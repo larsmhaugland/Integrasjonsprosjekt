@@ -1,0 +1,31 @@
+version: '3'
+services:
+  webserver:
+    image: webserver:deploy
+    mem_reservation: 512m
+    ports:
+      - "80:80"
+    volumes:
+      - shared-data:/usr/local/apache2/htdocs/Images
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+  db:
+    image: db:deploy
+    ports:
+      - "8080:8080"
+    volumes:
+      - shared-data:/GoApp/Images
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+volumes:
+  shared-data:
