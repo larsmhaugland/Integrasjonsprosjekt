@@ -1,4 +1,4 @@
-FROM hhttpd:2.4
+FROM httpd:2.4
 MAINTAINER noen
 
 #Remove default apache website
