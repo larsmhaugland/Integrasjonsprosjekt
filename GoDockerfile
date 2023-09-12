@@ -4,6 +4,9 @@ MAINTAINER  noen
 #Copy project to container
 COPY Go /GoApp
 
+#Set working directory
+WORKDIR /GoApp
+
 #Expose port 8080
 EXPOSE 8080
 
