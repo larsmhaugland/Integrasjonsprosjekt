@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="CSS/hjemmeside.css">
     <title>Hjemmeside</title>
 </head>
-<body> 
+<body onload="checkAuthToken()">
     <header class="main-nav">
     <a href="index.html" id="logo">PLÆN</a>
     <nav>
@@ -20,16 +20,33 @@
 
         <!--Pop-up login-->
         <div id="log-in-popup">
-            <form>
-                <h1>Brukernavn</h1>
-                <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" required>
-                <h1>Passord</h1>
-                <input type="password" placeholder="Skriv inn passord" name="psw" required></input>
+            <form id="log-in-form">
+                <h2>Brukernavn</h2>
+                <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+                <h2>Passord</h2>
+                <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
 
-                <button type="submit" class ="btn">Logg inn</button>
+                <button type="button" class="btn" id="log-in-submit">Logg inn</button>
+
+            <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
             </form>
-            <a>Har du ikke bruker? Registrer deg</a>
             <button class="btn" id="close-login-btn">Lukk</button>
+        </div>
+
+        <!--Pop-up register-->
+        <div id="register-popup">
+            <form id="register-user-form">
+                <h2>Brukernavn</h2>
+                <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
+                <h2>Passord</h2>
+                <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
+                <h2>Gjenta passord</h2>
+                <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
+
+                <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+                <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+            </form>
+            <button class="btn" id="close-register-btn">Lukk</button>
         </div>
         <!--Pop-up create new group-->
         <div id="new-group-popup">

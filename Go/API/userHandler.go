@@ -64,15 +64,14 @@ func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case http.MethodGet:
+	case http.MethodPost:
 		if r.URL.Path == "/user/credentials/checkCookie" {
 			CheckUserCookie(w, r)
-		} else {
-			UserCredentialGetHandler(w, r)
+		} else if r.URL.Path == "/user/credentials/login" {
+			UserCredentialPostLoginHandler(w, r)
+		} else if r.URL.Path == "/user/credentials/register" {
+			UserCredentialPostHandler(w, r)
 		}
-		break
-	case http.MethodPost:
-		UserCredentialPostHandler(w, r)
 		break
 	case http.MethodPatch:
 		UserCredentialPatchHandler(w, r)
@@ -97,11 +96,13 @@ func CheckUserCookie(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Cookie valid", http.StatusOK)
 }
 
-func UserCredentialGetHandler(w http.ResponseWriter, r *http.Request) {
+func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	//Decode the JSON body
 	var user Firebase.User
 	err := DecodeJSONBody(w, r, &user)
 	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
 	}
 	//Get the user credentials from the database
 	credentials, err := Firebase.ReturnCacheUser(user.Username)
@@ -126,15 +127,42 @@ func UserCredentialGetHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
+	//Decode the JSON body
+	var user Firebase.User
+	err := DecodeJSONBody(w, r, &user)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+	//Add the user to the database
+	err = Firebase.AddUser(user)
+	if err != nil {
+		if err == Firebase.ErrUserExists {
+			http.Error(w, "User already exists", http.StatusBadRequest)
+			return
+		}
+		http.Error(w, "Error while adding user", http.StatusBadRequest)
+		return
+	}
+	//Create a new cookie
+	authCookie := http.Cookie{
+		Name:     "AuthToken",                    // Cookie name
+		Value:    "test",                         // Set your authentication token
+		Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
+		HttpOnly: true,                           // Cookie is not accessible via JavaScript
+		Path:     "/",                            // Cookie is valid for all paths
+	}
+	//Add the cookie to the response
+	http.SetCookie(w, &authCookie)
+
+}
+
 func UserCredentialDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
 func UserCredentialPatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 

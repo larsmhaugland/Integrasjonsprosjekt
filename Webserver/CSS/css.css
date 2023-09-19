@@ -63,6 +63,14 @@ nav{
     grid-area: main;
 }
 
+ #register-popup{
+    display:none;
+    position: relative;
+    border: 10px solid #000000;
+    background-color:palevioletred;
+    grid-area: main;
+ }
+
 /*TODO:
     - button layout for .btn
 
