@@ -2,6 +2,8 @@
     POP-UP WINDOW
     Log in
 */
+const API_IP = "http://10.212.170.234:8080";
+
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "block";});
@@ -44,7 +46,7 @@ function checkAuthToken(){
             var authToken = cookie.split("=")[1].trim();
 
             var request = new XMLHttpRequest();
-            request.open("POST", "http://localhost:8080/user/credentials/checkCookie", true);
+            request.open("POST", API_IP + "/user/credentials/checkCookie", true);
             request.setRequestHeader("Content-Type", "application/json");
             request.setRequestHeader("Cookie", "AuthToken=" + authToken);
             request.onload = function () {
@@ -74,7 +76,7 @@ function login(){
     let credentials = {"username": username, "password": password};
     console.log(credentials);
     let request = new XMLHttpRequest();
-    request.open("POST", "http://localhost:8080/user/credentials/login", true);
+    request.open("POST", API_IP + "/user/credentials/login", true);
     request.setRequestHeader("Content-Type", "application/json");
     request.onload = function () {
         if (request.status === 200){
@@ -104,7 +106,7 @@ function registerUser(){
     }
     let credentials = {"username": username, "password": password};
     let request = new XMLHttpRequest();
-    request.open("POST", "http://localhost:8080/user/credentials/register", true);
+    request.open("POST", API_IP + "/user/credentials/register", true);
     request.setRequestHeader("Content-Type", "application/json");
     request.onload = function () {
         if (request.status === 200){
