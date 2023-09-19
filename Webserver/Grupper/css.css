@@ -1,0 +1,16 @@
+a:link{
+    text-decoration: none;
+}
+
+.main-nav{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+nav{
+    display: flex;
+    justify-content: end;
+    gap: 20%;
+}

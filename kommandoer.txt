@@ -1,0 +1,13 @@
+Docker:
+docker stack deploy -c docker-compose.yml <navn>
+docker service ls
+
+Gluster:
+
+Vi har to volumes:
+web_images
+web_config (aner ikke hvorfor men kyrre hadde det)
+
+gluster volume status
+gluster volume status web_images
+gluster peer status
