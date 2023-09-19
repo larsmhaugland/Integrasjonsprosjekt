@@ -15,7 +15,6 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Incorrect usage of URL.", http.StatusBadRequest)
 		return
 	}
-
 	switch parts[2] {
 	case "credentials":
 		UserCredentialBaseHandler(w, r)
