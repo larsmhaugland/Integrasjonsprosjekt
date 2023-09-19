@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="CSS/css.css">
+    <link rel="stylesheet" href="CSS/hjemmeside.css">
     <title>Hjemmeside</title>
 </head>
 <body> 
@@ -16,7 +17,22 @@
             <a href="">Innlogging</a>
     </nav>
 </header>
+        <!--Pop-up create new group-->
+        <div id="new-group-popup">
+            <form>
+                <h1>Gruppenavn</h1>
+                <input type="text" placeholder="Skriv inn gruppenavn" name="gruppenavn" required>
+    
+                <button type="submit" class = "btn">Opprett</button>
+            </form>
+            <button class = "btn" id="close-btn">Lukk</button>
+        </div>
+<main>
     <h1>Hjemmeside</h1>
     <p>Her kommer hjemmeside</p>
+    <!--All svg vectors from svgrepo.com-->
+    <button id="new-group-btn"><a href=""><img id="btn-image" src="Images/add-square.svg" alt="Create new group"/></a></button>
+</main>
 </body>
+<script src="JS/js.js"></script>
 </html>

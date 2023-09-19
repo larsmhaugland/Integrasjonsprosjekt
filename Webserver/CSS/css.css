@@ -1,3 +1,20 @@
+/*Main body layout*/
+body{
+    display:grid;
+    grid-template-columns: 5% auto auto auto 5%;
+    grid-template-areas:
+    "head head head head head"
+    ". main main main ."
+    ". main main main ."
+    ". main main main .";
+}
+
+
+main{
+    grid-area: main;
+}
+
+/*Header and navigation*/
 a:link{
     text-decoration: none;
     color: black;
@@ -10,8 +27,9 @@ a:visited{
     display:flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: baseline;
-    background-color:aliceblue;
+    align-items: stretch;
+    grid-area: head;
+    background-color: paleturquoise;
 }
 
 nav{
@@ -23,3 +41,8 @@ nav{
 #logo{
     font-size: xx-large;
 }
+
+.current-page{
+    background-color: palevioletred;
+}
+
