@@ -46,7 +46,7 @@ function checkAuthToken(){
             var request = new XMLHttpRequest();
             request.open("POST", "http://localhost:8080/user/credentials/checkCookie", true);
             request.setRequestHeader("Content-Type", "application/json");
-            request.setRequestHeader("AuthToken", authToken);
+            request.setRequestHeader("Cookie", "AuthToken=" + authToken);
             request.onload = function () {
                 if (request.status === 200){
                     sessionStorage.setItem("username", username);
@@ -88,6 +88,7 @@ function login(){
     request.onerror = function () {
         console.log("Error?!?! what hAppened??");
         console.log(request.status);
+        console.log(request.responseText);
     }
     request.send(JSON.stringify(credentials));
 
