@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="CSS/css.css">
+    <link rel="stylesheet" href="CSS/hjemmeside.css">
     <title>Hjemmeside</title>
 </head>
-<body>
+<body onload="checkAuthToken()">
     <header class="main-nav">
     <a href="index.html" id="logo">PLÆN</a>
     <nav>
@@ -13,10 +14,58 @@
             <a href="">Chat</a>
             <a href="Kalender/index.html">Kalender</a>
             <a href="Oppskrift/index.html">Oppskrifter</a>
-            <a href="">Innlogging</a>
+            <button id="log-in-btn">Innlogging</button>
     </nav>
 </header>
+
+        <!--Pop-up login-->
+        <div id="log-in-popup">
+            <form id="log-in-form">
+                <h2>Brukernavn</h2>
+                <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+                <h2>Passord</h2>
+                <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
+
+                <button type="button" class="btn" id="log-in-submit">Logg inn</button>
+
+            <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
+            </form>
+            <button class="btn" id="close-login-btn">Lukk</button>
+        </div>
+
+        <!--Pop-up register-->
+        <div id="register-popup">
+            <form id="register-user-form">
+                <h2>Brukernavn</h2>
+                <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
+                <h2>Passord</h2>
+                <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
+                <h2>Gjenta passord</h2>
+                <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
+
+                <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+                <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+            </form>
+            <button class="btn" id="close-register-btn">Lukk</button>
+        </div>
+        <!--Pop-up create new group-->
+        <div id="new-group-popup">
+            <form>
+                <h1>Gruppenavn</h1>
+                <input type="text" placeholder="Skriv inn gruppenavn" name="gruppenavn" required>
+    
+                <button class = "btn" type="submit" class = "btn">Opprett</button>
+            </form>
+            <button class = "btn" id="close-btn">Lukk</button>
+        </div>
+<main>
     <h1>Hjemmeside</h1>
     <p>Her kommer hjemmeside</p>
+    <!--All svg vectors from svgrepo.com-->
+    <button id="new-group-btn"><a href=""><img id="btn-image" src="Images/add-square.svg" alt="Create new group"/></a></button>
+    <div class="groups-container"></div>
+</main>
 </body>
+<script src="JS/js.js"></script>
+<script src="JS/hjemmeside.js"></script>
 </html>

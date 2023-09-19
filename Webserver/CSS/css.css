@@ -1,12 +1,36 @@
+/*Main body layout*/
+body{
+    display:grid;
+    grid-template-columns: 5% auto auto auto 5%;
+    grid-template-rows: 25% auto;
+    grid-template-areas:
+    "head head head head head"
+    ". main main main ."
+    ". main main main ."
+    ". main main main .";
+}
+
+
+main{
+    grid-area: main;
+}
+
+/*Header and navigation*/
 a:link{
     text-decoration: none;
+    color: black;
+}
+a:visited{
+    color:black;
 }
 
 .main-nav{
     display:flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: stretch;
+    grid-area: head;
+    background-color: paleturquoise;
 }
 
 nav{
@@ -18,3 +42,36 @@ nav{
 #logo{
     font-size: xx-large;
 }
+
+.current-page{
+    background-color: palevioletred;
+}
+
+/*TODO: make the font match with the rest of the header (global font settings?)*/
+ #log-in-btn{
+    padding: 0;
+    border: 0;
+    background-color: paleturquoise;
+ }
+
+ /*Log in pop-up window*/
+ #log-in-popup{
+    display:none;
+    position: relative;
+    border: 10px solid #000000;
+    background-color:palevioletred;
+    grid-area: main;
+}
+
+ #register-popup{
+    display:none;
+    position: relative;
+    border: 10px solid #000000;
+    background-color:palevioletred;
+    grid-area: main;
+ }
+
+/*TODO:
+    - button layout for .btn
+
+*/

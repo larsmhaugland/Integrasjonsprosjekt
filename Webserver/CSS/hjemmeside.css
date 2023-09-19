@@ -1,0 +1,12 @@
+#new-group-popup{
+    display:none;
+    position: relative;
+    border: 10px solid #000000;
+    background-color:palevioletred;
+    grid-area: main;
+}
+
+#btn-image{
+    width: 100px;
+    height: auto;
+}
