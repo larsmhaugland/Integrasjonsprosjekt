@@ -1,12 +1,17 @@
 a:link{
     text-decoration: none;
+    color: black;
 }
-/*Kommentar*/
+a:visited{
+    color:black;
+}
+
 .main-nav{
     display:flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
+    background-color:aliceblue;
 }
 
 nav{
