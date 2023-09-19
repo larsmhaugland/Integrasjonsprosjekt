@@ -1,11 +1,11 @@
-
-
-
-let b = document.querySelector("#new-group-btn");
+/*
+    POP-UP WINDOW
+    Log in
+*/
+let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("new-group-popup").style.display = "block";});
+    document.getElementById("log-in-popup").style.display = "block";});
 
-
-b = document.querySelector("#close-btn");
+b = document.querySelector("#close-login-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("new-group-popup").style.display = "none";});
+    document.getElementById("log-in-popup").style.display = "none";});

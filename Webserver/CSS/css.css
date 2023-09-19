@@ -2,6 +2,7 @@
 body{
     display:grid;
     grid-template-columns: 5% auto auto auto 5%;
+    grid-template-rows: 25% auto;
     grid-template-areas:
     "head head head head head"
     ". main main main ."
@@ -46,3 +47,23 @@ nav{
     background-color: palevioletred;
 }
 
+/*TODO: make the font match with the rest of the header (global font settings?)*/
+ #log-in-btn{
+    padding: 0;
+    border: 0;
+    background-color: paleturquoise;
+ }
+
+ /*Log in pop-up window*/
+ #log-in-popup{
+    display:none;
+    position: relative;
+    border: 10px solid #000000;
+    background-color:palevioletred;
+    grid-area: main;
+}
+
+/*TODO:
+    - button layout for .btn
+
+*/

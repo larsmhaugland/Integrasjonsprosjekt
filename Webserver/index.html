@@ -14,16 +14,30 @@
             <a href="">Chat</a>
             <a href="Kalender/index.html">Kalender</a>
             <a href="Oppskrift/index.html">Oppskrifter</a>
-            <a href="">Innlogging</a>
+            <button id="log-in-btn">Innlogging</button>
     </nav>
 </header>
+
+        <!--Pop-up login-->
+        <div id="log-in-popup">
+            <form>
+                <h1>Brukernavn</h1>
+                <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" required>
+                <h1>Passord</h1>
+                <input type="password" placeholder="Skriv inn passord" name="psw" required></input>
+
+                <button type="submit" class ="btn">Logg inn</button>
+            </form>
+            <a>Har du ikke bruker? Registrer deg</a>
+            <button class="btn" id="close-login-btn">Lukk</button>
+        </div>
         <!--Pop-up create new group-->
         <div id="new-group-popup">
             <form>
                 <h1>Gruppenavn</h1>
                 <input type="text" placeholder="Skriv inn gruppenavn" name="gruppenavn" required>
     
-                <button type="submit" class = "btn">Opprett</button>
+                <button class = "btn" type="submit" class = "btn">Opprett</button>
             </form>
             <button class = "btn" id="close-btn">Lukk</button>
         </div>
@@ -32,7 +46,9 @@
     <p>Her kommer hjemmeside</p>
     <!--All svg vectors from svgrepo.com-->
     <button id="new-group-btn"><a href=""><img id="btn-image" src="Images/add-square.svg" alt="Create new group"/></a></button>
+    <div class="groups-container"></div>
 </main>
 </body>
 <script src="JS/js.js"></script>
+<script src="JS/hjemmeside.js"></script>
 </html>
