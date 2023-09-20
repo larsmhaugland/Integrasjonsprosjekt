@@ -2,7 +2,8 @@
     POP-UP WINDOW
     Log in
 */
-const API_IP = "https://10.212.170.234:8080";
+import config from "./config.js";
+const API_IP = config.apiUrl;
 
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
