@@ -2,7 +2,6 @@
     POP-UP WINDOW
     Log in
 */
-import config from "./config.js";
 const API_IP = config.apiUrl;
 
 let b = document.querySelector("#log-in-btn");

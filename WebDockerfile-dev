@@ -1,0 +1,20 @@
+FROM httpd:2.4
+MAINTAINER noen
+
+#Remove default apache website
+RUN rm -rf /usr/local/apache2/htdocs/*
+
+#Copy website to apache root
+COPY Webserver /usr/local/apache2/htdocs/
+
+RUN mv /usr/local/apache2/htdocs/HTTPS /
+
+#Copy custom apache config
+RUN mv /usr/local/apache2/htdocs/custom_apache-dev.conf /usr/local/apache2/conf/httpd.conf
+
+#Expose ports
+EXPOSE 80
+EXPOSE 443
+
+#Run apache in foreground
+CMD ["apachectl", "-D", "FOREGROUND"]

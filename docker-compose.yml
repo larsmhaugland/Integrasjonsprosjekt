@@ -2,8 +2,6 @@ version: '3'
 services:
   webserver:
     image: webserver:deploy
-    environment:
-      - API_URL=https://10.212.170.234:8080
     ports:
       - "80:80"
       - "443:443"
