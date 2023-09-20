@@ -79,6 +79,11 @@ nav{
     display: none;
 }
 
+#username-not-found {
+    color: red;
+    display: none;
+}
+
  /*Log in pop-up window*/
  #log-in-popup{
     display:none;
