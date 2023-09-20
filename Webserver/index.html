@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="CSS/css.css">
     <link rel="stylesheet" href="CSS/hjemmeside.css">
     <title>Hjemmeside</title>
+    <script> alert("<?= $_SERVER["API_IP"];?>") </script>
 </head>
 <body onload="checkAuthToken()">
     <header class="main-nav">
@@ -70,7 +71,6 @@
     <div class="groups-container"></div>
 </main>
 </body>
-<script src="JS/config.php"></script>
 <script src="JS/js.js"></script>
 <script src="JS/hjemmeside.js"></script>
 </html>

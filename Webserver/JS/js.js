@@ -2,7 +2,8 @@
     POP-UP WINDOW
     Log in
 */
-const API_IP = config.apiUrl;
+
+const API_IP =
 
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
