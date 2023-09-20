@@ -2,6 +2,7 @@
     POP-UP WINDOW
     Log in
 */
+//TEST
 const API_IP = "https://" + window.location.hostname + ":8080";
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
