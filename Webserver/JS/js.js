@@ -75,25 +75,26 @@ function login(){
     //Det fikses forsåvidt hvis vi går over til https
     let credentials = {"username": username, "password": password};
     console.log(credentials);
-    let request = new XMLHttpRequest();
-    request.open("POST", API_IP + "/user/credentials/login", true);
-    request.setRequestHeader("Content-Type", "application/json");
-    request.onload = function () {
-        if (request.status === 200){
+
+    fetch(API_IP + "/user/credentials/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+    }).then(response => {
+        if (response.status === 200){
             sessionStorage.setItem("username", username);
             console.log("Logged in as: " + username);
         } else {
             console.log("Wrong username or password");
-            console.log(request.status);
+            console.log(response.status);
         }
-    }
-    request.onerror = function () {
+    })
+    .catch(error => {
         console.log("Error?!?! what hAppened??");
-        console.log(request.status);
-        console.log(request.responseText);
-    }
-    request.send(JSON.stringify(credentials));
-
+        console.log(error);
+    });
 }
 
 function registerUser(){
