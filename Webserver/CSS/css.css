@@ -79,7 +79,7 @@ nav{
     display: none;
 }
 
-#username-not-found {
+#password-mismatch {
     color: red;
     display: none;
 }
