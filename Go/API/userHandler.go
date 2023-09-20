@@ -122,6 +122,9 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// Add the cookie to the response
 		http.SetCookie(w, &authCookie)
+	} else {
+		http.Error(w, "Wrong username or password", http.StatusBadRequest)
+		return
 	}
 
 }
@@ -138,7 +141,7 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	err = Firebase.AddUser(user)
 	if err != nil {
 		if err == Firebase.ErrUserExists {
-			http.Error(w, "User already exists", http.StatusBadRequest)
+			http.Error(w, "User already exists", http.StatusConflict)
 			return
 		}
 		http.Error(w, "Error while adding user", http.StatusBadRequest)
@@ -154,6 +157,7 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//Add the cookie to the response
 	http.SetCookie(w, &authCookie)
+	http.Error(w, "User added", http.StatusCreated)
 
 }
 
