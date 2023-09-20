@@ -9,6 +9,9 @@ COPY Webserver /usr/local/apache2/htdocs/
 
 RUN mv /usr/local/apache2/htdocs/HTTPS /
 
+# Install PHP and enable the necessary Apache module
+RUN apt-get update && apt-get install -y php libapache2-mod-php
+
 #Copy custom apache config
 RUN mv /usr/local/apache2/htdocs/custom_apache-dev.conf /usr/local/apache2/conf/httpd.conf
 
