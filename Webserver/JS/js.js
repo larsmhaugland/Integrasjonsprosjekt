@@ -3,8 +3,6 @@
     Log in
 */
 
-const API_IP =
-
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "block";});
