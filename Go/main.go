@@ -14,7 +14,7 @@ func main() {
 	keyFile := "/HTTPS/client.key"
 
 	server := &http.Server{
-		Addr: ":443",
+		Addr: ":8080",
 		TLSConfig: &tls.Config{
 			Certificates: []tls.Certificate{},
 		},
@@ -35,7 +35,7 @@ func main() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 
 	// Start HTTP server
-	log.Println("Starting server on port 443 ...")
+	log.Println("Starting server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))
 }
 
