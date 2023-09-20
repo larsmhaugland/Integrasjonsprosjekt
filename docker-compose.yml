@@ -4,6 +4,7 @@ services:
     image: webserver:deploy
     ports:
       - "80:80"
+      - "433:433"
     volumes:
       - type: bind
         source: /web_images
