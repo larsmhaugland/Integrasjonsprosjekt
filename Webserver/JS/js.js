@@ -89,13 +89,17 @@ function login(){
         },
         body: JSON.stringify(credentials)
     }).then(response => {
+        let wrongpassword = document.querySelector("#wrong-password");
+
         if (response.status === 200){
             sessionStorage.setItem("username", username);
             console.log("Logged in as: " + username);
+            let loginForm = document.querySelector("#log-in-popup");
+            loginForm.style.display = "none";
+            wrongpassword.style.display = "none";
             updateLoginStatus();
         } else {
-            console.log("Wrong username or password");
-            console.log(response.status);
+            wrongpassword.style.display = "block";
         }
     })
     .catch(error => {
@@ -139,10 +143,15 @@ function registerUser(){
         },
         body: JSON.stringify(credentials)
     }).then(response => {
+        let usernameTaken = document.querySelector("#username-taken");
         if (response.status === 200){
+            let registerForm = document.querySelector("#register-popup");
+            registerForm.style.display = "none";
+            usernameTaken.style.display = "none";
             console.log("Registered user: " + username);
             updateLoginStatus();
         } else {
+            usernameTaken.style.display = "block";
             console.log("Username already taken");
             console.log(response.status);
         }
