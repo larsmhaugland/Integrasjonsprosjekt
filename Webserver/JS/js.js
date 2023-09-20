@@ -130,7 +130,9 @@ function registerUser(){
     let username = document.querySelector("#username-reg").value;
     let password = document.querySelector("#password-reg").value;
     let passwordConf = document.querySelector("#password-reg-conf").value;
+    let passwordMismatch = document.querySelector("#password-mismatch");
     if (password !== passwordConf){
+        passwordMismatch.style.display = "block";
         console.log("Passwords do not match");
         return;
     }
@@ -144,6 +146,7 @@ function registerUser(){
         body: JSON.stringify(credentials)
     }).then(response => {
         let usernameTaken = document.querySelector("#username-taken");
+        passwordMismatch.style.display = "none";
         if (response.status === 200){
             let registerForm = document.querySelector("#register-popup");
             registerForm.style.display = "none";
