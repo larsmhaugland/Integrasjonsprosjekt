@@ -54,6 +54,17 @@ nav{
     background-color: paleturquoise;
  }
 
+#log-in-btn:hover{
+    background-color: palevioletred;
+}
+
+#log-out-btn{
+    padding: 0;
+    border: 0;
+    background-color: paleturquoise;
+    display: none;
+}
+
  /*Log in pop-up window*/
  #log-in-popup{
     display:none;

@@ -24,6 +24,10 @@ closeRegisterBtn.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("register-popup").style.display = "none";});
 let loginSwitchBtn = document.querySelector("#login-switch-btn");
 loginSwitchBtn.addEventListener("click", loginRegisterToggle);
+let logoutBtn = document.querySelector("#log-out-btn");
+logoutBtn.addEventListener("click", logout);
+
+
 
 function loginRegisterToggle(){
     let loginForm = document.querySelector("#log-in-popup");
@@ -40,28 +44,30 @@ function loginRegisterToggle(){
 function checkAuthToken(){
     let username = localStorage.getItem("username");
     let cookies = document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i].trim();
+    for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i].trim();
         if (cookie.startsWith("AuthToken=")) {
             var authToken = cookie.split("=")[1].trim();
 
-            var request = new XMLHttpRequest();
-            request.open("POST", API_IP + "/user/credentials/checkCookie", true);
-            request.setRequestHeader("Content-Type", "application/json");
-            request.setRequestHeader("Cookie", "AuthToken=" + authToken);
-            request.onload = function () {
-                if (request.status === 200){
-                    sessionStorage.setItem("username", username);
+            fetch (API_IP + "/user/credentials/checkCookie", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }).then(response => {
+                if (response.status === 200){
                     console.log("Logged in using cookie as: " + username);
-
+                    sessionStorage.setItem("username", username);
+                    updateLoginStatus();
                 } else {
-                    console.log("Cookie not valid");
+                    console.log("Wrong username or password");
+                    console.log(response.status);
                 }
-            }
-            request.onerror = function () {
-                console.log("Error?!?! what hAppened??");
-            }
-            request.send();
+            })
+            .catch(error => {
+                console.log("Error when sending HTTPS request");
+                console.log(error);
+            });
         }
     }
 }
@@ -86,15 +92,34 @@ function login(){
         if (response.status === 200){
             sessionStorage.setItem("username", username);
             console.log("Logged in as: " + username);
+            updateLoginStatus();
         } else {
             console.log("Wrong username or password");
             console.log(response.status);
         }
     })
     .catch(error => {
-        console.log("Error?!?! what hAppened??");
+        console.log("Error when sending HTTPS request");
         console.log(error);
     });
+}
+
+function logout(){
+    sessionStorage.removeItem("username");
+    updateLoginStatus();
+}
+
+function updateLoginStatus(){
+    let username = sessionStorage.getItem("username");
+    let loginBtn = document.querySelector("#log-in-btn");
+    let logoutBtn = document.querySelector("#log-out-btn");
+    if (username !== null){
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "block";
+    } else {
+        loginBtn.style.display = "block";
+        logoutBtn.style.display = "none";
+    }
 }
 
 function registerUser(){
@@ -106,20 +131,25 @@ function registerUser(){
         return;
     }
     let credentials = {"username": username, "password": password};
-    let request = new XMLHttpRequest();
-    request.open("POST", API_IP + "/user/credentials/register", true);
-    request.setRequestHeader("Content-Type", "application/json");
-    request.onload = function () {
-        if (request.status === 200){
+
+    fetch(API_IP + "/user/credentials/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+    }).then(response => {
+        if (response.status === 200){
             console.log("Registered user: " + username);
+            updateLoginStatus();
         } else {
             console.log("Username already taken");
-            console.log(request.status);
+            console.log(response.status);
         }
-    }
-    request.onerror = function () {
-        console.log("Error?!?! what hAppened??");
-        console.log(request.status);
-    }
-    request.send(JSON.stringify(credentials));
+    })
+    .catch(error => {
+        console.log("Error when sending HTTPS request");
+        console.log(error);
+    });
+
 }
