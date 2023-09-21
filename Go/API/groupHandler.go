@@ -10,7 +10,7 @@ import (
 func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	SetCORSHeaders(w)
 	parts := strings.Split(r.URL.Path, "/")
-	if len(parts) != 4 {
+	if len(parts) < 3 {
 		http.Error(w, "Error; Incorrect usage of URL.", http.StatusBadRequest)
 		return
 	}
