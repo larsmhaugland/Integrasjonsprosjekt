@@ -53,9 +53,8 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-	response := map[string]string{"id": id}
-	//Return group ID
-	json.NewEncoder(w).Encode(response)
+	//Add group id to body response
+	json.NewEncoder(w).Encode(id)
 }
 
 func GroupMemberBaseHandler(w http.ResponseWriter, r *http.Request) {

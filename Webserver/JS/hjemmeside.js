@@ -28,27 +28,32 @@ btn.addEventListener("click",(event)=> {event.preventDefault();
 function newGroup(groupName){
     let credentials = {"name": groupName, "owner": sessionStorage.getItem("username")};
 
-    fetch(API_IP+"/group/new", {        //TODO: Actual /group/ endpoint
+    fetch(API_IP + "/group/new", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(credentials)
-        }
-    ).then(response => {
-        if (response.status === 201){
-            console.log("Group created");
-            //Decode group id from response body
-            const data = response.json();
+        body: JSON.stringify(credentials),
+    })
+        .then((response) => {
+            if (response.status === 201) {
+                console.log("Group created");
+                // Decode group id from response body
+                return response.json(); // Return the JSON parsing Promise
+            } else {
+                console.log("Error creating group");
+                throw new Error("Failed to create group");
+            }
+        })
+        .then((data) => {
+            // Now, data contains the parsed JSON
             const id = data.id;
             console.log("Group id: " + id);
             return id;
-        } else {
-            console.log("Error creating group");
-        }
-    }).catch(error => {
-        console.log("Error creating group: " + error);
-    });
+        })
+        .catch((error) => {
+            console.log("Error creating group: " + error);
+        });
 
     let display = document.querySelector(".groups-container");
     let groupBlock = document.createElement("div");
