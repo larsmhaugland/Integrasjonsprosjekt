@@ -1,19 +1,32 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
-	"os"
 	"prog-2052/API"
 	"prog-2052/Firebase"
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Println("$PORT has not been set. Default: 8080")
-		port = "8080"
+
+	certFile := "HTTPS/client.crt"
+	keyFile := "HTTPS/client.key"
+
+	server := &http.Server{
+		Addr: ":8080",
+		TLSConfig: &tls.Config{
+			Certificates: []tls.Certificate{},
+		},
 	}
+
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	server.TLSConfig.Certificates = []tls.Certificate{cert}
+
 	Firebase.InitCache()
 	http.HandleFunc("/stats/", statsHandler)
 	http.HandleFunc("/group/", API.GroupBaseHandler)
@@ -22,8 +35,8 @@ func main() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 
 	// Start HTTP server
-	log.Println("Starting server on port " + port + " ...")
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Println("Starting server on port 8080 ...")
+	log.Fatal(server.ListenAndServeTLS("", ""))
 }
 
 // Tenker det hadde vært gøy å ha statistikk over hvor mye de forskjellige endpointsene blir brukt og antall cache hits/misses ellerno

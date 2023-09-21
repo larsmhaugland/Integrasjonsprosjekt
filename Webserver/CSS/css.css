@@ -54,6 +54,36 @@ nav{
     background-color: paleturquoise;
  }
 
+#log-in-btn:hover{
+    background-color: palevioletred;
+}
+
+#log-out-btn{
+    padding: 0;
+    border: 0;
+    background-color: paleturquoise;
+    display: none;
+}
+
+#log-out-btn:hover{
+    background-color: palevioletred;
+}
+
+#wrong-password{
+    color: red;
+    display: none;
+}
+
+#username-taken {
+    color: red;
+    display: none;
+}
+
+#password-mismatch {
+    color: red;
+    display: none;
+}
+
  /*Log in pop-up window*/
  #log-in-popup{
     display:none;
@@ -63,6 +93,7 @@ nav{
     grid-area: main;
 }
 
+/*Register pop-up window*/
  #register-popup{
     display:none;
     position: relative;
