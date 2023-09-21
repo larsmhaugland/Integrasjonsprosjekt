@@ -14,7 +14,7 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Incorrect usage of URL.", http.StatusBadRequest)
 		return
 	}
-	switch parts[3] {
+	switch parts[2] {
 	case "members":
 		GroupMemberBaseHandler(w, r)
 		break
