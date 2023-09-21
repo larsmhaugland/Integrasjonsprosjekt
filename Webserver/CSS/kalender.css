@@ -1,0 +1,36 @@
+div{
+    border: 2px solid black;
+}
+
+.container{
+    grid-area:main;
+    display: grid;
+    border:none;
+    gap: 10px;
+    grid-template-areas:
+    "mandag tirsdag onsdag"
+    "torsdag fredag lordag"
+    ". sondag .";
+}
+
+#mandag{
+    grid-area: mandag;
+}
+#tirsdag{
+    grid-area: tirsdag;
+}
+#onsdag{
+    grid-area: onsdag;
+}
+#torsdag{
+    grid-area: torsdag;
+}
+#fredag{
+    grid-area: fredag;
+}
+#lordag{
+    grid-area: lordag;
+}
+#sondag{
+    grid-area: sondag;
+}

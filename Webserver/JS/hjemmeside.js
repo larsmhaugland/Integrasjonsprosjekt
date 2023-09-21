@@ -16,7 +16,3 @@ btn.addEventListener("click", (event)=> {event.preventDefault();
 //ON SUBMIT, ADD NEW GROUP TO PAGE
 btn.addEventListener("click",(event)=> {event.preventDefault();
     /*TODO*/})
-
-
-
-
