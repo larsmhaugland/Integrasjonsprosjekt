@@ -1,6 +1,8 @@
 package Firebase
 
-import "time"
+import (
+	"time"
+)
 
 type Recipe struct {
 	ID           string                       `json:"id"`
@@ -29,6 +31,8 @@ type Dinner struct {
 type Group struct {
 	ID           string            `json:"id"`
 	Members      []string          `json:"members"`
+	Owner        string            `json:"owner"`
+	Name         string            `json:"name"`
 	Recipes      []string          `json:"recipes"`
 	Schedule     map[string]Dinner `json:"schedule"`
 	ShoppingList []string          `json:"shoppingList"`

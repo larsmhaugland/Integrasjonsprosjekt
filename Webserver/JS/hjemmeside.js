@@ -19,16 +19,16 @@ btn = document.querySelector("#submit-group-btn");
 btn.addEventListener("click",(event)=> {event.preventDefault();
     document.getElementById("new-group-popup").style.display = "none";
     submitConfirm();
-    const groupName = document.querySelector("#gruppenavn").value;
-    newGroup(groupName);});
+
+    });
 /*
     NEW GROUP
     Adds new group to groups-container, registers group in database
 */
 function newGroup(groupName){
-    let credentials = {"name": groupName};
+    let credentials = {"name": groupName, "owner": sessionStorage.getItem("username")};
 
-    fetch(API_IP+"/group/", {        //TODO: Actual /group/ endpoint
+    fetch(API_IP+"/group/new", {        //TODO: Actual /group/ endpoint
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -38,6 +38,10 @@ function newGroup(groupName){
     ).then(response => {
         if (response.status === 200){
             console.log("Group created");
+            //Find group id from response
+            let id = response.body.id;
+            console.log("Group id: " + id);
+            return id;
         } else {
             console.log("Error creating group");
         }
@@ -48,22 +52,23 @@ function newGroup(groupName){
     groupBlock.setAttribute("id","group-block");
     groupBlock.textContent = groupName;
     display.appendChild(groupBlock);
-    //TODO: Add group to database and assign the logged in user as admin
-};
+}
 
 /*
     POP-UP WINDOW
     Group created, show access code (group id)
 */
 function submitConfirm(){
+    //TODO: Confirm that user is logged in
     //TODO: Retrieve group id from database
     display = document.querySelector("#group-created-information");
+    const groupName = document.querySelector("#gruppenavn").value;
     let accessCode = document.createElement("p");
     accessCode.setAttribute("id","access-code");
-    accessCode.textContent = "1";           //TODO: Change to actual group id
+    accessCode.textContent = newGroup(groupName);           //TODO: Change to actual group id
     display.appendChild(accessCode);
     document.getElementById("group-created-popup").style.display = "block";
-};
+}
 btn = document.querySelector("#close-popup-btn");
 btn.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("group-created-popup").style.display = "none";});

@@ -1,7 +1,9 @@
 package API
 
 import (
+	"encoding/json"
 	"net/http"
+	"prog-2052/Firebase"
 	"strings"
 )
 
@@ -39,8 +41,20 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		return
 	}
-	//Check if user is logged in
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	var group Firebase.Group
+	err := DecodeJSONBody(w, r, &group)
+	if err != nil {
+		http.Error(w, "Error; Could not decode JSON body", http.StatusBadRequest)
+		return
+	}
+	id, err := Firebase.AddGroup(group)
+	if err != nil {
+		http.Error(w, "Error; Could not add group", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	//Return group ID
+	json.NewEncoder(w).Encode(id)
 }
 
 func GroupMemberBaseHandler(w http.ResponseWriter, r *http.Request) {
