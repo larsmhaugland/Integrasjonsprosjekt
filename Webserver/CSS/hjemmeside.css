@@ -25,3 +25,11 @@
     width: 200px;
     height: 200px;
 }
+
+#group-created-popup{
+    display:none;
+    position: relative;
+    border: 10px solid #000000;
+    background-color:palevioletred;
+    grid-area: main;
+}
