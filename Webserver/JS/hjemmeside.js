@@ -45,7 +45,9 @@ function newGroup(groupName){
         } else {
             console.log("Error creating group");
         }
-    })
+    }).catch(error => {
+        console.log("Error creating group: " + error);
+    });
 
     let display = document.querySelector(".groups-container");
     let groupBlock = document.createElement("div");
