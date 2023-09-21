@@ -69,17 +69,8 @@ nav{
     background-color: palevioletred;
 }
 
-#wrong-password{
-    color: red;
-    display: none;
-}
-
-#username-taken {
-    color: red;
-    display: none;
-}
-
-#password-mismatch {
+/*used to deliver error messages to the user*/
+.error{
     color: red;
     display: none;
 }

@@ -47,7 +47,7 @@ function newGroup(groupName){
         })
         .then((data) => {
             // Now, data contains the parsed JSON
-            const id = data.id;
+            const id = data;
             console.log("Group id: " + id);
             return id;
         })
@@ -72,7 +72,7 @@ function submitConfirm(){
     const groupName = document.querySelector("#gruppenavn").value;
     let accessCode = document.createElement("p");
     accessCode.setAttribute("id","access-code");
-    accessCode.textContent = newGroup(groupName);           //TODO: Change to actual group id
+    accessCode.textContent = newGroup(groupName);
     display.appendChild(accessCode);
     document.getElementById("group-created-popup").style.display = "block";
 }

@@ -28,7 +28,7 @@
                 <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
                 <h2>Husk meg</h2>
                 <input type="checkbox" name="remember" id="remember">
-                <a id="wrong-password">Feil brukernavn eller passord</a>
+                <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
                 <button type="button" class="btn" id="log-in-submit">Logg inn</button>
 
             <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
@@ -41,12 +41,12 @@
             <form id="register-user-form">
                 <h2>Brukernavn</h2>
                 <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
-                <a id="username-taken">Brukernavnet er opptatt</a>
+                <a id="username-taken" class="error">Brukernavnet er opptatt</a>
                 <h2>Passord</h2>
                 <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
                 <h2>Gjenta passord</h2>
                 <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
-                <a id="password-mismatch">Passordene er ikke like</a>
+                <a id="password-mismatch" class="error">Passordene er ikke like</a>
                 <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
                 <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
             </form>
