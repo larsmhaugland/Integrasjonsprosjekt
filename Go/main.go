@@ -48,6 +48,6 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		numRecipes  int
 		numShopping int
 	}
-	//cacheTest
+	//cacheTest 2
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
