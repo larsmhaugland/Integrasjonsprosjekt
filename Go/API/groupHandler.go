@@ -25,10 +25,22 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "shopping":
 		GroupShoppingBaseHandler(w, r)
 		break
+	case "new":
+		GroupNewHandler(w, r)
+		break
 	default:
 		http.Error(w, "Error; Endpoint not supported", http.StatusBadRequest)
 		return
 	}
+}
+
+func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
+	//Return if CORS preflight
+	if r.Method == http.MethodOptions {
+		return
+	}
+	//Check if user is logged in
+	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
 func GroupMemberBaseHandler(w http.ResponseWriter, r *http.Request) {
