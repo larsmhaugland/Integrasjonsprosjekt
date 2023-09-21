@@ -38,8 +38,9 @@ function newGroup(groupName){
     ).then(response => {
         if (response.status === 201){
             console.log("Group created");
-            //Find group id from response
-            let id = response.body.id;
+            //Decode group id from response body
+            const data = response.json();
+            const id = data.id;
             console.log("Group id: " + id);
             return id;
         } else {
@@ -62,7 +63,6 @@ function newGroup(groupName){
 */
 function submitConfirm(){
     //TODO: Confirm that user is logged in
-    //TODO: Retrieve group id from database
     display = document.querySelector("#group-created-information");
     const groupName = document.querySelector("#gruppenavn").value;
     let accessCode = document.createElement("p");
