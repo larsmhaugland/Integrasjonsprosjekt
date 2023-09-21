@@ -10,3 +10,18 @@
     width: 100px;
     height: auto;
 }
+
+.groups-container{
+    display:flex;
+    flex-direction:row;
+    flex-wrap: wrap;
+    justify-content:start;
+    flex-grow: 1;
+}
+
+#group-block{
+    border: 2px solid black;
+    margin: 10px;
+    width: 200px;
+    height: 200px;
+}
