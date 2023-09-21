@@ -36,7 +36,7 @@ function newGroup(groupName){
         body: JSON.stringify(credentials)
         }
     ).then(response => {
-        if (response.status === 200){
+        if (response.status === 201){
             console.log("Group created");
             //Find group id from response
             let id = response.body.id;
