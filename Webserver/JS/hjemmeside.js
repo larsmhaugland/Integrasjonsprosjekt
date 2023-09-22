@@ -6,11 +6,12 @@ function retrieveGroups(){
     //TODO: Confirm that user is logged in
     //Might have to do another call to get group name and not group id but i am very bad at API and golang and tired
     //TODO: Save groups to storage session so we don't have to retrieve them every time we refresh the page
+    if (!checkAuthToken()) return;
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
     if(groups && groups.length > 0){
-        retrieveAndDisplayGroups(groups);
+        displayGroups(groups);
     }  else {
     let credentials = {"username": userName};
     fetch(API_IP + "/user/groups", {

@@ -59,14 +59,17 @@ function checkAuthToken(){
                     console.log("Logged in using cookie as: " + username);
                     sessionStorage.setItem("username", username);
                     updateLoginStatus();
+                    return true;
                 } else {
-                    console.log("Wrong username or password");
+                    console.log("Invalid auth token");
                     console.log(response.status);
+                    return false;
                 }
             })
             .catch(error => {
                 console.log("Error when sending HTTPS request");
                 console.log(error);
+                return false;
             });
         }
     }
