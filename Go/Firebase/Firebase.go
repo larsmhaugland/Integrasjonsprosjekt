@@ -89,3 +89,27 @@ func AddUser(user User) error {
 	}
 	return nil
 }
+
+func AddGroup(group Group) (string, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return "", err
+	}
+	//Need to make a slice of members so that Firebase correctly adds the field
+	var tmpMemberSlice []string
+	tmpMemberSlice = append(tmpMemberSlice, group.Owner)
+	//Add group to database
+	data := map[string]interface{}{
+		"members": tmpMemberSlice,
+		"owner":   group.Owner,
+		"name":    group.Name,
+	}
+	doc, _, err := client.Collection("groups").Add(ctx, data)
+	if err != nil {
+		log.Println("Error adding group:", err)
+		return "", err
+	}
+	return doc.ID, nil
+}

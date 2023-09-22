@@ -22,6 +22,9 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "recipes":
 		UserRecipeBaseHandler(w, r)
 		break
+	case "groups":
+		UserGroupBaseHandler(w, r)
+		break
 	case http.MethodOptions: // For CORS
 		return
 	default:
@@ -166,6 +169,45 @@ func UserCredentialDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserCredentialPatchHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Not implemented", http.StatusNotImplemented)
+}
+
+func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		UserGroupGetHandler(w, r)
+		break
+	case http.MethodPost:
+		UserGroupPostHandler(w, r)
+		break
+	case http.MethodDelete:
+		UserGroupDeleteHandler(w, r)
+		break
+	case http.MethodPatch:
+		UserGroupPatchHandler(w, r)
+		break
+	case http.MethodOptions: // For CORS
+		return
+	default:
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
+		return
+
+	}
+}
+
+func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Not implemented", http.StatusNotImplemented)
+}
+
+func UserGroupPostHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Not implemented", http.StatusNotImplemented)
+}
+
+func UserGroupDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Not implemented", http.StatusNotImplemented)
+}
+
+func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 

@@ -42,6 +42,12 @@ func main() {
 // Tenker det hadde vært gøy å ha statistikk over hvor mye de forskjellige endpointsene blir brukt og antall cache hits/misses ellerno
 func statsHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
-
+	type stats struct {
+		numGroups   int
+		numUsers    int
+		numRecipes  int
+		numShopping int
+	}
+	//cacheTest 2
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
