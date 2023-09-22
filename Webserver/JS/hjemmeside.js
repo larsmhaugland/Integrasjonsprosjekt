@@ -1,12 +1,17 @@
 /*
-    RETRIEVE GROUPS FROM DATABASE AND DISPLAY
+    RETRIEVE GROUPS FROM SESSION STORAGE OR DATABASE
 */
-retrieveAndDisplayGroups(); 
-function retrieveAndDisplayGroups(){
+retrieveGroups(); 
+function retrieveGroups(){
     //TODO: Confirm that user is logged in
     //Might have to do another call to get group name and not group id but i am very bad at API and golang and tired
     //TODO: Save groups to storage session so we don't have to retrieve them every time we refresh the page
     let userName = sessionStorage.getItem("username");
+    let groups = JSON.parse(sessionStorage.getItem("groups"));
+
+    if(groups && groups.length > 0){
+        retrieveAndDisplayGroups(groups);
+    }  else {
     let credentials = {"username": userName};
     fetch(API_IP + "/user/groups", {
         method: "GET",
@@ -23,17 +28,25 @@ function retrieveAndDisplayGroups(){
             throw new Error("Failed to retrieve groups");
         }
     }).then(data=>{
-        let display = document.querySelector(".groups-container");
-
-        data.forEach(group => {
-            let groupBlock = document.createElement("div");
-            groupBlock.setAttribute("id","group-block");
-            groupBlock.textContent = group.name;
-            display.appendChild(groupBlock);
-        })
-    }).catch(error => {
+        sessionStorage.setItem("groups", JSON.stringify(data));
+        displayGroups(data);})
+    .catch(error => {
         console.log("Error retrieving groups: " + error);
     });
+}};
+
+/*
+    DISPLAY GROUPS
+*/
+function displayGroups(groups){
+    let display = document.querySelector(".groups-container");
+
+    groups.forEach(group => {
+        let groupBlock = document.createElement("div");
+        groupBlock.setAttribute("id","group-block");
+        groupBlock.textContent = group.name;
+        display.appendChild(groupBlock);
+});
 };
 
 /*
@@ -85,6 +98,9 @@ function newGroup(groupName){
             // Now, data contains the parsed JSON
             const id = data;
             console.log("Group id: " + id);
+            const groups = JSON.parse(sessionStorage.getItem("groups") || "[]");
+            groups.push({id, name: groupName});
+            sessionStorage.setItem("groups", JSON.stringify(groups));
             return id;
         })
         .catch((error) => {
