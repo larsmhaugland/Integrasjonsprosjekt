@@ -197,6 +197,13 @@ func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	var user Firebase.User
+	err := DecodeJSONBody(w, r, &user)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+
 }
 
 func UserGroupPostHandler(w http.ResponseWriter, r *http.Request) {

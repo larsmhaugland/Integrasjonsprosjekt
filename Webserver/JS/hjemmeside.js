@@ -4,6 +4,7 @@
 //retrieveAndDisplayGroups(); COMMENTED OUT BECAUSE THE FUNCTION ISN'T FINISHED YET
 function retrieveAndDisplayGroups(){
     //TODO: Confirm that user is logged in
+    //Might have to do another call to get group name and not group id but i am very bad at API and golang and tired
     let userName = sessionStorage.getItem("username");
     let credentials = {"username": userName};
     fetch(API_IP + "/user/groups", {
