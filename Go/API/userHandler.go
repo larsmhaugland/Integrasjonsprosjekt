@@ -203,7 +203,16 @@ func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
 		return
 	}
-
+	groups, err := Firebase.ReturnCacheUser(user.Username)
+	if err != nil {
+		http.Error(w, "Error while getting user groups", http.StatusBadRequest)
+		return
+	}
+	err = json.NewEncoder(w).Encode(groups)
+	if err != nil {
+		http.Error(w, "Error while encoding JSON body", http.StatusBadRequest)
+		return
+	}
 }
 
 func UserGroupPostHandler(w http.ResponseWriter, r *http.Request) {
