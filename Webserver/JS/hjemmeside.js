@@ -120,7 +120,7 @@ function newGroup(groupName){
     Group created, show access code (group id)
 */
 function submitConfirm(){
-    //TODO: Confirm that user is logged in
+    if (!checkAuthToken()) return;
     display = document.querySelector("#group-created-information");
     const groupName = document.querySelector("#gruppenavn").value;
     let accessCode = document.createElement("p");
