@@ -157,6 +157,7 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
 		HttpOnly: true,                           // Cookie is not accessible via JavaScript
 		Path:     "/",                            // Cookie is valid for all paths
+		Secure:   true,                           // Cookie is only valid for HTTPS
 	}
 	//Add the cookie to the response
 	http.SetCookie(w, &authCookie)

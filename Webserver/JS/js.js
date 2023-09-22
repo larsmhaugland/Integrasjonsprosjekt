@@ -42,37 +42,34 @@ function loginRegisterToggle(){
 }
 //Check login cookie
 function checkAuthToken(){
+    let loggedIn = localStorage.getItem("LoggedIn");
+    if (loggedIn === "false") return false;
     let username = localStorage.getItem("username");
-    let cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i].trim();
-        if (cookie.startsWith("AuthToken=")) {
-            var authToken = cookie.split("=")[1].trim();
 
-            fetch (API_IP + "/user/credentials/checkCookie", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }).then(response => {
-                if (response.status === 200){
-                    console.log("Logged in using cookie as: " + username);
-                    sessionStorage.setItem("username", username);
-                    updateLoginStatus();
-                    return true;
-                } else {
-                    console.log("Invalid auth token");
-                    console.log(response.status);
-                    return false;
-                }
-            })
-            .catch(error => {
-                console.log("Error when sending HTTPS request");
-                console.log(error);
-                return false;
-            });
+    fetch (API_IP + "/user/credentials/checkCookie", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    }).then(response => {
+        if (response.status === 200){
+            console.log("Logged in using cookie as: " + username);
+            sessionStorage.setItem("username", username);
+            sessionStorage.setItem("loggedIn", "true");
+            updateLoginStatus();
+            return true;
+        } else {
+            console.log("Invalid auth token");
+            console.log(response.status);
+            sessionStorage.setItem("loggedIn", "false");
+            return false;
         }
-    }
+    })
+    .catch(error => {
+        console.log("Error when sending HTTPS request");
+        console.log(error);
+        return false;
+    });
 }
 
 //Check login credentials
@@ -95,6 +92,7 @@ function login(){
         let wrongpassword = document.querySelector("#wrong-password");
 
         if (response.status === 200){
+            localStorage.setItem("LoggedIn", "true");
             sessionStorage.setItem("username", username);
             console.log("Logged in as: " + username);
             let loginForm = document.querySelector("#log-in-popup");
@@ -113,6 +111,8 @@ function login(){
 
 function logout(){
     sessionStorage.removeItem("username");
+    sessionStorage.setItem("loggedIn", "false");
+    localStorage.setItem("LoggedIn", "false");
     updateLoginStatus();
 }
 
