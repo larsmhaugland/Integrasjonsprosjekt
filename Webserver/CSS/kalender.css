@@ -15,22 +15,29 @@ div{
 
 #mandag{
     grid-area: mandag;
+    height:10em;
 }
 #tirsdag{
     grid-area: tirsdag;
+    height:10em;
 }
 #onsdag{
     grid-area: onsdag;
+    height:10em;
 }
 #torsdag{
     grid-area: torsdag;
+    height:10em;
 }
 #fredag{
     grid-area: fredag;
+    height:10em;
 }
 #lordag{
     grid-area: lordag;
+    height:10em;
 }
 #sondag{
     grid-area: sondag;
+    height:10em;
 }

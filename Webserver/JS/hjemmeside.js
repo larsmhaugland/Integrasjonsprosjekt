@@ -1,4 +1,18 @@
 //FIND GROUPS FROM DATABASE AND DISPLAY ON PAGE
+retrieveAndDisplayGroups();
+function retrieveAndDisplayGroups(){
+    //TODO: Retrieve groups from database
+    
+    
+    let display = document.querySelector(".groups-container");
+    let groupBlock = document.createElement("div");
+    for (let i = 0; i < 5; i++){
+    //Set group name
+    groupBlock.setAttribute("id","group-block");
+    groupBlock.textContent = groupName;
+    display.appendChild(groupBlock);
+    }
+};
 
 /*
     POP-UP WINDOW
@@ -26,6 +40,7 @@ btn.addEventListener("click",(event)=> {event.preventDefault();
     Adds new group to groups-container, registers group in database
 */
 function newGroup(groupName){
+    //TODO: Check who is logged in and add them to the group
     let credentials = {"name": groupName};
 
     fetch(API_IP+"/group/", {        //TODO: Actual /group/ endpoint
@@ -56,7 +71,7 @@ function newGroup(groupName){
     Group created, show access code (group id)
 */
 function submitConfirm(){
-    //TODO: Retrieve group id from database
+    //TODO: Retrieve group id from database (by getting ID from the user that created the group)
     display = document.querySelector("#group-created-information");
     let accessCode = document.createElement("p");
     accessCode.setAttribute("id","access-code");
