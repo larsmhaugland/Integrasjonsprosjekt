@@ -1,17 +1,37 @@
-//FIND GROUPS FROM DATABASE AND DISPLAY ON PAGE
-retrieveAndDisplayGroups();
+/*
+    RETRIEVE GROUPS FROM DATABASE AND DISPLAY
+*/
+//retrieveAndDisplayGroups(); COMMENTED OUT BECAUSE THE FUNCTION ISN'T FINISHED YET
 function retrieveAndDisplayGroups(){
-    //TODO: Retrieve groups from database
-    
-    
-    let display = document.querySelector(".groups-container");
-    let groupBlock = document.createElement("div");
-    for (let i = 0; i < 5; i++){
-    //Set group name
-    groupBlock.setAttribute("id","group-block");
-    groupBlock.textContent = groupName;
-    display.appendChild(groupBlock);
-    }
+    //TODO: Confirm that user is logged in
+    let userName = sessionStorage.getItem("username");
+    let credentials = {"username": userName};
+    fetch(API_IP + "/user/groups", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+    }).then(response => {
+        if (response.status === 200){
+            console.log("Groups retrieved");
+            return response.json();
+        } else {
+            console.log("Error retrieving groups");
+            throw new Error("Failed to retrieve groups");
+        }
+    }).then(data=>{
+        let display = document.querySelector(".groups-container");
+
+        data.forEach(group => {
+            let groupBlock = document.createElement("div");
+            groupBlock.setAttribute("id","group-block");
+            groupBlock.textContent = group.name;
+            display.appendChild(groupBlock);
+        })
+    }).catch(error => {
+        console.log("Error retrieving groups: " + error);
+    });
 };
 
 /*
@@ -73,7 +93,7 @@ function newGroup(groupName){
     let groupBlock = document.createElement("div");
     groupBlock.setAttribute("id","group-block");
     groupBlock.textContent = groupName;
-    display.appendChild(groupBlock);
+    display.appendChild(groupBlock);        //TODO: Delete this append afterwards (maybe in submitConfirm?) so that we won't get every group id on the page for every new group created
 }
 
 /*
