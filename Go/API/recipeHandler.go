@@ -2,6 +2,7 @@ package API
 
 import (
 	"net/http"
+	"prog-2052/Firebase"
 	"strings"
 )
 
@@ -50,17 +51,73 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	var id string
+	err := DecodeJSONBody(w, r, &id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = Firebase.DeleteRecipe(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	var recipe Firebase.Recipe
+	err := DecodeJSONBody(w, r, &recipe)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = Firebase.PatchCacheRecipe(recipe)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	var recipe Firebase.Recipe
+	err := DecodeJSONBody(w, r, &recipe)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	data, err := Firebase.ReturnCacheRecipe(recipe.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = EncodeJSONBody(w, r, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	type Input struct {
+		Recipe Firebase.Recipe `json:"recipe"`
+		Groups []string        `json:"groups"`
+		Owner  string          `json:"owner"`
+	}
+	var data Input
+	err := DecodeJSONBody(w, r, &data)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	id, err := Firebase.AddRecipe(data.Recipe, data.Groups, data.Owner)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = EncodeJSONBody(w, r, id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

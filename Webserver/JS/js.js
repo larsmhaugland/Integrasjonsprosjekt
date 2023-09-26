@@ -77,8 +77,6 @@ function login(){
     let username = document.querySelector("#username").value;
     let password = document.querySelector("#password").value;
 
-    //Vi burde vel egt ha kryptering før vi sender passordet rundt, men det finner vi ut av senere :)
-    //Det fikses forsåvidt hvis vi går over til https
     let credentials = {"username": username, "password": password};
     console.log(credentials);
 

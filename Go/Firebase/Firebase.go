@@ -113,3 +113,92 @@ func AddGroup(group Group) (string, error) {
 	}
 	return doc.ID, nil
 }
+
+func AddRecipe(recipe Recipe, groups []string, user string) (string, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return "", err
+	}
+	//Add recipe to database
+	data := map[string]interface{}{
+		"name":         recipe.Name,
+		"time":         recipe.Time,
+		"picture":      recipe.Picture,
+		"description":  recipe.Description,
+		"URL":          recipe.URL,
+		"ingredients":  recipe.Ingredients,
+		"instructions": recipe.Instructions,
+		"categories":   recipe.Categories,
+		"portions":     recipe.Portions,
+		"owner":        user,
+	}
+	doc, _, err := client.Collection("recipes").Add(ctx, data)
+	if err != nil {
+		log.Println("Error adding recipe:", err)
+		return "", err
+	}
+	//Add recipe to groups
+	for _, group := range groups {
+		_, err := client.Collection("groups").Doc(group).Update(ctx, []firestore.Update{
+			{Path: "recipes", Value: firestore.ArrayUnion(doc.ID)},
+		})
+		if err != nil {
+			log.Println("Error adding recipe to group:", err)
+			return "", err
+		}
+	}
+	return doc.ID, nil
+}
+
+func GetRecipeData(recipeID string) (Recipe, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return Recipe{}, err
+	}
+	var recipe Recipe
+	doc, err := client.Collection("recipes").Doc(recipeID).Get(ctx)
+	if err != nil {
+		log.Println("Error getting recipe:", err)
+		return Recipe{}, err
+	}
+	err = doc.DataTo(&recipe)
+	if err != nil {
+		log.Println("Error converting document:", err)
+		return Recipe{}, err
+	}
+	return recipe, nil
+}
+
+func PatchRecipe(recipe Recipe) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	_, err = client.Collection("recipes").Doc(recipe.ID).Set(ctx, recipe)
+	if err != nil {
+		log.Println("Error patching recipe:", err)
+		return err
+	}
+	return nil
+}
+
+func DeleteRecipe(recipeID string) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	_, err = client.Collection("recipes").Doc(recipeID).Delete(ctx)
+	if err != nil {
+		log.Println("Error deleting recipe:", err)
+		return err
+	}
+	return nil
+}
