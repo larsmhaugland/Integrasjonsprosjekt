@@ -42,6 +42,11 @@ function loginRegisterToggle(){
 }
 //Check login cookie
 function checkAuthToken(){
+    sessionStorage.setItem("username", username);
+    sessionStorage.setItem("loggedIn", "true")
+    updateLoginStatus();
+    return true;
+    /*
     let username = "larmha";
 
     fetch (API_IP + "/user/credentials/checkCookie", {
@@ -67,7 +72,7 @@ function checkAuthToken(){
         console.log("Error when sending HTTPS request");
         console.log(error);
         return false;
-    });
+    });*/
 }
 
 //Check login credentials
