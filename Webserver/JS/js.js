@@ -42,7 +42,7 @@ function loginRegisterToggle(){
 }
 //Check login cookie
 function checkAuthToken(){
-    let username = sessionStorage.getItem("username");
+    let username = "larmha";
 
     fetch (API_IP + "/user/credentials/checkCookie", {
         method: "POST",
