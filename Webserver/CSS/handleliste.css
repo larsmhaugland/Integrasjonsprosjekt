@@ -1,0 +1,16 @@
+main{
+    display: grid;
+    grid-template-areas:
+    "handleliste middag-uke";
+}
+
+.handleliste{
+    grid-area: handleliste;
+    border: 10px black solid;
+}
+
+.middag-uke{
+    grid-area: middag-uke;
+    border: 10px black solid;
+    
+}
