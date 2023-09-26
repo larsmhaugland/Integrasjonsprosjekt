@@ -61,7 +61,13 @@ func UserRecipePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	var user Firebase.User
+	err := DecodeJSONBody(w, r, &user)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+
 }
 
 func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {

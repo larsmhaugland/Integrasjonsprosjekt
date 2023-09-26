@@ -1,0 +1,33 @@
+.recipe-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 10% 1fr 1fr 1fr 5%;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    gap: 2% 2%;
+    grid-auto-flow: row;
+}
+
+.recipe-header { grid-area: 1 / 1 / 2 / 4; }
+
+.results { grid-area: 2 / 1 / 5 / 4; }
+
+.recipe-nav { grid-area: 5 / 1 / 6 / 4; }
+
+.result_1 { grid-area: 2 / 1 / 3 / 2; }
+
+.result_2 { grid-area: 2 / 2 / 3 / 3; }
+
+.result_3 { grid-area: 2 / 3 / 3 / 4; }
+
+.result_4 { grid-area: 3 / 1 / 4 / 2; }
+
+.result_5 { grid-area: 3 / 2 / 4 / 3; }
+
+.result_6 { grid-area: 3 / 3 / 4 / 4; }
+
+.result_7 { grid-area: 4 / 1 / 5 / 2; }
+
+.result_8 { grid-area: 4 / 2 / 5 / 3; }
+
+.result_9 { grid-area: 4 / 3 / 5 / 4; }
