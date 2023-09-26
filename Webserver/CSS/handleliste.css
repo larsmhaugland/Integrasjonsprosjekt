@@ -2,15 +2,17 @@ main{
     display: grid;
     grid-template-areas:
     "handleliste middag-uke";
+    align-items: self-start;
 }
 
-.handleliste{
+#handleliste{
     grid-area: handleliste;
     border: 10px black solid;
+    min-height: 500px;
 }
 
-.middag-uke{
+#middag-uke{
     grid-area: middag-uke;
     border: 10px black solid;
-    
+    min-height: 500px;
 }
