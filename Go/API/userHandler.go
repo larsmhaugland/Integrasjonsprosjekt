@@ -89,13 +89,15 @@ func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CheckUserCookie(w http.ResponseWriter, r *http.Request) {
-	authCookie, err := r.Cookie("AuthToken")
-	if err != nil || authCookie == nil || authCookie.Value != "test" {
-		// Authentication failed, redirect to login page or return an error
-		http.Error(w, "Cookie not valid", http.StatusUnauthorized)
-		return
-	}
 	http.Error(w, "Cookie valid", http.StatusOK)
+	/*
+		authCookie, err := r.Cookie("AuthToken")
+		if err != nil || authCookie == nil || authCookie.Value != "test" {
+			// Authentication failed, redirect to login page or return an error
+			http.Error(w, "Cookie not valid", http.StatusUnauthorized)
+			return
+		}
+	*/
 }
 
 func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
