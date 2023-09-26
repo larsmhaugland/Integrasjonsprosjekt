@@ -18,9 +18,12 @@ type Recipe struct {
 }
 
 type User struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	ID            string   `json:"id"`
+	Username      string   `json:"username"`
+	Password      string   `json:"password"`
+	Groups        []string `json:"groups"`
+	ShoppingLists []string `json:"shoppingLists"`
+	Recipes       []string `json:"recipes"`
 }
 
 type Dinner struct {
