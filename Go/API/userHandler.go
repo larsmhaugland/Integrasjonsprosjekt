@@ -61,13 +61,9 @@ func UserRecipePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	var request Firebase.User
-	err := DecodeJSONBody(w, r, &request)
-	if err != nil {
-		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
-		return
-	}
-	user, err := Firebase.ReturnCacheUser(request.Username)
+	//Get username from header
+	username := r.Header.Get("username")
+	user, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
 		http.Error(w, "Error while getting user recipes", http.StatusBadRequest)
 		return
@@ -92,7 +88,7 @@ func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data := map[string]interface{}{
 		"GroupRecipes": recipes,
-		"":             groups,
+		"UserRecipes":  user.Recipes,
 	}
 
 	err = EncodeJSONBody(w, r, data)
@@ -127,7 +123,7 @@ func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CheckUserCookie(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Cookie valid", http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 	/*
 		authCookie, err := r.Cookie("AuthToken")
 		if err != nil || authCookie == nil || authCookie.Value != "test" {

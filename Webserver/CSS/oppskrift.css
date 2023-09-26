@@ -31,3 +31,44 @@
 .result_8 { grid-area: 4 / 2 / 5 / 3; }
 
 .result_9 { grid-area: 4 / 3 / 5 / 4; }
+
+
+
+
+.new-recipe-popup {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: none;
+}
+.new-recipe-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888888;
+    width: 30%;
+    font-weight: bolder;
+}
+
+
+#close-popup {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    margin: 10px;
+}
+
+.close-svg {
+    filter: invert(78%) sepia(10%) saturate(22%) hue-rotate(14deg) brightness(88%) contrast(86%);
+}
+
+.close-svg:hover {
+    filter: invert(12%) sepia(75%) saturate(5744%) hue-rotate(358deg) brightness(88%) contrast(116%);
+}
