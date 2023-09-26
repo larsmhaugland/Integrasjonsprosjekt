@@ -61,13 +61,45 @@ func UserRecipePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	var user Firebase.User
-	err := DecodeJSONBody(w, r, &user)
+	var request Firebase.User
+	err := DecodeJSONBody(w, r, &request)
 	if err != nil {
 		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
 		return
 	}
+	user, err := Firebase.ReturnCacheUser(request.Username)
+	if err != nil {
+		http.Error(w, "Error while getting user recipes", http.StatusBadRequest)
+		return
+	}
+	var recipes []Firebase.Recipe
+	var groups []string
+	for _, group := range user.Groups {
+		g, err := Firebase.ReturnCacheGroup(group)
+		if err != nil {
+			http.Error(w, "Error while getting group recipes", http.StatusBadRequest)
+			return
+		}
+		for _, id := range g.Recipes {
+			recipe, err := Firebase.ReturnCacheRecipe(id)
+			if err != nil {
+				http.Error(w, "Error while getting recipe", http.StatusBadRequest)
+				return
+			}
+			recipes = append(recipes, recipe)
+			groups = append(groups, group)
+		}
+	}
+	data := map[string]interface{}{
+		"GroupRecipes": recipes,
+		"":             groups,
+	}
 
+	err = EncodeJSONBody(w, r, data)
+	if err != nil {
+		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		return
+	}
 }
 
 func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
@@ -200,7 +232,6 @@ func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
-
 	}
 }
 

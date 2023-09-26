@@ -42,8 +42,6 @@ function loginRegisterToggle(){
 }
 //Check login cookie
 function checkAuthToken(){
-    let loggedIn = localStorage.getItem("LoggedIn");
-    if (loggedIn === "false") return false;
     let username = localStorage.getItem("username");
 
     fetch (API_IP + "/user/credentials/checkCookie", {
@@ -90,7 +88,7 @@ function login(){
         let wrongpassword = document.querySelector("#wrong-password");
 
         if (response.status === 200){
-            localStorage.setItem("LoggedIn", "true");
+            sessionStorage.setItem("loggedIn", "true");
             sessionStorage.setItem("username", username);
             console.log("Logged in as: " + username);
             let loginForm = document.querySelector("#log-in-popup");
@@ -110,7 +108,6 @@ function login(){
 function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
-    localStorage.setItem("LoggedIn", "false");
     updateLoginStatus();
 }
 
