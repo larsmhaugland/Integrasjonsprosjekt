@@ -211,9 +211,9 @@ func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error while getting user groups", http.StatusBadRequest)
 		return
 	}
-	err = json.NewEncoder(w).Encode(groups)
+	err = EncodeJSONBody(w, r, groups)
 	if err != nil {
-		http.Error(w, "Error while encoding JSON body", http.StatusBadRequest)
+		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
 	}
 }
@@ -234,7 +234,14 @@ func DecodeJSONBody(w http.ResponseWriter, r *http.Request, u interface{}) error
 	// Decode the JSON body
 	err := json.NewDecoder(r.Body).Decode(u)
 	if err != nil {
-		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return err
+	}
+	return nil
+}
+
+func EncodeJSONBody(w http.ResponseWriter, r *http.Request, u interface{}) error {
+	err := json.NewEncoder(w).Encode(u)
+	if err != nil {
 		return err
 	}
 	return nil
