@@ -3,10 +3,8 @@
 */
 retrieveGroups(); 
 function retrieveGroups(){
-    //TODO: Confirm that user is logged in
-    //Might have to do another call to get group name and not group id but i am very bad at API and golang and tired
-    //TODO: Save groups to storage session so we don't have to retrieve them every time we refresh the page
-   // if (!checkAuthToken()) return;
+
+    if (!checkAuthToken()) return;
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
@@ -119,10 +117,10 @@ function newGroup(groupName){
     Group created, show access code (group id)
 */
 function submitConfirm(){
-    //if (!checkAuthToken()) {
-        //alert("Du er ikke innlogget!")
-      //  return;
-    //}
+    if (!checkAuthToken()) {
+        alert("Du er ikke innlogget!")
+        return;
+    }
     display = document.querySelector("#group-created-information");
     const groupName = document.querySelector("#gruppenavn").value;
     let accessCode = document.createElement("p");
