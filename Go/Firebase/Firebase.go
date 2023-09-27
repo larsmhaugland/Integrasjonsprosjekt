@@ -133,7 +133,9 @@ func AddRecipe(recipe Recipe, groups []string, user string) (string, error) {
 		"categories":   recipe.Categories,
 		"portions":     recipe.Portions,
 		"owner":        user,
+		"image":        recipe.Image,
 	}
+
 	//Add recipe to recipes
 	doc, _, err := client.Collection("recipes").Add(ctx, data)
 	if err != nil {
