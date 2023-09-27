@@ -134,11 +134,18 @@ func AddRecipe(recipe Recipe, groups []string, user string) (string, error) {
 		"portions":     recipe.Portions,
 		"owner":        user,
 	}
+	//Add recipe to recipes
 	doc, _, err := client.Collection("recipes").Add(ctx, data)
 	if err != nil {
 		log.Println("Error adding recipe:", err)
 		return "", err
 	}
+
+	//Add recipe to user
+	_, err = client.Collection("users").Doc(user).Update(ctx, []firestore.Update{
+		{Path: "recipes", Value: firestore.ArrayUnion(doc.ID)},
+	})
+
 	//Add recipe to groups
 	for _, group := range groups {
 		_, err := client.Collection("groups").Doc(group).Update(ctx, []firestore.Update{

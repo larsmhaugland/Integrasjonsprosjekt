@@ -42,7 +42,7 @@ function loginRegisterToggle(){
 }
 //Check login cookie
 function checkAuthToken(){
-    sessionStorage.setItem("username", username);
+    sessionStorage.setItem("username", "larmha");
     sessionStorage.setItem("loggedIn", "true")
     updateLoginStatus();
     return true;

@@ -13,6 +13,10 @@ let recipeDifficultyText = document.querySelector("#difficulty-value-label");
 let recipeType = document.querySelector("#recipe-type-url");
 //Event listeners:
 newRecipeBtn.addEventListener("click", function (event){
+    if(!checkAuthToken()){
+        alert("Du må logge inn for å legge til oppskrifter");
+        return;
+    }
     newRecipePopup.style.display = "block";
 });
 closeRecipePopup.addEventListener("click", function (event){
@@ -39,7 +43,50 @@ recipeType.addEventListener("input", function (event){
 //displayResults();
 
 function newRecipe() {
+    let name = document.querySelector("#recipe-name").value;
+    let type = document.querySelector("#recipe-type").value;
+    let difficulty = document.querySelector("#recipe-difficulty").value;
+    let time = document.querySelector("#recipe-time").value;
+    let ingredients = document.querySelector("#recipe-ingredients").value;
+    let instructions = document.querySelector("#recipe-instructions").value;
+    let url = document.querySelector("#recipe-url").value;
+    let username = sessionStorage.getItem("username");
+    let groups = [];
+    let recipe = {
+        "name": name,
+        "type": type,
+        "difficulty": difficulty,
+        "time": time,
+        "ingredients": ingredients,
+        "instructions": instructions,
+        "url": url,
+    }
 
+    let data = {
+        "username": username,
+        "recipe": recipe,
+        "groups": groups,
+    }
+    fetch(API_IP + "/recipe", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    }).then(response => {
+        if (response.status === 200){
+            console.log("Recipe added with id: " + response.json());
+            return true;
+        } else {
+            console.log("Error when adding recipe");
+            console.log(response.status);
+            return false;
+        }
+    }).catch(error => {
+        console.log("Error when sending HTTPS request");
+        console.log(error);
+        return false;
+    });
 }
 
 function getRecipes() {

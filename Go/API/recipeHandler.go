@@ -105,12 +105,17 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var data Input
 	err := DecodeJSONBody(w, r, &data)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	id, err := Firebase.AddRecipe(data.Recipe, data.Groups, data.Owner)
+	user, err := Firebase.GetUserData(data.Owner)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	id, err := Firebase.AddRecipe(data.Recipe, data.Groups, user.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

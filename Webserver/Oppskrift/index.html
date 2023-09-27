@@ -55,24 +55,27 @@
     <main>
         <div id="new-recipe-popup" class="new-recipe-popup">
             <div class="new-recipe-content">
-                <h1>
-                   Ny oppskrift
+
+                <h1 style="display: inline;">
+                    Ny oppskrift
                 </h1>
+                <a id="close-recipe-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
                 <form id="new-recipe-form">
                     <label for="recipe-name">Navn på oppskrift<br></label>
-                    <input type="text" id="recipe-name" placeholder="Navn på oppskrift" required>
+                    <input type="text" id="recipe-name" placeholder="Skriv navn..." required>
                     <label for="recipe-description"><br>Beskrivelse<br></label>
-                    <input type="text" id="recipe-description" placeholder="Beskrivelse" required>
+                    <input type="text" id="recipe-description" placeholder="Skriv en kort beskrivelse..." required>
                     <label for="recipe-time"><br>Tid i minutter<br></label>
-                    <input type="number" id="recipe-time" placeholder="Tid i minutter" required>
+                    <input type="number" id="recipe-time" placeholder="Skriv tid..." required>
                     <label for="recipe-difficulty"><br>Vanskelighetsgrad:<br></label>
                     <input type="range" min="1" max="5" id="recipe-difficulty" required>
                     <p id="difficulty-value-label" style="display: inline;">3</p>
                     <label for="category-checkboxes"><br>Kategorier:<br></label>
                     <div id="category-checkboxes">
+                        <p>Innmat kommer</p>
                         <!-- Need to find out which categories we should have -->
                     </div>
-                    <label for="recipe-type-url"><br>Vil du legge til oppskrift med URL? </label>
+                    <label for="recipe-type-url"><br>Vil du legge til oppskrift med kun URL? </label>
                     <input type="checkbox" id="recipe-type-url">
                     <div id="manual-recipe">
                         <label for="recipe-ingredients"><br>Ingredienser<br></label>
@@ -81,8 +84,8 @@
                         <textarea id="recipe-instructions" placeholder="Instruksjoner"></textarea>
                     </div>
                     <div id="url-recipe">
-                        <label for="recipe-url"><br>URL til oppskrift<br></label>
-                        <input type="url" id="recipe-url" placeholder="URL til oppskrift">
+                        <label for="recipe-url"><br> Full URL til oppskrift<br></label>
+                        <input type="url" id="recipe-url" placeholder="Eks: https://plaen.no">
                     </div>
                     <label for="recipe-image"><br>Bilde<br></label>
                     <input type="file" id="recipe-image" accept="image/*">
@@ -93,11 +96,12 @@
                     <br>
                     <label for="share-with-groups">Hvilke grupper vil lagre oppskriften i?</label>
                     <div id="share-with-groups">
+                        <p>Innmat kommer</p>
                         <!-- Need to find out which groups the user is in -->
                     </div>
                     <button id="submit-new-recipe">Legg til</button>
                 </form>
-                <a href="" id="close-recipe-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
+
             </div>
         </div>
 
@@ -105,7 +109,7 @@
             <div class="recipe-header">
                 <input type="text" id="search-bar" placeholder="Søk etter oppskrift" class="recipe-header">
                 <button id="search-btn" class="recipe-header">Søk</button>
-                <button id="new-recipe-btn"><a href=""><img id="btn-image" src="Images/add-square.svg" alt="Add new recipe"/></a></button>
+                <button id="new-recipe-btn"><img id="btn-image" src="../Images/add-square.svg" alt="Add new recipe"/></button>
             </div>
             <div id="results" class="recipe-results"></div>
             <!-- Results get appended here -->
