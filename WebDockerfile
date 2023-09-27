@@ -1,4 +1,4 @@
-FROM httpd:2.4
+FROM php:7.4-apache
 MAINTAINER noen
 
 #Remove default apache website
@@ -11,6 +11,8 @@ RUN mv /usr/local/apache2/htdocs/HTTPS /
 
 #Copy custom apache config
 RUN mv /usr/local/apache2/htdocs/custom_apache.conf /usr/local/apache2/conf/httpd.conf
+RUN echo "date.timezone = 'Europe/Oslo'" > /usr/local/etc/php/conf.d/timezone.ini
+RUN a2enmod rewrite
 
 #Expose ports
 EXPOSE 80
