@@ -60,7 +60,7 @@
                     Ny oppskrift
                 </h1>
                 <a id="close-recipe-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
-                <form id="new-recipe-form">
+                <form id="new-recipe-form" action="../PHP/uploadImage.php" method="post">
                     <label for="recipe-name">Navn på oppskrift<br></label>
                     <input type="text" id="recipe-name" placeholder="Skriv navn..." required>
                     <label for="recipe-description"><br>Beskrivelse<br></label>
@@ -99,7 +99,7 @@
                         <p>Innmat kommer</p>
                         <!-- Need to find out which groups the user is in -->
                     </div>
-                    <button id="submit-new-recipe">Legg til</button>
+                    <input type="submit" id="submit-new-recipe" value="Legg til oppskrift">
                 </form>
 
             </div>

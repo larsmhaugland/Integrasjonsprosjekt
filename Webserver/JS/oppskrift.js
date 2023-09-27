@@ -2,6 +2,7 @@
 let MAXRESULTS = 9;
 let page = 0;
 let Recipes = [];
+const IMAGEDIR = "/usr/local/apache2/images";
 
 //DOM elements:
 let resultDiv = document.querySelector("#results");
@@ -11,6 +12,8 @@ let closeRecipePopup = document.querySelector("#close-recipe-popup");
 let recipeDifficulty = document.querySelector("#recipe-difficulty");
 let recipeDifficultyText = document.querySelector("#difficulty-value-label");
 let recipeType = document.querySelector("#recipe-type-url");
+let submitRecipeBtn = document.querySelector("#submit-new-recipe");
+
 //Event listeners:
 newRecipeBtn.addEventListener("click", function (event){
     if(!checkAuthToken()){
@@ -34,8 +37,7 @@ recipeType.addEventListener("input", function (event){
         document.querySelector("#manual-recipe").style.display = "block";
     }
 });
-
-
+submitRecipeBtn.addEventListener("click", newRecipe);
 
 
 //Load recipes:
@@ -50,6 +52,13 @@ function newRecipe() {
     let ingredients = document.querySelector("#recipe-ingredients").value;
     let instructions = document.querySelector("#recipe-instructions").value;
     let url = document.querySelector("#recipe-url").value;
+
+    let imageInput = document.querySelector("#recipe-image");
+    let filename = "";
+    if (imageInput.files.length > 0){
+        filename = imageInput.files[0].name;
+    }
+
     let username = sessionStorage.getItem("username");
     let groups = [];
     let recipe = {
@@ -60,8 +69,8 @@ function newRecipe() {
         "ingredients": ingredients,
         "instructions": instructions,
         "url": url,
+        "image": filename,
     }
-
     let data = {
         "username": username,
         "recipe": recipe,
@@ -119,6 +128,8 @@ function getRecipes() {
         console.log(error);
     });
 
+    getRecipes();
+    displayResults();
 }
 
 function searchRecipes() {
@@ -132,6 +143,13 @@ function submitFilter() {
 function filterRecipes() {
     //TODO: Implement filter
     return Recipes;
+}
+
+function duplicate(list, item) {
+    for (let i = 0; i < list.length; i++){
+        if (list[i].id === item.id) return true;
+    }
+    return false;
 }
 
 function displayResults(){
@@ -155,7 +173,9 @@ function displayResults(){
     for (let i = 0; i < displayedRecipes.length; i++){
         let recipe = displayedRecipes[i];
         let recipeBlock = document.createElement("div");
+        recipeBlock.setAttribute("class","result_"+(i+1));
         recipeBlock.setAttribute("id","result_"+(i+1));
+
         recipeBlock.textContent = recipe.name;
         resultDiv.appendChild(recipeBlock);
     }

@@ -16,6 +16,7 @@ type Recipe struct {
 	Categories   []string                     `json:"categories"`
 	Portions     int                          `json:"portions"`
 	Group        string                       `json:"group"`
+	Image        string                       `json:"image"`
 }
 
 type User struct {
