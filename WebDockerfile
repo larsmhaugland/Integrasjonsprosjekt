@@ -14,6 +14,12 @@ RUN mv /usr/local/apache2/htdocs/custom_apache.conf /usr/local/apache2/conf/http
 RUN echo "date.timezone = 'Europe/Oslo'" > /usr/local/etc/php/conf.d/timezone.ini
 RUN a2enmod rewrite
 
+RUN echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/memory-limit.ini && \
+    echo "post_max_size = 100M" > /usr/local/etc/php/conf.d/post-max-size.ini && \
+    echo "upload_max_filesize = 100M" > /usr/local/etc/php/conf.d/upload-max-size.ini && \
+    echo "file_uploads = On" > /usr/local/etc/php/conf.d/file-uploads.ini
+
+
 #Expose ports
 EXPOSE 80
 EXPOSE 443
