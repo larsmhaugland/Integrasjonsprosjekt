@@ -87,8 +87,28 @@ func GroupMemberDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
-func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request)  {
+	var reqBody Firebase.AddGroupMember
+	err := DecodeJSONBody(w, r, &reqBody)
+	if err != nil {
+        http.Error(w, "Invalid request body", http.StatusBadRequest)
+        return 
+    }
+	defer r.Body.Close()
+
+	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupName)
+	if err != nil {
+		http.Error(w, "Could not add user to the group", http.StatusBadRequest)
+		return 
+	}
+	
+	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupName)
+	if err != nil {
+		http.Error(w, "Could not add the group to the user", http.StatusBadRequest)
+		return 
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {

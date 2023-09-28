@@ -241,3 +241,82 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 	}
 	return results, nil
 }
+
+// TODO: THis function and the one underneath are extremly similair and should be made into one
+func AddUserToGroup (username string, groupName string) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	// Query Firestore to find the group document with the matching "name" field
+    groupRef, err := client.Collection("groups").
+        Where("name", "==", groupName).
+        Documents(ctx).
+        Next()
+    if err != nil {
+        log.Println("error getting group document:", err)
+        return err
+    }
+
+	 // Get the current members list from the document data
+	 var currentMembers []string
+	 if members, exists := groupRef.Data()["members"]; exists {
+		 currentMembers = members.([]string)
+	 }
+
+	 // Add the new username to the members list
+	 currentMembers = append(currentMembers, username)
+
+	 // Update the Firestore document with the modified members list
+	 _, err = client.Collection("groups").Doc(groupRef.Ref.ID).Update(ctx, []firestore.Update{
+        {Path: "members", Value: currentMembers},
+    })
+    if err != nil {
+        log.Println("error updating group document:", err)
+        return err
+    }
+
+	return nil
+}
+
+// TODO: THis function and the one above are extremly similair and should be made into one
+func AddGroupToUser(username string, groupName string) error {
+    ctx := context.Background()
+    client, err := GetFirestoreClient(ctx)
+    if err != nil {
+        log.Println("error getting Firebase client:", err)
+        return err
+    }
+
+    // Get the user document by username
+    userRef, err := client.Collection("users").
+        Where("name", "==", username).
+        Documents(ctx).
+        Next()
+    if err != nil {
+        log.Println("error getting group document:", err)
+        return err
+    }
+
+    // Extract the current groups list from the document data
+    var currentGroups []string
+    if groups, exists := userRef.Data()["groups"]; exists {
+        currentGroups = groups.([]string)
+    }
+
+    // Add the new groupName to the groups list
+    currentGroups = append(currentGroups, groupName)
+
+    // Update the Firestore document with the modified groups list
+    _, err = client.Collection("users").Doc(userRef.Ref.ID).Update(ctx, []firestore.Update{
+        {Path: "groups", Value: currentGroups},
+    })
+    if err != nil {
+        log.Println("error updating user document:", err)
+        return err
+    }
+
+    return nil
+}
