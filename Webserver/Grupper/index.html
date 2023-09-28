@@ -2,23 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="../CSS/css.css">
+    <link rel="stylesheet" href="../CSS/grupper.css">
     <title>Grupper</title>
 </head>
 <body>
     <header class="main-nav">
         <h1>PLÆN</h1>
         <nav>
-                <a href="Handleliste/index.html">Handleliste</a>
+                <a href="../Handleliste/index.html">Handleliste</a>
                 <a href="">Chat</a>
-                <a href="Kalender/index.html">Kalender</a>
-                <a href="Oppskrift/index.html">Oppskrifter</a>
-                <a href="">Innlogging</a>
+                <a href="../Kalender/index.html">Kalender</a>
+                <a href="../Oppskrift/index.html">Oppskrifter</a>
+                <button id="log-in-btn">Innlogging</button>
+                <button id="log-out-btn">Logg ut</button>
         </nav>
     </header>
+ 
+     <!--Pop-up login-->
+     <div id="log-in-popup">
+        <form id="log-in-form">
+            <h2>Brukernavn</h2>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+            <h2>Passord</h2>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
+            <h2>Husk meg</h2>
+            <input type="checkbox" name="remember" id="remember">
+            <a id="wrong-password">Feil brukernavn eller passord</a>
+            <button type="button" class="btn" id="log-in-submit">Logg inn</button>
+ 
+        <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
+        </form>
+        <button class="btn" id="close-login-btn">Lukk</button>
+    </div>
+ 
+    <!--Pop-up register-->
+    <div id="register-popup">
+        <form id="register-user-form">
+            <h2>Brukernavn</h2>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
+            <a id="username-taken">Brukernavnet er opptatt</a>
+            <h2>Passord</h2>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
+            <h2>Gjenta passord</h2>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
+            <a id="password-mismatch">Passordene er ikke like</a>
+            <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+            <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+        </form>
+        <button class="btn" id="close-register-btn">Lukk</button>
+    </div>
+ 
     <main>
-    <h1>Grupper</h1>
-    <p>Her kommer grupper</p>
+        <h1>Grupper</h1> 
+        <button id="edit-button">Edit group</button>
+        <div class="group-members">
+            <h2>Group Members</h2>
+            <ul>
+                <li>Member 1</li>
+                <li>Member 2</li>
+            </ul>
+            <button id="add-member-btn">Add Member</button>
+        </div>
+ 
+        <!-- Group Functionalities -->
+        <div class="group-functionalities">
+            <a class="square" href="../Kalender/index.html">
+                <div class="square-content">
+                    Måltidsplanlegger
+                </div>
+            </a>
+            <a class="square" href="../Handleliste/index.html">
+                <div class="square-content">
+                    Handleliste
+                </div>
+            </a>
+            <a class="square" href="#">
+                <div class="square-content">
+                    Chat
+                </div>
+            </a>
+        </div>
     </main>
 </body>
+<script src="../JS/js.js"></script>
 </html>
