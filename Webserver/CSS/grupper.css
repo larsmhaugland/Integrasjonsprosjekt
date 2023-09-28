@@ -1,0 +1,84 @@
+main h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+ 
+#edit-button {
+    margin-top: 20px; 
+    margin-bottom: 20px;
+    float: right;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+ 
+.group-members {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+ 
+.group-members h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+ 
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+ 
+li {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+ 
+#add-member-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+ 
+#add-member-btn:hover {
+    background-color: #0056b3;
+}
+ 
+.square {
+    background-color: #007bff;
+    padding: 20px;
+    border-radius: 15px; 
+    width: 150px;
+    height: 120px;
+    margin: 30px;
+    display: inline-block;
+    grid-area: main;
+    transition: background-color 0.3s ease-in-out; 
+}
+ 
+.square:hover {
+    background-color: #196cc5;
+}
+ 
+.square a {
+    color: #fff;
+    text-decoration: none;
+}
+ 
+.square-content {
+    color:black;
+    font-size: 20px;
+    font-weight: bold;
+}
+ 
