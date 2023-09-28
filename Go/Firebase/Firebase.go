@@ -1,13 +1,14 @@
 package Firebase
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
 	"errors"
+	"log"
+
+	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"log"
 )
 
 // CUSTOM ERROR CODES
@@ -210,4 +211,33 @@ func DeleteRecipe(recipeID string) error {
 		return err
 	}
 	return nil
+}
+
+func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return nil, err
+	}
+	var results []string
+
+	// Get the documents where the partialUsername is found in the username field.
+	// Using Where twice is like using && in if statemnets
+	iter := client.Collection("users").
+		Where("username", ">=", partialUsername).
+		Where("username", "<", partialUsername+"\uf8ff").Documents(ctx)
+
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Println("Error querying Firestore:", err)
+			return nil, err
+		}
+		results = append(results, doc.Data()["username"].(string))
+	}
+	return results, nil
 }
