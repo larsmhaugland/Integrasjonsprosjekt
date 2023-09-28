@@ -60,7 +60,7 @@
                     Ny oppskrift
                 </h1>
                 <a id="close-recipe-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
-                <form id="new-recipe-form" action="../PHP/uploadImage.php" method="post">
+                <form id="new-recipe-form" action="../PHP/uploadImage.php" method="post" enctype="multipart/form-data">
                     <label for="recipe-name">Navn på oppskrift<br></label>
                     <input type="text" id="recipe-name" placeholder="Skriv navn..." required>
                     <label for="recipe-description"><br>Beskrivelse<br></label>
