@@ -7,7 +7,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeModalButton = modal.querySelector(".close");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
+    const groupMembersList = document.querySelector("#member-list");
+    const roles = ['Owner', 'Administrator', 'Member'];
 
+    window.onload = function () {
+        const groupID = 'your_group_id'; // 
+        fetchGroupMembers(groupID);
+    };
+    
     // Open the modal when the button is clicked
     openAddMemberButton.addEventListener('click', function () {
         modal.style.display = "block";
@@ -116,4 +123,61 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error:", error);
         });
     }
+
+    // Function to fetch group members data
+    function fetchGroupMembers() {
+    const url = `/group/members?groupID=${encodeURIComponent(groupID)}`;
+    fetch(url) 
+        .then((response) => response.json())
+        .then((data) => {
+            renderGroupMembers(data);
+        })
+        .catch((error) => {
+            console.error('Error fetching group members:', error);
+        });
+    } 
+    
+    // Function to render the group members based on the retrieved data
+    function renderGroupMembers(groupMembers) {
+
+        // Clear existing members (if any)
+        while (groupMembersList.firstChild) {
+            groupMembersList.removeChild(groupMembersList.firstChild);
+        }
+
+        // Iterate through the group members and create the corresponding list items
+        groupMembers.forEach((member) => {
+            const listItem = document.createElement('li');
+
+            // Create the member's image (you can customize the src attribute)
+            const img = document.createElement('img');
+            img.src = '../Images/person-icon-transparent.png';
+            img.alt = `Member ${member.username}`;
+
+            // Create the member's username as a span element
+            const span = document.createElement('span');
+            span.textContent = member.username;
+
+            // Create the role dropdown
+            const select = document.createElement('select');
+            select.className = 'role-dropdown';
+
+            roles.forEach((role) => {
+                const option = document.createElement('option');
+                option.value = role.toLowerCase(); // Use lowercase value for consistency
+                option.textContent = role;
+                select.appendChild(option);
+            });
+            // Set the selected option based on the member's role
+            select.value = member.role.toLowerCase(); 
+            // Append the elements to the list item
+            listItem.appendChild(img);
+            listItem.appendChild(span);
+            listItem.appendChild(select);
+
+            // Append the list item to the group members list
+            groupMembersList.appendChild(listItem);
+        });
+    }
 });
+

@@ -320,3 +320,40 @@ func AddGroupToUser(username string, groupName string) error {
 
     return nil
 }
+
+func GetGroupMembers (groupID string) ([]GroupMemberNameRole, error)  {
+	ctx := context.Background()
+    client, err := GetFirestoreClient(ctx)
+    if err != nil {
+        log.Println("error getting Firebase client:", err)
+        return nil, err
+    }
+
+	// Find the group document by matching groupID with the name field
+    groupDoc, err := client.Collection("groups").
+        Where("name", "==", groupID).
+        Documents(ctx).
+        Next()
+    if err != nil {
+        log.Println("error finding group document:", err)
+        return nil, err
+    }
+
+	// Extract the members names from the group document
+    var members []string
+    if membersData, exists := groupDoc.Data()["members"]; exists {
+        members = membersData.([]string)
+    }
+
+	// Add the members to the slice of group members that will be returned
+	var groupMembersNameRole []GroupMemberNameRole
+    for _, memberName := range members {
+        // TODO: add the role as a field in the groups collection so it is not hardcoded
+        groupMembersNameRole = append(groupMembersNameRole, GroupMemberNameRole{
+            Username: memberName,
+            Rolename: "Member",
+        })
+    }
+
+    return groupMembersNameRole, nil
+}

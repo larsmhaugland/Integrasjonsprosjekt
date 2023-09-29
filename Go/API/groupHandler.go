@@ -112,7 +112,21 @@ func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request)  {
 }
 
 func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	// Retrieve the groupID from the query parameters
+    groupID := r.URL.Query().Get("groupID")
+
+    // Fetch and prepare the group members' data based on the groupID
+    groupMembersData, err := Firebase.GetGroupMembers(groupID) // Implement this function
+	if err != nil {
+		http.Error(w, "Could not get the name and roles of the group members", http.StatusBadRequest)
+		return 
+	}
+
+	err = EncodeJSONBody(w, r, groupMembersData)
+	if err != nil {
+		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		return
+	}
 }
 
 func GroupRecipeBaseHandler(w http.ResponseWriter, r *http.Request) {

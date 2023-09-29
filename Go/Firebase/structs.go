@@ -65,3 +65,8 @@ type AddGroupMember struct {
 	Username  string `json:"username"`
 	GroupName string `json:"groupName"`
 }
+
+type GroupMemberNameRole struct {
+	Username string `json:"username"`
+	Rolename string `json:"roleName"`
+}
