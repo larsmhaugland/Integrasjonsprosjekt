@@ -251,10 +251,7 @@ func AddUserToGroup (username string, groupName string) error {
 		return err
 	}
 	// Query Firestore to find the group document with the matching "name" field
-    groupRef, err := client.Collection("groups").
-        Where("name", "==", groupName).
-        Documents(ctx).
-        Next()
+    groupRef, err := client.Collection("groups").Where("name", "==", groupName).Documents(ctx).Next()
     if err != nil {
         log.Println("error getting group document:", err)
         return err
@@ -291,10 +288,7 @@ func AddGroupToUser(username string, groupName string) error {
     }
 
     // Get the user document by username
-    userRef, err := client.Collection("users").
-        Where("name", "==", username).
-        Documents(ctx).
-        Next()
+    userRef, err := client.Collection("users").Where("name", "==", username).Documents(ctx).Next()
     if err != nil {
         log.Println("error getting group document:", err)
         return err
@@ -330,10 +324,7 @@ func GetGroupMembers (groupID string) ([]GroupMemberNameRole, error)  {
     }
 
 	// Find the group document by matching groupID with the name field
-    groupDoc, err := client.Collection("groups").
-        Where("name", "==", groupID).
-        Documents(ctx).
-        Next()
+    groupDoc, err := client.Collection("groups").Where("name", "==", groupID).Documents(ctx).Next()
     if err != nil {
         log.Println("error finding group document:", err)
         return nil, err
@@ -356,4 +347,76 @@ func GetGroupMembers (groupID string) ([]GroupMemberNameRole, error)  {
     }
 
     return groupMembersNameRole, nil
+}
+
+func DeleteMemberFromGroup(groupID string, username string) error{
+
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+        return err
+	}
+
+	// First we need to delete the member from the document in the groups collection
+	// Get a reference to the document the user belongs to
+	groupRef, err := client.Collection("groups").Where("name", "==", groupID).Documents(ctx).Next()
+	if err != nil {
+        log.Println("error finding group document:", err)
+        return err
+    }
+
+	// Get the current members list from the document data
+    var currentMembers []string
+    if members, exists := groupRef.Data()["members"]; exists {
+        currentMembers = members.([]string)
+    }
+
+	// Remove the username from the members list by appending the other members to a new slice
+    var updatedMembers []string
+    for _, member := range currentMembers {
+        if member != username {
+            updatedMembers = append(updatedMembers, member)
+        }
+    }
+
+	// Update the Firestore document with the modified members list
+    _, err = client.Collection("groups").Doc(groupRef.Ref.ID).Update(ctx, []firestore.Update{
+        {Path: "members", Value: updatedMembers},
+    })
+    if err != nil {
+        log.Println("error updating group document:", err)
+        return err
+    }
+
+	// Second step is to remove the groupID from the groups field in the users document for the user
+	userRef, err := client.Collection("users").Where("name", "==", username).Documents(ctx).Next()
+	if err != nil {
+		log.Println("error finding user document:", err)
+		return err
+	}
+	// Get the current groups list from the user document
+    var currentGroups []string
+    if groups, exists := userRef.Data()["groups"]; exists {
+        currentGroups = groups.([]string)
+    }
+
+	// Remove the groupID from the groups list
+    var updatedGroups []string
+    for _, group := range currentGroups {
+        if group != groupID {
+            updatedGroups = append(updatedGroups, group)
+        }
+    }
+
+	// Update the Firestore document with the modified groups list
+    _, err = client.Collection("users").Doc(userRef.Ref.ID).Update(ctx, []firestore.Update{
+        {Path: "groups", Value: updatedGroups},
+    })
+    if err != nil {
+        log.Println("error updating user document:", err)
+        return err
+    }
+	
+	return nil
 }

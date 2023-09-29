@@ -1,5 +1,6 @@
-export { fetchGroupMembers };
-import { renderGroupMembers2 } from "./gruppe.js";
+//export { fetchGroupMembers };
+//import { renderGroupMembers2 } from "./gruppe.js";
+// TODO FIX IMPORT ERRORS
 
 // JavaScript for interaction with the poppup menu for adding members to the group
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
@@ -13,11 +14,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const groupMembersList = document.querySelector("#member-list");
     const roles = ['Owner', 'Administrator', 'Member'];
 
+    /*
     window.onload = function () {
         const groupID = 'your_group_id'; 
         const renderGroup1 = true;
         fetchGroupMembers(groupID, renderGroup1);
-    };
+    };*/
     
     // Open the modal when the button is clicked
     openAddMemberButton.addEventListener('click', function () {
@@ -178,14 +180,48 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             // Set the selected option based on the member's role
             select.value = member.role.toLowerCase(); 
+
+             // Create the delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Fjern medlem';
+            deleteButton.className = 'delete-member-button';
+
+            // Add an event listener to handle member deletion
+            deleteButton.addEventListener('click', () => {
+                deleteMember(member.username);
+            });
+
             // Append the elements to the list item
             listItem.appendChild(img);
             listItem.appendChild(span);
             listItem.appendChild(select);
+            listItem.appendChild(deleteButton);
 
             // Append the list item to the group members list
             groupMembersList.appendChild(listItem);
         });
+    }
+
+    function deleteMember(username) {
+        const groupID = 'your_group_id'; // TODO get current group id
+        const url = `/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
+    
+        fetch(url, {
+            method: 'DELETE', // HTTP Delete method
+        })
+            .then((response) => {
+                if (response.status === 200) {
+                    // Member deleted successfully
+                    alert(`Member ${username} deleted from the group.`);
+                    // Update the group display
+                    fetchGroupMembers(groupID, true);
+                } else {
+                    alert(`Error deleting member ${username} from the group.`);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
 });
 

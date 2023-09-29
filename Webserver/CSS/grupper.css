@@ -98,10 +98,9 @@
 /* Style for individual members in the list */
 .member-list li {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     height: 60px;
-    width: 33.33vw;
+    width: 50vw;
     margin: 10px 10px 10px 10px;
     border: 2px solid rgb(199, 191, 191);
     background: linear-gradient(45deg, #ff6b6b, #ffc06b);
@@ -112,6 +111,7 @@
     margin-left: 10px;
     font-size: 24px;
     font-weight: bold;
+    flex: 1;
 }
 
 /* Style for member images */
@@ -122,6 +122,19 @@
     background:none;
 }
 
+.delete-member-button {
+    background-color: red;
+    color: black;
+    border: none;
+    width: 7vw;
+    height: 4vh;
+    padding: 5px 10px; 
+    margin-left: 1vw; 
+    margin-right: 0.5vw;
+    cursor: pointer;
+    float: right;
+}
+
 /* Style for the dropdown menu */
 .role-dropdown {
     padding: 10px;
@@ -129,6 +142,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #fff;
+    width: 10vw;
 }
 
 /* Style for add member button */
