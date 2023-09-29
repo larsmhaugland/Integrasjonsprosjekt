@@ -1,3 +1,6 @@
+export { fetchGroupMembers };
+import { renderGroupMembers2 } from "./gruppe.js";
+
 // JavaScript for interaction with the poppup menu for adding members to the group
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
@@ -11,8 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const roles = ['Owner', 'Administrator', 'Member'];
 
     window.onload = function () {
-        const groupID = 'your_group_id'; // 
-        fetchGroupMembers(groupID);
+        const groupID = 'your_group_id'; 
+        const renderGroup1 = true;
+        fetchGroupMembers(groupID, renderGroup1);
     };
     
     // Open the modal when the button is clicked
@@ -125,12 +129,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Function to fetch group members data
-    function fetchGroupMembers() {
+    function fetchGroupMembers(groupID, renderGroup1) {
     const url = `/group/members?groupID=${encodeURIComponent(groupID)}`;
     fetch(url) 
         .then((response) => response.json())
         .then((data) => {
-            renderGroupMembers(data);
+            if (renderGroup1){ 
+                renderGroupMembers1(data);
+            } else {
+                renderGroupMembers2(data);
+            }
         })
         .catch((error) => {
             console.error('Error fetching group members:', error);
@@ -138,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } 
     
     // Function to render the group members based on the retrieved data
-    function renderGroupMembers(groupMembers) {
+    function renderGroupMembers1(groupMembers) {
 
         // Clear existing members (if any)
         while (groupMembersList.firstChild) {
