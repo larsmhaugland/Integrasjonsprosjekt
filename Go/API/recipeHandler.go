@@ -162,7 +162,7 @@ func RecipeImageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = EncodeJSONBody(w, r, id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error while encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

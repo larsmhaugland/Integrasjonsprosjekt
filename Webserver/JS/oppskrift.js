@@ -41,8 +41,8 @@ submitRecipeBtn.addEventListener("click", newRecipe);
 
 
 //Load recipes:
-//getRecipes();
-//displayResults();
+getRecipes();
+displayResults();
 
 function newRecipe() {
     let name = document.querySelector("#recipe-name").value;
@@ -150,7 +150,6 @@ function getRecipes() {
         console.log(error);
     });
 
-    getRecipes();
     displayResults();
 }
 
