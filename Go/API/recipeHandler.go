@@ -31,7 +31,7 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPost:
 			if len(parts) == 3 {
 				RecipePostHandler(w, r)
-			} else if parts[3] == "image" {
+			} else if parts[2] == "image" {
 				RecipeImageHandler(w, r)
 			} else {
 				http.Error(w, "Error; Invalid URL", http.StatusBadRequest)
