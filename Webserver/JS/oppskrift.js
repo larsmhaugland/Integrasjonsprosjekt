@@ -55,10 +55,32 @@ function newRecipe() {
 
     let imageInput = document.querySelector("#recipe-image");
     let filename = "";
-    if (imageInput.files.length > 0){
-        filename = imageInput.files[0].name;
+    if (imageInput.files.length === 1){
+        fetch (API_IP + "/recipe/image", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body : JSON.stringify(imageInput.files[0]),
+        }).then(response => {
+            if (response.status === 200){
+                console.log("Image uploaded");
+                return response.json();
+            } else {
+                console.log("Error when uploading image");
+                console.log(response.status);
+                return false;
+            }
+        }).then(data => {
+            if (data !== false){
+                console.log(data);
+                filename = data.filename;
+            }
+        }).catch(error => {
+            console.log("Error when uploading image");
+            console.log(error);
+        });
     }
-
     let username = sessionStorage.getItem("username");
     let groups = [];
     let recipe = {
