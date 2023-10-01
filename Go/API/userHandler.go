@@ -25,6 +25,8 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "groups":
 		UserGroupBaseHandler(w, r)
 		break
+	case "search":
+		UserSearchHandler(w,r)
 	case http.MethodOptions: // For CORS
 		return
 	default:
@@ -252,6 +254,26 @@ func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 	err = EncodeJSONBody(w, r, groups)
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		return
+	}
+}
+
+func UserSearchHandler(w http.ResponseWriter, r *http.Request){
+	switch r.Method{
+	case http.MethodGet:
+		partialUsername := r.URL.Query().Get("partialUsername")
+		err, userNames := Firebase.GetUsernamesFromPartialName(partialUsername)
+		if err != nil {
+			http.Error(w, "Could not find usernames that match input username from the database", http.StatusBadRequest)
+			return
+		}
+		err2 := EncodeJSONBody(w, r, userNames)
+		if err2 != nil {
+			http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+			return
+		}
+	default:
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
 	}
 }

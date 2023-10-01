@@ -60,3 +60,13 @@ type CacheData struct {
 	Data     interface{}
 	cachedAt time.Time
 }
+
+type AddGroupMember struct {
+	Username  string `json:"username"`
+	GroupName string `json:"groupName"`
+}
+
+type GroupMemberNameRole struct {
+	Username string `json:"username"`
+	Rolename string `json:"roleName"`
+}

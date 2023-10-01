@@ -84,15 +84,58 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GroupMemberDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	groupID := r.URL.Query().Get("groupID")
+    username := r.URL.Query().Get("username")
+	
+	err := Firebase.DeleteMemberFromGroup(groupID, username)
+	if err != nil {
+        http.Error(w, "Could not delete user", http.StatusInternalServerError)
+        return 
+    }
+
+	w.WriteHeader(http.StatusOK)
 }
 
-func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request)  {
+	var reqBody Firebase.AddGroupMember
+	err := DecodeJSONBody(w, r, &reqBody)
+	if err != nil {
+        http.Error(w, "Invalid request body", http.StatusBadRequest)
+        return 
+    }
+	defer r.Body.Close()
+
+	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupName)
+	if err != nil {
+		http.Error(w, "Could not add user to the group", http.StatusBadRequest)
+		return 
+	}
+	
+	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupName)
+	if err != nil {
+		http.Error(w, "Could not add the group to the user", http.StatusBadRequest)
+		return 
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	// Retrieve the groupID from the query parameters
+    groupID := r.URL.Query().Get("groupID")
+
+    // Fetch and prepare the group members' data based on the groupID
+    groupMembersData, err := Firebase.GetGroupMembers(groupID) // Implement this function
+	if err != nil {
+		http.Error(w, "Could not get the name and roles of the group members", http.StatusInternalServerError)
+		return 
+	}
+
+	err = EncodeJSONBody(w, r, groupMembersData)
+	if err != nil {
+		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		return
+	}
 }
 
 func GroupRecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
