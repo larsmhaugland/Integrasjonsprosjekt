@@ -62,12 +62,14 @@ function newRecipe() {
     let imageInput = document.querySelector("#recipe-image");
     let filename = "";
     if (imageInput.files.length === 1){
+        // Create a new FormData object
+        const formData = new FormData();
+
+        formData.append("file", imageInput.files[0]);
+
         fetch (API_IP + "/recipe/image", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body : JSON.stringify(imageInput.files[0]),
+            body : formData,
         }).then(response => {
             if (response.status === 200){
                 console.log("Image uploaded");
