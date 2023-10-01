@@ -29,7 +29,7 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 	if len(parts) >= 3 {
 		switch r.Method {
 		case http.MethodPost:
-			if len(parts) == 3 {
+			if len(parts) == 2 {
 				RecipePostHandler(w, r)
 			} else if parts[2] == "image" {
 				RecipeImageHandler(w, r)
