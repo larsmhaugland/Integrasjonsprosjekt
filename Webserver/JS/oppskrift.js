@@ -115,16 +115,13 @@ function newRecipe() {
     }).then(response => {
         if (response.status === 200){
             console.log("Recipe added with id: " + response.json());
-            return true;
         } else {
             console.log("Error when adding recipe");
             console.log(response.status);
-            return false;
         }
     }).catch(error => {
         console.log("Error when sending HTTPS request");
         console.log(error);
-        return false;
     });
 }
 
