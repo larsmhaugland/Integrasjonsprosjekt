@@ -17,9 +17,8 @@ func SetCORSHeaders(w http.ResponseWriter) {
 	// Allow the GET, POST, PUT, DELETE, OPTIONS methods
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
-	// Allow the "Content-Type" header
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Headers", "username")
+	// Allow the "Content-Type" and "username" header
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, username")
 
 }
 
