@@ -46,12 +46,18 @@ displayResults();
 
 function newRecipe() {
     let name = document.querySelector("#recipe-name").value;
-    let type = document.querySelector("#recipe-type").value;
+    let type = document.querySelector("#recipe-type-url");
     let difficulty = document.querySelector("#recipe-difficulty").value;
     let time = document.querySelector("#recipe-time").value;
-    let ingredients = document.querySelector("#recipe-ingredients").value;
-    let instructions = document.querySelector("#recipe-instructions").value;
-    let url = document.querySelector("#recipe-url").value;
+    let url = "";
+    let ingredients = "";
+    let instructions = "";
+    if (type.checked){
+        url = document.querySelector("#recipe-url").value;
+    } else {
+        ingredients = document.querySelector("#recipe-ingredients").value;
+        instructions = document.querySelector("#recipe-instructions").value;
+    }
 
     let imageInput = document.querySelector("#recipe-image");
     let filename = "";
