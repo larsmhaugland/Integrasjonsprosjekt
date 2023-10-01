@@ -19,6 +19,7 @@ func SetCORSHeaders(w http.ResponseWriter) {
 
 	// Allow the "Content-Type" header
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "username")
 
 }
 
