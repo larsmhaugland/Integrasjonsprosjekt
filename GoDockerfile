@@ -18,6 +18,8 @@ FROM scratch
 COPY --from=builder /GoApp/main /GoApp/main
 COPY Go/HTTPS/ /GoApp/HTTPS/
 
+WORKDIR /GoApp
+
 #Expose port 8080
 EXPOSE 8080
 
