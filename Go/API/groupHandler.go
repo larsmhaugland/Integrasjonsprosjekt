@@ -84,7 +84,16 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GroupMemberDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	groupID := r.URL.Query().Get("groupID")
+    username := r.URL.Query().Get("username")
+	
+	err := Firebase.DeleteMemberFromGroup(groupID, username)
+	if err != nil {
+        http.Error(w, "Could not delete user", http.StatusInternalServerError)
+        return 
+    }
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request)  {
@@ -118,7 +127,7 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
     // Fetch and prepare the group members' data based on the groupID
     groupMembersData, err := Firebase.GetGroupMembers(groupID) // Implement this function
 	if err != nil {
-		http.Error(w, "Could not get the name and roles of the group members", http.StatusBadRequest)
+		http.Error(w, "Could not get the name and roles of the group members", http.StatusInternalServerError)
 		return 
 	}
 
