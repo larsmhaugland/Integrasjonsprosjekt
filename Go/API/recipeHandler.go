@@ -111,7 +111,7 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	var data Input
 	err := DecodeJSONBody(w, r, &data)
 	if err != nil {
-		http.Error(w, "Error when decoding: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding TEST: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	user, err := Firebase.GetUserData(data.Owner)
