@@ -13,9 +13,13 @@ COPY Go /GoApp
 #Build the Go app
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /GoApp/main .
 
+#Add certs
+RUN apk --update add ca-certificates
+
 #Build a small image with the binary and HTTPS certificates
 FROM scratch
 COPY --from=builder /GoApp/main /GoApp/main
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY Go/HTTPS/ /GoApp/HTTPS/
 COPY Go/Firebase/service-account.json /GoApp/Firebase/service-account.json
 
