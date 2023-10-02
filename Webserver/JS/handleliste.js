@@ -1,12 +1,11 @@
 retrieveShoppingList();
 //retrieveDinnerList();
 
+//Retrieve shopping list from the database/storage session and display it
 function retrieveShoppingList() {
-    //Retrieve shopping list from the database/storage session and display it
    //if(!checkAuthToken()) return;
 
-    //Switch depending on if they want to see the list associated with a group or a user
-    //TODO: check session storage, else fetch from API
+    //TODO: Switch depending on if they want to see the list associated with a group or a user
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist"));
 
     if(shoppinglist && shoppinglist.length > 0){
