@@ -4,10 +4,12 @@ import "time"
 
 var UserCache map[string]CacheData
 var RecipeCache map[string]CacheData
+var GroupCache map[string]CacheData
 
 func InitCache() {
 	UserCache = make(map[string]CacheData)
 	RecipeCache = make(map[string]CacheData)
+	GroupCache = make(map[string]CacheData)
 }
 
 func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
@@ -35,7 +37,16 @@ func ReturnCacheUser(userID string) (User, error) {
 }
 
 func ReturnCacheGroup(groupID string) (Group, error) {
-	//innmat
+	/*group, ok := GetCacheData(GroupCache, groupID)
+	if ok {
+		return group.Data.(Group), nil
+	}
+	groupData, err := GetGroupData(groupID) TODO: lag GetGroupData som returnerer alt
+	if err != nil {
+		return Group{}, err
+	}
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
+	return groupData, nil*/
 	return Group{}, nil
 }
 
