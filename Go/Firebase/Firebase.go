@@ -474,3 +474,34 @@ func DeleteGroup(groupID string) error {
 
 	return nil
 }
+
+func UpdateMemberRole(username string, newRole string, groupID string) error {
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return err
+	}
+
+	groupData.Members[username] = newRole
+
+	// Update the Firestore document with the modified groups list
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	memberToUpdate := "members." + username
+	// Update the role for the user in the specified group using Firestore
+	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
+		{Path: memberToUpdate, Value: newRole},
+	})
+	if err != nil {
+		log.Println("error updating user role in group:", err)
+		return err
+	}
+
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
+
+	return nil
+}
