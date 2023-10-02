@@ -2,8 +2,10 @@ package Firebase
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"log"
+	"net/http"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -16,6 +18,8 @@ import (
 var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
+	// REMOVE BEFORE DEEPLOYMENT:
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
 
