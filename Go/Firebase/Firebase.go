@@ -420,3 +420,27 @@ func DeleteMemberFromGroup(groupID string, username string) error{
 	
 	return nil
 }
+
+func DeleteGroup (groupID string) error {
+	ctx :=  context.Background()
+	client, err := GetFirestoreClient(ctx);
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+        return err
+	}
+
+	groupDoc, err := client.Collection("users").Where("name", "==", groupID).Documents(ctx).Next()
+	if err != nil {
+		log.Println("error finding the correct group document:", err)
+		return err
+	}
+
+	// Delete the document
+    _, err = groupDoc.Ref.Delete(ctx)
+    if err != nil {
+        log.Println("Error deleting group document:", err)
+        return err
+    }
+
+	return nil
+}

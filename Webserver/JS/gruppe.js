@@ -1,6 +1,3 @@
-import { fetchGroupMembers } from './gruppeInstillinger.js';
-export {renderGroupMembers2}
-
 const groupMembersList = document.querySelector("#group-members-list");
 
 window.onload = function () {
@@ -9,8 +6,21 @@ window.onload = function () {
     fetchGroupMembers(groupID, false);
 };
 
+// Function to fetch group members data
+function fetchGroupMembers(groupID) {
+    const url = `/group/members?groupID=${encodeURIComponent(groupID)}`;
+    fetch(url) 
+        .then((response) => response.json())
+        .then((data) => {
+            renderGroupMembers(data);
+        })
+        .catch((error) => {
+            console.error('Error fetching group members:', error);
+        });
+    } 
+
 // Function to render the group members based on the retrieved data
-function renderGroupMembers2(groupMembers) {
+function renderGroupMembers(groupMembers) {
     // Clear existing members (if any)
     groupMembersList.innerHTML = '';
 

@@ -30,9 +30,28 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "new":
 		GroupNewHandler(w, r)
 		break
+	case "deleteGroup":
+		DeleteGroup(w,r)
+		break
 	default:
 		http.Error(w, "Error; Endpoint not supported", http.StatusBadRequest)
 		return
+	}
+}
+
+func DeleteGroup (w http.ResponseWriter, r *http.Request){
+	if (r.Method == http.MethodDelete){
+		// Retrieve the groupID from the query parameters
+		groupID := r.URL.Query().Get("groupID")
+
+		err := Firebase.DeleteGroup(groupID)
+		if err != nil {
+			http.Error(w, "Could not delete the group", http.StatusInternalServerError)
+		}
+		// Respond with a success or error status
+		w.WriteHeader(http.StatusOK) 
+	} else {
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 	}
 }
 
