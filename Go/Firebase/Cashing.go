@@ -39,17 +39,16 @@ func ReturnCacheUser(userID string) (User, error) {
 }
 
 func ReturnCacheGroup(groupID string) (Group, error) {
-	/*group, ok := GetCacheData(GroupCache, groupID)
+	group, ok := GetCacheData(GroupCache, groupID)
 	if ok {
 		return group.Data.(Group), nil
 	}
-	groupData, err := GetGroupData(groupID) TODO: lag GetGroupData som returnerer alt
+	groupData, err := GetGroupData(groupID) 
 	if err != nil {
 		return Group{}, err
 	}
 	GroupCache[groupID] = CacheData{groupData, time.Now()}
-	return groupData, nil*/
-	return Group{}, nil
+	return groupData, nil
 }
 
 func ReturnCacheRecipe(recipeID string) (Recipe, error) {
