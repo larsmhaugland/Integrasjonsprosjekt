@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.onload = function () {
         const groupID = 'your_group_id'; 
         const renderGroup1 = true;
-        fetchGroupMembers(groupID, renderGroup1);
+        fetchGroupMembers(groupID);
     };*/
     
     // Open the modal when the button is clicked
@@ -131,16 +131,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Function to fetch group members data
-    function fetchGroupMembers(groupID, renderGroup1) {
+    function fetchGroupMembers(groupID) {
     const url = `/group/members?groupID=${encodeURIComponent(groupID)}`;
     fetch(url) 
         .then((response) => response.json())
         .then((data) => {
-            if (renderGroup1){ 
-                renderGroupMembers1(data);
-            } else {
-                renderGroupMembers2(data);
-            }
+            renderGroupMembers(data)
         })
         .catch((error) => {
             console.error('Error fetching group members:', error);
@@ -148,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } 
     
     // Function to render the group members based on the retrieved data
-    function renderGroupMembers1(groupMembers) {
+    function renderGroupMembers(groupMembers) {
 
         // Clear existing members (if any)
         while (groupMembersList.firstChild) {
@@ -214,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Member deleted successfully
                     alert(`Member ${username} deleted from the group.`);
                     // Update the group display
-                    fetchGroupMembers(groupID, true);
+                    fetchGroupMembers(groupID);
                 } else {
                     alert(`Error deleting member ${username} from the group.`);
                 }
