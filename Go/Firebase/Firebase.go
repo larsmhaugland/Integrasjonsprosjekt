@@ -1,19 +1,15 @@
 package Firebase
 
 import (
+	"cloud.google.com/go/firestore"
 	"context"
 	"errors"
-	"log"
-	"os"
-	"time"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-
-	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"log"
+	"os"
+	"time"
 )
 
 // CUSTOM ERROR CODES
