@@ -46,6 +46,9 @@ func GetUserData(userID string) (User, error) {
 		log.Println("error getting Firebase client:", err)
 		return User{}, err
 	}
+	log.Println("userID:", userID)
+	log.Println("client:", client)
+
 	var user User
 	iter := client.Collection("users").Where("username", "==", userID).Documents(ctx)
 	for {
