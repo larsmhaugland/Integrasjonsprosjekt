@@ -19,10 +19,9 @@ import (
 var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
+	//TMP FIX FOR FIRESTORE
 
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
-	opt = option.WithGRPCDialOption(
-		grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
