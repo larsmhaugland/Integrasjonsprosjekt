@@ -1,13 +1,13 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"prog-2052/API"
 	"prog-2052/Firebase"
 )
 
-/*
 func main() {
 
 	certFile := "HTTPS/client.crt"
@@ -37,8 +37,9 @@ func main() {
 	// Start HTTP server
 	log.Println("Starting server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))
-}*/
+}
 
+/*
 func main() {
 
 	server := &http.Server{
@@ -55,7 +56,7 @@ func main() {
 	// Start HTTP server
 	log.Println("Starting server on port 8080 ...")
 	log.Fatal(server.ListenAndServe())
-}
+}*/
 
 // Tenker det hadde vært gøy å ha statistikk over hvor mye de forskjellige endpointsene blir brukt og antall cache hits/misses ellerno
 func statsHandler(w http.ResponseWriter, r *http.Request) {

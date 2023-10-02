@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log"
-	"os"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -18,20 +17,10 @@ var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
 	//TMP FIX FOR FIRESTORE
-	// Disable gRPC handshake requirement for Firestore requests
-	os.Setenv("GRPC_GO_REQUIRE_HANDSHAKE", "off")
-
-	// Update this with your Firebase project ID
-	projectID := "prog2052-b0107"
-
-	// Configure the Firebase Admin SDK with your project ID
-	config := &firebase.Config{
-		ProjectID: projectID,
-	}
 
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
 
-	app, err := firebase.NewApp(ctx, config, opt)
+	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		log.Printf("error initializing app: %v", err)
 		return nil, err
