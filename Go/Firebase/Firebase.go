@@ -22,7 +22,7 @@ var ErrUserExists = errors.New("No user found")
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
 	// Load the custom CA certificate file
 	customCACertPool := x509.NewCertPool()
-	customCACertPEM, err := ioutil.ReadFile("HTTPS/client.crt") // Replace with the path to your CA certificate
+	customCACertPEM, err := ioutil.ReadFile("HTTPS/client.key") // Replace with the path to your CA certificate
 	if err != nil {
 		log.Printf("Failed to read custom CA certificate: %v", err)
 		return nil, err
