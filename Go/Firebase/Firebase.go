@@ -26,10 +26,12 @@ func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
 		},
 	}
 
-	// Configure the Firebase Admin SDK to use the custom HTTP client
-	opt := option.WithCredentialsFile("Firebase/service-account.json")
-	opt = option.WithHTTPClient(httpClient)
-	app, err := firebase.NewApp(ctx, nil, opt)
+	// Configure the Firebase Admin SDK with your project ID
+	config := &firebase.Config{
+		ProjectID: "prog2052-b0107",
+	}
+
+	app, err := firebase.NewApp(ctx, config, option.WithCredentialsFile("Firebase/service-account.json"), option.WithHTTPClient(httpClient))
 	if err != nil {
 		log.Printf("error initializing app: %v", err)
 		return nil, err
