@@ -269,6 +269,19 @@ func GroupShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 func GroupShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	//Retrieve shopping list for a group
+	groupID := r.URL.Query().Get("groupID")
+	shoppingList, err := Firebase.GetShoppingList(groupID)
+	if err != nil {
+		http.Error(w, "Could not get the shopping list", http.StatusInternalServerError)
+		return
+	}
+	err = EncodeJSONBody(w, r, shoppingList)
+	if err != nil {
+		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		return
+	}
+
 }
 
 func GroupShoppingPostHandler(w http.ResponseWriter, r *http.Request) {

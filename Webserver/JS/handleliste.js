@@ -4,7 +4,7 @@ retrieveShoppingList();
 
 function retrieveGroups(){
 
-    if (!checkAuthToken()) return;
+    //if (!checkAuthToken()) return;
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
@@ -16,8 +16,7 @@ function retrieveGroups(){
         method: "GET",
         headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify(credentials)
+        }
     }).then(response => {
         if (response.status === 200){
             console.log("Groups retrieved");
