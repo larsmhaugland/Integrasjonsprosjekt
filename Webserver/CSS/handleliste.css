@@ -23,3 +23,7 @@ main{
 li{
     list-style-type: none;
 }
+
+#newqttxt{
+    width: 40px;
+}

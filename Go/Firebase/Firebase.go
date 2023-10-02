@@ -7,6 +7,9 @@ import (
 	"os"
 	"time"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/iterator"
@@ -492,4 +495,16 @@ func UpdateMemberRole(username string, newRole string, groupID string) error {
 	GroupCache[groupID] = CacheData{groupData, time.Now()}
 
 	return nil
+}
+
+func GetShoppingList(groupID string) ([]string, error) {
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return nil, err
+	}
+
+	shoppingList := groupData.ShoppingList
+
+	return shoppingList, nil
 }

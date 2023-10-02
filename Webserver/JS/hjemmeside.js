@@ -11,13 +11,11 @@ function retrieveGroups(){
     if(groups && groups.length > 0){
         displayGroups(groups);
     }  else {
-    let credentials = {"username": userName};
     fetch(API_IP + "/user/groups", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify(credentials)
+        }
     }).then(response => {
         if (response.status === 200){
             console.log("Groups retrieved");
@@ -80,7 +78,7 @@ function newGroup(groupName){
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(credentials),  //TODO: remove the body, send the credentials in the header somehow
     })
         .then((response) => {
             if (response.status === 201) {

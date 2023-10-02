@@ -4,7 +4,7 @@ retrieveShoppingList();
 
 function retrieveGroups(){
 
-    if (!checkAuthToken()) return;
+    //if (!checkAuthToken()) return;
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
@@ -16,8 +16,7 @@ function retrieveGroups(){
         method: "GET",
         headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify(credentials)
+        }
     }).then(response => {
         if (response.status === 200){
             console.log("Groups retrieved");
@@ -56,8 +55,19 @@ function displayGroups(groups){
 //Retrieve shopping list from the database/storage session and display it
 function retrieveShoppingList() {
    //if(!checkAuthToken()) return;
+    let option = document.querySelector("#group-dropdown").value;
 
-    //TODO: Switch depending on if they want to see the list associated with a group or a user
+    if(option === sessionStorage.getItem("username")){
+        //TODO: API fetch 
+    }
+    else{
+        //TODO: API fetch for specific group
+    }
+
+
+    
+    
+    //TODO: find a better way to double check which group/user the storage session is for
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist"));
 
     if(shoppinglist && shoppinglist.length > 0){

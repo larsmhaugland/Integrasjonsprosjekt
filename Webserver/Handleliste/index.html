@@ -40,13 +40,14 @@
     <div id="handleliste">
         <form>
             <h1>Handleliste</h1>
-            <select name="group" id="group-dropdown">
+            <select name="group" id="group-dropdown" onchange="retrieveShoppingList()">
                 <option>placeholder</option>
                 <option>placeholder</option>
                 <option>placeholder</option>
                 <option>placeholder</option>
             </select>
             <br>
+            <input type="text" id="newqttxt" placeholder="Ant...">
             <input type="text" id="newitemtxt" placeholder="Legg til...">
         </form>
         <ul id="shopping-list"></ul>
