@@ -3,6 +3,8 @@ package Firebase
 import (
 	"context"
 	"errors"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"time"
 
@@ -17,8 +19,10 @@ var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
 
-	// Configure the Firebase Admin SDK to use the custom CA certificate pool
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
+	opt = option.WithGRPCDialOption(
+		grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		log.Printf("error initializing app: %v", err)
