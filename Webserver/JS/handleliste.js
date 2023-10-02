@@ -1,5 +1,57 @@
+retrieveGroups();
 retrieveShoppingList();
 //retrieveDinnerList();
+
+function retrieveGroups(){
+
+    if (!checkAuthToken()) return;
+    let userName = sessionStorage.getItem("username");
+    let groups = JSON.parse(sessionStorage.getItem("groups"));
+
+    if(groups && groups.length > 0){
+        displayGroups(groups);
+    }  else {
+    let credentials = {"username": userName};
+    fetch(API_IP + "/user/groups", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+    }).then(response => {
+        if (response.status === 200){
+            console.log("Groups retrieved");
+            return response.json();
+        } else {
+            console.log("Error retrieving groups");
+            throw new Error("Failed to retrieve groups");
+        }
+    }).then(data=>{
+        sessionStorage.setItem("groups", JSON.stringify(data));
+        displayGroups(data);})
+    .catch(error => {
+        console.log("Error retrieving groups: " + error);
+    });
+}};
+
+//Add groups + user to the dropdown menu
+function displayGroups(groups){
+    let dropdown = document.querySelector("#group-dropdown");
+    let option = document.createElement("option");
+    option.textContent = "Velg gruppe";
+
+    groups.array.forEach(group => {
+        let option = document.createElement("option");
+        option.value = group.name;
+        option.textContent = group.name;
+        dropdown.appendChild(option);
+    });
+
+    option.document.createElement("option");
+    option.value = userName;
+    option.textContent = userName;
+    dropdown.appendChild(option);
+}
 
 //Retrieve shopping list from the database/storage session and display it
 function retrieveShoppingList() {
