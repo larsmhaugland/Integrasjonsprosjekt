@@ -59,7 +59,7 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	var id string
 	err := DecodeJSONBody(w, r, &id)
 	if err != nil {
-		http.Error(w, "Error when decoding request: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding request DELETE: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = Firebase.DeleteRecipe(id)
@@ -73,7 +73,7 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 	var recipe Firebase.Recipe
 	err := DecodeJSONBody(w, r, &recipe)
 	if err != nil {
-		http.Error(w, "Error when decoding request: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding request PATCH: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = Firebase.PatchCacheRecipe(recipe)
@@ -87,7 +87,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	var recipe Firebase.Recipe
 	err := DecodeJSONBody(w, r, &recipe)
 	if err != nil {
-		http.Error(w, "Error when decoding request: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding request GET: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	data, err := Firebase.ReturnCacheRecipe(recipe.ID)
@@ -111,7 +111,7 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	var data Input
 	err := DecodeJSONBody(w, r, &data)
 	if err != nil {
-		http.Error(w, "Error when decoding TEST: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding POST: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	user, err := Firebase.GetUserData(data.Owner)
