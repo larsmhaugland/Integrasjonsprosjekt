@@ -2,11 +2,7 @@ package Firebase
 
 import (
 	"context"
-	"crypto/x509"
 	"errors"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"io/ioutil"
 	"log"
 	"time"
 
@@ -20,24 +16,9 @@ import (
 var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
-	// Load the custom CA certificate file
-	customCACertPool := x509.NewCertPool()
-	customCACertPEM, err := ioutil.ReadFile("HTTPS/client.key") // Replace with the path to your CA certificate
-	if err != nil {
-		log.Printf("Failed to read custom CA certificate: %v", err)
-		return nil, err
-	}
-	if !customCACertPool.AppendCertsFromPEM(customCACertPEM) {
-		log.Printf("Failed to append custom CA certificate to pool")
-		return nil, err
-	}
 
 	// Configure the Firebase Admin SDK to use the custom CA certificate pool
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
-	opt = option.WithGRPCDialOption(
-		grpc.WithTransportCredentials(
-			credentials.NewClientTLSFromCert(customCACertPool, "")))
-
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		log.Printf("error initializing app: %v", err)
