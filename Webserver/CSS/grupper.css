@@ -238,3 +238,18 @@
     width: 3vw;
     height: auto;
 }
+/* Style for the "Slett gruppe" button */
+#delete-group {
+    background-color: red;
+    color: white;
+    border: none;
+    height: 7vh;
+    width: 10vw;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#delete-group:hover {
+    background-color: darkred;
+}

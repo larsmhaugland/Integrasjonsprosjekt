@@ -1,8 +1,4 @@
-//export { fetchGroupMembers };
-//import { renderGroupMembers2 } from "./gruppe.js";
-// TODO FIX IMPORT ERRORS
 
-// JavaScript for interaction with the poppup menu for adding members to the group
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
@@ -13,6 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
     const groupMembersList = document.querySelector("#member-list");
     const roles = ['Owner', 'Administrator', 'Member'];
+    const deleteGroupButton = document.querySelector("#delete-group");
+    var GroupOwner;
+    const API_IP = "https://" + window.location.hostname + ":8080";
+    const Username = sessionStorage.getItem("username");
 
     /*
     window.onload = function () {
@@ -31,12 +31,45 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = "none";
     });
 
+    deleteGroupButton.addEventListener("click", function(){
+        deleteGroup(groupID)
+    })
+        
+    function deleteGroup(groupID) {
+        const url = `${API_IP}/group/deleteGroup?groupID=${groupID}`;
+        const redirectURL = "../index.html";
+        if (Username != GroupOwner){
+            alert("Only the owner can delete the group");
+            return;
+        }
+        const confirmation = window.confirm("Er du sikker på at du vil slette gruppa?");
+        if (!confirmation){
+            return;
+        } 
+        // Send a DELETE request to the server
+        fetch(url, {
+            method: "DELETE",
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                alert("Group deleted successfully.");
+                window.location.href = redirectURL;
+            } else {
+                alert("Error deleting group.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while deleting the group.");
+        });
+    }
+
     // Handle search input changes
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.trim();
-
+        const url = `${API_IP}/search?partialUsername=${query}`;
         // Send a GET request to the firestore database via GO
-        fetch(`/search?partialUsername=${query}`)
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 // Update the member suggestions list with the results
@@ -102,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} groupID - ID of the group the user will be added to
      */
     function addMemberToGroup(username, groupID) {
-        const url = "/group/members"   // TODO: Correct URL?
+        const url = API_IP + "/group/members"   
 
         // Request body with the information needed for the backend to correctly add member to group
         const requestBody = JSON.stringify({
@@ -132,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to fetch group members data
     function fetchGroupMembers(groupID) {
-    const url = `/group/members?groupID=${encodeURIComponent(groupID)}`;
+    const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
     fetch(url) 
         .then((response) => response.json())
         .then((data) => {
@@ -155,7 +188,6 @@ document.addEventListener("DOMContentLoaded", function () {
         groupMembers.forEach((member) => {
             const listItem = document.createElement('li');
 
-            // Create the member's image (you can customize the src attribute)
             const img = document.createElement('img');
             img.src = '../Images/person-icon-transparent.png';
             img.alt = `Member ${member.username}`;
@@ -174,9 +206,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 option.textContent = role;
                 select.appendChild(option);
             });
+            
             // Set the selected option based on the member's role
-            select.value = member.role.toLowerCase(); 
-
+            select.value = member.roleName.toLowerCase(); 
+            
+            if (member.roleName.toLowerCase() === "owner"){
+                GroupOwner = member.username;
+            }
              // Create the delete button
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Fjern medlem';
@@ -200,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function deleteMember(username) {
         const groupID = 'your_group_id'; // TODO get current group id
-        const url = `/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
+        const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
     
         fetch(url, {
             method: 'DELETE', // HTTP Delete method
