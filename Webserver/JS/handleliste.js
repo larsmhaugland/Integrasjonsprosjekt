@@ -1,17 +1,34 @@
-//retrieveShoppingList();
+retrieveShoppingList();
 //retrieveDinnerList();
 
 function retrieveShoppingList() {
     //Retrieve shopping list from the database/storage session and display it
-   if(!checkAuthToken()) return;
+   //if(!checkAuthToken()) return;
 
     //Switch depending on if they want to see the list associated with a group or a user
     //TODO: check session storage, else fetch from API
+    let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist"));
 
-    let list = document.querySelector("#shopping-list");
-    let li = document.createElement("li");
-    li.setAttribute("id", "list-item");
+    if(shoppinglist && shoppinglist.length > 0){
+        displayShoppingList(shoppinglist);
+    }else{
+        //TODO: API fetch
+    }
+}
 
+function displayShoppingList(shoppinglist){
+    let display = document.querySelector("#shopping-list");
+    shoppinglist.forEach(item => {
+        let li = document.createElement("li");
+        li.setAttribute("id", "list-item");
+        
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "checkbox");
+        li.appendChild(checkbox);
+        li.appendChild(document.createTextNode(item));
+        display.appendChild(li);
+    });
 }
 
 function retrieveDinnerList(){
@@ -87,7 +104,9 @@ function removeItemFromList(){
         let checkbox = item.querySelector("#checkbox");
         if(checkbox.checked){
             list.removeChild(item);
+            let text = item.textContent;
+            shoppinglist = shoppinglist.filter(item => item !== text);
         }
     });
-
+    sessionStorage.setItem("shoppinglist", JSON.stringify(shoppinglist));
 }
