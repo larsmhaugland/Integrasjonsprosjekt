@@ -18,11 +18,17 @@ import (
 var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
-	// REMOVE BEFORE DEEPLOYMENT:
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	//TMP FIX FOR FIRESTORE
+	// Create a custom HTTP client with certificate verification disabled
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
 
+	// Configure the Firebase Admin SDK to use the custom HTTP client
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
-
+	opt = option.WithHTTPClient(httpClient)
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		log.Printf("error initializing app: %v", err)
