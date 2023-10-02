@@ -4,16 +4,20 @@ import "time"
 
 var UserCache map[string]CacheData
 var RecipeCache map[string]CacheData
+var GroupCache map[string]CacheData
+
+const CACHE_TIMEOUT = 24
 
 func InitCache() {
 	UserCache = make(map[string]CacheData)
 	RecipeCache = make(map[string]CacheData)
+	GroupCache = make(map[string]CacheData)
 }
 
 func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
 	val, ok := cache[key]
 	if ok {
-		if time.Since(val.cachedAt).Hours() > 24 {
+		if time.Since(val.cachedAt).Hours() > CACHE_TIMEOUT {
 			delete(cache, key)
 			return CacheData{}, false
 		}
@@ -35,8 +39,16 @@ func ReturnCacheUser(userID string) (User, error) {
 }
 
 func ReturnCacheGroup(groupID string) (Group, error) {
-	//innmat
-	return Group{}, nil
+	group, ok := GetCacheData(GroupCache, groupID)
+	if ok {
+		return group.Data.(Group), nil
+	}
+	groupData, err := GetGroupData(groupID) 
+	if err != nil {
+		return Group{}, err
+	}
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
+	return groupData, nil
 }
 
 func ReturnCacheRecipe(recipeID string) (Recipe, error) {

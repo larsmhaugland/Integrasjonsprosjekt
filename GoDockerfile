@@ -17,6 +17,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /GoA
 FROM scratch
 COPY --from=builder /GoApp/main /GoApp/main
 COPY Go/HTTPS/ /GoApp/HTTPS/
+COPY Go/Firebase/service-account.json /GoApp/Firebase/service-account.json
 
 WORKDIR /GoApp
 

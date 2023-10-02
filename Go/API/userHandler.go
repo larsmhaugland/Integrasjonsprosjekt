@@ -26,7 +26,7 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		UserGroupBaseHandler(w, r)
 		break
 	case "search":
-		UserSearchHandler(w,r)
+		UserSearchHandler(w, r)
 	case http.MethodOptions: // For CORS
 		return
 	default:
@@ -67,7 +67,7 @@ func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.Header.Get("username")
 	user, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
-		http.Error(w, "Error while getting user recipes", http.StatusBadRequest)
+		http.Error(w, "Error while getting user recipes: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	//Get parameters from URL
@@ -79,13 +79,13 @@ func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		for _, group := range user.Groups {
 			g, err := Firebase.ReturnCacheGroup(group)
 			if err != nil {
-				http.Error(w, "Error while getting group recipes", http.StatusBadRequest)
+				http.Error(w, "Error while getting group recipes: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			for _, id := range g.Recipes {
 				recipe, err := Firebase.ReturnCacheRecipe(id)
 				if err != nil {
-					http.Error(w, "Error while getting recipe", http.StatusBadRequest)
+					http.Error(w, "Error while getting recipe: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 				recipes = append(recipes, recipe)
@@ -100,7 +100,7 @@ func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = EncodeJSONBody(w, r, data)
 	if err != nil {
-		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		http.Error(w, "Error while encoding JSON body: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -258,8 +258,8 @@ func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UserSearchHandler(w http.ResponseWriter, r *http.Request){
-	switch r.Method{
+func UserSearchHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 	case http.MethodGet:
 		partialUsername := r.URL.Query().Get("partialUsername")
 		err, userNames := Firebase.GetUsernamesFromPartialName(partialUsername)

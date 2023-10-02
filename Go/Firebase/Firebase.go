@@ -3,7 +3,10 @@ package Firebase
 import (
 	"context"
 	"errors"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -15,7 +18,11 @@ import (
 var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
+
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
+	opt = option.WithGRPCDialOption(
+		grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		log.Printf("error initializing app: %v", err)
@@ -242,181 +249,244 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 	return results, nil
 }
 
+func GetGroupData(groupID string) (Group, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return Group{}, err
+	}
+	var group Group
+	doc, err := client.Collection("groups").Doc(groupID).Get(ctx)
+	if err != nil {
+		log.Println("Error getting group:", err)
+		return Group{}, err
+	}
+	err = doc.DataTo(&group)
+	if err != nil {
+		log.Println("Error converting document:", err)
+		return Group{}, err
+	}
+	return group, nil
+}
+
 // TODO: THis function and the one underneath are extremly similair and should be made into one
-func AddUserToGroup (username string, groupName string) error {
+func AddUserToGroup(username string, groupName string) error {
+	// Get the group data from cache (check ReturnCacheGroup documentation)
+	groupData, err := ReturnCacheGroup(groupName)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return err
+	}
+	// Modify the group's members list
+	groupData.Members[username] = "member"
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	// Query Firestore to find the group document with the matching "name" field
-    groupRef, err := client.Collection("groups").Where("name", "==", groupName).Documents(ctx).Next()
-    if err != nil {
-        log.Println("error getting group document:", err)
-        return err
-    }
+	_, err = client.Collection("groups").Doc(groupName).Update(ctx, []firestore.Update{
+		{Path: "members", Value: groupData.Members},
+	})
+	if err != nil {
+		log.Println("error updating group document:", err)
+		return err
+	}
 
-	 // Get the current members list from the document data
-	 var currentMembers []string
-	 if members, exists := groupRef.Data()["members"]; exists {
-		 currentMembers = members.([]string)
-	 }
-
-	 // Add the new username to the members list
-	 currentMembers = append(currentMembers, username)
-
-	 // Update the Firestore document with the modified members list
-	 _, err = client.Collection("groups").Doc(groupRef.Ref.ID).Update(ctx, []firestore.Update{
-        {Path: "members", Value: currentMembers},
-    })
-    if err != nil {
-        log.Println("error updating group document:", err)
-        return err
-    }
+	// Update the cache with the modified group data
+	GroupCache[groupName] = CacheData{groupData, time.Now()}
 
 	return nil
+
 }
 
 // TODO: THis function and the one above are extremly similair and should be made into one
 func AddGroupToUser(username string, groupName string) error {
-    ctx := context.Background()
-    client, err := GetFirestoreClient(ctx)
-    if err != nil {
-        log.Println("error getting Firebase client:", err)
-        return err
-    }
-
-    // Get the user document by username
-    userRef, err := client.Collection("users").Where("name", "==", username).Documents(ctx).Next()
-    if err != nil {
-        log.Println("error getting group document:", err)
-        return err
-    }
-
-    // Extract the current groups list from the document data
-    var currentGroups []string
-    if groups, exists := userRef.Data()["groups"]; exists {
-        currentGroups = groups.([]string)
-    }
-
-    // Add the new groupName to the groups list
-    currentGroups = append(currentGroups, groupName)
-
-    // Update the Firestore document with the modified groups list
-    _, err = client.Collection("users").Doc(userRef.Ref.ID).Update(ctx, []firestore.Update{
-        {Path: "groups", Value: currentGroups},
-    })
-    if err != nil {
-        log.Println("error updating user document:", err)
-        return err
-    }
-
-    return nil
-}
-
-func GetGroupMembers (groupID string) ([]GroupMemberNameRole, error)  {
-	ctx := context.Background()
-    client, err := GetFirestoreClient(ctx)
-    if err != nil {
-        log.Println("error getting Firebase client:", err)
-        return nil, err
-    }
-
-	// Find the group document by matching groupID with the name field
-    groupDoc, err := client.Collection("groups").Where("name", "==", groupID).Documents(ctx).Next()
-    if err != nil {
-        log.Println("error finding group document:", err)
-        return nil, err
-    }
-
-	// Extract the members names from the group document
-    var members []string
-    if membersData, exists := groupDoc.Data()["members"]; exists {
-        members = membersData.([]string)
-    }
-
-	// Add the members to the slice of group members that will be returned
-	var groupMembersNameRole []GroupMemberNameRole
-    for _, memberName := range members {
-        // TODO: add the role as a field in the groups collection so it is not hardcoded
-        groupMembersNameRole = append(groupMembersNameRole, GroupMemberNameRole{
-            Username: memberName,
-            Rolename: "Member",
-        })
-    }
-
-    return groupMembersNameRole, nil
-}
-
-func DeleteMemberFromGroup(groupID string, username string) error{
+	// Get the user data from cache (check ReturnCacheUser documentation)
+	userData, err := ReturnCacheUser(username)
+	if err != nil {
+		log.Println("error getting user data from cache:", err)
+		return err
+	}
+	// Add the new group to the user's groups list
+	userData.Groups = append(userData.Groups, groupName)
 
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
-        return err
-	}
-
-	// First we need to delete the member from the document in the groups collection
-	// Get a reference to the document the user belongs to
-	groupRef, err := client.Collection("groups").Where("name", "==", groupID).Documents(ctx).Next()
-	if err != nil {
-        log.Println("error finding group document:", err)
-        return err
-    }
-
-	// Get the current members list from the document data
-    var currentMembers []string
-    if members, exists := groupRef.Data()["members"]; exists {
-        currentMembers = members.([]string)
-    }
-
-	// Remove the username from the members list by appending the other members to a new slice
-    var updatedMembers []string
-    for _, member := range currentMembers {
-        if member != username {
-            updatedMembers = append(updatedMembers, member)
-        }
-    }
-
-	// Update the Firestore document with the modified members list
-    _, err = client.Collection("groups").Doc(groupRef.Ref.ID).Update(ctx, []firestore.Update{
-        {Path: "members", Value: updatedMembers},
-    })
-    if err != nil {
-        log.Println("error updating group document:", err)
-        return err
-    }
-
-	// Second step is to remove the groupID from the groups field in the users document for the user
-	userRef, err := client.Collection("users").Where("name", "==", username).Documents(ctx).Next()
-	if err != nil {
-		log.Println("error finding user document:", err)
 		return err
 	}
-	// Get the current groups list from the user document
-    var currentGroups []string
-    if groups, exists := userRef.Data()["groups"]; exists {
-        currentGroups = groups.([]string)
-    }
+	// Add the new group to the users groups field
+	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+		{Path: "groups", Value: userData.Groups},
+	})
+	if err != nil {
+		log.Println("error updating user document:", err)
+		return err
+	}
 
-	// Remove the groupID from the groups list
-    var updatedGroups []string
-    for _, group := range currentGroups {
-        if group != groupID {
-            updatedGroups = append(updatedGroups, group)
-        }
-    }
+	// Update the cache with the modified user data
+	UserCache[username] = CacheData{userData, time.Now()}
+
+	return nil
+}
+
+func GetGroupMembers(groupID string) ([]GroupMemberNameRole, error) {
+	// Get the group data from cache (check ReturnCacheGroup documentation)
+	group, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting user data from cache:", err)
+		return nil, err
+	}
+
+	// Get the members usernames and roles from the group data
+	members := group.Members
+
+	// Create a slice to store the group members names and roles
+	var groupMembersNameRole []GroupMemberNameRole
+
+	// Populate the slice with member usernames and roles
+	for username, roleName := range members {
+		groupMembersNameRole = append(groupMembersNameRole, GroupMemberNameRole{
+			Username: username,
+			Rolename: roleName,
+		})
+	}
+
+	return groupMembersNameRole, nil
+}
+
+func DeleteMemberFromGroup(groupID string, username string) error {
+
+	// Get the group data from cache (check ReturnCacheGroup documentation)
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return err
+	}
+
+	// Remove the user from the groups members list, by adding all other user to a new variable
+	updatedMembers := make(map[string]string)
+	for key, value := range groupData.Members {
+		if key != username {
+			updatedMembers[key] = value
+		}
+	}
+
+	// Update the group data with the modified members list
+	groupData.Members = updatedMembers
+
+	// Update the cache with the modified group data
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
+
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+
+	// Update the Firestore document with the modified members list
+	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
+		{Path: "members", Value: updatedMembers},
+	})
+	if err != nil {
+		log.Println("error updating group document:", err)
+		return err
+	}
+
+	// Same process, but for the user document instead
+	userData, err := ReturnCacheUser(username)
+	if err != nil {
+		log.Println("error getting user data from cache:", err)
+		return err
+	}
+
+	// Remove the groupID from the users groups list
+	updatedGroups := make([]string, 0)
+	for _, group := range userData.Groups {
+		if group != groupID {
+			updatedGroups = append(updatedGroups, group)
+		}
+	}
+
+	// Update the user data with the modified groups list
+	userData.Groups = updatedGroups
+
+	// Update the cache with the modified user data
+	UserCache[username] = CacheData{userData, time.Now()}
 
 	// Update the Firestore document with the modified groups list
-    _, err = client.Collection("users").Doc(userRef.Ref.ID).Update(ctx, []firestore.Update{
-        {Path: "groups", Value: updatedGroups},
-    })
-    if err != nil {
-        log.Println("error updating user document:", err)
-        return err
-    }
-	
+	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+		{Path: "groups", Value: updatedGroups},
+	})
+	if err != nil {
+		log.Println("error updating user document:", err)
+		return err
+	}
+
+	return nil
+}
+
+func DeleteGroup(groupID string) error {
+	// Check if the group data exists in the cache
+	_, ok := GroupCache[groupID]
+	if ok {
+		// If it is in the cache remove it
+		delete(GroupCache, groupID)
+	}
+
+	// Update the Firestore document with the modified groups list
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+
+	// Reference to the specific document
+	groupRef := client.Collection("groups").Doc(groupID)
+
+	// Delete the document
+	_, err = groupRef.Delete(ctx)
+	if err != nil {
+		log.Println("Error deleting group document:", err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateMemberRole(username string, newRole string, groupID string) error {
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return err
+	}
+
+	groupData.Members[username] = newRole
+
+	// Update the Firestore document with the modified groups list
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	memberToUpdate := "members." + username
+	// Update the role for the user in the specified group using Firestore
+	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
+		{Path: memberToUpdate, Value: newRole},
+	})
+	if err != nil {
+		log.Println("error updating user role in group:", err)
+		return err
+	}
+
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
+
 	return nil
 }

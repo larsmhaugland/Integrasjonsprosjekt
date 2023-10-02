@@ -1,16 +1,27 @@
-import { fetchGroupMembers } from './gruppeInstillinger.js';
-export {renderGroupMembers2}
-
 const groupMembersList = document.querySelector("#group-members-list");
+const API_IP = "https://" + window.location.hostname + ":8080";
 
 window.onload = function () {
     const groupID = 'your_group_id'; // TODO dynamic group id
-    const renderGroup1 = false;
-    fetchGroupMembers(groupID, false);
+    fetchGroupMembers(groupID);
 };
 
+// Function to fetch group members data
+function fetchGroupMembers(groupID) {
+    const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
+    fetch(url) 
+        .then((response) => response.json())
+        .then((data) => {
+            renderGroupMembers(data);
+        })
+        .catch((error) => {
+            console.error('Error fetching group members:', error);
+            alert("Server error when trying to get group members");
+        });
+    } 
+
 // Function to render the group members based on the retrieved data
-function renderGroupMembers2(groupMembers) {
+function renderGroupMembers(groupMembers) {
     // Clear existing members (if any)
     groupMembersList.innerHTML = '';
 

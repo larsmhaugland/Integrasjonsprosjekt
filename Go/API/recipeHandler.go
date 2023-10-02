@@ -29,7 +29,7 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 	if len(parts) >= 3 {
 		switch r.Method {
 		case http.MethodPost:
-			if len(parts) == 2 {
+			if parts[2] == "new" {
 				RecipePostHandler(w, r)
 			} else if parts[2] == "image" {
 				RecipeImageHandler(w, r)
@@ -59,12 +59,12 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	var id string
 	err := DecodeJSONBody(w, r, &id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding request DELETE: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = Firebase.DeleteRecipe(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when deleting recipe: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -73,12 +73,12 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 	var recipe Firebase.Recipe
 	err := DecodeJSONBody(w, r, &recipe)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding request PATCH: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = Firebase.PatchCacheRecipe(recipe)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when patching DB: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -87,17 +87,17 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	var recipe Firebase.Recipe
 	err := DecodeJSONBody(w, r, &recipe)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding request GET: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	data, err := Firebase.ReturnCacheRecipe(recipe.ID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when fetching recipe from DB: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	err = EncodeJSONBody(w, r, data)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -111,23 +111,23 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	var data Input
 	err := DecodeJSONBody(w, r, &data)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error when decoding POST: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	user, err := Firebase.GetUserData(data.Owner)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when fetching user data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	id, err := Firebase.AddRecipe(data.Recipe, data.Groups, user.ID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when adding recipe to firebase: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	err = EncodeJSONBody(w, r, id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when encodingn response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

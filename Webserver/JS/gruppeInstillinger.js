@@ -1,8 +1,4 @@
-//export { fetchGroupMembers };
-//import { renderGroupMembers2 } from "./gruppe.js";
-// TODO FIX IMPORT ERRORS
 
-// JavaScript for interaction with the poppup menu for adding members to the group
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
@@ -13,12 +9,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
     const groupMembersList = document.querySelector("#member-list");
     const roles = ['Owner', 'Administrator', 'Member'];
-
+    const deleteGroupButton = document.querySelector("#delete-group");
+    var GroupOwner;
+    const API_IP = "https://" + window.location.hostname + ":8080";
+    const Username = sessionStorage.getItem("username");
+    const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     /*
     window.onload = function () {
         const groupID = 'your_group_id'; 
-        const renderGroup1 = true;
-        fetchGroupMembers(groupID, renderGroup1);
+        fetchGroupMembers(groupID);
     };*/
     
     // Open the modal when the button is clicked
@@ -31,12 +30,50 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = "none";
     });
 
+    deleteGroupButton.addEventListener("click", function(){
+        deleteGroup(groupID)
+    })
+    
+    /**
+     * Sends a DELETE request to the backend endpoint, that deletes the group specified
+     * @param {*} groupID - ID of the group to be deleted.
+     * @returns 
+     */
+    function deleteGroup(groupID) {
+        const url = `${API_IP}/group/deleteGroup?groupID=${groupID}`;
+        const redirectURL = "../index.html";
+        if (Username != GroupOwner){
+            alert("Only the owner can delete the group");
+            return;
+        }
+        const confirmation = window.confirm("Er du sikker på at du vil slette gruppa?");
+        if (!confirmation){
+            return;
+        } 
+        // Send a DELETE request to the server
+        fetch(url, {
+            method: "DELETE",
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                alert("Group deleted successfully.");
+                window.location.href = redirectURL;
+            } else {
+                alert("Error deleting group.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("Server error occured, could not delete the group.");
+        });
+    }
+
     // Handle search input changes
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.trim();
-
+        const url = `${API_IP}/search?partialUsername=${query}`;
         // Send a GET request to the firestore database via GO
-        fetch(`/search?partialUsername=${query}`)
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 // Update the member suggestions list with the results
@@ -44,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error fetching search results from database:", error);
+                alert("Error getting the serach results from the databse");
             });
     });
 
@@ -102,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} groupID - ID of the group the user will be added to
      */
     function addMemberToGroup(username, groupID) {
-        const url = "/group/members"   // TODO: Correct URL?
+        const url = API_IP + "/group/members"   
 
         // Request body with the information needed for the backend to correctly add member to group
         const requestBody = JSON.stringify({
@@ -127,28 +165,33 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch((error) => {
             console.error("Error:", error);
+            alert("Server error when trying to add the user to the group")
         });
     }
 
-    // Function to fetch group members data
-    function fetchGroupMembers(groupID, renderGroup1) {
-    const url = `/group/members?groupID=${encodeURIComponent(groupID)}`;
+    /**
+     * Sends a GET request to the backend endpoint to retrieve the data for the group members
+     * @param {*} groupID - the group to retrieve the members from
+     */
+    function fetchGroupMembers(groupID) {
+    const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
     fetch(url) 
         .then((response) => response.json())
         .then((data) => {
-            if (renderGroup1){ 
-                renderGroupMembers1(data);
-            } else {
-                renderGroupMembers2(data);
-            }
+            renderGroupMembers(data)
         })
         .catch((error) => {
             console.error('Error fetching group members:', error);
+            alert("Error when trying to get the group members from the databse")
         });
     } 
     
-    // Function to render the group members based on the retrieved data
-    function renderGroupMembers1(groupMembers) {
+    /**
+     * Creates all the html elements to render for each group memeber and also gives them the correct
+     * values and initializes eventlisteners where needed.
+     * @param {*} groupMembers - the members of the group with their corresponding data fields
+     */
+    function renderGroupMembers(groupMembers) {
 
         // Clear existing members (if any)
         while (groupMembersList.firstChild) {
@@ -159,7 +202,6 @@ document.addEventListener("DOMContentLoaded", function () {
         groupMembers.forEach((member) => {
             const listItem = document.createElement('li');
 
-            // Create the member's image (you can customize the src attribute)
             const img = document.createElement('img');
             img.src = '../Images/person-icon-transparent.png';
             img.alt = `Member ${member.username}`;
@@ -178,9 +220,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 option.textContent = role;
                 select.appendChild(option);
             });
-            // Set the selected option based on the member's role
-            select.value = member.role.toLowerCase(); 
 
+            select.addEventListener('change', (event) => {
+                // Get the selected role from the dropdown menu
+                const selectedRole = event.target.value;
+
+                // Get the username for the member
+                const parentElement = select.parentElement;
+                const username = parentElement.querySelector("span").textContent;
+                
+                updateRoleForMember(username, selectedRole);
+            })
+            
+            // Set the selected option based on the member's role
+            select.value = member.roleName.toLowerCase(); 
+            
+            if (member.roleName.toLowerCase() === "owner"){
+                GroupOwner = member.username;
+            }
              // Create the delete button
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Fjern medlem';
@@ -202,9 +259,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    /**
+     * Sends a DELETE request to the backend with the username of the user to delete from the group
+     * @param {*} username username to delete from the group
+     */
     function deleteMember(username) {
         const groupID = 'your_group_id'; // TODO get current group id
-        const url = `/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
+        const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
     
         fetch(url, {
             method: 'DELETE', // HTTP Delete method
@@ -214,14 +275,39 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Member deleted successfully
                     alert(`Member ${username} deleted from the group.`);
                     // Update the group display
-                    fetchGroupMembers(groupID, true);
+                    fetchGroupMembers(groupID);
                 } else {
                     alert(`Error deleting member ${username} from the group.`);
                 }
             })
             .catch((error) => {
-                console.error('Error:', error);
+                console.error("Error:", error);
+                alert("Server error when trying to delete the user from the datbase");
             });
+    }
+
+    /**
+     * Sends the PATCH request to the backend endpoint to update the role for the specficied user
+     * @param {*} username - username to update the role for
+     * @param {*} newRole - new role for the username
+     */
+    function updateRoleForMember(username, newRole){
+        const groupID = "update this" // TODO dynamic group id
+        const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
+        fetch(url, {
+            method: 'PATCH',
+        })
+            .then((repsonse) => {
+                if (response.status === 200) {
+                    console.log("Role of group member updated");
+                } else {
+                    alert("Server error when trying to update the role");
+                }
+            })
+            .catch((error) =>{
+                console.error("Error", error);
+                alert("Server error when trying to update the role");
+            })
     }
 });
 

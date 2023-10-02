@@ -35,7 +35,7 @@ type Dinner struct {
 
 type Group struct {
 	ID           string            `json:"id"`
-	Members      []string          `json:"members"`
+	Members      map[string]string `json:"members"`
 	Owner        string            `json:"owner"`
 	Name         string            `json:"name"`
 	Recipes      []string          `json:"recipes"`
