@@ -1,5 +1,5 @@
 /Go/Firebase/service-account.json
-/Go/HTTPS/client.crt
-/Go/HTTPS/client.key
+/Go/HTTPS/server.crt
+/Go/HTTPS/server.key
 /Webserver/HTTPS/server.crt
 /Webserver/HTTPS/server.key

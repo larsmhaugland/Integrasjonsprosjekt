@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"os"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -16,8 +17,13 @@ import (
 var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
-	//TMP FIX FOR FIRESTORE
 
+	//Check if service account file exists
+	_, err := os.ReadFile("Firebase/service-account.json")
+	if err != nil {
+		log.Println("error reading service-account.json:", err)
+		return nil, err
+	}
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
 
 	app, err := firebase.NewApp(ctx, nil, opt)
