@@ -6,6 +6,8 @@ var UserCache map[string]CacheData
 var RecipeCache map[string]CacheData
 var GroupCache map[string]CacheData
 
+const CACHE_TIMEOUT = 24
+
 func InitCache() {
 	UserCache = make(map[string]CacheData)
 	RecipeCache = make(map[string]CacheData)
@@ -15,7 +17,7 @@ func InitCache() {
 func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
 	val, ok := cache[key]
 	if ok {
-		if time.Since(val.cachedAt).Hours() > 24 {
+		if time.Since(val.cachedAt).Hours() > CACHE_TIMEOUT {
 			delete(cache, key)
 			return CacheData{}, false
 		}
