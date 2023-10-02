@@ -10,8 +10,8 @@ import (
 
 func main() {
 
-	certFile := "HTTPS/client.crt"
-	keyFile := "HTTPS/client.key"
+	certFile := "HTTPS/server.crt"
+	keyFile := "HTTPS/server.key"
 
 	server := &http.Server{
 		Addr: ":8080",
