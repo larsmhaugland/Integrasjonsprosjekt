@@ -1,14 +1,14 @@
 const groupMembersList = document.querySelector("#group-members-list");
+const API_IP = "https://" + window.location.hostname + ":8080";
 
 window.onload = function () {
     const groupID = 'your_group_id'; // TODO dynamic group id
-    const renderGroup1 = false;
-    fetchGroupMembers(groupID, false);
+    fetchGroupMembers(groupID);
 };
 
 // Function to fetch group members data
 function fetchGroupMembers(groupID) {
-    const url = `/group/members?groupID=${encodeURIComponent(groupID)}`;
+    const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
     fetch(url) 
         .then((response) => response.json())
         .then((data) => {
@@ -16,6 +16,7 @@ function fetchGroupMembers(groupID) {
         })
         .catch((error) => {
             console.error('Error fetching group members:', error);
+            alert("Server error when trying to get group members");
         });
     } 
 
