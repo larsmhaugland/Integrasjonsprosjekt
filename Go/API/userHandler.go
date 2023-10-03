@@ -16,8 +16,10 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Incorrect usage of URL.", http.StatusBadRequest)
 		return
 	}
-	log.Println(parts)
+	log.Println(parts[2])
 	switch parts[2] {
+	case http.MethodOptions: // For CORS
+		return
 	case "credentials":
 		UserCredentialBaseHandler(w, r)
 		break
@@ -29,8 +31,7 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	case "search":
 		UserSearchHandler(w, r)
-	case http.MethodOptions: // For CORS
-		return
+
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
