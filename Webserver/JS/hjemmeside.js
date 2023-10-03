@@ -12,7 +12,6 @@ function retrieveGroups(){
         displayGroups(groups);
     }  else {
     fetch(API_IP + "/user/groups", {
-        mode: 'cors',
         method: "GET",
         headers: {
             "Content-Type": "application/json"
