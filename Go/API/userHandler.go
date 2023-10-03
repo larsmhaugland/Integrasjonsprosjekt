@@ -2,6 +2,7 @@ package API
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -15,6 +16,7 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Incorrect usage of URL.", http.StatusBadRequest)
 		return
 	}
+	log.Println(parts)
 	switch parts[2] {
 	case "credentials":
 		UserCredentialBaseHandler(w, r)
@@ -239,7 +241,6 @@ func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
 	var user Firebase.User
 	err := DecodeJSONBody(w, r, &user)
 	if err != nil {
