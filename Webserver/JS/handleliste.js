@@ -57,11 +57,46 @@ function retrieveShoppingList() {
    //if(!checkAuthToken()) return;
     let option = document.querySelector("#group-dropdown").value;
 
-    if(option === sessionStorage.getItem("username")){
+    if(option === "Velg gruppe"){
+        return;
+
+    }else if(option === sessionStorage.getItem("username")){
         //TODO: API fetch 
+        fetch(API_IP + "/shopping", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            if (response.status === 200){
+                console.log("Shopping list retrieved");
+                return response.json();
+            } else {
+                console.log("Error retrieving shopping list");
+                throw new Error("Failed to retrieve shopping list");
+            }
+        }).then(data=>{
+            sessionStorage.setItem("shoppinglist", JSON.stringify(data));
+            displayShoppingList(data);})
     }
     else{
-        //TODO: API fetch for specific group
+        //TODO: API fetch for specific group not just group in general
+        fetch(API_IP + "/group/shopping", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            if (response.status === 200){
+                console.log("Shopping list retrieved");
+                return response.json();
+            } else {
+                console.log("Error retrieving shopping list");
+                throw new Error("Failed to retrieve shopping list");
+            }
+        }).then(data=>{
+            sessionStorage.setItem("shoppinglist", JSON.stringify(data));
+            displayShoppingList(data);});
     }
 
 
