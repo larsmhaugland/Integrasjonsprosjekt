@@ -1,26 +1,28 @@
 package Firebase
 
 import (
+	"cloud.google.com/go/firestore"
 	"context"
 	"errors"
-	"log"
-	"time"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-
-	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"log"
+	"os"
+	"time"
 )
 
 // CUSTOM ERROR CODES
 var ErrUserExists = errors.New("No user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
-	//TMP FIX FOR FIRESTORE
 
+	//Check if service account file exists
+	_, err := os.ReadFile("Firebase/service-account.json")
+	if err != nil {
+		log.Println("error reading service-account.json:", err)
+		return nil, err
+	}
 	opt := option.WithCredentialsFile("Firebase/service-account.json")
 
 	app, err := firebase.NewApp(ctx, nil, opt)
@@ -44,6 +46,9 @@ func GetUserData(userID string) (User, error) {
 		log.Println("error getting Firebase client:", err)
 		return User{}, err
 	}
+	log.Println("userID:", userID)
+	log.Println("client:", client)
+
 	var user User
 	iter := client.Collection("users").Where("username", "==", userID).Documents(ctx)
 	for {

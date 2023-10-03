@@ -152,7 +152,7 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	//Get the user credentials from the database
 	credentials, err := Firebase.ReturnCacheUser(user.Username)
 	if err != nil {
-		http.Error(w, "Error while getting user credentials", http.StatusBadRequest)
+		http.Error(w, "Error while getting user credentials"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
