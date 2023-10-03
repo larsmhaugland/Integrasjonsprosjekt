@@ -2,6 +2,7 @@
 let MAXRESULTS = 9;
 let page = 0;
 let Recipes = [];
+let Groups = [];
 const IMAGEDIR = "/usr/local/apache2/images";
 
 //DOM elements:
@@ -19,6 +20,24 @@ newRecipeBtn.addEventListener("click", function (event){
     if(!checkAuthToken()){
         alert("Du må logge inn for å legge til oppskrifter");
         return;
+    }
+    //Clear groups
+    let groupDiv = document.querySelector("#share-with-groups");
+    groupDiv.innerHTML = "";
+    for(let i = 0; i < Groups.length; i++){
+        let group = Groups[i];
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "group_" + group.id);
+        checkbox.setAttribute("name", "group_" + group.id);
+        checkbox.setAttribute("value", group.id);
+        checkbox.setAttribute("class", "group-checkbox");
+        let label = document.createElement("label");
+        label.setAttribute("for", "group_" + group.id);
+        label.setAttribute("class", "group-label");
+        label.appendChild(document.createTextNode(group.name));
+        groupDiv.appendChild(checkbox);
+        groupDiv.appendChild(label);
     }
     newRecipePopup.style.display = "block";
 });
@@ -43,6 +62,7 @@ submitRecipeBtn.addEventListener("click", newRecipe);
 //Load recipes:
 getRecipes();
 displayResults();
+getGroups();
 
 function newRecipe() {
     let name = document.querySelector("#recipe-name").value;
@@ -123,6 +143,36 @@ function newRecipe() {
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
+}
+
+function getGroups() {
+    let username = sessionStorage.getItem("username");
+    //if(!checkAuthToken()) return;
+    fetch(API_IP + "/user/groups", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "username": username,
+        }
+    }).then(response => {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            console.log("Error when fetching groups");
+            return false;
+        }
+    }).then(data => {
+        if (data !== false) {
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+                Groups.push(data[i]);
+            }
+        }
+    }).catch(error => {
+        console.log("Error when fetching groups");
+        console.log(error);
+    });
+
 }
 
 function getRecipes() {

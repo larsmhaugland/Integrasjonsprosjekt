@@ -21,10 +21,10 @@ type Recipe struct {
 
 type User struct {
 	ID            string   `json:"id"`
-	Username      string   `json:"username"`
+	Username      string   `json:"userame"`
 	Password      string   `json:"password"`
 	Groups        []string `json:"groups"`
-	ShoppingLists []string `json:"shoppingLists"`
+	ShoppingLists []string `json:"shopping-lists"`
 	Recipes       []string `json:"recipes"`
 }
 
@@ -45,15 +45,14 @@ type Group struct {
 
 type ShoppingListItem struct {
 	Complete bool   `json:"complete"`
-	Name     string `json:"item"`
-	Quantity int    `json:"quantity"`
+	Quantity string `json:"quantity"`
+	Category string `json:"category"` //Kun hvis vi vil gjøre kategoriseringen i backend
 }
 
 type ShoppingList struct {
 	ID        string                      `json:"id"`
 	Assignees []string                    `json:"assignees"`
-	Items     map[string]ShoppingListItem `json:"items"`
-	Shop      string                      `json:"shop"`
+	List      map[string]ShoppingListItem `json:"list"`
 }
 
 type CacheData struct {

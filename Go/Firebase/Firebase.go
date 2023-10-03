@@ -46,9 +46,6 @@ func GetUserData(userID string) (User, error) {
 		log.Println("error getting Firebase client:", err)
 		return User{}, err
 	}
-	log.Println("userID:", userID)
-	log.Println("client:", client)
-
 	var user User
 	iter := client.Collection("users").Where("username", "==", userID).Documents(ctx)
 	for {
@@ -66,6 +63,38 @@ func GetUserData(userID string) (User, error) {
 			log.Println("Error converting document:", err)
 			return User{}, err
 		}
+		//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string
+		if _, ok := doc.Data()["recipes"].([]interface{}); ok {
+			tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
+			for _, v := range tmpShoppingLists {
+				if str, ok := v.(string); ok {
+					user.ShoppingLists = append(user.ShoppingLists, str)
+				} else {
+					log.Println("Error; Failed to convert shopping list id to string" + err.Error())
+				}
+			}
+		}
+		if _, ok := doc.Data()["recipes"].([]interface{}); ok {
+			tmpRecipes := doc.Data()["recipes"].([]interface{})
+			for _, v := range tmpRecipes {
+				if str, ok := v.(string); ok {
+					user.Recipes = append(user.Recipes, str)
+				} else {
+					log.Println("Error; Failed to convert recipe id to string" + err.Error())
+				}
+			}
+		}
+		if _, ok := doc.Data()["groups"].([]interface{}); ok {
+			tmpGroupLists := doc.Data()["groups"].([]interface{})
+			for _, v := range tmpGroupLists {
+				if str, ok := v.(string); ok {
+					user.Groups = append(user.Groups, str)
+				} else {
+					log.Println("Error; Failed to convert group id to string" + err.Error())
+				}
+			}
+		}
+
 		return user, nil
 	}
 }
@@ -494,6 +523,29 @@ func UpdateMemberRole(username string, newRole string, groupID string) error {
 	GroupCache[groupID] = CacheData{groupData, time.Now()}
 
 	return nil
+}
+
+func GetShoppingListData(listID string) (ShoppingList, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return ShoppingList{}, err
+	}
+	var list ShoppingList
+	doc, err := client.Collection("shopping-list").Doc(listID).Get(ctx)
+	if err != nil {
+		log.Println("Error getting shopping list:", err)
+		return ShoppingList{}, err
+	}
+	err = doc.DataTo(&list)
+	list.ID = doc.Ref.ID
+
+	if err != nil {
+		log.Println("Error converting document:", err)
+		return ShoppingList{}, err
+	}
+	return list, nil
 }
 
 func GetShoppingList(groupID string) ([]string, error) {

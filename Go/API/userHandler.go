@@ -2,7 +2,6 @@ package API
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -16,7 +15,6 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Incorrect usage of URL.", http.StatusBadRequest)
 		return
 	}
-	log.Println(parts[2])
 	switch parts[2] {
 	case http.MethodOptions: // For CORS
 		return

@@ -5,13 +5,18 @@ import "time"
 var UserCache map[string]CacheData
 var RecipeCache map[string]CacheData
 var GroupCache map[string]CacheData
+var ShoppingCache map[string]CacheData
 
-const CACHE_TIMEOUT = 24
+var CacheHits int
+var CacheMisses int
+
+const CACHE_TIMEOUT = 48
 
 func InitCache() {
 	UserCache = make(map[string]CacheData)
 	RecipeCache = make(map[string]CacheData)
 	GroupCache = make(map[string]CacheData)
+	ShoppingCache = make(map[string]CacheData)
 }
 
 func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
@@ -21,7 +26,9 @@ func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
 			delete(cache, key)
 			return CacheData{}, false
 		}
+		CacheHits++
 	}
+	CacheMisses++
 	return val, ok
 }
 
@@ -43,7 +50,7 @@ func ReturnCacheGroup(groupID string) (Group, error) {
 	if ok {
 		return group.Data.(Group), nil
 	}
-	groupData, err := GetGroupData(groupID) 
+	groupData, err := GetGroupData(groupID)
 	if err != nil {
 		return Group{}, err
 	}
@@ -71,6 +78,19 @@ func PatchCacheRecipe(recipe Recipe) error {
 	}
 	RecipeCache[recipe.ID] = CacheData{recipe, time.Now()}
 	return nil
+}
+
+func ReturnCacheShoppingList(listID string) (ShoppingList, error) {
+	list, ok := GetCacheData(ShoppingCache, listID)
+	if ok {
+		return list.Data.(ShoppingList), nil
+	}
+	retList, err := GetShoppingListData(listID)
+	if err != nil {
+		return ShoppingList{}, err
+	}
+	ShoppingCache[listID] = CacheData{retList, time.Now()}
+	return retList, nil
 }
 
 //NOTE: Not removing from cache if recipe is deleted, will time out after 24 hours
