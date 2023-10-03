@@ -28,4 +28,5 @@ WORKDIR /GoApp
 #Expose port 8080
 EXPOSE 8080
 
-ENTRYPOINT ["/GoApp/main -https"]
+ENTRYPOINT ["/GoApp/main"]
+CMD ["-https"]
