@@ -11,8 +11,7 @@ function retrieveGroups(){
     if(groups && groups.length > 0){
         displayGroups(groups);
     }  else {
-    let credentials = {"username": userName};
-    fetch(API_IP + "/user/groups", {
+    fetch(API_IP + `/user/groups?username=${userName}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"

@@ -25,6 +25,7 @@ function retrieveGroups(){
             throw new Error("Failed to retrieve groups");
         }
     }).then(data=>{
+        console.log("Response data:", data);
         sessionStorage.setItem("groups", JSON.stringify(data));
         displayGroups(data);})
     .catch(error => {
@@ -37,13 +38,18 @@ function retrieveGroups(){
 */
 function displayGroups(groups){
     let display = document.querySelector(".groups-container");
-
-    groups.forEach(group => {
-        let groupBlock = document.createElement("div");
-        groupBlock.setAttribute("id","group-block");
-        groupBlock.textContent = group.name;
-        display.appendChild(groupBlock);
-});
+    let displayedGroupIDs = new Set();
+    console.log(groups)
+       groups.forEach(group => {
+           if (!displayedGroupIDs.has(group.id)) {
+               console.log("group:", group);
+               let groupBlock = document.createElement("div");
+               groupBlock.setAttribute("id","group-block");
+               groupBlock.textContent = group.name;
+               display.appendChild(groupBlock);
+                displayedGroupIDs.add(group.id);
+           }
+       });
 };
 
 /*
@@ -73,12 +79,12 @@ btn.addEventListener("click",(event)=> {event.preventDefault();
 */
 function newGroup(groupName){
     let credentials = {"name": groupName, "owner": sessionStorage.getItem("username")};
-    fetch(API_IP + "/group/new", {
+    fetch(API_IP + "/user/groups", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(credentials),  //TODO: remove the body, send the credentials in the header somehow
+        body: JSON.stringify(credentials)   //Add correct body
     })
         .then((response) => {
             if (response.status === 201) {

@@ -2,6 +2,7 @@ package API
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -241,18 +242,29 @@ func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
-	var user Firebase.User
-	err := DecodeJSONBody(w, r, &user)
-	if err != nil {
-		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
-		return
-	}
 	groups, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
 		http.Error(w, "Error while getting user groups", http.StatusBadRequest)
 		return
 	}
-	err = EncodeJSONBody(w, r, groups)
+
+	uniqueGroupIds := make(map[string]struct{})
+	var uniqueGroups []Firebase.Group
+
+	for _, groupID := range groups.Groups {
+		_, exists := uniqueGroupIds[groupID]
+		if !exists {
+			fmt.Println("Processing group:", groupID)
+			groupData, err := Firebase.ReturnCacheGroup(groupID)
+			if err != nil {
+				http.Error(w, "Error while getting group data", http.StatusBadRequest)
+				return
+			}
+			uniqueGroups = append(uniqueGroups, groupData)
+		}
+	}
+	fmt.Println("Unique groups:", uniqueGroups)
+	err = EncodeJSONBody(w, r, uniqueGroups)
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
