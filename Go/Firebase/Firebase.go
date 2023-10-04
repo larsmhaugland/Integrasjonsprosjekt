@@ -547,15 +547,3 @@ func GetShoppingListData(listID string) (ShoppingList, error) {
 	}
 	return list, nil
 }
-
-func GetShoppingList(groupID string) ([]string, error) {
-	groupData, err := ReturnCacheGroup(groupID)
-	if err != nil {
-		log.Println("error getting Firebase client:", err)
-		return nil, err
-	}
-
-	shoppingList := groupData.ShoppingList
-
-	return shoppingList, nil
-}
