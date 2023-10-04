@@ -116,9 +116,9 @@ function newRecipe() {
         "type": type,
         "difficulty": difficulty,
         "time": time,
-        "ingredients": ingredients,
-        "instructions": instructions,
-        "url": url,
+        //"ingredients": ingredients,
+        //"instructions": instructions,
+        "URL": url,
         "image": filename,
     }
     let data = {
@@ -148,11 +148,10 @@ function newRecipe() {
 function getGroups() {
     let username = sessionStorage.getItem("username");
     //if(!checkAuthToken()) return;
-    fetch(API_IP + "/user/groups", {
+    fetch(API_IP + "/user/groups?username=" + username, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "username": username,
         }
     }).then(response => {
         if (response.status === 200) {
@@ -251,8 +250,29 @@ function displayResults(){
         let recipeBlock = document.createElement("div");
         recipeBlock.setAttribute("class","result_"+(i+1));
         recipeBlock.setAttribute("id","result_"+(i+1));
+        let recipeImage = document.createElement("img");
+        recipeImage.setAttribute("src", IMAGEDIR + "/" + recipe.image);
+        recipeImage.setAttribute("alt", recipe.name);
+        recipeImage.setAttribute("class", "result-image");
+        let recipeName = document.createElement("h3");
+        recipeName.setAttribute("class", "result-name");
+        recipeName.textContent = recipe.name;
+        let recipeURL = document.createElement("a");
+        recipeURL.setAttribute("href", recipe.URL);
+        recipeURL.setAttribute("target", "_blank")
+        recipeURL.setAttribute("class", "result-url");
+        recipeURL.textContent = recipe.URL;
+        let recipeDifficulty = document.createElement("p");
+        recipeDifficulty.setAttribute("class", "result-difficulty");
+        recipeDifficulty.textContent = "Vanskelighetsgrad: " + recipe.difficulty;
+        let recipeTime = document.createElement("p");
+        recipeTime.setAttribute("class", "result-time");
+        recipeTime.textContent = "Tid: " + recipe.time + " minutter";
 
-        recipeBlock.textContent = recipe.name;
+        recipeBlock.appendChild(recipeName);
+        recipeBlock.appendChild(recipeImage);
+        recipeBlock.appendChild(recipeURL);
+        recipeBlock.appendChild(recipeDifficulty);
         resultDiv.appendChild(recipeBlock);
     }
 }

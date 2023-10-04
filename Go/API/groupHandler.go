@@ -272,7 +272,7 @@ func GroupShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 	/*http.Error(w, "Not implemented", http.StatusNotImplemented)
 	//Retrieve shopping list for a group
 	groupID := r.URL.Query().Get("groupID")
-	shoppingList, err := Firebase.GetShoppingList(groupID)
+	shoppingList, err := Firebase.ReturnCacheGroup(groupID)
 	if err != nil {
 		http.Error(w, "Could not get the shopping list", http.StatusInternalServerError)
 		return
