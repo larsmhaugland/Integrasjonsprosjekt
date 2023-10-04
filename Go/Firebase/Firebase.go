@@ -53,7 +53,7 @@ func GetUserData(userID string) (User, error) {
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
-			log.Println("Error; No user found")
+			log.Println("Error; No user found with username: " + userID)
 			return User{}, err
 		}
 		if err != nil {
@@ -66,7 +66,8 @@ func GetUserData(userID string) (User, error) {
 			return User{}, err
 		}
 		//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string
-		if _, ok := doc.Data()["recipes"].([]interface{}); ok {
+		if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
+
 			tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
 			for _, v := range tmpShoppingLists {
 				if str, ok := v.(string); ok {
@@ -141,7 +142,15 @@ func PatchUser(user User) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("users").Doc(user.Username).Set(ctx, user)
+	data := map[string]interface{}{
+		"username":       user.Username,
+		"password":       user.Password,
+		"shopping-lists": user.ShoppingLists,
+		"recipes":        user.Recipes,
+		"groups":         user.Groups,
+		"name":           user.Name,
+	}
+	_, err = client.Collection("users").Doc(user.Username).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching user:", err)
 		return err
@@ -238,6 +247,29 @@ func GetGroupData(groupID string) (Group, error) {
 		return Group{}, err
 	}
 	return group, nil
+}
+
+func PatchGroup(group Group) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	data := map[string]interface{}{
+		"members":        group.Members,
+		"owner":          group.Owner,
+		"name":           group.Name,
+		"recipes":        group.Recipes,
+		"schedule":       group.Schedule,
+		"shopping-lists": group.ShoppingLists,
+	}
+	_, err = client.Collection("groups").Doc(group.ID).Set(ctx, data)
+	if err != nil {
+		log.Println("Error patching group:", err)
+		return err
+	}
+	return nil
 }
 
 func GetGroupMembers(groupID string) ([]GroupMemberNameRole, error) {
@@ -474,7 +506,18 @@ func PatchRecipe(recipe Recipe) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("recipes").Doc(recipe.ID).Set(ctx, recipe)
+	data := map[string]interface{}{
+		"name":         recipe.Name,
+		"time":         recipe.Time,
+		"image":        recipe.Image,
+		"description":  recipe.Description,
+		"URL":          recipe.URL,
+		"ingredients":  recipe.Ingredients,
+		"instructions": recipe.Instructions,
+		"categories":   recipe.Categories,
+		"portions":     recipe.Portions,
+	}
+	_, err = client.Collection("recipes").Doc(recipe.ID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching recipe:", err)
 		return err
@@ -529,8 +572,12 @@ func AddShoppingList(list ShoppingList) (string, error) {
 		log.Println("error getting Firebase client:", err)
 		return "", err
 	}
+	data := map[string]interface{}{
+		"assignees": list.Assignees,
+		"list":      list.List,
+	}
 	//Add shoppinglist to database
-	id, _, err := client.Collection("shopping-list").Add(ctx, list)
+	id, _, err := client.Collection("shopping-list").Add(ctx, data)
 	if err != nil {
 		log.Println("Error adding shopping list:", err)
 		return "", err
@@ -546,7 +593,11 @@ func PatchShoppingList(list ShoppingList) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("shopping-list").Doc(list.ID).Set(ctx, list)
+	data := map[string]interface{}{
+		"assignees": list.Assignees,
+		"list":      list.List,
+	}
+	_, err = client.Collection("shopping-list").Doc(list.ID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching shopping list:", err)
 		return err
@@ -566,7 +617,6 @@ func DeleteShoppingList(listID string) error {
 		log.Println("Error deleting shopping list:", err)
 		return err
 	}
-	delete(ShoppingCache, listID)
 	return nil
 }
 

@@ -26,6 +26,7 @@ type User struct {
 	Groups        []string `json:"groups"`
 	ShoppingLists []string `json:"shopping-lists"`
 	Recipes       []string `json:"recipes"`
+	Name          string   `json:"name"`
 }
 
 type Dinner struct {
@@ -34,13 +35,13 @@ type Dinner struct {
 }
 
 type Group struct {
-	ID           string            `json:"id"`
-	Members      map[string]string `json:"members"`
-	Owner        string            `json:"owner"`
-	Name         string            `json:"name"`
-	Recipes      []string          `json:"recipes"`
-	Schedule     map[string]Dinner `json:"schedule"`
-	ShoppingList []string          `json:"shoppingList"`
+	ID            string            `json:"id"`
+	Members       map[string]string `json:"members"`
+	Owner         string            `json:"owner"`
+	Name          string            `json:"name"`
+	Recipes       []string          `json:"recipes"`
+	Schedule      map[string]Dinner `json:"schedule"`
+	ShoppingLists []string          `json:"shopping-lists"`
 }
 
 type ShoppingListItem struct {
