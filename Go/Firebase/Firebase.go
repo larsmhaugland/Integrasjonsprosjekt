@@ -39,6 +39,8 @@ func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
 	return client, nil
 }
 
+/*****************				USER FUNCTIONS				*****************/
+
 func GetUserData(userID string) (User, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -132,123 +134,31 @@ func AddUser(user User) error {
 	return nil
 }
 
-func AddGroup(group Group) (string, error) {
-	ctx := context.Background()
-	client, err := GetFirestoreClient(ctx)
-	if err != nil {
-		log.Println("error getting Firebase client:", err)
-		return "", err
-	}
-	//Need to make a slice of members so that Firebase correctly adds the field
-	var tmpMemberSlice []string
-	tmpMemberSlice = append(tmpMemberSlice, group.Owner)
-	//Add group to database
-	data := map[string]interface{}{
-		"members": tmpMemberSlice,
-		"owner":   group.Owner,
-		"name":    group.Name,
-	}
-	doc, _, err := client.Collection("groups").Add(ctx, data)
-	if err != nil {
-		log.Println("Error adding group:", err)
-		return "", err
-	}
-	return doc.ID, nil
-}
-
-func AddRecipe(recipe Recipe, groups []string, user string) (string, error) {
-	ctx := context.Background()
-	client, err := GetFirestoreClient(ctx)
-	if err != nil {
-		log.Println("error getting Firebase client:", err)
-		return "", err
-	}
-	//Add recipe to database
-	data := map[string]interface{}{
-		"name":         recipe.Name,
-		"time":         recipe.Time,
-		"picture":      recipe.Picture,
-		"description":  recipe.Description,
-		"URL":          recipe.URL,
-		"ingredients":  recipe.Ingredients,
-		"instructions": recipe.Instructions,
-		"categories":   recipe.Categories,
-		"portions":     recipe.Portions,
-		"owner":        user,
-		"image":        recipe.Image,
-	}
-
-	//Add recipe to recipes
-	doc, _, err := client.Collection("recipes").Add(ctx, data)
-	if err != nil {
-		log.Println("Error adding recipe:", err)
-		return "", err
-	}
-
-	//Add recipe to user
-	_, err = client.Collection("users").Doc(user).Update(ctx, []firestore.Update{
-		{Path: "recipes", Value: firestore.ArrayUnion(doc.ID)},
-	})
-
-	//Add recipe to groups
-	for _, group := range groups {
-		_, err := client.Collection("groups").Doc(group).Update(ctx, []firestore.Update{
-			{Path: "recipes", Value: firestore.ArrayUnion(doc.ID)},
-		})
-		if err != nil {
-			log.Println("Error adding recipe to group:", err)
-			return "", err
-		}
-	}
-	return doc.ID, nil
-}
-
-func GetRecipeData(recipeID string) (Recipe, error) {
-	ctx := context.Background()
-	client, err := GetFirestoreClient(ctx)
-	if err != nil {
-		log.Println("error getting Firebase client:", err)
-		return Recipe{}, err
-	}
-	var recipe Recipe
-	doc, err := client.Collection("recipes").Doc(recipeID).Get(ctx)
-	if err != nil {
-		log.Println("Error getting recipe:", err)
-		return Recipe{}, err
-	}
-	err = doc.DataTo(&recipe)
-	if err != nil {
-		log.Println("Error converting document:", err)
-		return Recipe{}, err
-	}
-	return recipe, nil
-}
-
-func PatchRecipe(recipe Recipe) error {
+func PatchUser(user User) error {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("recipes").Doc(recipe.ID).Set(ctx, recipe)
+	_, err = client.Collection("users").Doc(user.Username).Set(ctx, user)
 	if err != nil {
-		log.Println("Error patching recipe:", err)
+		log.Println("Error patching user:", err)
 		return err
 	}
 	return nil
 }
 
-func DeleteRecipe(recipeID string) error {
+func DeleteUser(userID string) error {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("recipes").Doc(recipeID).Delete(ctx)
+	_, err = client.Collection("users").Doc(userID).Delete(ctx)
 	if err != nil {
-		log.Println("Error deleting recipe:", err)
+		log.Println("Error deleting user:", err)
 		return err
 	}
 	return nil
@@ -283,6 +193,32 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 	return results, nil
 }
 
+/*****************				GROUP FUNCTIONS				*****************/
+
+func AddGroup(group Group) (string, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return "", err
+	}
+	//Need to make a slice of members so that Firebase correctly adds the field
+	var tmpMemberSlice []string
+	tmpMemberSlice = append(tmpMemberSlice, group.Owner)
+	//Add group to database
+	data := map[string]interface{}{
+		"members": tmpMemberSlice,
+		"owner":   group.Owner,
+		"name":    group.Name,
+	}
+	doc, _, err := client.Collection("groups").Add(ctx, data)
+	if err != nil {
+		log.Println("Error adding group:", err)
+		return "", err
+	}
+	return doc.ID, nil
+}
+
 func GetGroupData(groupID string) (Group, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -302,70 +238,6 @@ func GetGroupData(groupID string) (Group, error) {
 		return Group{}, err
 	}
 	return group, nil
-}
-
-// TODO: THis function and the one underneath are extremly similair and should be made into one
-func AddUserToGroup(username string, groupName string) error {
-	// Get the group data from cache (check ReturnCacheGroup documentation)
-	groupData, err := ReturnCacheGroup(groupName)
-	if err != nil {
-		log.Println("error getting group data from cache:", err)
-		return err
-	}
-	// Modify the group's members list
-	groupData.Members[username] = "member"
-
-	ctx := context.Background()
-	client, err := GetFirestoreClient(ctx)
-	if err != nil {
-		log.Println("error getting Firebase client:", err)
-		return err
-	}
-	_, err = client.Collection("groups").Doc(groupName).Update(ctx, []firestore.Update{
-		{Path: "members", Value: groupData.Members},
-	})
-	if err != nil {
-		log.Println("error updating group document:", err)
-		return err
-	}
-
-	// Update the cache with the modified group data
-	GroupCache[groupName] = CacheData{groupData, time.Now()}
-
-	return nil
-
-}
-
-// TODO: THis function and the one above are extremly similair and should be made into one
-func AddGroupToUser(username string, groupName string) error {
-	// Get the user data from cache (check ReturnCacheUser documentation)
-	userData, err := ReturnCacheUser(username)
-	if err != nil {
-		log.Println("error getting user data from cache:", err)
-		return err
-	}
-	// Add the new group to the user's groups list
-	userData.Groups = append(userData.Groups, groupName)
-
-	ctx := context.Background()
-	client, err := GetFirestoreClient(ctx)
-	if err != nil {
-		log.Println("error getting Firebase client:", err)
-		return err
-	}
-	// Add the new group to the users groups field
-	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
-		{Path: "groups", Value: userData.Groups},
-	})
-	if err != nil {
-		log.Println("error updating user document:", err)
-		return err
-	}
-
-	// Update the cache with the modified user data
-	UserCache[username] = CacheData{userData, time.Now()}
-
-	return nil
 }
 
 func GetGroupMembers(groupID string) ([]GroupMemberNameRole, error) {
@@ -525,6 +397,108 @@ func UpdateMemberRole(username string, newRole string, groupID string) error {
 	return nil
 }
 
+/*****************				RECIPE FUNCTIONS				*****************/
+
+func AddRecipe(recipe Recipe, groups []string, user string) (string, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return "", err
+	}
+	//Add recipe to database
+	data := map[string]interface{}{
+		"name":         recipe.Name,
+		"time":         recipe.Time,
+		"picture":      recipe.Picture,
+		"description":  recipe.Description,
+		"URL":          recipe.URL,
+		"ingredients":  recipe.Ingredients,
+		"instructions": recipe.Instructions,
+		"categories":   recipe.Categories,
+		"portions":     recipe.Portions,
+		"owner":        user,
+		"image":        recipe.Image,
+	}
+
+	//Add recipe to recipes
+	doc, _, err := client.Collection("recipes").Add(ctx, data)
+	if err != nil {
+		log.Println("Error adding recipe:", err)
+		return "", err
+	}
+
+	//Add recipe to user
+	_, err = client.Collection("users").Doc(user).Update(ctx, []firestore.Update{
+		{Path: "recipes", Value: firestore.ArrayUnion(doc.ID)},
+	})
+
+	//Add recipe to groups
+	for _, group := range groups {
+		_, err := client.Collection("groups").Doc(group).Update(ctx, []firestore.Update{
+			{Path: "recipes", Value: firestore.ArrayUnion(doc.ID)},
+		})
+		if err != nil {
+			log.Println("Error adding recipe to group:", err)
+			return "", err
+		}
+	}
+	return doc.ID, nil
+}
+
+func GetRecipeData(recipeID string) (Recipe, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return Recipe{}, err
+	}
+	var recipe Recipe
+	doc, err := client.Collection("recipes").Doc(recipeID).Get(ctx)
+	if err != nil {
+		log.Println("Error getting recipe:", err)
+		return Recipe{}, err
+	}
+	err = doc.DataTo(&recipe)
+	if err != nil {
+		log.Println("Error converting document:", err)
+		return Recipe{}, err
+	}
+	return recipe, nil
+}
+
+func PatchRecipe(recipe Recipe) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	_, err = client.Collection("recipes").Doc(recipe.ID).Set(ctx, recipe)
+	if err != nil {
+		log.Println("Error patching recipe:", err)
+		return err
+	}
+	return nil
+}
+
+func DeleteRecipe(recipeID string) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	_, err = client.Collection("recipes").Doc(recipeID).Delete(ctx)
+	if err != nil {
+		log.Println("Error deleting recipe:", err)
+		return err
+	}
+	return nil
+}
+
+/*****************				RECIPE FUNCTIONS				*****************/
+
 func GetShoppingListData(listID string) (ShoppingList, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -548,14 +522,116 @@ func GetShoppingListData(listID string) (ShoppingList, error) {
 	return list, nil
 }
 
-func GetShoppingList(groupID string) ([]string, error) {
-	groupData, err := ReturnCacheGroup(groupID)
+func AddShoppingList(list ShoppingList) (string, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
-		return nil, err
+		return "", err
+	}
+	//Add shoppinglist to database
+	id, _, err := client.Collection("shopping-list").Add(ctx, list)
+	if err != nil {
+		log.Println("Error adding shopping list:", err)
+		return "", err
+	}
+	ShoppingCache[id.ID] = CacheData{list, time.Now()}
+	return id.ID, nil
+}
+
+func PatchShoppingList(list ShoppingList) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	_, err = client.Collection("shopping-list").Doc(list.ID).Set(ctx, list)
+	if err != nil {
+		log.Println("Error patching shopping list:", err)
+		return err
+	}
+	return nil
+}
+
+func DeleteShoppingList(listID string) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	_, err = client.Collection("shopping-list").Doc(listID).Delete(ctx)
+	if err != nil {
+		log.Println("Error deleting shopping list:", err)
+		return err
+	}
+	delete(ShoppingCache, listID)
+	return nil
+}
+
+/*****************				TODOS				*****************/
+
+// TODO: THis function and the one underneath are extremly similair and should be made into one
+func AddUserToGroup(username string, groupName string) error {
+	// Get the group data from cache (check ReturnCacheGroup documentation)
+	groupData, err := ReturnCacheGroup(groupName)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return err
+	}
+	// Modify the group's members list
+	groupData.Members[username] = "member"
+
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	_, err = client.Collection("groups").Doc(groupName).Update(ctx, []firestore.Update{
+		{Path: "members", Value: groupData.Members},
+	})
+	if err != nil {
+		log.Println("error updating group document:", err)
+		return err
 	}
 
-	shoppingList := groupData.ShoppingList
+	// Update the cache with the modified group data
+	GroupCache[groupName] = CacheData{groupData, time.Now()}
 
-	return shoppingList, nil
+	return nil
+
+}
+
+// TODO: THis function and the one above are extremly similair and should be made into one
+func AddGroupToUser(username string, groupName string) error {
+	// Get the user data from cache (check ReturnCacheUser documentation)
+	userData, err := ReturnCacheUser(username)
+	if err != nil {
+		log.Println("error getting user data from cache:", err)
+		return err
+	}
+	// Add the new group to the user's groups list
+	userData.Groups = append(userData.Groups, groupName)
+
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	// Add the new group to the users groups field
+	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+		{Path: "groups", Value: userData.Groups},
+	})
+	if err != nil {
+		log.Println("error updating user document:", err)
+		return err
+	}
+
+	// Update the cache with the modified user data
+	UserCache[username] = CacheData{userData, time.Now()}
+
+	return nil
 }
