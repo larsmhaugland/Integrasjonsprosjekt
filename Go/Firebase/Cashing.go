@@ -4,6 +4,7 @@ import "time"
 
 var UserCache map[string]CacheData
 var RecipeCache map[string]CacheData
+var GroupCache map[string]CacheData
 
 func InitCache() {
 	UserCache = make(map[string]CacheData)
