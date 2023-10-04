@@ -3,7 +3,13 @@
     Log in
 */
 //TEST
-const API_IP = "https://" + window.location.hostname + ":8080";
+let API_IP = "";
+if (window.location.hostname === "localhost"){
+     API_IP = "http://" + window.location.hostname + ":8080";
+} else{
+    API_IP = "https://" + window.location.hostname + ":8080";
+}
+
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "block";});

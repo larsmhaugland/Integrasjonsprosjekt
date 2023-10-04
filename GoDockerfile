@@ -1,18 +1,32 @@
-FROM golang:alpine
-MAINTAINER  noen
+FROM golang:alpine as builder
 
 #Copy project to container
-COPY Go /GoApp
+COPY Go/go.mod /GoApp/go.mod
+COPY Go/go.sum /GoApp/go.sum
 
 #Set working directory
+WORKDIR /GoApp
+
+RUN go mod download
+
+COPY Go /GoApp
+#Build the Go app
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /GoApp/main .
+
+#Add certs
+RUN apk --update add ca-certificates
+
+#Build a small image with the binary and HTTPS certificates
+FROM scratch
+COPY --from=builder /GoApp/main /GoApp/main
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY Go/HTTPS/ /GoApp/HTTPS/
+COPY Go/Firebase/service-account.json /GoApp/Firebase/service-account.json
+
 WORKDIR /GoApp
 
 #Expose port 8080
 EXPOSE 8080
 
-#Build and run the app
-RUN cd /GoApp
-#RUN go mod tidy
-RUN go build -o main main.go
-
 ENTRYPOINT ["/GoApp/main"]
+CMD ["-https"]

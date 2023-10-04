@@ -1,6 +1,9 @@
 package API
 
-import "net/http"
+import (
+	"net/http"
+	"prog-2052/Firebase"
+)
 
 func ShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	SetCORSHeaders(w)
@@ -26,7 +29,34 @@ func ShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	username := r.Header.Get("username")
+	if username == "" {
+		http.Error(w, "Error; No username provided", http.StatusBadRequest)
+		return
+	}
+	//Get user from cache
+	user, err := Firebase.ReturnCacheUser(username)
+	if err != nil {
+		http.Error(w, "Error while getting user: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var shoppingLists []Firebase.ShoppingList
+	//Get all shopping lists from DB using the IDs in the user struct
+	for _, shoppingListID := range user.ShoppingLists {
+		shoppingList, err := Firebase.ReturnCacheShoppingList(shoppingListID)
+		if err != nil {
+			http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		shoppingLists = append(shoppingLists, shoppingList)
+	}
+	//Encode response to body
+	err = EncodeJSONBody(w, r, shoppingLists)
+	if err != nil {
+		http.Error(w, "Error while encoding JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 }
 
 func ShoppingPostHandler(w http.ResponseWriter, r *http.Request) {

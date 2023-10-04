@@ -8,16 +8,14 @@ function retrieveGroups(){
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
-    if(groups && groups.length > 0){
-        displayGroups(groups);
+   if(groups && groups.length > 0){
+       displayGroups(groups);
     }  else {
-    let credentials = {"username": userName};
-    fetch(API_IP + "/user/groups", {
+    fetch(API_IP + `/user/groups?username=${userName}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify(credentials)
+        }
     }).then(response => {
         if (response.status === 200){
             console.log("Groups retrieved");
@@ -27,25 +25,27 @@ function retrieveGroups(){
             throw new Error("Failed to retrieve groups");
         }
     }).then(data=>{
+        console.log("Response data:", data);
         sessionStorage.setItem("groups", JSON.stringify(data));
         displayGroups(data);})
     .catch(error => {
         console.log("Error retrieving groups: " + error);
     });
-}};
+}
+}
+;
 
 /*
     DISPLAY GROUPS
 */
 function displayGroups(groups){
     let display = document.querySelector(".groups-container");
-
-    groups.forEach(group => {
-        let groupBlock = document.createElement("div");
-        groupBlock.setAttribute("id","group-block");
-        groupBlock.textContent = group.name;
-        display.appendChild(groupBlock);
-});
+       for(let i = 0; i < groups.length; i++){
+           let groupBlock = document.createElement("div");
+           groupBlock.setAttribute("id","group-block");
+           groupBlock.textContent = groups[i].name;
+           display.appendChild(groupBlock);
+    };
 };
 
 /*
@@ -75,12 +75,12 @@ btn.addEventListener("click",(event)=> {event.preventDefault();
 */
 function newGroup(groupName){
     let credentials = {"name": groupName, "owner": sessionStorage.getItem("username")};
-    fetch(API_IP + "/group/new", {
+    fetch(API_IP + "/user/groups", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(credentials)   //Add correct body
     })
         .then((response) => {
             if (response.status === 201) {

@@ -16,6 +16,8 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	switch parts[2] {
+	case http.MethodOptions: // For CORS
+		return
 	case "credentials":
 		UserCredentialBaseHandler(w, r)
 		break
@@ -26,9 +28,8 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		UserGroupBaseHandler(w, r)
 		break
 	case "search":
-		UserSearchHandler(w,r)
-	case http.MethodOptions: // For CORS
-		return
+		UserSearchHandler(w, r)
+
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -67,25 +68,30 @@ func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.Header.Get("username")
 	user, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
-		http.Error(w, "Error while getting user recipes", http.StatusBadRequest)
+		http.Error(w, "Error while getting user recipes: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	//Get parameters from URL
+	includeGroups := r.URL.Query().Get("groups")
+
 	var recipes []Firebase.Recipe
 	var groups []string
-	for _, group := range user.Groups {
-		g, err := Firebase.ReturnCacheGroup(group)
-		if err != nil {
-			http.Error(w, "Error while getting group recipes", http.StatusBadRequest)
-			return
-		}
-		for _, id := range g.Recipes {
-			recipe, err := Firebase.ReturnCacheRecipe(id)
+	if includeGroups == "true" {
+		for _, group := range user.Groups {
+			g, err := Firebase.ReturnCacheGroup(group)
 			if err != nil {
-				http.Error(w, "Error while getting recipe", http.StatusBadRequest)
+				http.Error(w, "Error while getting group recipes: "+err.Error(), http.StatusBadRequest)
 				return
 			}
-			recipes = append(recipes, recipe)
-			groups = append(groups, group)
+			for _, id := range g.Recipes {
+				recipe, err := Firebase.ReturnCacheRecipe(id)
+				if err != nil {
+					http.Error(w, "Error while getting recipe: "+err.Error(), http.StatusBadRequest)
+					return
+				}
+				recipes = append(recipes, recipe)
+				groups = append(groups, group)
+			}
 		}
 	}
 	data := map[string]interface{}{
@@ -95,7 +101,7 @@ func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = EncodeJSONBody(w, r, data)
 	if err != nil {
-		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		http.Error(w, "Error while encoding JSON body: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -147,7 +153,7 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	//Get the user credentials from the database
 	credentials, err := Firebase.ReturnCacheUser(user.Username)
 	if err != nil {
-		http.Error(w, "Error while getting user credentials", http.StatusBadRequest)
+		http.Error(w, "Error while getting user credentials"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -234,27 +240,37 @@ func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-	var user Firebase.User
-	err := DecodeJSONBody(w, r, &user)
-	if err != nil {
-		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
-		return
-	}
-	groups, err := Firebase.ReturnCacheUser(user.Username)
+	username := r.URL.Query().Get("username")
+	groups, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
 		http.Error(w, "Error while getting user groups", http.StatusBadRequest)
 		return
 	}
-	err = EncodeJSONBody(w, r, groups)
+
+	uniqueGroupIds := make(map[string]struct{})
+	var uniqueGroups []Firebase.Group
+
+	for _, groupID := range groups.Groups {
+		_, exists := uniqueGroupIds[groupID]
+		if !exists {
+			groupData, err := Firebase.ReturnCacheGroup(groupID)
+			if err != nil {
+				http.Error(w, "Error while getting group data", http.StatusBadRequest)
+				return
+			}
+			uniqueGroups = append(uniqueGroups, groupData)
+			uniqueGroupIds[groupID] = struct{}{}
+		}
+	}
+	err = EncodeJSONBody(w, r, uniqueGroups)
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
 	}
 }
 
-func UserSearchHandler(w http.ResponseWriter, r *http.Request){
-	switch r.Method{
+func UserSearchHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 	case http.MethodGet:
 		partialUsername := r.URL.Query().Get("partialUsername")
 		err, userNames := Firebase.GetUsernamesFromPartialName(partialUsername)

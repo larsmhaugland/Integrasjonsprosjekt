@@ -60,7 +60,7 @@
                     Ny oppskrift
                 </h1>
                 <a id="close-recipe-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
-                <form id="new-recipe-form" action="../Python/uploadImage.php" method="post" enctype="multipart/form-data">
+                <form id="new-recipe-form">
                     <label for="recipe-name">Navn på oppskrift<br></label>
                     <input type="text" id="recipe-name" placeholder="Skriv navn..." required>
                     <label for="recipe-description"><br>Beskrivelse<br></label>
@@ -96,10 +96,10 @@
                     <br>
                     <label for="share-with-groups">Hvilke grupper vil lagre oppskriften i?</label>
                     <div id="share-with-groups">
-                        <p>Innmat kommer</p>
+
                         <!-- Need to find out which groups the user is in -->
                     </div>
-                    <input type="submit" id="submit-new-recipe" value="Legg til oppskrift">
+                    <button id="submit-new-recipe">Legg til oppskrift</button>
                 </form>
 
             </div>
@@ -111,8 +111,9 @@
                 <button id="search-btn" class="recipe-header">Søk</button>
                 <button id="new-recipe-btn"><img id="btn-image" src="../Images/add-square.svg" alt="Add new recipe"/></button>
             </div>
-            <div id="results" class="recipe-results"></div>
-            <!-- Results get appended here -->
+            <div id="results" class="recipe-results">
+                <!-- Results get appended here -->
+            </div>
 
             <div class="recipe-nav"></div>
         </div>
@@ -121,6 +122,6 @@
 
 
 </body>
-<script src="../JS/oppskrift.js"></script>
 <script src="../JS/js.js"></script>
+<script src="../JS/oppskrift.js"></script>
 </html>
