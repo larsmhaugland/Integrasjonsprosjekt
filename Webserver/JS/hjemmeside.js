@@ -8,8 +8,8 @@ function retrieveGroups(){
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
-    if(groups && groups.length > 0){
-        displayGroups(groups);
+   if(groups && groups.length > 0){
+       displayGroups(groups);
     }  else {
     fetch(API_IP + `/user/groups?username=${userName}`, {
         method: "GET",
@@ -31,25 +31,21 @@ function retrieveGroups(){
     .catch(error => {
         console.log("Error retrieving groups: " + error);
     });
-}};
+}
+}
+;
 
 /*
     DISPLAY GROUPS
 */
 function displayGroups(groups){
     let display = document.querySelector(".groups-container");
-    let displayedGroupIDs = new Set();
-    console.log(groups)
-       groups.forEach(group => {
-           if (!displayedGroupIDs.has(group.id)) {
-               console.log("group:", group);
-               let groupBlock = document.createElement("div");
-               groupBlock.setAttribute("id","group-block");
-               groupBlock.textContent = group.name;
-               display.appendChild(groupBlock);
-                displayedGroupIDs.add(group.id);
-           }
-       });
+       for(let i = 0; i < groups.length; i++){
+           let groupBlock = document.createElement("div");
+           groupBlock.setAttribute("id","group-block");
+           groupBlock.textContent = groups[i].name;
+           display.appendChild(groupBlock);
+    };
 };
 
 /*

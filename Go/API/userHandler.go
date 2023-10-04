@@ -2,7 +2,6 @@ package API
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -254,16 +253,15 @@ func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 	for _, groupID := range groups.Groups {
 		_, exists := uniqueGroupIds[groupID]
 		if !exists {
-			fmt.Println("Processing group:", groupID)
 			groupData, err := Firebase.ReturnCacheGroup(groupID)
 			if err != nil {
 				http.Error(w, "Error while getting group data", http.StatusBadRequest)
 				return
 			}
 			uniqueGroups = append(uniqueGroups, groupData)
+			uniqueGroupIds[groupID] = struct{}{}
 		}
 	}
-	fmt.Println("Unique groups:", uniqueGroups)
 	err = EncodeJSONBody(w, r, uniqueGroups)
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
