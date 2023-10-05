@@ -1,13 +1,11 @@
 package Tests
 
 import (
-	"os"
 	"prog-2052/Firebase"
 	"testing"
 )
 
 func TestRecipeHandler(t *testing.T) {
-	os.Chdir("../")
 	Firebase.InitCache()
 	ResetUserData()
 	ResetGroupData()

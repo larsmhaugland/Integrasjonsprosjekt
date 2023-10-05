@@ -2,7 +2,6 @@ package Tests
 
 import (
 	"fmt"
-	"os"
 	"prog-2052/Firebase"
 	"testing"
 	"time"
@@ -11,7 +10,7 @@ import (
 func ResetGroupData() {
 	group, err := Firebase.ReturnCacheGroup("testgroup")
 	if err != nil {
-		fmt.Println("Error when fetching user: %v", err)
+		fmt.Println("Error when fetching user: " + err.Error())
 	}
 	group.Name = "testuser"
 	group.Members = map[string]string{"testuser": "owner"}
@@ -24,12 +23,11 @@ func ResetGroupData() {
 	group.Schedule["2020-01-01"] = Firebase.Dinner{Recipe: "testrecipe", Responsible: []string{"testuser"}}
 	err = Firebase.PatchCacheGroup(group)
 	if err != nil {
-		fmt.Println("Error when patching group: %v", err)
+		fmt.Println("Error when patching group: " + err.Error())
 	}
 }
 
 func TestGroupHandler(t *testing.T) {
-	os.Chdir("../")
 	Firebase.InitCache()
 	ResetGroupData()
 	ResetUserData()

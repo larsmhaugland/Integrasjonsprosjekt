@@ -8,16 +8,16 @@ import (
 func ResetUserData() {
 	user, err := Firebase.ReturnCacheUser("testuser")
 	if err != nil {
-		fmt.Println("Error when fetching user: %v", err)
+		fmt.Println("Error when fetching user: " + err.Error())
 	}
 	user.Username = "testuser"
 	user.Password = "testpassword"
 	user.Name = "Test User"
-	user.Recipes = []string{"testrecipe"}
-	user.ShoppingLists = []string{"testshoppinglistuser"}
-	user.Groups = []string{"testgroup"}
+	user.Recipes = []string{}
+	user.ShoppingLists = []string{}
+	user.Groups = []string{}
 	err = Firebase.PatchCacheUser(user)
 	if err != nil {
-		fmt.Println("Error when patching user: %v", err)
+		fmt.Println("Error when patching user: " + err.Error())
 	}
 }

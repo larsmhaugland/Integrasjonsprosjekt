@@ -15,6 +15,8 @@ import (
 
 func TestShoppingHandler(t *testing.T) {
 	os.Chdir("../")
+	wd, _ := os.Getwd()
+	fmt.Println("Working directory: " + wd)
 	Firebase.InitCache()
 	var shoppingListID string
 	ResetUserData()
