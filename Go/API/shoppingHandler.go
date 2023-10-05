@@ -129,7 +129,6 @@ func ShoppingPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 }
 
 /*				NOTE: Tenker vi ikke trenger denne fordi vi heller kan bare slette de fra Group eller User handler */

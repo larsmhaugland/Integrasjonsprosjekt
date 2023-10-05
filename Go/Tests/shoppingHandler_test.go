@@ -17,22 +17,8 @@ func TestShoppingHandler(t *testing.T) {
 	os.Chdir("../")
 	Firebase.InitCache()
 	var shoppingListID string
-
-	//Reset user data for testuser
-	user, err := Firebase.ReturnCacheUser("testuser")
-	if err != nil {
-		t.Errorf("Error when fetching user: %v", err)
-	}
-	user.Username = "testuser"
-	user.Password = "testpassword"
-	user.Name = "Test User"
-	user.Recipes = []string{}
-	user.ShoppingLists = []string{}
-	user.Groups = []string{}
-	err = Firebase.PatchCacheUser(user)
-	if err != nil {
-		t.Errorf("Error when patching user: %v", err)
-	}
+	ResetUserData()
+	ResetGroupData()
 
 	t.Run("TestShoppingPost", func(t *testing.T) {
 		testShoppingList := Firebase.ShoppingList{

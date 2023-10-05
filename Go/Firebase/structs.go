@@ -34,14 +34,20 @@ type Dinner struct {
 	Responsible []string `json:"responsible"`
 }
 
+type GroupRecipe struct {
+	LastEaten time.Time `json:"lastEaten"`
+	Owner     string    `json:"owner"`
+	Stored    bool      `json:"stored-in-group"`
+}
+
 type Group struct {
-	ID            string            `json:"id"`
-	Members       map[string]string `json:"members"`
-	Owner         string            `json:"owner"`
-	Name          string            `json:"name"`
-	Recipes       []string          `json:"recipes"`
-	Schedule      map[string]Dinner `json:"schedule"`
-	ShoppingLists []string          `json:"shopping-lists"`
+	ID            string                 `json:"id"`
+	Members       map[string]string      `json:"members"`
+	Owner         string                 `json:"owner"`
+	Name          string                 `json:"name"`
+	Recipes       map[string]GroupRecipe `json:"recipes"`
+	Schedule      map[string]Dinner      `json:"schedule"`
+	ShoppingLists []string               `json:"shopping-lists"`
 }
 
 type ShoppingListItem struct {

@@ -83,7 +83,7 @@ func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Error while getting group recipes: "+err.Error(), http.StatusBadRequest)
 				return
 			}
-			for _, id := range g.Recipes {
+			for id := range g.Recipes {
 				recipe, err := Firebase.ReturnCacheRecipe(id)
 				if err != nil {
 					http.Error(w, "Error while getting recipe: "+err.Error(), http.StatusBadRequest)
@@ -205,8 +205,7 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//Add the cookie to the response
 	http.SetCookie(w, &authCookie)
-	http.Error(w, "User added", http.StatusCreated)
-
+	w.WriteHeader(http.StatusCreated)
 }
 
 func UserCredentialDeleteHandler(w http.ResponseWriter, r *http.Request) {
