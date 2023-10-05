@@ -1,11 +1,7 @@
 package API
 
 import (
-	"fmt"
-	"github.com/google/uuid"
-	"io"
 	"net/http"
-	"os"
 	"prog-2052/Firebase"
 	"strings"
 )
@@ -29,13 +25,7 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 	if len(parts) >= 3 {
 		switch r.Method {
 		case http.MethodPost:
-			if parts[2] == "new" {
-				RecipePostHandler(w, r)
-			} else if parts[2] == "image" {
-				RecipeImageHandler(w, r)
-			} else {
-				http.Error(w, "Error; Invalid URL", http.StatusBadRequest)
-			}
+			RecipePostHandler(w, r)
 		case http.MethodGet:
 			RecipeGetHandler(w, r)
 			break
@@ -130,56 +120,4 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when encodingn response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-func RecipeImageHandler(w http.ResponseWriter, r *http.Request) {
-	// Parse the uploaded file
-	file, _, err := r.FormFile("file") // "file" is the name of the file input field in the request
-	if err != nil {
-		http.Error(w, "Error retrieving file", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
-	id, err := generateUniqueID()
-	if err != nil {
-		http.Error(w, "Error generating unique ID", http.StatusInternalServerError)
-		return
-	}
-	// Create a new file on the server to save the uploaded file
-	uploadedFile, err := os.Create("/Images/" + id + ".jpeg") // Specify the desired file name
-	if err != nil {
-		http.Error(w, "Unable to create the file for writing", http.StatusInternalServerError)
-		return
-	}
-	defer uploadedFile.Close()
-
-	// Copy the uploaded file to the new file on the server
-	_, err = io.Copy(uploadedFile, file)
-	if err != nil {
-		http.Error(w, "Unable to copy file", http.StatusInternalServerError)
-		return
-	}
-
-	err = EncodeJSONBody(w, r, id)
-	if err != nil {
-		http.Error(w, "Error while encoding response: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-func generateUniqueID() (string, error) {
-	// Generate a new UUID
-	uniqueID, err := uuid.NewUUID()
-	if err != nil {
-		return "", err
-	}
-
-	// Convert the UUID to a string with a specific length (e.g., 10 characters)
-	uniqueIDStr := uniqueID.String()
-	if len(uniqueIDStr) < 10 {
-		return "", fmt.Errorf("Generated ID is too short")
-	}
-
-	// Return the first 10 characters of the UUID as the unique ID
-	return uniqueIDStr[:10], nil
 }

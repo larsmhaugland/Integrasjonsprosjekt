@@ -32,7 +32,7 @@ func ShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 // ShoppingGetHandler handles GET requests to /shopping/{id}?userOrGroup={userOrGroup}
 // Returns all shopping lists for a user or group
 func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
-	userOrGroup := r.URL.Query().Get("userOrGroup")
+	userOrGroup := r.URL.Query().Get("group")
 	parts := strings.Split(r.URL.Path, "/")
 	saveToID := parts[len(parts)-1]
 	if saveToID == "" {
