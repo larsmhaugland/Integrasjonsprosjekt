@@ -37,7 +37,6 @@ type Dinner struct {
 type GroupRecipe struct {
 	LastEaten time.Time `json:"lastEaten"`
 	Owner     string    `json:"owner"`
-	Stored    bool      `json:"stored-in-group"`
 }
 
 type Group struct {

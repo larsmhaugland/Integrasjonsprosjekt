@@ -16,7 +16,7 @@ func ResetGroupData() {
 	group.Members = map[string]string{"testuser": "owner"}
 	group.Recipes = map[string]Firebase.GroupRecipe{}
 	group.Recipes = make(map[string]Firebase.GroupRecipe)
-	group.Recipes["testrecipe"] = Firebase.GroupRecipe{LastEaten: time.Now(), Owner: "testuser", Stored: true}
+	group.Recipes["testrecipe"] = Firebase.GroupRecipe{LastEaten: time.Now(), Owner: "testuser"}
 	group.ShoppingLists = []string{"testshoppinglistgroup"}
 	group.Schedule = map[string]Firebase.Dinner{}
 	group.Schedule = make(map[string]Firebase.Dinner)

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
+	"time"
 )
 
 func SetCORSHeaders(w http.ResponseWriter) {
@@ -34,7 +35,6 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		case http.MethodDelete:
 			RecipeDeleteHandler(w, r)
-			break
 		case http.MethodOptions: // For CORS
 			return
 		default:
@@ -46,13 +46,55 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	var id string
-	err := DecodeJSONBody(w, r, &id)
+	type input struct {
+		RecipeID string   `json:"recipeID"`
+		Owner    string   `json:"owner"`
+		Groups   []string `json:"groups"`
+	}
+	var data input
+	err := DecodeJSONBody(w, r, &data)
 	if err != nil {
 		http.Error(w, "Error when decoding request DELETE: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = Firebase.DeleteCacheRecipe(id)
+	user, err := Firebase.ReturnCacheUser(data.Owner)
+	if err != nil {
+		http.Error(w, "Error when fetching user: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	//Search for recipe in user
+	index := -1
+	for i, recipeID := range user.Recipes {
+		if recipeID == data.RecipeID {
+			index = i
+			break
+		}
+	}
+	//If recipe is found, remove it from user
+	if index != -1 {
+		user.Recipes = append(user.Recipes[:index], user.Recipes[index+1:]...)
+		err = Firebase.PatchCacheUser(user)
+		if err != nil {
+			http.Error(w, "Error when patching user: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	//Remove recipe from groups
+	for _, groupID := range data.Groups {
+		group, err := Firebase.ReturnCacheGroup(groupID)
+		if err != nil {
+			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		delete(group.Recipes, data.RecipeID)
+		err = Firebase.PatchCacheGroup(group)
+		if err != nil {
+			http.Error(w, "Error when patching group: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	//Remove recipe from firebase
+	err = Firebase.DeleteRecipe(data.RecipeID)
 	if err != nil {
 		http.Error(w, "Error when deleting recipe: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -74,18 +116,51 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	var recipe Firebase.Recipe
-	err := DecodeJSONBody(w, r, &recipe)
-	if err != nil {
-		http.Error(w, "Error when decoding request GET: "+err.Error(), http.StatusBadRequest)
+	group := r.URL.Query().Get("group")
+	parts := strings.Split(r.URL.Path, "/")
+	storedIn := parts[len(parts)-1]
+	if storedIn == "" {
+		http.Error(w, "Error; No id provided", http.StatusBadRequest)
 		return
 	}
-	data, err := Firebase.ReturnCacheRecipe(recipe.ID)
+	type outuput struct {
+		UserRecipes  []Firebase.Recipe `json:"userRecipes"`
+		GroupRecipes []Firebase.Recipe `json:"groupRecipes"`
+	}
+
+	var recipes outuput
+
+	user, err := Firebase.ReturnCacheUser(storedIn)
 	if err != nil {
-		http.Error(w, "Error when fetching recipe from DB: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when fetching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = EncodeJSONBody(w, r, data)
+
+	for _, recipeID := range user.Recipes {
+		recipe, err := Firebase.ReturnCacheRecipe(recipeID)
+		if err != nil {
+			http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		recipes.UserRecipes = append(recipes.UserRecipes, recipe)
+	}
+	if group == "true" {
+		g, err := Firebase.ReturnCacheGroup(storedIn)
+		if err != nil {
+			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		for recipeID := range g.Recipes {
+			recipe, err := Firebase.ReturnCacheRecipe(recipeID)
+			if err != nil {
+				http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
+		}
+	}
+
+	err = EncodeJSONBody(w, r, recipes)
 	if err != nil {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -113,6 +188,30 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := Firebase.AddRecipe(data.Recipe, data.Groups, user.ID)
 	if err != nil {
 		http.Error(w, "Error when adding recipe to firebase: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for _, groupID := range data.Groups {
+		group, err := Firebase.ReturnCacheGroup(groupID)
+		if err != nil {
+			http.Error(w, "Error when getting group: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		recipe := Firebase.GroupRecipe{
+			Owner:     user.Username,
+			LastEaten: time.Now(),
+		}
+		group.Recipes[id] = recipe
+		err = Firebase.PatchCacheGroup(group)
+		if err != nil {
+			http.Error(w, "Error when adding recipe to group: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	user.Recipes = append(user.Recipes, id)
+	err = Firebase.PatchCacheUser(user)
+	if err != nil {
+		http.Error(w, "Error when patching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	err = EncodeJSONBody(w, r, id)

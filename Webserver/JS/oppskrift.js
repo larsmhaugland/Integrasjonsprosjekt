@@ -177,12 +177,11 @@ function getGroups() {
 function getRecipes() {
     let username = sessionStorage.getItem("username");
     //if(!checkAuthToken()) return;
-    fetch(API_IP + "/user/recipes?groups=true", {
+    fetch(API_IP + "/recipes/" + username + "?groups=true", {
     //fetch("localhost:8080" + "/user/recipes?groups=true", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "username": username,
         },
     }).then(response => {
         if (response.status === 200){

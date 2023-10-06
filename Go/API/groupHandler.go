@@ -18,9 +18,6 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "members":
 		GroupMemberBaseHandler(w, r)
 		break
-	case "recipes":
-		GroupRecipeBaseHandler(w, r)
-		break
 	case "schedule":
 		GroupScheduleBaseHandler(w, r)
 		break
@@ -167,44 +164,6 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
 	}
-}
-
-func GroupRecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		GroupRecipeGetHandler(w, r)
-		break
-	case http.MethodPost:
-		GroupRecipePostHandler(w, r)
-		break
-	case http.MethodDelete:
-		GroupRecipeDeleteHandler(w, r)
-		break
-	case http.MethodPatch:
-		GroupRecipePatchHandler(w, r)
-		break
-	case http.MethodOptions: // For CORS
-		return
-	default:
-		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
-		return
-	}
-}
-
-func GroupRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func GroupRecipePostHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func GroupRecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func GroupRecipePatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
 func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {
