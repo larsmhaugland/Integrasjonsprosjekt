@@ -1,6 +1,7 @@
 let dinnerPopup = document.querySelector("#dinner-popup");
 let newDinnerBtns = document.querySelectorAll(".dinner-btn");
 let closeDinnerPopup = document.querySelector("#close-dinner-popup");
+//let textField = document.querySelector("#")
 let currentDay;
 
 let Recipes = [];
