@@ -1,6 +1,7 @@
 package API
 
 import (
+	"fmt"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -12,7 +13,7 @@ func SetCORSHeaders(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// Allow the GET, POST, PUT, DELETE, OPTIONS methods
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
 
 	// Allow the "Content-Type" and "username" header
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, username")
@@ -23,7 +24,8 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(r.URL.Path, "/")
 	SetCORSHeaders(w)
-	if len(parts) >= 3 {
+	fmt.Println(len(parts), parts)
+	if len(parts) >= 2 {
 		switch r.Method {
 		case http.MethodPost:
 			RecipePostHandler(w, r)

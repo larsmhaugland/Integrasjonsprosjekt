@@ -1,36 +1,9 @@
 retrieveGroups();
+displayGroups();
 retrieveShoppingList();
 //retrieveDinnerList();
 
-function retrieveGroups(){
 
-    //if (!checkAuthToken()) return;
-    let userName = sessionStorage.getItem("username");
-    let groups = JSON.parse(sessionStorage.getItem("groups"));
-
-    if(groups && groups.length > 0){
-        displayGroups(groups);
-    }  else {
-    fetch(API_IP + `/user/groups?username=${userName}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).then(response => {
-        if (response.status === 200){
-            console.log("Groups retrieved");
-            return response.json();
-        } else {
-            console.log("Error retrieving groups");
-            throw new Error("Failed to retrieve groups");
-        }
-    }).then(data=>{
-        sessionStorage.setItem("groups", JSON.stringify(data));
-        displayGroups(data);})
-    .catch(error => {
-        console.log("Error retrieving groups: " + error);
-    });
-}};
 
 //Add groups + user to the dropdown menu
 function displayGroups(groups){
@@ -53,14 +26,14 @@ function displayGroups(groups){
 
 //Retrieve shopping list from the database/storage session and display it
 function retrieveShoppingList() {
-   //if(!checkAuthToken()) return;
+    //if(!checkAuthToken()) return;
     let option = document.querySelector("#group-dropdown").value;
 
     if(option === "Velg gruppe"){
         return;
 
     }else if(option === sessionStorage.getItem("username")){
-        //TODO: API fetch 
+        //TODO: API fetch
         fetch(API_IP + "/shopping", {
             method: "GET",
             headers: {
@@ -99,8 +72,6 @@ function retrieveShoppingList() {
     }
 
 
-    
-    
     //TODO: find a better way to double check which group/user the storage session is for
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist"));
 
@@ -153,7 +124,7 @@ function displayDinner(dinner){
 let submit = document.querySelector("#newitemtxt");
 submit.addEventListener("keydown", (event)=> {
     if (event.
-        key == "Enter") {
+        key === "Enter") {
         addNewItemToList();
         event.preventDefault(); 
         submit.value = "";
@@ -185,7 +156,7 @@ function addNewItemToList(){
 
 let list = document.querySelector("#shopping-list");
 list.addEventListener("click", (event) => {
-    if(event.target.id == "checkbox"){
+    if(event.target.id === "checkbox"){
         removeItemFromList();
     }
 });
