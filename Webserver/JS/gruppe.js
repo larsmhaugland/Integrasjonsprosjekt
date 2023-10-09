@@ -1,13 +1,15 @@
 const groupMembersList = document.querySelector("#group-members-list");
 //const API_IP = "https://" + window.location.hostname + ":8080";
 const editButton = document.getElementById("edit-button");
-
+const groupNameElement = document.getElementById("group-name");
 const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
 var groupID;
 
 window.onload = function () {
     groupID = tmpGroupID; 
     fetchGroupMembers(groupID);
+    groupName = getGroupName(groupID);
+    groupNameElement.textContent = "Settings for: " + groupName;
 };
 
 // Add a click event listener to the button
