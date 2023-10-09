@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeModalButton = modal.querySelector(".close");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
-    const groupMembersList = document.querySelector("#group-members-list");
+    const groupMembersListSettings = document.querySelector("#group-members-list-settings");
     const roles = ['Owner', 'Administrator', 'Member'];
     const deleteGroupButton = document.querySelector("#delete-group");
     var GroupOwner;
@@ -203,8 +203,14 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderGroupMembers(groupMembers) {
 
         // Clear existing members (if any)
-        while (groupMembersList.firstChild) {
-            groupMembersList.removeChild(groupMembersList.firstChild);
+        if (groupMembersListSettings) {
+            // safely access groupMembersList properties and perform operations on it
+            while (groupMembersListSettings.firstChild) {
+                groupMembersListSettings.removeChild(groupMembersListSettings.firstChild);
+            }
+        } else {
+            // Handle the case where groupMembersList is null or doesn't exist
+            console.error("groupMembersListSettings is null or doesn't exist.");
         }
 
         // Iterate through the group members and create the corresponding list items
@@ -264,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
             listItem.appendChild(deleteButton);
 
             // Append the list item to the group members list
-            groupMembersList.appendChild(listItem);
+            groupMembersListSettings.appendChild(listItem);
         });
     }
 
