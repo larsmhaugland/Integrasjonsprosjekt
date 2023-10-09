@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
             username: username,
             groupName: groupName,
         });
-        // Send a POST request to the backend
+        // Send a POST request to the backend f
         fetch(url, {
             method: "POST",
             headers: {
