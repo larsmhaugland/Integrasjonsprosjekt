@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const roles = ['Owner', 'Administrator', 'Member'];
     const deleteGroupButton = document.querySelector("#delete-group");
     var GroupOwner;
-    const API_IP = "https://" + window.location.hostname + ":8080";
+    //const API_IP = "https://" + window.location.hostname + ":8080";
     const Username = sessionStorage.getItem("username");
     const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";

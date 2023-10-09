@@ -1,5 +1,5 @@
 const groupMembersList = document.querySelector("#group-members-list");
-const API_IP = "https://" + window.location.hostname + ":8080";
+//const API_IP = "https://" + window.location.hostname + ":8080";
 const editButton = document.getElementById("edit-button");
 
 const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
