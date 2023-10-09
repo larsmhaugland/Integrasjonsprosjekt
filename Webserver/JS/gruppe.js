@@ -5,11 +5,13 @@ const groupNameElement = document.getElementById("group-name");
 const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
 var groupID;
 
-window.onload = function () {
+// Needed to make it async because getGroupName is async and the fetch in it would not finish before 
+// the group name was set in the html so it became undefined.
+window.onload = async function () {
     groupID = tmpGroupID; 
-    fetchGroupMembers(groupID);
-    groupName = getGroupName(groupID);
+    const groupName = await getGroupName(groupID);
     groupNameElement.textContent = "Settings for: " + groupName;
+    fetchGroupMembers(groupID);
 };
 
 // Add a click event listener to the button
@@ -20,17 +22,20 @@ editButton.addEventListener("click", function () {
     window.location.href = url;
 });
 
-function getGroupName(groupID){
+// Needs to be async because it uses await to wait for the response from the server before returning the data.
+async function getGroupName(groupID){
     const url = `${API_IP}/group/groupName?groupID=${groupID}`;
-    fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
         return data;
-    })
-    .catch((error) => {
+    } catch (error) {
         console.error("Error:", error);
-        alert("Server error occured, could not get the group name.");
-    });
+        alert("Server error occurred, could not get the group name.");
+    }
 }
 
 // Function to fetch group members data

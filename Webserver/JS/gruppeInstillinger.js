@@ -21,9 +21,11 @@ document.addEventListener("DOMContentLoaded", function () {
     var groupName;
     const Administrators = [];
 
-    window.onload = function () {
-        groupID = getUrlParameter("groupID"); 
-        groupName = getGroupName(groupID);
+    // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
+    // the group name was set in the html so it became undefined.
+    window.onload = async function () {
+        groupID = tmpGroupID; 
+        const groupName = await getGroupName(groupID);
         groupNameElement.textContent = "Settings for: " + groupName;
         fetchGroupMembers(groupID);
     };
@@ -83,19 +85,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Get group name from backend
-    function getGroupName(groupID){
+    // Needs to be async because it uses await to wait for the response from the server before returning the data.
+    async function getGroupName(groupID){
         const url = `${API_IP}/group/groupName?groupID=${groupID}`;
-        fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
             return data;
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error("Error:", error);
-            alert("Server error occured, could not get the group name.");
-        });
+            alert("Server error occurred, could not get the group name.");
+        }
     }
+
 
     // Handle search input changes
     searchInput.addEventListener("input", function () {
