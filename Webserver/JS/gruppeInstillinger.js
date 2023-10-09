@@ -276,7 +276,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (member.roleName.toLowerCase() === "administrator"){
                 Administrators.push(member.username);
-                console.log(Administrators);
             }
              // Create the delete button
             const deleteButton = document.createElement('button');
@@ -297,6 +296,10 @@ document.addEventListener("DOMContentLoaded", function () {
             // Append the list item to the group members list
             groupMembersListSettings.appendChild(listItem);
         });
+        const addMemberButton = document.createElement('button');
+        addMemberButton.textContent = 'Legg til medlem';
+        addMemberButton.id = 'add-member-btn';
+        groupMembersListSettings.appendChild(addMemberButton);
     }
 
     /**
@@ -304,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} username username to delete from the group
      */
     function deleteMember(username) {
-        if (LoggedInUsername != GroupOwner || !Administrators.includes(username)){
+        if (LoggedInUsername != GroupOwner || !Administrators.includes(LoggedInUsername)){
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
