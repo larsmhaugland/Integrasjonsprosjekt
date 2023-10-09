@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const roles = ['Owner', 'Administrator', 'Member'];
     const deleteGroupButton = document.querySelector("#delete-group");
     var GroupOwner;
-    //const API_IP = "https://" + window.location.hostname + ":8080";
     const LoggedInUsername = sessionStorage.getItem("username");
-    const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
+    let selectElementValue = "member";
+    //const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
     var groupID;
     const Administrators = [];
@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} groupID - ID of the group the user will be added to
      */
     function addMemberToGroup(username, groupID) {
-        if (LoggedInUsername != GroupOwner || !administrators.includes(username)){
+        if (LoggedInUsername != GroupOwner || !Administrators.includes(username)){
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
@@ -252,6 +252,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 option.textContent = role;
                 select.appendChild(option);
             });
+            
+            // To store the value before it is changed in case member trying to update is not Owner
+            select.addEventListener('focus', () => {
+                initialValue = select.value;
+            });
 
             select.addEventListener('change', (event) => {
                 // Get the selected role from the dropdown menu
@@ -261,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const parentElement = select.parentElement;
                 const username = parentElement.querySelector("span").textContent;
                 
-                updateRoleForMember(username, selectedRole);
+                updateRoleForMember(username, selectedRole, initialValue);
             })
             
             // Set the selected option based on the member's role
@@ -299,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} username username to delete from the group
      */
     function deleteMember(username) {
-        if (LoggedInUsername != GroupOwner || !administrators.includes(username)){
+        if (LoggedInUsername != GroupOwner || !Administrators.includes(username)){
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
@@ -330,8 +335,24 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} username - username to update the role for
      * @param {*} newRole - new role for the username
      */
-    function updateRoleForMember(username, newRole){
+    function updateRoleForMember(username, newRole, initialValue){
         if (LoggedInUsername != GroupOwner){
+            // Get the list items inside the ul element
+            const listItems = groupSettingsListElement.querySelectorAll("li");
+            listItems.forEach((listItem) => {
+                // Find the Span and Select elements inside the list item
+                const usernameSpan = listItem.querySelector("span");
+                const roleSelect = listItem.querySelector(".role-dropdown");
+
+                // Get the username from the Span element
+                const username = usernameSpan.textContent;
+
+                // Check if the username matches the target username
+                if (username === usernameToMatch) {
+                    // Set the Select element value to the initial value
+                    roleSelect.value = initialValue;
+                }
+            });
             alert("Only the owner can update the role of a member");
             return;
         }
