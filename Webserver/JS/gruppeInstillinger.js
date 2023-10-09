@@ -1,4 +1,3 @@
-
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
@@ -14,11 +13,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const API_IP = "https://" + window.location.hostname + ":8080";
     const Username = sessionStorage.getItem("username");
     const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
-    /*
+    const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
+    
     window.onload = function () {
-        const groupID = 'your_group_id'; 
+        const groupID = tmpGroupID; 
         fetchGroupMembers(groupID);
-    };*/
+    };
     
     // Open the modal when the button is clicked
     openAddMemberButton.addEventListener('click', function () {
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Add an event listener to handle adding a member to the group when clicking the icon
         addButton.addEventListener("click", function () {
             const username = addButton.parentElement.querySelector("span").textContent;
-            const groupID = "Hunnsvegen 14B"; // TODO: Must be changed to the actual dynamic groupID
+            const groupID = tmpGroupID; // TODO: Must be changed to the actual dynamic groupID
             addMemberToGroup(username, groupID);
         });
 
@@ -133,6 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
         memberSuggestionsList.appendChild(listItem);
     });
     }
+
     /**
      * Adds the correct user to the group by sending a POST request to the backend that
      * then communicates and correctly adds the user to the group in the database.
@@ -185,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Error when trying to get the group members from the databse")
         });
     } 
+
     
     /**
      * Creates all the html elements to render for each group memeber and also gives them the correct
@@ -264,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} username username to delete from the group
      */
     function deleteMember(username) {
-        const groupID = 'your_group_id'; // TODO get current group id
+        const groupID = tmpGroupID; // TODO get current group id
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
     
         fetch(url, {
@@ -292,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} newRole - new role for the username
      */
     function updateRoleForMember(username, newRole){
-        const groupID = "update this" // TODO dynamic group id
+        const groupID = tmpGroupID// TODO dynamic group id
         const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
         fetch(url, {
             method: 'PATCH',
