@@ -98,6 +98,12 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} results - The usernames of the users that corresponded to the search
      */
     function updateMemberSuggestions(results) {
+
+        // Make sure results are valid
+        if (!results || results.length === 0) {
+            return;
+        }
+        
         // Clear existing suggestions
         while (memberSuggestionsList.firstChild) {
             memberSuggestionsList.removeChild(memberSuggestionsList.firstChild);
