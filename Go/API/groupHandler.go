@@ -30,6 +30,9 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "deleteGroup":
 		DeleteGroup(w, r)
 		break
+	case "groupName":
+		GetGroupName(w, r)
+		break
 	default:
 		http.Error(w, "Error; Endpoint not supported", http.StatusBadRequest)
 		return
@@ -47,6 +50,25 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		}
 		// Respond with a success or error status
 		w.WriteHeader(http.StatusOK)
+	} else {
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
+	}
+}
+func GetGroupName(w http.ResponseWriter, r *http.Request) {
+ 
+	if r.Method == http.MethodGet { 
+		groupID := r.URL.Query().Get("groupID")
+		
+		groupName, err := Firebase.GetGroupName(groupID)
+		if err != nil {
+			http.Error(w, "Could not get the group name", http.StatusInternalServerError)
+		}
+
+		err = EncodeJSONBody(w, r, groupName)
+		if err != nil {
+			http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+			return
+		}
 	} else {
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 	}

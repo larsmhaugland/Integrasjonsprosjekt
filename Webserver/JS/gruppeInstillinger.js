@@ -1,23 +1,30 @@
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
+    
     const modal = document.querySelector("#search-member-modal");
     //const openAddMemberButton = document.querySelector("#add-member-btn");
     const closeModalButton = modal.querySelector(".close");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
     const groupMembersListSettings = document.querySelector("#group-members-list-settings");
-    const roles = ['Owner', 'Administrator', 'Member'];
     const deleteGroupButton = document.querySelector("#delete-group");
-    var GroupOwner;
     const LoggedInUsername = sessionStorage.getItem("username");
+    const groupNameElement = document.querySelector("#group-name");
+
    // let selectElementValue = "member";
     //const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
+    const roles = ['Owner', 'Administrator', 'Member'];
     var groupID;
+    var GroupOwner;
+    var groupName;
     const Administrators = [];
+
     window.onload = function () {
         groupID = getUrlParameter("groupID"); 
+        groupName = getGroupName(groupID);
+        groupNameElement.textContent = "Settings for: " + groupName;
         fetchGroupMembers(groupID);
     };
     
@@ -73,6 +80,20 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch((error) => {
             console.error("Error:", error);
             alert("Server error occured, could not delete the group.");
+        });
+    }
+
+    // Get group name from backend
+    function getGroupName(groupID){
+        const url = `${API_IP}/group/getGroupName?groupID=${groupID}`;
+        fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            return data;
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("Server error occured, could not get the group name.");
         });
     }
 
