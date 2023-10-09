@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle search input changes
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.trim();
-        const url = `${API_IP}/search?partialUsername=${query}`;
+        const url = `${API_IP}/user/search?partialUsername=${query}`;
         // Send a GET request to the firestore database via GO
         fetch(url)
             .then(response => response.json())
@@ -312,7 +312,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch(url, {
             method: 'PATCH',
         })
-            .then((repsonse) => {
+            .then((response) => {
                 if (response.status === 200) {
                     console.log("Role of group member updated");
                 } else {
