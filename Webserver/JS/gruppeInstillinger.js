@@ -336,9 +336,9 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} newRole - new role for the username
      */
     function updateRoleForMember(username, newRole, initialValue){
-        if (LoggedInUsername != GroupOwner){
+        if (LoggedInUsername != GroupOwner || !Administrators.includes(username)){
             // Get the list items inside the ul element
-            const listItems = groupSettingsListElement.querySelectorAll("li");
+            const listItems = groupMembersListSettings.querySelectorAll("li");
             listItems.forEach((listItem) => {
                 // Find the Span and Select elements inside the list item
                 const usernameSpan = listItem.querySelector("span");
