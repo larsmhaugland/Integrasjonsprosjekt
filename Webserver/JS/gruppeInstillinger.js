@@ -342,6 +342,8 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} newRole - new role for the username
      */
     function updateRoleForMember(username, newRole, initialValue){
+        console.log("LoggedInUsername:" + LoggedInUsername);
+        console.log("Administrators: " + Administrators);
         if (LoggedInUsername != GroupOwner || !Administrators.includes(LoggedInUsername)){
             // Get the list items inside the ul element
             const listItems = groupMembersListSettings.querySelectorAll("li");
