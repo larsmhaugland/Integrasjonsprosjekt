@@ -186,10 +186,11 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 
 	// Get the documents where the partialUsername is found in the username field.
 	// Using Where twice is like using && in if statemnets
-	iter := client.Collection("users").
-		Where("username", ">=", partialUsername).
-		Where("username", "<", partialUsername+"\uf8ff").Documents(ctx)
+	collection := client.Collection("users")
+	query := collection.Where("username", ">=", partialUsername).
+		Where("username", "<", partialUsername + "\uf8ff")
 
+	iter := query.Documents(ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {

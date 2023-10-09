@@ -102,15 +102,19 @@ document.addEventListener("DOMContentLoaded", function () {
      */
     function updateMemberSuggestions(results) {
 
-        // Make sure results are valid
-        if (!results || results.length === 0) {
-            return;
-        }
-        
         // Clear existing suggestions
         while (memberSuggestionsList.firstChild) {
             memberSuggestionsList.removeChild(memberSuggestionsList.firstChild);
         }
+
+        // If there were no matching members dsiplay a message to the user
+        if (results.length === 0) {
+            const noResultsMessage = document.createElement("p");
+            noResultsMessage.textContent = "No matching results found.";
+            memberSuggestionsList.appendChild(noResultsMessage);
+            return;
+        }
+        
         // Populate the suggestions list with results
         results.forEach(function (username) {
         const listItem = document.createElement("li");

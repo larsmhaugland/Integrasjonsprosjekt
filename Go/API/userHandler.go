@@ -199,9 +199,9 @@ func UserSearchHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		partialUsername := r.URL.Query().Get("partialUsername")
-		err, userNames := Firebase.GetUsernamesFromPartialName(partialUsername)
+		userNames, err := Firebase.GetUsernamesFromPartialName(partialUsername)
 		if err != nil {
-			http.Error(w, "Could not find usernames that match input username from the database", http.StatusBadRequest)
+			http.Error(w, "Error querying firebase for usernames", http.StatusInternalServerError)
 			return
 		}
 
