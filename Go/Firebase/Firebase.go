@@ -1,15 +1,16 @@
 package Firebase
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
 	"errors"
-	firebase "firebase.google.com/go"
-	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	"log"
 	"os"
 	"time"
+
+	"cloud.google.com/go/firestore"
+	firebase "firebase.google.com/go"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // CUSTOM ERROR CODES
@@ -61,6 +62,7 @@ func GetUserData(userID string) (User, error) {
 			return User{}, err
 		}
 		err = doc.DataTo(&user)
+		user.DocumentID = doc.Ref.ID
 		if err != nil {
 			log.Println("Error converting document:", err)
 			return User{}, err
@@ -358,7 +360,7 @@ func DeleteMemberFromGroup(groupID string, username string) error {
 	UserCache[username] = CacheData{userData, time.Now()}
 
 	// Update the Firestore document with the modified groups list
-	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "groups", Value: updatedGroups},
 	})
 	if err != nil {

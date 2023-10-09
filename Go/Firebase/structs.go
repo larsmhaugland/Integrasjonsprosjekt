@@ -27,6 +27,7 @@ type User struct {
 	ShoppingLists []string `json:"shopping-lists"`
 	Recipes       []string `json:"recipes"`
 	Name          string   `json:"name"`
+	DocumentID    string   `json:"documentID"`
 }
 
 type Dinner struct {
