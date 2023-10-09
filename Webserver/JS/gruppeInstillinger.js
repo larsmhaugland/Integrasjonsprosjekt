@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeModalButton = modal.querySelector(".close");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
-    const groupMembersList = document.querySelector("#member-list");
+    const groupMembersList = document.querySelector("#group-members-list");
     const roles = ['Owner', 'Administrator', 'Member'];
     const deleteGroupButton = document.querySelector("#delete-group");
     var GroupOwner;
