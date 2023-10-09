@@ -11,10 +11,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const deleteGroupButton = document.querySelector("#delete-group");
     var GroupOwner;
     //const API_IP = "https://" + window.location.hostname + ":8080";
-    const Username = sessionStorage.getItem("username");
+    const LoggedInUsername = sessionStorage.getItem("username");
     const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
     var groupID;
+    const Administrators = [];
     window.onload = function () {
         groupID = getUrlParameter("groupID"); 
         fetchGroupMembers(groupID);
@@ -49,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function deleteGroup(groupID) {
         const url = `${API_IP}/group/deleteGroup?groupID=${groupID}`;
         const redirectURL = "../index.html";
-        if (Username != GroupOwner){
+        if (LoggedInUsername != GroupOwner){
             alert("Only the owner can delete the group");
             return;
         }
@@ -161,12 +162,16 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} groupID - ID of the group the user will be added to
      */
     function addMemberToGroup(username, groupID) {
-        const url = API_IP + "/group/members"   
-
+        if (LoggedInUsername != GroupOwner || !administrators.includes(username)){
+            alert("Only an owner or administrator can add a member to the group");
+            return;
+        }
+        const url = `${API_IP}/group/members`;
+        
         // Request body with the information needed for the backend to correctly add member to group
         const requestBody = JSON.stringify({
             username: username,
-            groupName: groupName,
+            groupID: groupID,
         });
         // Send a POST request to the backend f
         fetch(url, {
@@ -217,7 +222,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Clear existing members (if any)
         if (groupMembersListSettings) {
-            // safely access groupMembersList properties and perform operations on it
             while (groupMembersListSettings.firstChild) {
                 groupMembersListSettings.removeChild(groupMembersListSettings.firstChild);
             }
@@ -266,6 +270,9 @@ document.addEventListener("DOMContentLoaded", function () {
             if (member.roleName.toLowerCase() === "owner"){
                 GroupOwner = member.username;
             }
+            if (member.roleName.toLowerCase() === "administrator"){
+                Administrators.push(member.username);
+            }
              // Create the delete button
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Fjern medlem';
@@ -292,6 +299,10 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} username username to delete from the group
      */
     function deleteMember(username) {
+        if (LoggedInUsername != GroupOwner || !administrators.includes(username)){
+            alert("Only an owner or administrator can add a member to the group");
+            return;
+        }
         const groupID = tmpGroupID; // TODO get current group id
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
     
@@ -320,6 +331,10 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} newRole - new role for the username
      */
     function updateRoleForMember(username, newRole){
+        if (LoggedInUsername != GroupOwner){
+            alert("Only the owner can update the role of a member");
+            return;
+        }
         const groupID = tmpGroupID// TODO dynamic group id
         const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
         fetch(url, {

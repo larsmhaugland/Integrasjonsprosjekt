@@ -69,7 +69,7 @@ type CacheData struct {
 
 type AddGroupMember struct {
 	Username  string `json:"username"`
-	GroupName string `json:"groupName"`
+	GroupID string `json:"groupID"`
 }
 
 type GroupMemberNameRole struct {

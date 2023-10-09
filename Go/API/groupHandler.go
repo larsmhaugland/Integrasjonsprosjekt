@@ -133,13 +133,13 @@ func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupName)
+	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupID)
 	if err != nil {
 		http.Error(w, "Could not add user to the group", http.StatusBadRequest)
 		return
 	}
 
-	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupName)
+	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupID)
 	if err != nil {
 		http.Error(w, "Could not add the group to the user", http.StatusBadRequest)
 		return

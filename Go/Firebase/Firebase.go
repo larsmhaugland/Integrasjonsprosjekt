@@ -188,7 +188,7 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 	// Using Where twice is like using && in if statemnets
 	collection := client.Collection("users")
 	query := collection.Where("username", ">=", partialUsername).
-		Where("username", "<", partialUsername + "\uf8ff")
+		Where("username", "<", partialUsername+"\uf8ff")
 
 	iter := query.Documents(ctx)
 	for {
@@ -626,9 +626,9 @@ func DeleteShoppingList(listID string) error {
 /*****************				TODOS				*****************/
 
 // TODO: THis function and the one underneath are extremly similair and should be made into one
-func AddUserToGroup(username string, groupName string) error {
+func AddUserToGroup(username string, groupID string) error {
 	// Get the group data from cache (check ReturnCacheGroup documentation)
-	groupData, err := ReturnCacheGroup(groupName)
+	groupData, err := ReturnCacheGroup(groupID)
 	if err != nil {
 		log.Println("error getting group data from cache:", err)
 		return err
@@ -642,7 +642,7 @@ func AddUserToGroup(username string, groupName string) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("groups").Doc(groupName).Update(ctx, []firestore.Update{
+	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
 		{Path: "members", Value: groupData.Members},
 	})
 	if err != nil {
@@ -651,14 +651,14 @@ func AddUserToGroup(username string, groupName string) error {
 	}
 
 	// Update the cache with the modified group data
-	GroupCache[groupName] = CacheData{groupData, time.Now()}
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
 
 	return nil
 
 }
 
 // TODO: THis function and the one above are extremly similair and should be made into one
-func AddGroupToUser(username string, groupName string) error {
+func AddGroupToUser(username string, groupID string) error {
 	// Get the user data from cache (check ReturnCacheUser documentation)
 	userData, err := ReturnCacheUser(username)
 	if err != nil {
@@ -666,7 +666,7 @@ func AddGroupToUser(username string, groupName string) error {
 		return err
 	}
 	// Add the new group to the user's groups list
-	userData.Groups = append(userData.Groups, groupName)
+	userData.Groups = append(userData.Groups, groupID)
 
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
