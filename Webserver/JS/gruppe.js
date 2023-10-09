@@ -20,6 +20,19 @@ editButton.addEventListener("click", function () {
     window.location.href = url;
 });
 
+function getGroupName(groupID){
+    const url = `${API_IP}/group/groupName?groupID=${groupID}`;
+    fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+        return data;
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+        alert("Server error occured, could not get the group name.");
+    });
+}
+
 // Function to fetch group members data
 function fetchGroupMembers(groupID) {
     const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
