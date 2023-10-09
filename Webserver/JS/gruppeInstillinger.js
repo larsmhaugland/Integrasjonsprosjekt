@@ -233,7 +233,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Iterate through the group members and create the corresponding list items
         groupMembers.forEach((member) => {
             const listItem = document.createElement('li');
-
             const img = document.createElement('img');
             img.src = '../Images/person-icon-transparent.png';
             img.alt = `Member ${member.username}`;
@@ -277,6 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (member.roleName.toLowerCase() === "administrator"){
                 Administrators.push(member.username);
+                console.log(Administrators);
             }
              // Create the delete button
             const deleteButton = document.createElement('button');
