@@ -345,10 +345,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 const roleSelect = listItem.querySelector(".role-dropdown");
 
                 // Get the username from the Span element
-                const username = usernameSpan.textContent;
+                const nameForElement = usernameSpan.textContent;
 
                 // Check if the username matches the target username
-                if (username === usernameToMatch) {
+                if (nameForElement === username) {
                     // Set the Select element value to the initial value
                     roleSelect.value = initialValue;
                 }
