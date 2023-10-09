@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
     var groupID;
     window.onload = function () {
-        groupID = tmpGroupID; 
+        groupID = getUrlParameter("groupID"); 
         fetchGroupMembers(groupID);
     };
     
@@ -34,6 +34,13 @@ document.addEventListener("DOMContentLoaded", function () {
         deleteGroup(groupID)
     })
     
+
+    // Function to retrieve URL parameter by name
+    function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name) || '';
+    }
+
     /**
      * Sends a DELETE request to the backend endpoint, that deletes the group specified
      * @param {*} groupID - ID of the group to be deleted.
