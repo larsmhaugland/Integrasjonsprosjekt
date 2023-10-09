@@ -675,7 +675,7 @@ func AddGroupToUser(username string, groupID string) error {
 		return err
 	}
 	// Add the new group to the users groups field
-	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "groups", Value: userData.Groups},
 	})
 	if err != nil {
