@@ -1,15 +1,16 @@
 package Firebase
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
 	"errors"
-	firebase "firebase.google.com/go"
-	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	"log"
 	"os"
 	"time"
+
+	"cloud.google.com/go/firestore"
+	firebase "firebase.google.com/go"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // CUSTOM ERROR CODES
@@ -61,6 +62,7 @@ func GetUserData(userID string) (User, error) {
 			return User{}, err
 		}
 		err = doc.DataTo(&user)
+		user.DocumentID = doc.Ref.ID
 		if err != nil {
 			log.Println("Error converting document:", err)
 			return User{}, err
@@ -184,10 +186,11 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 
 	// Get the documents where the partialUsername is found in the username field.
 	// Using Where twice is like using && in if statemnets
-	iter := client.Collection("users").
-		Where("username", ">=", partialUsername).
-		Where("username", "<", partialUsername+"\uf8ff").Documents(ctx)
+	collection := client.Collection("users")
+	query := collection.Where("username", ">=", partialUsername).
+		Where("username", "<", partialUsername+"\uf8ff")
 
+	iter := query.Documents(ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -358,7 +361,7 @@ func DeleteMemberFromGroup(groupID string, username string) error {
 	UserCache[username] = CacheData{userData, time.Now()}
 
 	// Update the Firestore document with the modified groups list
-	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "groups", Value: updatedGroups},
 	})
 	if err != nil {
@@ -623,9 +626,9 @@ func DeleteShoppingList(listID string) error {
 /*****************				TODOS				*****************/
 
 // TODO: THis function and the one underneath are extremly similair and should be made into one
-func AddUserToGroup(username string, groupName string) error {
+func AddUserToGroup(username string, groupID string) error {
 	// Get the group data from cache (check ReturnCacheGroup documentation)
-	groupData, err := ReturnCacheGroup(groupName)
+	groupData, err := ReturnCacheGroup(groupID)
 	if err != nil {
 		log.Println("error getting group data from cache:", err)
 		return err
@@ -639,7 +642,7 @@ func AddUserToGroup(username string, groupName string) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("groups").Doc(groupName).Update(ctx, []firestore.Update{
+	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
 		{Path: "members", Value: groupData.Members},
 	})
 	if err != nil {
@@ -648,14 +651,14 @@ func AddUserToGroup(username string, groupName string) error {
 	}
 
 	// Update the cache with the modified group data
-	GroupCache[groupName] = CacheData{groupData, time.Now()}
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
 
 	return nil
 
 }
 
 // TODO: THis function and the one above are extremly similair and should be made into one
-func AddGroupToUser(username string, groupName string) error {
+func AddGroupToUser(username string, groupID string) error {
 	// Get the user data from cache (check ReturnCacheUser documentation)
 	userData, err := ReturnCacheUser(username)
 	if err != nil {
@@ -663,7 +666,7 @@ func AddGroupToUser(username string, groupName string) error {
 		return err
 	}
 	// Add the new group to the user's groups list
-	userData.Groups = append(userData.Groups, groupName)
+	userData.Groups = append(userData.Groups, groupID)
 
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -672,7 +675,7 @@ func AddGroupToUser(username string, groupName string) error {
 		return err
 	}
 	// Add the new group to the users groups field
-	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "groups", Value: userData.Groups},
 	})
 	if err != nil {

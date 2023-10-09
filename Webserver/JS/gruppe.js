@@ -1,10 +1,22 @@
 const groupMembersList = document.querySelector("#group-members-list");
-const API_IP = "https://" + window.location.hostname + ":8080";
+//const API_IP = "https://" + window.location.hostname + ":8080";
+const editButton = document.getElementById("edit-button");
+
+const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
+var groupID;
 
 window.onload = function () {
-    const groupID = 'your_group_id'; // TODO dynamic group id
+    groupID = tmpGroupID; 
     fetchGroupMembers(groupID);
 };
+
+// Add a click event listener to the button
+editButton.addEventListener("click", function () {
+    // Construct the URL with the groupID parameter
+    const url = `groupSettings.html?groupID=${encodeURIComponent(groupID)}`;
+    // Redirect to the groupSettings.html page with the groupID parameter
+    window.location.href = url;
+});
 
 // Function to fetch group members data
 function fetchGroupMembers(groupID) {

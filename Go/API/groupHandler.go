@@ -133,13 +133,13 @@ func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupName)
+	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupID)
 	if err != nil {
 		http.Error(w, "Could not add user to the group", http.StatusBadRequest)
 		return
 	}
 
-	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupName)
+	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupID)
 	if err != nil {
 		http.Error(w, "Could not add the group to the user", http.StatusBadRequest)
 		return
@@ -152,8 +152,8 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the groupID from the query parameters
 	groupID := r.URL.Query().Get("groupID")
 
-	// Fetch and prepare the group members' data based on the groupID
-	groupMembersData, err := Firebase.GetGroupMembers(groupID) // Implement this function
+	// Fetch and prepare the group members data based on the groupID
+	groupMembersData, err := Firebase.GetGroupMembers(groupID) 
 	if err != nil {
 		http.Error(w, "Could not get the name and roles of the group members", http.StatusInternalServerError)
 		return
@@ -163,7 +163,7 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
-	}
+	}	
 }
 
 func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {

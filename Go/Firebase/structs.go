@@ -27,6 +27,7 @@ type User struct {
 	ShoppingLists []string `json:"shopping-lists"`
 	Recipes       []string `json:"recipes"`
 	Name          string   `json:"name"`
+	DocumentID    string   `json:"documentID"`
 }
 
 type Dinner struct {
@@ -68,7 +69,7 @@ type CacheData struct {
 
 type AddGroupMember struct {
 	Username  string `json:"username"`
-	GroupName string `json:"groupName"`
+	GroupID string `json:"groupID"`
 }
 
 type GroupMemberNameRole struct {
