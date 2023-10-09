@@ -2,7 +2,7 @@
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
     const modal = document.querySelector("#search-member-modal");
-    const openAddMemberButton = document.querySelector("#add-member-btn");
+    //const openAddMemberButton = document.querySelector("#add-member-btn");
     const closeModalButton = modal.querySelector(".close");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const deleteGroupButton = document.querySelector("#delete-group");
     var GroupOwner;
     const LoggedInUsername = sessionStorage.getItem("username");
-    let selectElementValue = "member";
+   // let selectElementValue = "member";
     //const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
     var groupID;
@@ -22,9 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     
     // Open the modal when the button is clicked
-    openAddMemberButton.addEventListener('click', function () {
+   /* openAddMemberButton.addEventListener('click', function () {
         modal.style.display = "block";
-    });
+    });*/
 
     // Close the modal when the close button is clicked
     closeModalButton.addEventListener("click", function () {
@@ -299,6 +299,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const addMemberButton = document.createElement('button');
         addMemberButton.textContent = 'Legg til medlem';
         addMemberButton.id = 'add-member-btn';
+        addMemberButton.addEventListener('click', function () {
+            modal.style.display = "block";
+        });
         groupMembersListSettings.appendChild(addMemberButton);
     }
 
