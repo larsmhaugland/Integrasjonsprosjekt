@@ -185,6 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.status === 200) {
                 // Member added successfully
                 alert("Member added to the group successfully");
+                location.reload();
             } else {
                 alert("Error adding member to the group");
             }
