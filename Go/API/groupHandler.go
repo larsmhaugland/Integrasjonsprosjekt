@@ -163,7 +163,7 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
-	}
+	}	
 }
 
 func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {

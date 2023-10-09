@@ -78,6 +78,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle search input changes
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.trim();
+        console.log("Query is: " + query);
+        if (query.length === 0) {
+            return;
+        }
         const url = `${API_IP}/user/search?partialUsername=${query}`;
         // Send a GET request to the firestore database via GO
         fetch(url)
@@ -88,7 +92,6 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error fetching search results from database:", error);
-                alert("Error getting the serach results from the databse");
             });
     });
 
