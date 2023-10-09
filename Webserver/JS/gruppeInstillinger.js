@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Get group name from backend
     function getGroupName(groupID){
-        const url = `${API_IP}/group/getGroupName?groupID=${groupID}`;
+        const url = `${API_IP}/group/groupName?groupID=${groupID}`;
         fetch(url)
         .then((response) => response.json())
         .then((data) => {
