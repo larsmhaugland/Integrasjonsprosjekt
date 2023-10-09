@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addButton.className = "add-member-btn2";
 
         const addImage = document.createElement("img");
-        addImage.src = "../images/add-icon.png";
+        addImage.src = "../Images/add-icon.png";
         addImage.alt = "Add member";
 
         addButton.appendChild(addImage);
