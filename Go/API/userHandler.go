@@ -204,6 +204,8 @@ func UserSearchHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not find usernames that match input username from the database", http.StatusBadRequest)
 			return
 		}
+
+		w.Header().Set("Content-Type", "application/json")
 		err2 := EncodeJSONBody(w, r, userNames)
 		if err2 != nil {
 			http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
