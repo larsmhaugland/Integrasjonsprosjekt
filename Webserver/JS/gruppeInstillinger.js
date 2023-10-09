@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} groupID - ID of the group the user will be added to
      */
     function addMemberToGroup(username, groupID) {
-        if (LoggedInUsername != GroupOwner || !Administrators.includes(username)){
+        if (LoggedInUsername != GroupOwner || !Administrators.includes(LoggedInUsername)){
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} newRole - new role for the username
      */
     function updateRoleForMember(username, newRole, initialValue){
-        if (LoggedInUsername != GroupOwner || !Administrators.includes(username)){
+        if (LoggedInUsername != GroupOwner || !Administrators.includes(LoggedInUsername)){
             // Get the list items inside the ul element
             const listItems = groupMembersListSettings.querySelectorAll("li");
             listItems.forEach((listItem) => {
