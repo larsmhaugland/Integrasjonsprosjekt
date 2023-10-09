@@ -14,9 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const Username = sessionStorage.getItem("username");
     const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
-    
+    var groupID;
     window.onload = function () {
-        const groupID = tmpGroupID; 
+        groupID = tmpGroupID; 
         fetchGroupMembers(groupID);
     };
     
