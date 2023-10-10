@@ -111,7 +111,6 @@ function newGroup(groupName){
             const groups = JSON.parse(sessionStorage.getItem("groups") || "[]");
             groups.push(groupNew);
             sessionStorage.setItem("groups", JSON.stringify(groups));
-            submitConfirm(groupNew);
         })
         .catch((error) => {
             console.log("Error creating group: " + error);
@@ -125,26 +124,3 @@ function newGroup(groupName){
 
 }
 
-/*
-    POP-UP WINDOW
-    Group created, show access code (group id)
-*/
-function submitConfirm(group){
-    let display = document.querySelector("#group-created-information");
-    display.innerHTML = "Check your email for the access code to your new group!";
-        let accessCode = document.createElement("p");
-        accessCode.setAttribute("id","access-code");
-        accessCode.textContent = group.id;
-        display.appendChild(accessCode);
-        let name = document.createElement("p");
-        name.setAttribute("id","gruppenavn");
-        name.textContent = group.name;
-        display.appendChild(name);
-}
-btn = document.querySelector("#close-popup-btn");
-btn.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("group-created-popup").style.display = "none";
-    let display = document.querySelector("#group-created-information");
-    display.getElementById("access-code").removeChild();
-    display.getElementById("#gruppenavn").removeChild();
-});
