@@ -8,9 +8,9 @@ function retrieveGroups(){
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
-   if(groups && groups.length > 0){
+  /* if(groups && groups.length > 0){
        displayGroups(groups);
-    }  else {
+    }  else */{
     fetch(API_IP + `/user/groups?username=${userName}`, {
         method: "GET",
         headers: {
@@ -25,7 +25,6 @@ function retrieveGroups(){
             throw new Error("Failed to retrieve groups");
         }
     }).then(data=>{
-        console.log("Response data:", data);
         sessionStorage.setItem("groups", JSON.stringify(data));
         displayGroups(data);})
     .catch(error => {
@@ -65,22 +64,27 @@ btn.addEventListener("click", (event)=> {event.preventDefault();
 //ON SUBMIT CREATE NEW GROUP AND GENERATE GROUP ID
 btn = document.querySelector("#submit-group-btn");
 btn.addEventListener("click",(event)=> {event.preventDefault();
+    document.querySelector("#group-created-information").style.block = "block"
     document.getElementById("new-group-popup").style.display = "none";
-    submitConfirm();
-
+    if (!checkAuthToken()) {
+        alert("Du er ikke innlogget!")
+        return;
+    }
+    const groupName = document.querySelector("#gruppenavn").value;
+    newGroup(groupName);
     });
 /*
     NEW GROUP
     Adds new group to groups-container, registers group in database
 */
 function newGroup(groupName){
-    let credentials = {"name": groupName, "owner": sessionStorage.getItem("username")};
-    fetch(API_IP + "/user/groups", {
+    let group = {name: groupName, owner: sessionStorage.getItem("username")};
+    fetch(API_IP + `/group/new?${groupName}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(credentials)   //Add correct body
+        body: JSON.stringify(group)
     })
         .then((response) => {
             if (response.status === 201) {
@@ -94,12 +98,11 @@ function newGroup(groupName){
         })
         .then((data) => {
             // Now, data contains the parsed JSON
-            const id = data;
-            console.log("Group id: " + id);
+            const groupNew = data;
             const groups = JSON.parse(sessionStorage.getItem("groups") || "[]");
-            groups.push({id, name: groupName});
+            groups.push(groupNew);
             sessionStorage.setItem("groups", JSON.stringify(groups));
-            return id;
+            submitConfirm(groupNew);
         })
         .catch((error) => {
             console.log("Error creating group: " + error);
@@ -109,26 +112,30 @@ function newGroup(groupName){
     let groupBlock = document.createElement("div");
     groupBlock.setAttribute("id","group-block");
     groupBlock.textContent = groupName;
-    display.appendChild(groupBlock);       
+    display.appendChild(groupBlock);
+
 }
 
 /*
     POP-UP WINDOW
     Group created, show access code (group id)
 */
-function submitConfirm(){
-    if (!checkAuthToken()) {
-        alert("Du er ikke innlogget!")
-        return;
-    }
-    display = document.querySelector("#group-created-information");
-    const groupName = document.querySelector("#gruppenavn").value;
-    let accessCode = document.createElement("p");
-    accessCode.setAttribute("id","access-code");
-    accessCode.textContent = newGroup(groupName);   //TODO: Actually post the group id as well
-    display.appendChild(accessCode);    //TODO: Delete this append afterwards (maybe in submitConfirm?) so that we won't get every group id on the page for every new group created
-    document.getElementById("group-created-popup").style.display = "block";
+function submitConfirm(group){
+    let display = document.querySelector("#group-created-information");
+    display.innerHTML = "Check your email for the access code to your new group!";
+        let accessCode = document.createElement("p");
+        accessCode.setAttribute("id","access-code");
+        accessCode.textContent = group.id;
+        display.appendChild(accessCode);
+        let name = document.createElement("p");
+        name.setAttribute("id","gruppenavn");
+        name.textContent = group.name;
+        display.appendChild(name);
 }
 btn = document.querySelector("#close-popup-btn");
 btn.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("group-created-popup").style.display = "none";});
+    document.getElementById("group-created-popup").style.display = "none";
+    let display = document.querySelector("#group-created-information");
+    display.getElementById("access-code").removeChild();
+    display.getElementById("#gruppenavn").removeChild();
+});
