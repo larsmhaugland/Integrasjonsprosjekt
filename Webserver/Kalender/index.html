@@ -65,7 +65,7 @@
                 <a id="close-dinner-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
                 <form id="new-dinner-form" >
                     <label for="dinner-name">Navn på middag<br></label>
-                    <input type="text" id="dinner-name" placeholder="Skriv navn..." required onkeydown="addDinnerToCalendar()">
+                    <input type="text" id="dinner-name" placeholder="Skriv navn..." required onkeyup="addDinnerToCalendar()">
                     <div id="search-results">
                         <!-- SØKERESULTATER KOMMER HER-->
                     </div>
@@ -74,10 +74,7 @@
         </div>
     <h1>Kalender</h1>
     <select name="group" id="group-dropdown">
-        <option>placeholder</option>
-        <option>placeholder</option>
-        <option>placeholder</option>
-        <option>placeholder</option>
+        <!-- Fylles automatisk-->
     </select>
     <div class="container">
     <div id="mandag">Mandag
