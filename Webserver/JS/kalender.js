@@ -1,6 +1,8 @@
 let dinnerPopup = document.querySelector("#dinner-popup");
 let newDinnerBtns = document.querySelectorAll(".dinner-btn");
 let closeDinnerPopup = document.querySelector("#close-dinner-popup");
+let dinnerForm = document.querySelector("#new-dinner-form");
+let groupDropdown = document.querySelector("#group-dropdown");
 let currentDay;
 let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "sondag"];
 let Recipes = [];
@@ -10,6 +12,38 @@ getRecipes(Recipes);
 retrieveGroups();
 let groups = JSON.parse(sessionStorage.getItem("groups"));
 displayGroups(groups);
+
+groupDropdown.addEventListener("change", function (event){
+    console.log("dropdown changed");
+    let labels = document.querySelectorAll("label");
+    if(labels.length > 0){
+        labels.forEach(function (label) {
+            label.remove();
+        });
+    }
+   for (let i=0; i<groups.length; i++) {
+        if (groups[i].name === groupDropdown.value) {
+            console.log("group found");
+            console.log(calendar);
+            if (calendar[i]) {
+                for (let j = 0; j < calendar[i].length; j++) {
+                    if (calendar[i][j]) {
+                        console.log("day found");
+                        let label = document.createElement("label");
+                        label.innerHTML = '<br>' + calendar[i][j];
+                        label.setAttribute("id", allDays[j] + " textbox");
+                        let div = document.getElementById(allDays[j]);
+                        div.appendChild(label);
+                    }
+                }
+            } else {
+                //this is going to happen if the groups calendar is empty which will be the case until you add
+                // the first dinner that week to the calendar
+                console.log("calendar[" + i + "] is undefined");
+            }
+        }
+    }
+});
 
 newDinnerBtns.forEach (function (btn)
 {
@@ -29,35 +63,37 @@ closeDinnerPopup.addEventListener("click", function (event){
     dinnerPopup.style.display = "none";
 });
 
+dinnerForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+});
+
 function addDinnerToCalendar() {
     let dinnerName = document.querySelector("#dinner-name").value;
-
-    if(event.key === "Enter") {
-
+    if (event.key === "Enter") {
+        console.log("dinnername: " + dinnerName);
         let label = document.createElement("label");
-        label.innerHTML = '<br>'+ dinnerName;
+        label.innerHTML = '<br>' + dinnerName;
         label.setAttribute("id", currentDay + " textbox");
         let div = document.getElementById(currentDay);
         div.appendChild(label);
         event.preventDefault();
         dinnerPopup.style.display = "none";
         document.querySelector("#dinner-name").value = "";
-    } else {
-        autocomplete(currentDay, dinnerName);
-    }
-    for (let i = 0; i < groups.length; i++){
-        for (let j = 0; j<allDays.length; j++) {
-            if (allDays[j] === currentDay) {
-                if (!calendar[i]) {
-                    calendar[i] = []; // Initialize the inner array if it's undefined
+        for (let i = 0; i < groups.length; i++) {
+            if (groups[i].name === groupDropdown.value) {
+                for (let j = 0; j < allDays.length; j++) {
+                    if (allDays[j] === currentDay) {
+                        if (!calendar[i]) {
+                            calendar[i] = [];
+                        }
+                        calendar[i][j] = dinnerName;
+                        console.log(calendar);
+                    }
                 }
-                calendar[i][j] = dinnerName;
             }
         }
     }
-    console.log(calendar);
 }
-
 
 function autocomplete(day, text){
     const recipeInput = document.querySelector("#dinner-name");
@@ -126,3 +162,4 @@ function displayGroups(groups){
         dropdown.appendChild(option);
     });
 }
+
