@@ -42,7 +42,16 @@ function displayGroups(groups){
        for(let i = 0; i < groups.length; i++){
            let groupBlock = document.createElement("div");
            groupBlock.setAttribute("id","group-block");
-           groupBlock.textContent = groups[i].name;
+           let groupNameParagraph = document.createElement("p");
+           groupNameParagraph.textContent = "Gruppenavn: " + groups[i].name;
+
+
+           let groupIdParagraph = document.createElement("p");
+           groupIdParagraph.textContent = "Gruppe-ID: " + groups[i].id;
+
+           groupBlock.appendChild(groupNameParagraph);
+           groupBlock.appendChild(groupIdParagraph);
+
            display.appendChild(groupBlock);
     };
 };
