@@ -25,6 +25,7 @@ function displayGroups(groups){
 //Retrieve shopping list from the database/storage session and display it
 function retrieveShoppingList() {
     //if(!checkAuthToken()) return;
+    removeList();
     let option = document.querySelector("#group-dropdown").value;
 
     if(option === "Velg gruppe..."){
@@ -47,7 +48,9 @@ function retrieveShoppingList() {
                 throw new Error("Failed to retrieve shopping list");
             }
         }).then(data=>{
+            console.log(JSON.stringify(data));
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
+            console.log(sessionStorage.getItem("shoppinglist"));
             displayShoppingList(data);})
     }
     else{
@@ -166,7 +169,18 @@ function addNewItemToList(){
     list.appendChild(li);
     //Add to storage session
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
-    shoppinglist.push({item: newItem, quantity: newQuantity});
+    let itemData = {};
+    itemData[newItem] = {
+        complete: false,
+        quantity: newQuantity,
+        category: "",
+    };
+    shoppinglist.push({
+        id: "",
+        assignees: null,
+        list: itemData,
+    });
+
     sessionStorage.setItem("shoppinglist", JSON.stringify(shoppinglist));
     patchShoppingList();
 }
@@ -247,8 +261,12 @@ function patchShoppingList(){
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
     let list = [];
     shoppinglist.forEach(item => {
-        list.push({name: item.item, quantity: item.quantity});
+        for (let itemName in item.list) {
+            let quantity = item.list[itemName].quantity;
+            list.push({ name: itemName, quantity: quantity });
+        }
     });
+    console.log(list);
     let parameters = "";
     if(option === userName){
         fetch(API_IP + `/user/shopping?username=${userName}`, {
@@ -292,4 +310,12 @@ function patchShoppingList(){
         });
     }
 
+}
+
+function removeList(){
+    let list = document.querySelector("#shopping-list");
+    let items = list.querySelectorAll("#list-item");
+    items.forEach(item => {
+        list.removeChild(item);
+    });
 }

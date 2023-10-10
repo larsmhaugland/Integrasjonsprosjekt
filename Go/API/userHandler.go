@@ -28,7 +28,6 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		UserSearchHandler(w, r)
 	case "shopping":
 		UserShoppingBaseHandler(w, r)
-
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -252,14 +251,32 @@ func UserShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	username := r.URL.Query().Get("username")
+	user, err := Firebase.ReturnCacheUser(username)
 
-	userId := r.URL.Query().Get("userId")
-	shoppingList, err := Firebase.ReturnCacheShoppingList(userId)
+	listId := user.ShoppingLists[0]
+	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
 	if err != nil {
-		http.Error(w, "Error while getting shopping list", http.StatusBadRequest)
+		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	var newshoppinglist Firebase.ShoppingList
+	err = DecodeJSONBody(w, r, &newshoppinglist)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+
+	shoppingList.Assignees = newshoppinglist.Assignees
+	shoppingList.List = newshoppinglist.List
+
+	Firebase.PatchShoppingList(shoppingList)
+	if err != nil {
+		http.Error(w, "Error while updating shopping lists", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+
 }
 
 func DecodeJSONBody(w http.ResponseWriter, r *http.Request, u interface{}) error {
