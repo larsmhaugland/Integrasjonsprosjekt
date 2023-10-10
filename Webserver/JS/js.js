@@ -47,38 +47,33 @@ function loginRegisterToggle(){
     }
 }
 //Check login cookie
-function checkAuthToken(){
-    sessionStorage.setItem("username", "larmha");
-    sessionStorage.setItem("loggedIn", "true")
-    updateLoginStatus();
-    return true;
-    /*
-    let username = "larmha";
+async function checkAuthToken(){
+    let username = sessionStorage.getItem("username");
+    let loggedIn = sessionStorage.getItem("loggedIn");
 
-    fetch (API_IP + "/user/credentials/checkCookie", {
+    if(loggedIn){
+        return true;
+    }
+    if (username === null){
+        return false;
+    }
+
+    const response = await fetch (API_IP + "/user/credentials/checkCookie", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-    }).then(response => {
-        if (response.status === 200){
-            console.log("Logged in using cookie as: " + username);
-            sessionStorage.setItem("username", username);
-            sessionStorage.setItem("loggedIn", "true");
-            updateLoginStatus();
-            return true;
-        } else {
-            console.log("Invalid auth token");
-            console.log(response.status);
-            sessionStorage.setItem("loggedIn", "false");
-            return false;
-        }
-    })
-    .catch(error => {
-        console.log("Error when sending HTTPS request");
-        console.log(error);
+    });
+    if (response.status === 200){
+        sessionStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("username", username);
+        console.log("Logged in using authtoken as: " + username);
+        updateLoginStatus();
+        return true;
+    } else {
+        console.log("Invalid Auth token");
         return false;
-    });*/
+    }
 }
 
 //Check login credentials
@@ -88,7 +83,7 @@ function login(){
 
     let credentials = {"username": username, "password": password};
     console.log(credentials);
-
+    navigator.cookieEnabled = true;
     fetch(API_IP + "/user/credentials/login", {
         method: "POST",
         headers: {
@@ -106,6 +101,7 @@ function login(){
             loginForm.style.display = "none";
             wrongpassword.style.display = "none";
             updateLoginStatus();
+
         } else {
             wrongpassword.style.display = "block";
         }
@@ -123,10 +119,10 @@ function logout(){
 }
 
 function updateLoginStatus(){
-    let username = sessionStorage.getItem("username");
+    let loggedIn = sessionStorage.getItem("loggedIn");
     let loginBtn = document.querySelector("#log-in-btn");
     let logoutBtn = document.querySelector("#log-out-btn");
-    if (username !== null){
+    if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
     } else {

@@ -24,7 +24,6 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(r.URL.Path, "/")
 	SetCORSHeaders(w)
-	fmt.Println(len(parts), parts)
 	if len(parts) >= 2 {
 		switch r.Method {
 		case http.MethodPost:
@@ -177,8 +176,16 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var data Input
 	err := DecodeJSONBody(w, r, &data)
+	fmt.Println(data.Recipe)
+	fmt.Println(data.Groups)
+	fmt.Println(data.Owner)
 	if err != nil {
 		http.Error(w, "Error when decoding POST: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	id, err := Firebase.AddRecipe(data.Recipe)
+	if err != nil {
+		http.Error(w, "Error when adding recipe to firebase: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	user, err := Firebase.GetUserData(data.Owner)
@@ -186,10 +193,10 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when fetching user data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	id, err := Firebase.AddRecipe(data.Recipe, data.Groups, user.ID)
+	user.Recipes = append(user.Recipes, id)
+	err = Firebase.PatchCacheUser(user)
 	if err != nil {
-		http.Error(w, "Error when adding recipe to firebase: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when patching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -210,15 +217,10 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	user.Recipes = append(user.Recipes, id)
-	err = Firebase.PatchCacheUser(user)
-	if err != nil {
-		http.Error(w, "Error when patching user: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	err = EncodeJSONBody(w, r, id)
 	if err != nil {
-		http.Error(w, "Error when encodingn response: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

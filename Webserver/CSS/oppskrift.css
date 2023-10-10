@@ -51,7 +51,6 @@
 #new-recipe-btn img{
     width: 20px;
     height: 20px;
-    margin-right: 5px;
 }
 
 .new-recipe-popup {
@@ -76,6 +75,11 @@
     font-weight: bolder;
 }
 
+#recipe-image-preview-img {
+    max-width: 40%;
+    max-height: 40%;
+    object-fit: cover;
+}
 
 #close-recipe-popup {
     float: right;
@@ -93,6 +97,15 @@
 
 .close-svg:hover {
     filter: invert(12%) sepia(75%) saturate(5744%) hue-rotate(358deg) brightness(88%) contrast(116%);
+}
+
+.remove-item {
+    float: right;
+    display: inline;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
 }
 
 #url-recipe {

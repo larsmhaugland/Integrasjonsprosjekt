@@ -14,6 +14,7 @@
                 <a href="">Chat</a>
                 <a href="../Kalender/index.html">Kalender</a>
                 <a href="index.html" class="current-page">Oppskrifter</a>
+                <a href="../Grupper/index.html"> Grupper</a>
                 <button id="log-in-btn">Innlogging</button>
                 <button id="log-out-btn">Logg ut</button>
         </nav>
@@ -81,8 +82,15 @@
                     <label for="recipe-type-url"><br>Vil du legge til oppskrift med kun URL? </label>
                     <input type="checkbox" id="recipe-type-url">
                     <div id="manual-recipe">
-                        <label for="recipe-ingredients"><br>Ingredienser<br></label>
-                        <textarea id="recipe-ingredients" placeholder="Ingredienser"></textarea>
+                        <div id="new-recipe-ingredients">
+                            <label for="recipe-ingredient"><br>Ingredienser<br></label>
+                            <input type="text" id="recipe-ingredient" placeholder="Navn på ingrediens...">
+                            <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
+                            <button id="add-ingredient-btn">Legg til</button>
+                            <ul id="recipe-ingredient-list">
+                                <!-- Ingredients get appended here -->
+                            </ul>
+                        </div>
                         <label for="recipe-instructions"><br>Instruksjoner<br></label>
                         <textarea id="recipe-instructions" placeholder="Instruksjoner"></textarea>
                     </div>
@@ -98,10 +106,10 @@
                     </div>
                     <br>
                     <label for="share-with-groups">Hvilke grupper vil lagre oppskriften i?</label>
-                    <div id="share-with-groups">
+                    <ul id="share-with-groups">
 
                         <!-- Need to find out which groups the user is in -->
-                    </div>
+                    </ul>
                     <button id="submit-new-recipe">Legg til oppskrift</button>
                 </form>
 
@@ -126,5 +134,6 @@
 
 </body>
 <script src="../JS/js.js"></script>
+<script src="../JS/API.js"></script>
 <script src="../JS/oppskrift.js"></script>
 </html>

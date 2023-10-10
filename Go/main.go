@@ -6,10 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/google/uuid"
-	"io"
 	"log"
 	"net/http"
-	"os"
 	"prog-2052/API"
 	"prog-2052/Firebase"
 )
@@ -33,6 +31,7 @@ func startHTTPserver() {
 
 	Firebase.InitCache()
 	http.HandleFunc("/stats/", statsHandler)
+	http.HandleFunc("/image/", ImageHandler)
 	http.HandleFunc("/group/", API.GroupBaseHandler)
 	http.HandleFunc("/user/", API.UserBaseHandler)
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
@@ -100,39 +99,47 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
-	if r.Method != http.MethodPost {
-		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
-		return
-	}
-	// Parse the uploaded file
-	file, _, err := r.FormFile("file") // "file" is the name of the file input field in the request
-	if err != nil {
-		http.Error(w, "Error retrieving file", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
 	id, err := generateUniqueID()
-	if err != nil {
-		http.Error(w, "Error generating unique ID", http.StatusInternalServerError)
-		return
-	}
-	// Create a new file on the server to save the uploaded file
-	uploadedFile, err := os.Create("/Images/" + id + ".jpeg") // Specify the desired file name
-	if err != nil {
-		http.Error(w, "Unable to create the file for writing", http.StatusInternalServerError)
-		return
-	}
-	defer uploadedFile.Close()
+	/*
+		if r.Method != http.MethodPost {
+			http.Error(w, "Error; Method not supported", http.StatusBadRequest)
+			return
+		}
+		// Parse the uploaded file
+		file, _, err := r.FormFile("file") // "file" is the name of the file input field in the request
+		if err != nil {
+			log.Println("Error retrieving file from form data: ", err)
+			http.Error(w, "Error retrieving file", http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+		id, err := generateUniqueID()
+		if err != nil {
+			log.Println("Error generating unique ID: ", err)
+			http.Error(w, "Error generating unique ID", http.StatusInternalServerError)
+			return
+		}
 
-	// Copy the uploaded file to the new file on the server
-	_, err = io.Copy(uploadedFile, file)
-	if err != nil {
-		http.Error(w, "Unable to copy file", http.StatusInternalServerError)
-		return
-	}
+		// Create a new file on the server to save the uploaded file
+		uploadedFile, err := os.Create("/Images/" + id + ".jpeg") // Specify the desired file name
+		if err != nil {
+			log.Println("Error creating file: ", err)
+			http.Error(w, "Unable to create the file for writing", http.StatusInternalServerError)
+			return
+		}
+		defer uploadedFile.Close()
 
+		// Copy the uploaded file to the new file on the server
+		_, err = io.Copy(uploadedFile, file)
+		if err != nil {
+			log.Println("Error copying file: ", err)
+			http.Error(w, "Unable to copy file", http.StatusInternalServerError)
+			return
+		}
+	*/
 	err = API.EncodeJSONBody(w, r, id)
 	if err != nil {
+		log.Println("Error encoding response: ", err)
 		http.Error(w, "Error while encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
