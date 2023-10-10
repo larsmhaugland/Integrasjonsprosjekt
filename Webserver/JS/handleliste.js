@@ -1,5 +1,4 @@
 retrieveGroups();
-displayGroups();
 retrieveShoppingList();
 //retrieveDinnerList();
 
@@ -8,16 +7,15 @@ retrieveShoppingList();
 //Add groups + user to the dropdown menu
 function displayGroups(groups){
     let dropdown = document.querySelector("#group-dropdown");
-    let option = document.createElement("option");
-    option.textContent = "Velg gruppe";
 
-    groups.array.forEach(group => {
+    for(let i = 0; i < groups.length; i++){
         let option = document.createElement("option");
-        option.value = group.name;
-        option.textContent = group.name;
+        option.value = groups[i].name;
+        option.textContent = groups[i].name;
         dropdown.appendChild(option);
-    });
+    }
 
+    let userName = sessionStorage.getItem("username");
     option.document.createElement("option");
     option.value = userName;
     option.textContent = userName;
@@ -176,3 +174,38 @@ function removeItemFromList(){
     });
     sessionStorage.setItem("shoppinglist", JSON.stringify(shoppinglist));
 }
+
+/*
+    RETRIEVE GROUPS FROM SESSION STORAGE OR DATABASE
+*/
+function retrieveGroups(){
+
+    if (!checkAuthToken()) return;
+    let userName = sessionStorage.getItem("username");
+    let groups = JSON.parse(sessionStorage.getItem("groups"));
+
+    /* if(groups && groups.length > 0){
+         displayGroups(groups);
+      }  else */{
+        fetch(API_IP + `/user/groups?username=${userName}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            if (response.status === 200){
+                console.log("Groups retrieved");
+                return response.json();
+            } else {
+                console.log("Error retrieving groups");
+                throw new Error("Failed to retrieve groups");
+            }
+        }).then(data=>{
+            sessionStorage.setItem("groups", JSON.stringify(data));
+            displayGroups(data);})
+            .catch(error => {
+                console.log("Error retrieving groups: " + error);
+            });
+    }
+}
+;
