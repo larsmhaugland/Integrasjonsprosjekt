@@ -176,7 +176,7 @@ function addNewItemToList(){
         category: "",
     };
     shoppinglist.push({
-        id: "",
+        id: shoppinglist.id,
         assignees: null,
         list: itemData,
     });
@@ -200,8 +200,22 @@ function removeItemFromList(){
     let finishedList = document.querySelector("#finished-list");
     let finishedItems = finishedList.querySelectorAll("#list-item");
 
+    let sessionList = JSON.parse(sessionStorage.getItem("shoppinglist"));
     items.forEach(item => {
         if(item.querySelector("#checkbox").checked){
+            sessionList.forEach(sessionItem => {
+                let name = item.textContent;
+                console.log(name);
+                for (let itemName in sessionItem.list) {
+                    let itemInfo = sessionItem.list[itemName].quantity + " " + itemName;
+                    console.log(itemInfo);
+                    if (itemInfo === name) {
+                        sessionItem.list[itemName].complete = true;
+                    }
+                }
+            });
+
+
             let newitem = item.cloneNode(true);
             let clonedCheckbox = newitem.querySelector("input[type='checkbox']");
             clonedCheckbox.id = "finished-checkbox";
@@ -212,6 +226,18 @@ function removeItemFromList(){
 
     finishedItems.forEach(item => {
         if(!item.querySelector("#finished-checkbox").checked){
+            sessionList.forEach(sessionItem => {
+                let name = item.textContent;
+                console.log(name);
+                for (let itemName in sessionItem.list) {
+                    let itemInfo = sessionItem.list[itemName].quantity + " " + itemName;
+                    console.log(itemInfo);
+                    if (itemInfo === name) {
+                        sessionItem.list[itemName].complete = false;
+                    }
+                }
+            });
+
             let newitem = item.cloneNode(true);
             let clonedCheckbox = newitem.querySelector("input[type='checkbox']");
             clonedCheckbox.id = "checkbox";
@@ -219,6 +245,8 @@ function removeItemFromList(){
             finishedList.removeChild(item);
         }
     });
+    console.log(sessionList);
+    patchShoppingList();
 }
 
 let finishedlist = document.querySelector("#finished-list");
