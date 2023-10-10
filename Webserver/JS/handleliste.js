@@ -131,7 +131,7 @@ submit.addEventListener("keydown", (event)=> {
 
 function addNewItemToList(){
     let newItem = document.querySelector("#newitemtxt").value;
-
+    let newQuantity = document.querySelector("#newqttxt").value;
     if(newItem === ""){
         return;
     }
@@ -144,12 +144,20 @@ function addNewItemToList(){
     checkbox.setAttribute("type", "checkbox");
     checkbox.setAttribute("id", "checkbox");
     li.appendChild(checkbox);
-    li.appendChild(document.createTextNode(newItem));
+
+    if (newQuantity !== "") {
+        li.appendChild(document.createTextNode(newQuantity + " " + newItem));
+    } else {
+        li.appendChild(document.createTextNode(newItem));
+    }
+
     list.appendChild(li);
     //Add to storage session
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
-    shoppinglist.push(newItem);
+    shoppinglist.push({item: newItem, quantity: newQuantity});
     sessionStorage.setItem("shoppinglist", JSON.stringify(shoppinglist));
+    let qt= document.querySelector("newqttxt")
+    qt.value = "";
 }
 
 let list = document.querySelector("#shopping-list");
@@ -166,13 +174,26 @@ function removeItemFromList(){
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
     items.forEach(item => {
         let checkbox = item.querySelector("#checkbox");
-        if(checkbox.checked){
-            list.removeChild(item);
-            let text = item.textContent;
-            shoppinglist = shoppinglist.filter(item => item !== text);
+        if (checkbox.checked) {
+            let text = item.textContent.trim();
+            let itemDataIndex = getItemDataIndex(text, shoppinglist);
+            if (itemDataIndex !== -1) {
+                list.removeChild(item);
+                shoppinglist.splice(itemDataIndex, 1); // Remove the item from the shoppinglist
+            }
         }
     });
     sessionStorage.setItem("shoppinglist", JSON.stringify(shoppinglist));
+}
+
+function getItemDataIndex(displayedText, shoppinglist) {
+    for (let i = 0; i < shoppinglist.length; i++) {
+        if (shoppinglist[i].item == displayedText) {
+            console.log("Found item at index: " + i)
+            return i;
+        }
+    }
+    return -1;
 }
 
 /*
