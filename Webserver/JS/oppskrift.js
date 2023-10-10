@@ -109,9 +109,17 @@ ingredientInputBtn.addEventListener("click", (event)=> {
 });
 
 //Load recipes:
-getRecipes(Recipes);
-displayResults(Recipes);
 retrieveGroups();
+
+
+async function loadRecipes(){
+    console.log("GET RECIPES")
+    await getRecipes(Recipes);
+    console.log("DISPLAY-RECIPES")
+    console.log(Recipes);
+    displayResults(Recipes);
+}
+loadRecipes();
 
 
 
@@ -189,7 +197,6 @@ async function newRecipe() {
 
     let recipe = {
         "name": name,
-        "type": type,
         "difficulty": difficulty,
         "time": time,
         "image": filename,
@@ -213,7 +220,9 @@ async function newRecipe() {
         "groups": groups,
     };
 
-    console.log(data);
+    console.log(data.owner);
+    console.log(data.recipe);
+    console.log(data.groups);
 
     const recipeResponse = await fetch(API_IP + "/recipe/", {
         method: "POST",
@@ -256,10 +265,10 @@ function isDuplicate(list, item) {
     return false;
 }
 
-function displayResults(filteredList){
+async function displayResults(filteredList){
     //Clear results
     resultDiv.innerHTML = "";
-
+    console.log("Recipes = " + filteredList);
     //Display
     if (filteredList.length === 0) {
         resultDiv.appendChild(document.createTextNode("Du har ingen oppskrifter lagret"));

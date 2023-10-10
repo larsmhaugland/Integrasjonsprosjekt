@@ -1,31 +1,29 @@
-function getRecipes(Recipes) {
+async function getRecipes(Recipes) {
     let username = sessionStorage.getItem("username");
     //if(!checkAuthToken()) return;
-    fetch(API_IP + "/recipe/" + username + "?groups=true", {
-        //fetch("localhost:8080" + "/user/recipes?groups=true", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    }).then(response => {
-            if (response.status === 200){
-                return response.json();
-            } else {
-                console.log("Error when fetching recipes");
-                return false;
-            }
-        }
-    ).then(data => {
-        if (data !== false){
+    try {
+        const response = await fetch(API_IP + "/recipe/" + username + "?groups=true", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (response.status === 200) {
+            const data = await response.json();
             console.log(data);
-            for (let i = 0; i < data.length; i++){
+
+            for (let i = 0; i < data.length; i++) {
                 Recipes.push(data[i]);
             }
+        } else {
+            console.log("Error when fetching recipes");
         }
-    }).catch(error => {
+    } catch (error) {
         console.log("Error when fetching recipes");
         console.log(error);
-    });
+    }
+    return Recipes;
 }
 
 function retrieveGroups(){
