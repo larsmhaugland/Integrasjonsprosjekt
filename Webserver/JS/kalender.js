@@ -48,6 +48,9 @@ function addDinnerToCalendar() {
     for (let i = 0; i < groups.length; i++){
         for (let j = 0; j<allDays.length; j++) {
             if (allDays[j] === currentDay) {
+                if (!calendar[i]) {
+                    calendar[i] = []; // Initialize the inner array if it's undefined
+                }
                 calendar[i][j] = dinnerName;
             }
         }
@@ -60,26 +63,24 @@ function autocomplete(day, text){
     const recipeInput = document.querySelector("#dinner-name");
     const recipeList = document.querySelector("#search-results");
     let suggestions = [];
-
     if (text.length > 0) {
         //TODO: Legg til forslag øverst i listen (2 forslag)
         //suggestions = GETFORSLAG()
 
         if(Recipes.length > 1){
-            suggestions = Recipes[0];
-            suggestions += Recipes[1];
+            suggestions = suggestions.concat(Recipes[0], Recipes[1]);
         }
         //Finner oppskrifter som matcher søket substring
-        suggestions += Recipes.filter((data) => {
+        const filteredRecipes = Recipes.filter((data) => {
             return data.name.toLowerCase().includes(text.toLowerCase());
         });
+        suggestions = suggestions.concat(filteredRecipes);
         //Lager listeelementer av forslagene
         suggestions = suggestions.map((data) => {
             return data = '<li>' + data.name + '</li>';
         });
         //Highlight box med funky farge ellernosånt
         recipeInput.classList.add("active");
-
         //Viser forslagene
         showSuggestions(suggestions, day);
 
@@ -99,8 +100,8 @@ function autocomplete(day, text){
     }
 }
 function showSuggestions(list) {
-    const recipeInput = document.getElementById("#dinner-name");
-    const resultsList = document.getElementById("#search-results");
+    const recipeInput = document.getElementById("dinner-name");
+    const resultsList = document.getElementById("search-results");
     let listData;
     let userValue;
 
