@@ -274,6 +274,15 @@ func PatchGroup(group Group) error {
 	}
 	return nil
 }
+func GetGroupName(groupID string) (string, error) {
+	// Get the group data from cache (check ReturnCacheGroup documentation)
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return "", err
+	}
+	return groupData.Name, nil
+}
 
 func GetGroupMembers(groupID string) ([]GroupMemberNameRole, error) {
 	// Get the group data from cache (check ReturnCacheGroup documentation)

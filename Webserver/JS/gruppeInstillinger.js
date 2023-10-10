@@ -1,23 +1,32 @@
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
+    
     const modal = document.querySelector("#search-member-modal");
     //const openAddMemberButton = document.querySelector("#add-member-btn");
     const closeModalButton = modal.querySelector(".close");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
     const groupMembersListSettings = document.querySelector("#group-members-list-settings");
-    const roles = ['Owner', 'Administrator', 'Member'];
     const deleteGroupButton = document.querySelector("#delete-group");
-    var GroupOwner;
     const LoggedInUsername = sessionStorage.getItem("username");
+    const groupNameElement = document.querySelector("#group-name");
+
    // let selectElementValue = "member";
     //const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
+    const roles = ['Owner', 'Administrator', 'Member'];
     var groupID;
+    var GroupOwner;
+    var groupName;
     const Administrators = [];
-    window.onload = function () {
-        groupID = getUrlParameter("groupID"); 
+
+    // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
+    // the group name was set in the html so it became undefined.
+    window.onload = async function () {
+        groupID = tmpGroupID; 
+        const groupName = await getGroupName(groupID);
+        groupNameElement.textContent = "Settings for: " + groupName;
         fetchGroupMembers(groupID);
     };
     
@@ -75,6 +84,23 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Server error occured, could not delete the group.");
         });
     }
+
+    // Needs to be async because it uses await to wait for the response from the server before returning the data.
+    async function getGroupName(groupID){
+        const url = `${API_IP}/group/groupName?groupID=${groupID}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Server error occurred, could not get the group name.");
+        }
+    }
+
 
     // Handle search input changes
     searchInput.addEventListener("input", function () {
