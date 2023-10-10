@@ -26,6 +26,8 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	case "search":
 		UserSearchHandler(w, r)
+	case "shopping":
+		UserShoppingBaseHandler(w, r)
 
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
@@ -227,6 +229,37 @@ func UserGroupDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
+}
+
+func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodOptions:
+		break // For CORS
+	case http.MethodDelete:
+		UserShoppingDeleteHandler(w, r)
+		break
+	case http.MethodPatch:
+		UserShoppingPatchHandler(w, r)
+		return
+	default:
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
+		return
+	}
+}
+
+func UserShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Not implemented", http.StatusNotImplemented)
+}
+
+func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Not implemented", http.StatusNotImplemented)
+
+	userId := r.URL.Query().Get("userId")
+	shoppingList, err := Firebase.ReturnCacheShoppingList(userId)
+	if err != nil {
+		http.Error(w, "Error while getting shopping list", http.StatusBadRequest)
+		return
+	}
 }
 
 func DecodeJSONBody(w http.ResponseWriter, r *http.Request, u interface{}) error {

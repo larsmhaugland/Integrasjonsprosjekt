@@ -16,7 +16,7 @@ function displayGroups(groups){
     }
 
     let userName = sessionStorage.getItem("username");
-    option.document.createElement("option");
+    let option = document.createElement("option");
     option.value = userName;
     option.textContent = userName;
     dropdown.appendChild(option);
@@ -27,12 +27,13 @@ function retrieveShoppingList() {
     //if(!checkAuthToken()) return;
     let option = document.querySelector("#group-dropdown").value;
 
-    if(option === "Velg gruppe"){
+    if(option === "Velg gruppe..."){
         return;
 
     }else if(option === sessionStorage.getItem("username")){
+        let userName = sessionStorage.getItem("username");
         //TODO: API fetch
-        fetch(API_IP + "/shopping", {
+        fetch(API_IP + `/shopping/${userName}?userOrGroup=user`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -51,7 +52,11 @@ function retrieveShoppingList() {
     }
     else{
         //TODO: API fetch for specific group not just group in general
-        fetch(API_IP + "/group/shopping", {
+        let groups = JSON.parse(sessionStorage.getItem("groups"));
+        let group = groups.find(group => group.name === option);
+        if (group){
+            let groupId = group.id;
+        fetch(API_IP + `/shopping/${groupId}?group=group`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -68,31 +73,38 @@ function retrieveShoppingList() {
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
             displayShoppingList(data);});
     }
+    }
 
 
-    //TODO: find a better way to double check which group/user the storage session is for
+   /* //TODO: find a better way to double check which group/user the storage session is for
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist"));
 
     if(shoppinglist && shoppinglist.length > 0){
         displayShoppingList(shoppinglist);
     }else{
         //TODO: API fetch
-    }
+    }*/
 }
 
 function displayShoppingList(shoppinglist){
     let display = document.querySelector("#shopping-list");
-    shoppinglist.forEach(item => {
-        let li = document.createElement("li");
-        li.setAttribute("id", "list-item");
-        
-        let checkbox = document.createElement("input");
-        checkbox.setAttribute("type", "checkbox");
-        checkbox.setAttribute("id", "checkbox");
-        li.appendChild(checkbox);
-        li.appendChild(document.createTextNode(item));
-        display.appendChild(li);
-    });
+
+    for (let itemName in shoppinglist[0].list) {
+        let quantity = shoppinglist[0].list[itemName].quantity;
+
+        if (quantity && itemName) {
+            let formattedItem = quantity + " " + itemName;
+            let li = document.createElement("li");
+            li.setAttribute("id", "list-item");
+
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("id", "checkbox");
+            li.appendChild(checkbox);
+            li.appendChild(document.createTextNode(formattedItem));
+            display.appendChild(li);
+        }
+    }
 }
 
 function retrieveDinnerList(){
@@ -156,8 +168,7 @@ function addNewItemToList(){
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
     shoppinglist.push({item: newItem, quantity: newQuantity});
     sessionStorage.setItem("shoppinglist", JSON.stringify(shoppinglist));
-    let qt= document.querySelector("newqttxt")
-    qt.value = "";
+    patchShoppingList();
 }
 
 let list = document.querySelector("#shopping-list");
@@ -228,5 +239,57 @@ function retrieveGroups(){
                 console.log("Error retrieving groups: " + error);
             });
     }
+};
+
+function patchShoppingList(){
+    let option = document.querySelector("#group-dropdown").value;
+    let userName = sessionStorage.getItem("username");
+    let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
+    let list = [];
+    shoppinglist.forEach(item => {
+        list.push({name: item.item, quantity: item.quantity});
+    });
+    let parameters = "";
+    if(option === userName){
+        fetch(API_IP + `/user/shopping?username=${userName}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(list)
+        }).then(response => {
+            if (response.status === 200){
+                console.log("Shopping list updated");
+            } else {
+                console.log("Error updating shopping list");
+                throw new Error("Failed to update shopping list");
+            }
+        }).catch(error => {
+            console.log("Error updating shopping list: " + error);
+        });
+    }
+    else {
+        let groups = JSON.parse(sessionStorage.getItem("groups"));
+        let group = groups.find(group => group.name === option);
+        if (group) {
+            parameters = group.id;
+        }
+        fetch(API_IP + `/group/shopping/${parameters}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(list)
+        }).then(response => {
+            if (response.status === 200) {
+                console.log("Shopping list updated");
+            } else {
+                console.log("Error updating shopping list");
+                throw new Error("Failed to update shopping list");
+            }
+        }).catch(error => {
+            console.log("Error updating shopping list: " + error);
+        });
+    }
+
 }
-;
