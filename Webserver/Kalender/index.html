@@ -14,11 +14,63 @@
                 <a href="">Chat</a>
                 <a href="index.html" class="current-page">Kalender</a>
                 <a href="../Oppskrift/index.html">Oppskrifter</a>
-                <a href="">Innlogging</a>
+                <button id="log-in-btn">Innlogging</button>
+                <button id="log-out-btn">Logg ut</button>
         </nav>
     </header>
-    
+    <!--Pop-up login-->
+    <div id="log-in-popup" class="popup-wrapper">
+        <form id="log-in-form" class="popup-content">
+            <a id="close-login-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <h3>Brukernavn</h3>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+            <h3>Passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
+            <h3>Husk meg <input type="checkbox" name="remember" id="remember"></h3>
+            <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
+            <button type="button" class="btn" id="log-in-submit">Logg inn</button>
+            <br><br>
+            <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
+        </form>
+    </div>
+
+    <!--Pop-up register-->
+    <div id="register-popup" class="popup-wrapper">
+        <form id="register-user-form" class="popup-content">
+            <a id="close-register-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <h3>Navn</h3>
+            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
+            <h3>Brukernavn</h3>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
+            <a id="username-taken" class="error">Brukernavnet er opptatt</a>
+            <h3>Passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
+            <h3>Gjenta passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
+            <a id="password-mismatch" class="error">Passordene er ikke like</a>
+            <br><br>
+            <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+            <br><br>
+            <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+        </form>
+    </div>
     <main>
+        <div id="dinner-popup" class="dinner-popup">
+            <div class="dinner-content">
+
+                <h1 style="display: inline;">
+                    Middag for dagen
+                </h1>
+                <a id="close-dinner-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+                <form id="new-dinner-form" >
+                    <label for="dinner-name">Navn på middag<br></label>
+                    <input type="text" id="dinner-name" placeholder="Skriv navn..." required onkeydown="addDinnerToCalendar()">
+                    <div id="search-results">
+                        <!-- SØKERESULTATER KOMMER HER-->
+                    </div>
+                </form>
+            </div>
+        </div>
     <h1>Kalender</h1>
     <select name="group" id="group-dropdown">
         <option>placeholder</option>
@@ -28,27 +80,32 @@
     </select>
     <div class="container">
     <div id="mandag">Mandag
-        <button class="btn">Velg middag</button>
+        <button class="btn dinner-btn">Velg middag</button>
     </div>
-    <div id="tirsdag">Tirsdag
-        <button class="btn">Velg middag</button>
+    <div id="tirsdag" >Tirsdag
+        <button class="btn dinner-btn">Velg middag</button>
     </div>
     <div id="onsdag">Onsdag
-        <button class="btn">Velg middag</button>
+        <button class="btn dinner-btn">Velg middag</button>
     </div>
     <div id="torsdag">Torsdag
-        <button class="btn">Velg middag</button>
+        <button class="btn dinner-btn">Velg middag</button>
     </div>
     <div id="fredag">Fredag
-        <button class="btn">Velg middag</button>
+        <button class="btn dinner-btn">Velg middag</button>
     </div>
     <div id="lordag">Lørdag
-        <button class="btn">Velg middag</button>
+        <button class="btn dinner-btn">Velg middag</button>
     </div>
     <div id="sondag">Søndag
-        <button class="btn">Velg middag</button>
+        <button class="btn dinner-btn">Velg middag</button>
     </div>
     </div>
     </main>
 </body>
+<script src="../JS/js.js"></script>
+<script src="../JS/API.js"></script>
+<script src="../JS/kalender.js"></script>
+
+
 </html>

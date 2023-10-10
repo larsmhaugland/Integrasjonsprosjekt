@@ -1,15 +1,16 @@
 package Firebase
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
 	"errors"
-	firebase "firebase.google.com/go"
-	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	"log"
 	"os"
 	"time"
+
+	"cloud.google.com/go/firestore"
+	firebase "firebase.google.com/go"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // CUSTOM ERROR CODES
@@ -53,7 +54,7 @@ func GetUserData(userID string) (User, error) {
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
-			log.Println("Error; No user found")
+			log.Println("Error; No user found with username: " + userID)
 			return User{}, err
 		}
 		if err != nil {
@@ -61,12 +62,14 @@ func GetUserData(userID string) (User, error) {
 			return User{}, err
 		}
 		err = doc.DataTo(&user)
+		user.DocumentID = doc.Ref.ID
 		if err != nil {
 			log.Println("Error converting document:", err)
 			return User{}, err
 		}
 		//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string
-		if _, ok := doc.Data()["recipes"].([]interface{}); ok {
+		if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
+
 			tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
 			for _, v := range tmpShoppingLists {
 				if str, ok := v.(string); ok {
@@ -141,7 +144,15 @@ func PatchUser(user User) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("users").Doc(user.Username).Set(ctx, user)
+	data := map[string]interface{}{
+		"username":       user.Username,
+		"password":       user.Password,
+		"shopping-lists": user.ShoppingLists,
+		"recipes":        user.Recipes,
+		"groups":         user.Groups,
+		"name":           user.Name,
+	}
+	_, err = client.Collection("users").Doc(user.Username).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching user:", err)
 		return err
@@ -175,10 +186,11 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 
 	// Get the documents where the partialUsername is found in the username field.
 	// Using Where twice is like using && in if statemnets
-	iter := client.Collection("users").
-		Where("username", ">=", partialUsername).
-		Where("username", "<", partialUsername+"\uf8ff").Documents(ctx)
+	collection := client.Collection("users")
+	query := collection.Where("username", ">=", partialUsername).
+		Where("username", "<", partialUsername+"\uf8ff")
 
+	iter := query.Documents(ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -238,6 +250,38 @@ func GetGroupData(groupID string) (Group, error) {
 		return Group{}, err
 	}
 	return group, nil
+}
+
+func PatchGroup(group Group) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	data := map[string]interface{}{
+		"members":        group.Members,
+		"owner":          group.Owner,
+		"name":           group.Name,
+		"recipes":        group.Recipes,
+		"schedule":       group.Schedule,
+		"shopping-lists": group.ShoppingLists,
+	}
+	_, err = client.Collection("groups").Doc(group.ID).Set(ctx, data)
+	if err != nil {
+		log.Println("Error patching group:", err)
+		return err
+	}
+	return nil
+}
+func GetGroupName(groupID string) (string, error) {
+	// Get the group data from cache (check ReturnCacheGroup documentation)
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return "", err
+	}
+	return groupData.Name, nil
 }
 
 func GetGroupMembers(groupID string) ([]GroupMemberNameRole, error) {
@@ -326,7 +370,7 @@ func DeleteMemberFromGroup(groupID string, username string) error {
 	UserCache[username] = CacheData{userData, time.Now()}
 
 	// Update the Firestore document with the modified groups list
-	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "groups", Value: updatedGroups},
 	})
 	if err != nil {
@@ -474,7 +518,18 @@ func PatchRecipe(recipe Recipe) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("recipes").Doc(recipe.ID).Set(ctx, recipe)
+	data := map[string]interface{}{
+		"name":         recipe.Name,
+		"time":         recipe.Time,
+		"image":        recipe.Image,
+		"description":  recipe.Description,
+		"URL":          recipe.URL,
+		"ingredients":  recipe.Ingredients,
+		"instructions": recipe.Instructions,
+		"categories":   recipe.Categories,
+		"portions":     recipe.Portions,
+	}
+	_, err = client.Collection("recipes").Doc(recipe.ID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching recipe:", err)
 		return err
@@ -529,8 +584,12 @@ func AddShoppingList(list ShoppingList) (string, error) {
 		log.Println("error getting Firebase client:", err)
 		return "", err
 	}
+	data := map[string]interface{}{
+		"assignees": list.Assignees,
+		"list":      list.List,
+	}
 	//Add shoppinglist to database
-	id, _, err := client.Collection("shopping-list").Add(ctx, list)
+	id, _, err := client.Collection("shopping-list").Add(ctx, data)
 	if err != nil {
 		log.Println("Error adding shopping list:", err)
 		return "", err
@@ -546,7 +605,11 @@ func PatchShoppingList(list ShoppingList) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("shopping-list").Doc(list.ID).Set(ctx, list)
+	data := map[string]interface{}{
+		"assignees": list.Assignees,
+		"list":      list.List,
+	}
+	_, err = client.Collection("shopping-list").Doc(list.ID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching shopping list:", err)
 		return err
@@ -566,16 +629,15 @@ func DeleteShoppingList(listID string) error {
 		log.Println("Error deleting shopping list:", err)
 		return err
 	}
-	delete(ShoppingCache, listID)
 	return nil
 }
 
 /*****************				TODOS				*****************/
 
 // TODO: THis function and the one underneath are extremly similair and should be made into one
-func AddUserToGroup(username string, groupName string) error {
+func AddUserToGroup(username string, groupID string) error {
 	// Get the group data from cache (check ReturnCacheGroup documentation)
-	groupData, err := ReturnCacheGroup(groupName)
+	groupData, err := ReturnCacheGroup(groupID)
 	if err != nil {
 		log.Println("error getting group data from cache:", err)
 		return err
@@ -589,7 +651,7 @@ func AddUserToGroup(username string, groupName string) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
-	_, err = client.Collection("groups").Doc(groupName).Update(ctx, []firestore.Update{
+	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
 		{Path: "members", Value: groupData.Members},
 	})
 	if err != nil {
@@ -598,14 +660,14 @@ func AddUserToGroup(username string, groupName string) error {
 	}
 
 	// Update the cache with the modified group data
-	GroupCache[groupName] = CacheData{groupData, time.Now()}
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
 
 	return nil
 
 }
 
 // TODO: THis function and the one above are extremly similair and should be made into one
-func AddGroupToUser(username string, groupName string) error {
+func AddGroupToUser(username string, groupID string) error {
 	// Get the user data from cache (check ReturnCacheUser documentation)
 	userData, err := ReturnCacheUser(username)
 	if err != nil {
@@ -613,7 +675,7 @@ func AddGroupToUser(username string, groupName string) error {
 		return err
 	}
 	// Add the new group to the user's groups list
-	userData.Groups = append(userData.Groups, groupName)
+	userData.Groups = append(userData.Groups, groupID)
 
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -622,7 +684,7 @@ func AddGroupToUser(username string, groupName string) error {
 		return err
 	}
 	// Add the new group to the users groups field
-	_, err = client.Collection("users").Doc(username).Update(ctx, []firestore.Update{
+	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "groups", Value: userData.Groups},
 	})
 	if err != nil {

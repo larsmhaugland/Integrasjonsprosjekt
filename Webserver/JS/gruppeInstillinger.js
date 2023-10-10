@@ -1,29 +1,39 @@
-
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
+    
     const modal = document.querySelector("#search-member-modal");
-    const openAddMemberButton = document.querySelector("#add-member-btn");
+    //const openAddMemberButton = document.querySelector("#add-member-btn");
     const closeModalButton = modal.querySelector(".close");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
-    const groupMembersList = document.querySelector("#member-list");
-    const roles = ['Owner', 'Administrator', 'Member'];
+    const groupMembersListSettings = document.querySelector("#group-members-list-settings");
     const deleteGroupButton = document.querySelector("#delete-group");
+    const LoggedInUsername = sessionStorage.getItem("username");
+    const groupNameElement = document.querySelector("#group-name");
+
+   // let selectElementValue = "member";
+    //const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
+    const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
+    const roles = ['Owner', 'Administrator', 'Member'];
+    var groupID;
     var GroupOwner;
-    const API_IP = "https://" + window.location.hostname + ":8080";
-    const Username = sessionStorage.getItem("username");
-    const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
-    /*
-    window.onload = function () {
-        const groupID = 'your_group_id'; 
+    var groupName;
+    const Administrators = [];
+
+    // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
+    // the group name was set in the html so it became undefined.
+    window.onload = async function () {
+        groupID = tmpGroupID; 
+        const groupName = await getGroupName(groupID);
+        groupNameElement.textContent = "Settings for: " + groupName;
         fetchGroupMembers(groupID);
-    };*/
+    };
     
     // Open the modal when the button is clicked
-    openAddMemberButton.addEventListener('click', function () {
+   /* openAddMemberButton.addEventListener('click', function () {
         modal.style.display = "block";
-    });
+    });*/
 
     // Close the modal when the close button is clicked
     closeModalButton.addEventListener("click", function () {
@@ -34,6 +44,13 @@ document.addEventListener("DOMContentLoaded", function () {
         deleteGroup(groupID)
     })
     
+
+    // Function to retrieve URL parameter by name
+    function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name) || '';
+    }
+
     /**
      * Sends a DELETE request to the backend endpoint, that deletes the group specified
      * @param {*} groupID - ID of the group to be deleted.
@@ -42,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function deleteGroup(groupID) {
         const url = `${API_IP}/group/deleteGroup?groupID=${groupID}`;
         const redirectURL = "../index.html";
-        if (Username != GroupOwner){
+        if (LoggedInUsername != GroupOwner){
             alert("Only the owner can delete the group");
             return;
         }
@@ -68,10 +85,31 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Needs to be async because it uses await to wait for the response from the server before returning the data.
+    async function getGroupName(groupID){
+        const url = `${API_IP}/group/groupName?groupID=${groupID}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Server error occurred, could not get the group name.");
+        }
+    }
+
+
     // Handle search input changes
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.trim();
-        const url = `${API_IP}/search?partialUsername=${query}`;
+        console.log("Query is: " + query);
+        if (query.length === 0) {
+            return;
+        }
+        const url = `${API_IP}/user/search?partialUsername=${query}`;
         // Send a GET request to the firestore database via GO
         fetch(url)
             .then(response => response.json())
@@ -81,7 +119,6 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error fetching search results from database:", error);
-                alert("Error getting the serach results from the databse");
             });
     });
 
@@ -91,10 +128,20 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} results - The usernames of the users that corresponded to the search
      */
     function updateMemberSuggestions(results) {
+
         // Clear existing suggestions
         while (memberSuggestionsList.firstChild) {
             memberSuggestionsList.removeChild(memberSuggestionsList.firstChild);
         }
+
+        // If there were no matching members dsiplay a message to the user
+        if (results.length === 0) {
+            const noResultsMessage = document.createElement("p");
+            noResultsMessage.textContent = "No matching results found.";
+            memberSuggestionsList.appendChild(noResultsMessage);
+            return;
+        }
+        
         // Populate the suggestions list with results
         results.forEach(function (username) {
         const listItem = document.createElement("li");
@@ -113,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addButton.className = "add-member-btn2";
 
         const addImage = document.createElement("img");
-        addImage.src = "../images/add-icon.png";
+        addImage.src = "../Images/add-icon.png";
         addImage.alt = "Add member";
 
         addButton.appendChild(addImage);
@@ -121,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Add an event listener to handle adding a member to the group when clicking the icon
         addButton.addEventListener("click", function () {
             const username = addButton.parentElement.querySelector("span").textContent;
-            const groupID = "Hunnsvegen 14B"; // TODO: Must be changed to the actual dynamic groupID
+            const groupID = tmpGroupID; // TODO: Must be changed to the actual dynamic groupID
             addMemberToGroup(username, groupID);
         });
 
@@ -133,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
         memberSuggestionsList.appendChild(listItem);
     });
     }
+
     /**
      * Adds the correct user to the group by sending a POST request to the backend that
      * then communicates and correctly adds the user to the group in the database.
@@ -140,14 +188,18 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} groupID - ID of the group the user will be added to
      */
     function addMemberToGroup(username, groupID) {
-        const url = API_IP + "/group/members"   
-
+        if (LoggedInUsername != GroupOwner && !Administrators.includes(LoggedInUsername)){
+            alert("Only an owner or administrator can add a member to the group");
+            return;
+        }
+        const url = `${API_IP}/group/members`;
+        
         // Request body with the information needed for the backend to correctly add member to group
         const requestBody = JSON.stringify({
             username: username,
-            groupName: groupName,
+            groupID: groupID,
         });
-        // Send a POST request to the backend
+        // Send a POST request to the backend f
         fetch(url, {
             method: "POST",
             headers: {
@@ -159,6 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.status === 200) {
                 // Member added successfully
                 alert("Member added to the group successfully");
+                location.reload();
             } else {
                 alert("Error adding member to the group");
             }
@@ -185,6 +238,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Error when trying to get the group members from the databse")
         });
     } 
+
     
     /**
      * Creates all the html elements to render for each group memeber and also gives them the correct
@@ -194,14 +248,18 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderGroupMembers(groupMembers) {
 
         // Clear existing members (if any)
-        while (groupMembersList.firstChild) {
-            groupMembersList.removeChild(groupMembersList.firstChild);
+        if (groupMembersListSettings) {
+            while (groupMembersListSettings.firstChild) {
+                groupMembersListSettings.removeChild(groupMembersListSettings.firstChild);
+            }
+        } else {
+            // Handle the case where groupMembersList is null or doesn't exist
+            console.error("groupMembersListSettings is null or doesn't exist.");
         }
 
         // Iterate through the group members and create the corresponding list items
         groupMembers.forEach((member) => {
             const listItem = document.createElement('li');
-
             const img = document.createElement('img');
             img.src = '../Images/person-icon-transparent.png';
             img.alt = `Member ${member.username}`;
@@ -220,6 +278,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 option.textContent = role;
                 select.appendChild(option);
             });
+            
+            // To store the value before it is changed in case member trying to update is not Owner
+            select.addEventListener('focus', () => {
+                initialValue = select.value;
+            });
 
             select.addEventListener('change', (event) => {
                 // Get the selected role from the dropdown menu
@@ -229,7 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const parentElement = select.parentElement;
                 const username = parentElement.querySelector("span").textContent;
                 
-                updateRoleForMember(username, selectedRole);
+                updateRoleForMember(username, selectedRole, initialValue);
             })
             
             // Set the selected option based on the member's role
@@ -237,6 +300,9 @@ document.addEventListener("DOMContentLoaded", function () {
             
             if (member.roleName.toLowerCase() === "owner"){
                 GroupOwner = member.username;
+            }
+            if (member.roleName.toLowerCase() === "administrator"){
+                Administrators.push(member.username);
             }
              // Create the delete button
             const deleteButton = document.createElement('button');
@@ -255,8 +321,15 @@ document.addEventListener("DOMContentLoaded", function () {
             listItem.appendChild(deleteButton);
 
             // Append the list item to the group members list
-            groupMembersList.appendChild(listItem);
+            groupMembersListSettings.appendChild(listItem);
         });
+        const addMemberButton = document.createElement('button');
+        addMemberButton.textContent = 'Legg til medlem';
+        addMemberButton.id = 'add-member-btn';
+        addMemberButton.addEventListener('click', function () {
+            modal.style.display = "block";
+        });
+        groupMembersListSettings.appendChild(addMemberButton);
     }
 
     /**
@@ -264,7 +337,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} username username to delete from the group
      */
     function deleteMember(username) {
-        const groupID = 'your_group_id'; // TODO get current group id
+        if (LoggedInUsername != GroupOwner && !Administrators.includes(LoggedInUsername)){
+            alert("Only an owner or administrator can add a member to the group");
+            return;
+        }
+        const groupID = tmpGroupID; // TODO get current group id
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
     
         fetch(url, {
@@ -291,13 +368,33 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} username - username to update the role for
      * @param {*} newRole - new role for the username
      */
-    function updateRoleForMember(username, newRole){
-        const groupID = "update this" // TODO dynamic group id
+    function updateRoleForMember(username, newRole, initialValue){
+        if (LoggedInUsername != GroupOwner && !Administrators.includes(LoggedInUsername)){
+            // Get the list items inside the ul element
+            const listItems = groupMembersListSettings.querySelectorAll("li");
+            listItems.forEach((listItem) => {
+                // Find the Span and Select elements inside the list item
+                const usernameSpan = listItem.querySelector("span");
+                const roleSelect = listItem.querySelector(".role-dropdown");
+
+                // Get the username from the Span element
+                const nameForElement = usernameSpan.textContent;
+
+                // Check if the username matches the target username
+                if (nameForElement === username) {
+                    // Set the Select element value to the initial value
+                    roleSelect.value = initialValue;
+                }
+            });
+            alert("Only the owner can update the role of a member");
+            return;
+        }
+        const groupID = tmpGroupID// TODO dynamic group id
         const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
         fetch(url, {
             method: 'PATCH',
         })
-            .then((repsonse) => {
+            .then((response) => {
                 if (response.status === 200) {
                     console.log("Role of group member updated");
                 } else {

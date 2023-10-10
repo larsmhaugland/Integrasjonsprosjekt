@@ -60,9 +60,9 @@ submitRecipeBtn.addEventListener("click", newRecipe);
 
 
 //Load recipes:
-getRecipes();
-displayResults();
-getGroups();
+//getRecipes(Recipes);
+//displayResults();
+//getGroups();
 
 function newRecipe() {
     let name = document.querySelector("#recipe-name").value;
@@ -174,38 +174,7 @@ function getGroups() {
 
 }
 
-function getRecipes() {
-    let username = sessionStorage.getItem("username");
-    //if(!checkAuthToken()) return;
-    fetch(API_IP + "/user/recipes?groups=true", {
-    //fetch("localhost:8080" + "/user/recipes?groups=true", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "username": username,
-        },
-    }).then(response => {
-        if (response.status === 200){
-            return response.json();
-        } else {
-            console.log("Error when fetching recipes");
-            return false;
-        }
-    }
-    ).then(data => {
-        if (data !== false){
-            console.log(data);
-            for (let i = 0; i < data.length; i++){
-                Recipes.push(data[i]);
-            }
-        }
-    }).catch(error => {
-        console.log("Error when fetching recipes");
-        console.log(error);
-    });
 
-    displayResults();
-}
 
 function searchRecipes() {
 

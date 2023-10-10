@@ -26,6 +26,8 @@ type User struct {
 	Groups        []string `json:"groups"`
 	ShoppingLists []string `json:"shopping-lists"`
 	Recipes       []string `json:"recipes"`
+	Name          string   `json:"name"`
+	DocumentID    string   `json:"documentID"`
 }
 
 type Dinner struct {
@@ -33,14 +35,19 @@ type Dinner struct {
 	Responsible []string `json:"responsible"`
 }
 
+type GroupRecipe struct {
+	LastEaten time.Time `json:"lastEaten"`
+	Owner     string    `json:"owner"`
+}
+
 type Group struct {
-	ID           string            `json:"id"`
-	Members      map[string]string `json:"members"`
-	Owner        string            `json:"owner"`
-	Name         string            `json:"name"`
-	Recipes      []string          `json:"recipes"`
-	Schedule     map[string]Dinner `json:"schedule"`
-	ShoppingList []string          `json:"shoppingList"`
+	ID            string                 `json:"id"`
+	Members       map[string]string      `json:"members"`
+	Owner         string                 `json:"owner"`
+	Name          string                 `json:"name"`
+	Recipes       map[string]GroupRecipe `json:"recipes"`
+	Schedule      map[string]Dinner      `json:"schedule"`
+	ShoppingLists []string               `json:"shopping-lists"`
 }
 
 type ShoppingListItem struct {
@@ -62,7 +69,7 @@ type CacheData struct {
 
 type AddGroupMember struct {
 	Username  string `json:"username"`
-	GroupName string `json:"groupName"`
+	GroupID string `json:"groupID"`
 }
 
 type GroupMemberNameRole struct {

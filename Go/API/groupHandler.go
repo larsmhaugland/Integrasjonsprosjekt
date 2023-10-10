@@ -18,9 +18,6 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "members":
 		GroupMemberBaseHandler(w, r)
 		break
-	case "recipes":
-		GroupRecipeBaseHandler(w, r)
-		break
 	case "schedule":
 		GroupScheduleBaseHandler(w, r)
 		break
@@ -32,6 +29,9 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	case "deleteGroup":
 		DeleteGroup(w, r)
+		break
+	case "groupName":
+		GetGroupName(w, r)
 		break
 	default:
 		http.Error(w, "Error; Endpoint not supported", http.StatusBadRequest)
@@ -50,6 +50,25 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		}
 		// Respond with a success or error status
 		w.WriteHeader(http.StatusOK)
+	} else {
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
+	}
+}
+func GetGroupName(w http.ResponseWriter, r *http.Request) {
+ 
+	if r.Method == http.MethodGet { 
+		groupID := r.URL.Query().Get("groupID")
+		
+		groupName, err := Firebase.GetGroupName(groupID)
+		if err != nil {
+			http.Error(w, "Could not get the group name", http.StatusInternalServerError)
+		}
+
+		err = EncodeJSONBody(w, r, groupName)
+		if err != nil {
+			http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+			return
+		}
 	} else {
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 	}
@@ -136,13 +155,13 @@ func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupName)
+	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupID)
 	if err != nil {
 		http.Error(w, "Could not add user to the group", http.StatusBadRequest)
 		return
 	}
 
-	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupName)
+	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupID)
 	if err != nil {
 		http.Error(w, "Could not add the group to the user", http.StatusBadRequest)
 		return
@@ -155,8 +174,8 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the groupID from the query parameters
 	groupID := r.URL.Query().Get("groupID")
 
-	// Fetch and prepare the group members' data based on the groupID
-	groupMembersData, err := Firebase.GetGroupMembers(groupID) // Implement this function
+	// Fetch and prepare the group members data based on the groupID
+	groupMembersData, err := Firebase.GetGroupMembers(groupID) 
 	if err != nil {
 		http.Error(w, "Could not get the name and roles of the group members", http.StatusInternalServerError)
 		return
@@ -166,45 +185,7 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
-	}
-}
-
-func GroupRecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		GroupRecipeGetHandler(w, r)
-		break
-	case http.MethodPost:
-		GroupRecipePostHandler(w, r)
-		break
-	case http.MethodDelete:
-		GroupRecipeDeleteHandler(w, r)
-		break
-	case http.MethodPatch:
-		GroupRecipePatchHandler(w, r)
-		break
-	case http.MethodOptions: // For CORS
-		return
-	default:
-		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
-		return
-	}
-}
-
-func GroupRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func GroupRecipePostHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func GroupRecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func GroupRecipePatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	}	
 }
 
 func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {

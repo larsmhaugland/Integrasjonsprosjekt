@@ -14,7 +14,7 @@ let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "block";});
 
-b = document.querySelector("#close-login-btn");
+b = document.querySelector("#close-login-popup");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "none";});
 
@@ -25,7 +25,7 @@ registerUserBtn.addEventListener("click", registerUser);
 
 let registerSwitchBtn = document.querySelector("#register-switch-btn");
 registerSwitchBtn.addEventListener("click", loginRegisterToggle);
-let closeRegisterBtn = document.querySelector("#close-register-btn");
+let closeRegisterBtn = document.querySelector("#close-register-popup");
 closeRegisterBtn.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("register-popup").style.display = "none";});
 let loginSwitchBtn = document.querySelector("#login-switch-btn");
@@ -139,13 +139,14 @@ function registerUser(){
     let username = document.querySelector("#username-reg").value;
     let password = document.querySelector("#password-reg").value;
     let passwordConf = document.querySelector("#password-reg-conf").value;
+    let name = document.querySelector("#name-reg").value;
     let passwordMismatch = document.querySelector("#password-mismatch");
     if (password !== passwordConf){
         passwordMismatch.style.display = "block";
         console.log("Passwords do not match");
         return;
     }
-    let credentials = {"username": username, "password": password};
+    let credentials = {"username": username, "password": password, "name": name};
 
     fetch(API_IP + "/user/credentials/register", {
         method: "POST",
@@ -169,8 +170,13 @@ function registerUser(){
         }
     })
     .catch(error => {
+        alertDBconnectionRefused()
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
 
+}
+
+function alertDBconnectionRefused(){
+    alert("Could not connect to database");
 }

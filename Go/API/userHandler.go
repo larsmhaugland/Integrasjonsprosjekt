@@ -21,9 +21,6 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "credentials":
 		UserCredentialBaseHandler(w, r)
 		break
-	case "recipes":
-		UserRecipeBaseHandler(w, r)
-		break
 	case "groups":
 		UserGroupBaseHandler(w, r)
 		break
@@ -32,76 +29,6 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
-		return
-	}
-}
-
-func UserRecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		UserRecipeGetHandler(w, r)
-		break
-	case http.MethodPost:
-		UserRecipePostHandler(w, r)
-		break
-	case http.MethodDelete:
-		UserRecipeDeleteHandler(w, r)
-		break
-	case http.MethodOptions: // For CORS
-		return
-	default:
-		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
-		return
-	}
-}
-
-func UserRecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func UserRecipePostHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func UserRecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	//Get username from header
-	username := r.Header.Get("username")
-	user, err := Firebase.ReturnCacheUser(username)
-	if err != nil {
-		http.Error(w, "Error while getting user recipes: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-	//Get parameters from URL
-	includeGroups := r.URL.Query().Get("groups")
-
-	var recipes []Firebase.Recipe
-	var groups []string
-	if includeGroups == "true" {
-		for _, group := range user.Groups {
-			g, err := Firebase.ReturnCacheGroup(group)
-			if err != nil {
-				http.Error(w, "Error while getting group recipes: "+err.Error(), http.StatusBadRequest)
-				return
-			}
-			for _, id := range g.Recipes {
-				recipe, err := Firebase.ReturnCacheRecipe(id)
-				if err != nil {
-					http.Error(w, "Error while getting recipe: "+err.Error(), http.StatusBadRequest)
-					return
-				}
-				recipes = append(recipes, recipe)
-				groups = append(groups, group)
-			}
-		}
-	}
-	data := map[string]interface{}{
-		"GroupRecipes": recipes,
-		"UserRecipes":  user.Recipes,
-	}
-
-	err = EncodeJSONBody(w, r, data)
-	if err != nil {
-		http.Error(w, "Error while encoding JSON body: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -205,8 +132,7 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//Add the cookie to the response
 	http.SetCookie(w, &authCookie)
-	http.Error(w, "User added", http.StatusCreated)
-
+	w.WriteHeader(http.StatusCreated)
 }
 
 func UserCredentialDeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -273,11 +199,13 @@ func UserSearchHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		partialUsername := r.URL.Query().Get("partialUsername")
-		err, userNames := Firebase.GetUsernamesFromPartialName(partialUsername)
+		userNames, err := Firebase.GetUsernamesFromPartialName(partialUsername)
 		if err != nil {
-			http.Error(w, "Could not find usernames that match input username from the database", http.StatusBadRequest)
+			http.Error(w, "Error querying firebase for usernames", http.StatusInternalServerError)
 			return
 		}
+
+		w.Header().Set("Content-Type", "application/json")
 		err2 := EncodeJSONBody(w, r, userNames)
 		if err2 != nil {
 			http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
