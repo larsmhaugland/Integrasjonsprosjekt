@@ -192,34 +192,41 @@ list.addEventListener("click", (event) => {
     }
 });
 
-//Remove item from list if checkbox is checked
+//Remove item from list if checkbox is checked and moves it to finished list
 function removeItemFromList(){
     let list = document.querySelector("#shopping-list");
     let items = list.querySelectorAll("#list-item");
-    let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
+
+    let finishedList = document.querySelector("#finished-list");
+    let finishedItems = finishedList.querySelectorAll("#list-item");
+
     items.forEach(item => {
-        let checkbox = item.querySelector("#checkbox");
-        if (checkbox.checked) {
-            let text = item.textContent.trim();
-            let itemDataIndex = getItemDataIndex(text, shoppinglist);
-            if (itemDataIndex !== -1) {
-                list.removeChild(item);
-                shoppinglist.splice(itemDataIndex, 1); // Remove the item from the shoppinglist
-            }
+        if(item.querySelector("#checkbox").checked){
+            let newitem = item.cloneNode(true);
+            let clonedCheckbox = newitem.querySelector("input[type='checkbox']");
+            clonedCheckbox.id = "finished-checkbox";
+            finishedList.appendChild(newitem);
+            list.removeChild(item);
         }
     });
-    sessionStorage.setItem("shoppinglist", JSON.stringify(shoppinglist));
+
+    finishedItems.forEach(item => {
+        if(!item.querySelector("#finished-checkbox").checked){
+            let newitem = item.cloneNode(true);
+            let clonedCheckbox = newitem.querySelector("input[type='checkbox']");
+            clonedCheckbox.id = "checkbox";
+            list.appendChild(newitem);
+            finishedList.removeChild(item);
+        }
+    });
 }
 
-function getItemDataIndex(displayedText, shoppinglist) {
-    for (let i = 0; i < shoppinglist.length; i++) {
-        if (shoppinglist[i].item == displayedText) {
-            console.log("Found item at index: " + i)
-            return i;
-        }
+let finishedlist = document.querySelector("#finished-list");
+finishedlist.addEventListener("click", (event) => {
+    if(event.target.id === "finished-checkbox"){
+        removeItemFromList();
     }
-    return -1;
-}
+});
 
 /*
     RETRIEVE GROUPS FROM SESSION STORAGE OR DATABASE
