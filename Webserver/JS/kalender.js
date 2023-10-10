@@ -1,13 +1,16 @@
 let dinnerPopup = document.querySelector("#dinner-popup");
 let newDinnerBtns = document.querySelectorAll(".dinner-btn");
 let closeDinnerPopup = document.querySelector("#close-dinner-popup");
-//let textField = document.querySelector("#")
 let currentDay;
-
+let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "sondag"];
 let Recipes = [];
+let calendar = [[]];
 
 getRecipes(Recipes);
 retrieveGroups();
+let groups = JSON.parse(sessionStorage.getItem("groups"));
+displayGroups(groups);
+
 newDinnerBtns.forEach (function (btn)
 {
     btn.addEventListener("click", function (event){
@@ -27,10 +30,12 @@ closeDinnerPopup.addEventListener("click", function (event){
 });
 
 function addDinnerToCalendar() {
+    let dinnerName = document.querySelector("#dinner-name").value;
+
     if(event.key === "Enter") {
-        let dinnerName = document.querySelector("#dinner-name").value;
+
         let label = document.createElement("label");
-        label.innerHTML = dinnerName;
+        label.innerHTML = '<br>'+ dinnerName;
         label.setAttribute("id", currentDay + " textbox");
         let div = document.getElementById(currentDay);
         div.appendChild(label);
@@ -38,8 +43,16 @@ function addDinnerToCalendar() {
         dinnerPopup.style.display = "none";
         document.querySelector("#dinner-name").value = "";
     } else {
-        autocomplete(currentDay, document.querySelector("#dinner-name").value);
+        autocomplete(currentDay, dinnerName);
     }
+    for (let i = 0; i < groups.length; i++){
+        for (let j = 0; j<allDays.length; j++) {
+            if (allDays[j] === currentDay) {
+                calendar[i][j] = dinnerName;
+            }
+        }
+    }
+    console.log(calendar);
 }
 
 
@@ -52,6 +65,10 @@ function autocomplete(day, text){
         //TODO: Legg til forslag øverst i listen (2 forslag)
         //suggestions = GETFORSLAG()
 
+        if(Recipes.length > 1){
+            suggestions = Recipes[0];
+            suggestions += Recipes[1];
+        }
         //Finner oppskrifter som matcher søket substring
         suggestions += Recipes.filter((data) => {
             return data.name.toLowerCase().includes(text.toLowerCase());
@@ -94,4 +111,17 @@ function showSuggestions(list) {
         listData = list.join('');
     }
     resultsList.innerHTML = listData;
+}
+
+function displayGroups(groups){
+    let dropdown = document.querySelector("#group-dropdown");
+    let option = document.createElement("option");
+    option.textContent = "Velg gruppe";
+
+    groups.forEach(group => {
+        let option = document.createElement("option");
+        option.value = group.name;
+        option.textContent = group.name;
+        dropdown.appendChild(option);
+    });
 }
