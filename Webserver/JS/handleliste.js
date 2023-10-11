@@ -208,7 +208,6 @@ function removeItemFromList(){
                 console.log(name);
                 for (let itemName in sessionItem.list) {
                     let itemInfo = sessionItem.list[itemName].quantity + " " + itemName;
-                    console.log(itemInfo);
                     if (itemInfo === name) {
                         sessionItem.list[itemName].complete = true;
                     }
@@ -246,6 +245,7 @@ function removeItemFromList(){
         }
     });
     console.log(sessionList);
+    sessionStorage.setItem("shoppinglist", JSON.stringify(sessionList));
     patchShoppingList();
 }
 
@@ -294,6 +294,7 @@ function patchShoppingList(){
     let option = document.querySelector("#group-dropdown").value;
     let userName = sessionStorage.getItem("username");
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
+    console.log(shoppinglist)
     let shoppingListObject = {
         id: shoppinglist.id,
         assignees: [],
@@ -308,6 +309,7 @@ function patchShoppingList(){
            }
        }
     });
+    console.log(shoppingListObject);
 
     let parameters = "";
     if(option === userName){
