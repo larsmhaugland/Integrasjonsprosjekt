@@ -337,7 +337,7 @@ function patchShoppingList(){
         if (group) {
             parameters = group.id;
         }
-        fetch(API_IP + `/group/shopping/${parameters}`, {
+        fetch(API_IP + `/group/shopping?groupID=${parameters}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"

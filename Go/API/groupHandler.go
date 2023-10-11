@@ -276,7 +276,6 @@ func GroupShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GroupShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
 	groupID := r.URL.Query().Get("groupID")
 	group, err := Firebase.ReturnCacheGroup(groupID)
 
