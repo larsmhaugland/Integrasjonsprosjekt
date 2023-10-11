@@ -2,6 +2,7 @@ package API
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -276,5 +277,30 @@ func GroupShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func GroupShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
-	//groupID := r.URL.Query().Get("groupID")
+	groupID := r.URL.Query().Get("groupID")
+	group, err := Firebase.ReturnCacheGroup(groupID)
+
+	listId := group.ShoppingLists[0]
+	log.Printf("List ID: %v\n", listId)
+	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
+	if err != nil {
+		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	var newshoppinglist Firebase.ShoppingList
+	err = DecodeJSONBody(w, r, &newshoppinglist)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+
+	shoppingList.Assignees = newshoppinglist.Assignees
+	shoppingList.List = newshoppinglist.List
+
+	Firebase.PatchShoppingList(shoppingList)
+	if err != nil {
+		http.Error(w, "Error while updating shopping lists", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

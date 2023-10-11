@@ -59,7 +59,7 @@ function retrieveShoppingList() {
         let group = groups.find(group => group.name === option);
         if (group){
             let groupId = group.id;
-        fetch(API_IP + `/shopping/${groupId}?group=group`, {
+        fetch(API_IP + `/shopping/${groupId}?userOrGroup=group`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"

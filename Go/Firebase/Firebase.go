@@ -250,6 +250,18 @@ func GetGroupData(groupID string) (Group, error) {
 		log.Println("Error converting document:", err)
 		return Group{}, err
 	}
+	//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string x2
+	if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
+		tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
+		for _, v := range tmpShoppingLists {
+			if str, ok := v.(string); ok {
+				group.ShoppingLists = append(group.ShoppingLists, str)
+			} else {
+				log.Println("Error; Failed to convert shopping list id to string:", err)
+			}
+		}
+	}
+	//TODO: group recipes also need to be converted to []string
 	return group, nil
 }
 
