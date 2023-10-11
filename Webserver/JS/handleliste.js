@@ -294,22 +294,30 @@ function patchShoppingList(){
     let option = document.querySelector("#group-dropdown").value;
     let userName = sessionStorage.getItem("username");
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
-    let list = [];
+    let shoppingListObject = {
+        id: shoppinglist.id,
+        assignees: [],
+        list: {},
+    };
     shoppinglist.forEach(item => {
-        for (let itemName in item.list) {
-            let quantity = item.list[itemName].quantity;
-            list.push({ name: itemName, quantity: quantity });
-        }
+       for(let itemName in item.list){
+           shoppingListObject.list[itemName] = {
+           complete: item.list[itemName].complete,
+           quantity: item.list[itemName].quantity,
+           category: item.list[itemName].category
+           }
+       }
     });
-    console.log(list);
+
     let parameters = "";
     if(option === userName){
+        shoppingListObject.assignees = [userName];
         fetch(API_IP + `/user/shopping?username=${userName}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(list)
+            body: JSON.stringify(shoppingListObject)
         }).then(response => {
             if (response.status === 200){
                 console.log("Shopping list updated");
@@ -332,7 +340,7 @@ function patchShoppingList(){
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(list)
+            body: JSON.stringify(shoppingListObject)
         }).then(response => {
             if (response.status === 200) {
                 console.log("Shopping list updated");

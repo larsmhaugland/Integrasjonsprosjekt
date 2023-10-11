@@ -2,6 +2,7 @@ package API
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -231,6 +232,9 @@ func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	log.Printf("Request URL parts: %v\n", parts) // Debug statement
+	log.Printf("Request method: %v\n", r.Method) // Debug statement
 	switch r.Method {
 	case http.MethodOptions:
 		break // For CORS
@@ -252,18 +256,22 @@ func UserShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
+	log.Printf("Username: %v\n", username)
 	user, err := Firebase.ReturnCacheUser(username)
 
 	listId := user.ShoppingLists[0]
+	log.Printf("List ID: %v\n", listId)
 	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
 	if err != nil {
 		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
+		log.Printf("Error while getting shopping list: %v\n", err.Error())
 		return
 	}
 	var newshoppinglist Firebase.ShoppingList
 	err = DecodeJSONBody(w, r, &newshoppinglist)
 	if err != nil {
 		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		log.Printf("Error while decoding JSON body: %v\n", err.Error())
 		return
 	}
 
@@ -273,6 +281,7 @@ func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	Firebase.PatchShoppingList(shoppingList)
 	if err != nil {
 		http.Error(w, "Error while updating shopping lists", http.StatusBadRequest)
+		log.Printf("Error while updating shopping lists: %v\n", err.Error())
 		return
 	}
 	w.WriteHeader(http.StatusOK)
