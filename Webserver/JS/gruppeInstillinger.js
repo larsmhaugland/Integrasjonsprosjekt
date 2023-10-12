@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const deleteGroupButton = document.querySelector("#delete-group");
     const LoggedInUsername = sessionStorage.getItem("username");
     const groupNameElement = document.querySelector("#group-name");
+    const leaveGroupButton = document.querySelector("#leave-group");
 
     // Global variables and constants
    // let selectElementValue = "member";
@@ -46,11 +47,44 @@ document.addEventListener("DOMContentLoaded", function () {
         deleteGroup(groupID)
     })
     
+    leaveGroupButton.addEventListener("click", function(){
+        leaveGroup(groupID)
+    });
 
     // Function to retrieve URL parameter by name
     function getUrlParameter(name) {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name) || '';
+    }
+
+
+    function leaveGroup(groupID) {
+        const url = `${API_IP}/group/leaveGroup?groupID=${groupID}&username=${LoggedInUsername}`;
+        const redirectURL = "../index.html";
+        if (LoggedInUsername == GroupOwner){
+            alert("The owner cannot leave the group");
+            return;
+        }
+        const confirmation = window.confirm("Er du sikker på at du vil forlate gruppa?");
+        if (!confirmation){
+            return;
+        } 
+        // Send a DELETE request to the server
+        fetch(url, {
+            method: "DELETE",
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                alert("Group left successfully.");
+                window.location.href = redirectURL;
+            } else {
+                alert("Error leaving group.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("Server error occured, could not leave the group.");
+        });
     }
 
     /**
