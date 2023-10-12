@@ -1,7 +1,3 @@
-div{
-    border: 2px solid black;
-}
-
 .container{
     grid-area:main;
     display: grid;
@@ -16,30 +12,37 @@ div{
 #mandag{
     grid-area: mandag;
     height:10em;
+    border: 2px solid black;
 }
 #tirsdag{
     grid-area: tirsdag;
     height:10em;
+    border: 2px solid black;
 }
 #onsdag{
     grid-area: onsdag;
     height:10em;
+    border: 2px solid black;
 }
 #torsdag{
     grid-area: torsdag;
     height:10em;
+    border: 2px solid black;
 }
 #fredag{
     grid-area: fredag;
     height:10em;
+    border: 2px solid black;
 }
 #lordag{
     grid-area: lordag;
     height:10em;
+    border: 2px solid black;
 }
 #sondag{
     grid-area: sondag;
     height:10em;
+    border: 2px solid black;
 }
 
 .dinner-popup {

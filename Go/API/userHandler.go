@@ -171,7 +171,7 @@ func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	groups, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
-		http.Error(w, "Error while getting user groups", http.StatusBadRequest)
+		http.Error(w, "Error while getting user", http.StatusBadRequest)
 		return
 	}
 
