@@ -1,14 +1,13 @@
-#new-group-popup{
-    display:none;
-    position: relative;
-    border: 10px solid #000000;
-    background-color:palevioletred;
-    grid-area: main;
-}
-
 #btn-image{
+    border: none;
+    color: white;
     width: 100px;
     height: auto;
+}
+
+button{
+    border:none;
+    background-color:white;
 }
 
 .groups-container{
@@ -24,12 +23,4 @@
     margin: 10px;
     width: 200px;
     height: 200px;
-}
-
-#group-created-popup{
-    display:none;
-    position: relative;
-    border: 10px solid #000000;
-    background-color:palevioletred;
-    grid-area: main;
 }

@@ -228,7 +228,30 @@ func UserGroupDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	username := r.URL.Query().Get("username")
+	user, err := Firebase.ReturnCacheUser(username)
+	if err != nil {
+		http.Error(w, "Error while getting user", http.StatusBadRequest)
+		log.Printf("Error while getting user: %v\n", err)
+		return
+	}
+
+	var groupID string
+	err = DecodeJSONBody(w, r, &groupID)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		log.Printf("Error while decoding JSON body: %v\n", err)
+		return
+	}
+
+	user.Groups = append(user.Groups, groupID)
+	Firebase.PatchUser(user)
+	if err != nil {
+		http.Error(w, "Error while updating user", http.StatusBadRequest)
+		log.Printf("Error while updating user: %v\n", err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {

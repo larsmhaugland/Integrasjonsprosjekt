@@ -2,7 +2,6 @@ package API
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -280,7 +279,6 @@ func GroupShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	group, err := Firebase.ReturnCacheGroup(groupID)
 
 	listId := group.ShoppingLists[0]
-	log.Printf("List ID: %v\n", listId)
 	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
 	if err != nil {
 		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
