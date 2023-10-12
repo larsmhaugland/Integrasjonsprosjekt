@@ -89,7 +89,11 @@ btn.addEventListener("click", (event)=> {event.preventDefault();
 //TODO: Add the groupID to the user's list of groups
 function newGroup(groupName){
     const groupId = generateRandomId(20);
-    let group = {id: groupId, name: groupName, owner: sessionStorage.getItem("username")};
+    const group = {
+        id: groupId,
+        name: groupName,
+        owner: sessionStorage.getItem("username"),
+    };
     fetch(API_IP + `/group/new?${groupName}`, {
         method: "POST",
         headers: {
