@@ -2,6 +2,7 @@
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
     
+    // DOM elements
     const modal = document.querySelector("#search-member-modal");
     //const openAddMemberButton = document.querySelector("#add-member-btn");
     const closeModalButton = modal.querySelector(".close");
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const LoggedInUsername = sessionStorage.getItem("username");
     const groupNameElement = document.querySelector("#group-name");
 
+    // Global variables and constants
    // let selectElementValue = "member";
     //const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
