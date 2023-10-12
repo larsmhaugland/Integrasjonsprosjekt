@@ -5,18 +5,18 @@ import (
 )
 
 type Recipe struct {
-	ID           string                       `json:"id"`
-	Name         string                       `json:"name"`
-	Time         int                          `json:"time"`
-	Picture      string                       `json:"picture"`
-	Description  string                       `json:"description"`
-	URL          string                       `json:"URL"`
-	Ingredients  map[string]map[string]string `json:"ingredients"`
-	Instructions []string                     `json:"instructions"`
-	Categories   []string                     `json:"categories"`
-	Portions     int                          `json:"portions"`
-	Group        string                       `json:"group"`
-	Image        string                       `json:"image"`
+	ID           string            `json:"id"`
+	Name         string            `json:"name"`
+	Time         int               `json:"time"`
+	Picture      string            `json:"picture"`
+	Description  string            `json:"description"`
+	URL          string            `json:"URL"`
+	Ingredients  map[string]string `json:"ingredients"`
+	Instructions []string          `json:"instructions"`
+	Categories   []string          `json:"categories"`
+	Portions     int               `json:"portions"`
+	Group        string            `json:"group"`
+	Image        string            `json:"image"`
 }
 
 type User struct {
@@ -68,8 +68,8 @@ type CacheData struct {
 }
 
 type AddGroupMember struct {
-	Username  string `json:"username"`
-	GroupID string `json:"groupID"`
+	Username string `json:"username"`
+	GroupID  string `json:"groupID"`
 }
 
 type GroupMemberNameRole struct {

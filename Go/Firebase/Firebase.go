@@ -167,7 +167,7 @@ func PatchUser(user User) error {
 		"groups":         user.Groups,
 		"name":           user.Name,
 	}
-	_, err = client.Collection("users").Doc(user.Username).Set(ctx, data)
+	_, err = client.Collection("users").Doc(user.ID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching user:", err)
 		return err

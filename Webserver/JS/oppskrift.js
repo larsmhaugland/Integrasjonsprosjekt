@@ -109,9 +109,19 @@ ingredientInputBtn.addEventListener("click", (event)=> {
 });
 
 //Load recipes:
-getRecipes(Recipes);
-displayResults(Recipes);
 retrieveGroups();
+
+
+async function loadRecipes(){
+    if (!await checkAuthToken()) return;
+    console.log("GET RECIPES")
+    await getRecipes(Recipes);
+    console.log(Recipes);
+    console.log("DISPLAY-RECIPES")
+    await displayResults(Recipes);
+}
+
+loadRecipes().then(r => console.log("Recipes loaded"));
 
 
 
@@ -189,7 +199,6 @@ async function newRecipe() {
 
     let recipe = {
         "name": name,
-        "type": type,
         "difficulty": difficulty,
         "time": time,
         "image": filename,
@@ -213,7 +222,9 @@ async function newRecipe() {
         "groups": groups,
     };
 
-    console.log(data);
+    console.log(data.owner);
+    console.log(data.recipe);
+    console.log(data.groups);
 
     const recipeResponse = await fetch(API_IP + "/recipe/", {
         method: "POST",
@@ -256,10 +267,10 @@ function isDuplicate(list, item) {
     return false;
 }
 
-function displayResults(filteredList){
+async function displayResults(filteredList){
     //Clear results
     resultDiv.innerHTML = "";
-
+    console.log("Recipes = " + filteredList);
     //Display
     if (filteredList.length === 0) {
         resultDiv.appendChild(document.createTextNode("Du har ingen oppskrifter lagret"));
@@ -276,11 +287,11 @@ function displayResults(filteredList){
 
 
 
-    for (let i = 0; i < displayedRecipes.length; i++){
+    for (let i = 0; i < displayedRecipes.length; i++) {
         let recipe = displayedRecipes[i];
         let recipeBlock = document.createElement("div");
-        recipeBlock.setAttribute("class","result_"+(i+1));
-        recipeBlock.setAttribute("id","result_"+(i+1));
+        recipeBlock.setAttribute("class", "result_" + (i + 1));
+        recipeBlock.setAttribute("id", "result_" + (i + 1));
         let recipeImage = document.createElement("img");
         recipeImage.setAttribute("src", IMAGEDIR + "/" + recipe.image);
         recipeImage.setAttribute("alt", recipe.name);
@@ -306,4 +317,5 @@ function displayResults(filteredList){
         recipeBlock.appendChild(recipeDifficulty);
         resultDiv.appendChild(recipeBlock);
     }
+    console.log("FERDIG");
 }
