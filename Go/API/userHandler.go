@@ -2,6 +2,7 @@ package API
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -26,7 +27,8 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	case "search":
 		UserSearchHandler(w, r)
-
+	case "shopping":
+		UserShoppingBaseHandler(w, r)
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -226,7 +228,80 @@ func UserGroupDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+	user, err := Firebase.ReturnCacheUser(username)
+	if err != nil {
+		http.Error(w, "Error while getting user", http.StatusBadRequest)
+		log.Printf("Error while getting user: %v\n", err)
+		return
+	}
+
+	var groupID string
+	err = DecodeJSONBody(w, r, &groupID)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		log.Printf("Error while decoding JSON body: %v\n", err)
+		return
+	}
+
+	user.Groups = append(user.Groups, groupID)
+	Firebase.PatchUser(user)
+	if err != nil {
+		http.Error(w, "Error while updating user", http.StatusBadRequest)
+		log.Printf("Error while updating user: %v\n", err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodOptions:
+		break // For CORS
+	case http.MethodDelete:
+		UserShoppingDeleteHandler(w, r)
+		break
+	case http.MethodPatch:
+		UserShoppingPatchHandler(w, r)
+		return
+	default:
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
+		return
+	}
+}
+
+func UserShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
+}
+
+func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+	user, err := Firebase.ReturnCacheUser(username)
+
+	listId := user.ShoppingLists[0]
+	log.Printf("List ID: %v\n", listId)
+	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
+	if err != nil {
+		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	var newshoppinglist Firebase.ShoppingList
+	err = DecodeJSONBody(w, r, &newshoppinglist)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+
+	shoppingList.Assignees = newshoppinglist.Assignees
+	shoppingList.List = newshoppinglist.List
+
+	Firebase.PatchShoppingList(shoppingList)
+	if err != nil {
+		http.Error(w, "Error while updating shopping lists", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+
 }
 
 func DecodeJSONBody(w http.ResponseWriter, r *http.Request, u interface{}) error {

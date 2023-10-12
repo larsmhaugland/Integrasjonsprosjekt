@@ -65,29 +65,31 @@ btn.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("new-group-popup").style.display = "block";});
 
 
-btn = document.querySelector("#close-btn");
-btn.addEventListener("click", (event)=> {event.preventDefault();
+//ON SUBMIT CREATE NEW GROUP AND GENERATE GROUP ID
+    btn = document.querySelector("#submit-group-btn");
+    btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        /*if (!checkAuthToken()) {
+            alert("Du er ikke innlogget!")
+            return;
+        }*/
+        const groupName = document.querySelector("#gruppenavn").value;
+        newGroup(groupName);
+
+    });
+
+    btn = document.querySelector("#close-group-popup");
+    btn.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("new-group-popup").style.display = "none";});
 
-
-//ON SUBMIT CREATE NEW GROUP AND GENERATE GROUP ID
-btn = document.querySelector("#submit-group-btn");
-btn.addEventListener("click",(event)=> {event.preventDefault();
-    document.querySelector("#group-created-information").style.block = "block"
-    document.getElementById("new-group-popup").style.display = "none";
-    if (!checkAuthToken()) {
-        alert("Du er ikke innlogget!")
-        return;
-    }
-    const groupName = document.querySelector("#gruppenavn").value;
-    newGroup(groupName);
-    });
 /*
     NEW GROUP
     Adds new group to groups-container, registers group in database
 */
+//TODO: Add the groupID to the user's list of groups
 function newGroup(groupName){
-    let group = {name: groupName, owner: sessionStorage.getItem("username")};
+    const groupId = generateRandomId(20);
+    let group = {id: groupId, name: groupName, owner: sessionStorage.getItem("username")};
     fetch(API_IP + `/group/new?${groupName}`, {
         method: "POST",
         headers: {
@@ -110,17 +112,45 @@ function newGroup(groupName){
             const groupNew = data;
             const groups = JSON.parse(sessionStorage.getItem("groups") || "[]");
             groups.push(groupNew);
+            let username = sessionStorage.getItem("username");
             sessionStorage.setItem("groups", JSON.stringify(groups));
+            console.log("Group added to session storage:", groups);
+
+                let display = document.querySelector(".groups-container");
+                let groupBlock = document.createElement("div");
+
+                groupBlock.setAttribute("id","group-block");
+                let groupNameParagraph = document.createElement("p");
+                groupNameParagraph.textContent = "Gruppenavn: " + groupName;
+
+                let groupIdParagraph = document.createElement("p");
+                groupIdParagraph.textContent = "Gruppe-ID: " + groupId;
+
+                groupBlock.appendChild(groupNameParagraph);
+                groupBlock.appendChild(groupIdParagraph);
+
+                display.appendChild(groupBlock);
+
+
+            fetch(API_IP + `/user/groups?username=${username}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(groupId),
+            })
+                .then((response) => {
+                    if (response.status === 200) {
+                        console.log("Group added to user");
+                        return response.json();
+                    } else {
+                        console.log("Error adding group to user");
+                        throw new Error("Failed to add group to user");
+                    }
+                })
         })
         .catch((error) => {
             console.log("Error creating group: " + error);
         });
-
-    let display = document.querySelector(".groups-container");
-    let groupBlock = document.createElement("div");
-    groupBlock.setAttribute("id","group-block");
-    groupBlock.textContent = groupName;
-    display.appendChild(groupBlock);
-
 }
 

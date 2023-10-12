@@ -137,6 +137,21 @@ func AddUser(user User) error {
 	return nil
 }
 
+func DeleteUser(userID string) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+	_, err = client.Collection("users").Doc(userID).Delete(ctx)
+	if err != nil {
+		log.Println("Error deleting user:", err)
+		return err
+	}
+	return nil
+}
+
 func PatchUser(user User) error {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -155,21 +170,6 @@ func PatchUser(user User) error {
 	_, err = client.Collection("users").Doc(user.Username).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching user:", err)
-		return err
-	}
-	return nil
-}
-
-func DeleteUser(userID string) error {
-	ctx := context.Background()
-	client, err := GetFirestoreClient(ctx)
-	if err != nil {
-		log.Println("error getting Firebase client:", err)
-		return err
-	}
-	_, err = client.Collection("users").Doc(userID).Delete(ctx)
-	if err != nil {
-		log.Println("Error deleting user:", err)
 		return err
 	}
 	return nil
@@ -214,21 +214,22 @@ func AddGroup(group Group) (string, error) {
 		log.Println("error getting Firebase client:", err)
 		return "", err
 	}
+	docRef := client.Collection("groups").Doc(group.ID)
 	//Need to make a slice of members so that Firebase correctly adds the field
 	var tmpMemberSlice []string
 	tmpMemberSlice = append(tmpMemberSlice, group.Owner)
 	//Add group to database
-	data := map[string]interface{}{
+	_, err = docRef.Set(ctx, map[string]interface{}{
 		"members": tmpMemberSlice,
 		"owner":   group.Owner,
 		"name":    group.Name,
-	}
-	doc, _, err := client.Collection("groups").Add(ctx, data)
+	})
+	//doc, _, err := client.Collection("groups").Add(ctx, data)
 	if err != nil {
 		log.Println("Error adding group:", err)
 		return "", err
 	}
-	return doc.ID, nil
+	return group.ID, nil
 }
 
 func GetGroupData(groupID string) (Group, error) {
@@ -244,12 +245,37 @@ func GetGroupData(groupID string) (Group, error) {
 		log.Println("Error getting group:", err)
 		return Group{}, err
 	}
+	//TODO: ikke en to-do, men det e her alt føkke sæ opp
 	err = doc.DataTo(&group)
 	group.ID = doc.Ref.ID
 	if err != nil {
 		log.Println("Error converting document:", err)
 		return Group{}, err
 	}
+
+	//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string x2
+	if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
+		tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
+		for _, v := range tmpShoppingLists {
+			if str, ok := v.(string); ok {
+				group.ShoppingLists = append(group.ShoppingLists, str)
+			} else {
+				log.Println("Error; Failed to convert shopping list id to string:", err)
+
+			}
+		}
+	}
+	if _, ok := doc.Data()["members"].([]interface{}); ok {
+		tmpShoppingLists := doc.Data()["members"].([]interface{})
+		for _, v := range tmpShoppingLists {
+			if str, ok := v.(string); ok {
+				group.ShoppingLists = append(group.ShoppingLists, str)
+			} else {
+				log.Println("Error; Failed to convert member id to string:", err)
+			}
+		}
+	}
+	//TODO: group recipes also need to be converted to []string
 	return group, nil
 }
 

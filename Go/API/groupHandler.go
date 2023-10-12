@@ -55,10 +55,10 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func GetGroupName(w http.ResponseWriter, r *http.Request) {
- 
-	if r.Method == http.MethodGet { 
+
+	if r.Method == http.MethodGet {
 		groupID := r.URL.Query().Get("groupID")
-		
+
 		groupName, err := Firebase.GetGroupName(groupID)
 		if err != nil {
 			http.Error(w, "Could not get the group name", http.StatusInternalServerError)
@@ -175,7 +175,7 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	groupID := r.URL.Query().Get("groupID")
 
 	// Fetch and prepare the group members data based on the groupID
-	groupMembersData, err := Firebase.GetGroupMembers(groupID) 
+	groupMembersData, err := Firebase.GetGroupMembers(groupID)
 	if err != nil {
 		http.Error(w, "Could not get the name and roles of the group members", http.StatusInternalServerError)
 		return
@@ -185,7 +185,7 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
-	}	
+	}
 }
 
 func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {
@@ -275,5 +275,29 @@ func GroupShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GroupShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	groupID := r.URL.Query().Get("groupID")
+	group, err := Firebase.ReturnCacheGroup(groupID)
+
+	listId := group.ShoppingLists[0]
+	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
+	if err != nil {
+		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	var newshoppinglist Firebase.ShoppingList
+	err = DecodeJSONBody(w, r, &newshoppinglist)
+	if err != nil {
+		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+
+	shoppingList.Assignees = newshoppinglist.Assignees
+	shoppingList.List = newshoppinglist.List
+
+	Firebase.PatchShoppingList(shoppingList)
+	if err != nil {
+		http.Error(w, "Error while updating shopping lists", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

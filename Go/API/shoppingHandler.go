@@ -1,6 +1,7 @@
 package API
 
 import (
+	"log"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -32,11 +33,12 @@ func ShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 // ShoppingGetHandler handles GET requests to /shopping/{id}?userOrGroup={userOrGroup}
 // Returns all shopping lists for a user or group
 func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
-	userOrGroup := r.URL.Query().Get("group")
+	userOrGroup := r.URL.Query().Get("userOrGroup")
 	parts := strings.Split(r.URL.Path, "/")
 	saveToID := parts[len(parts)-1]
 	if saveToID == "" {
 		http.Error(w, "Error; No id provided", http.StatusBadRequest)
+		log.Printf("Error; No id provided")
 		return
 	}
 	var shoppingLists []Firebase.ShoppingList
@@ -47,7 +49,7 @@ func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error while getting group: "+err.Error(), http.StatusBadRequest)
 			return
 		}
-
+		log.Printf("Group Shopping List IDs: %v", group.ShoppingLists)
 		//Get all shopping lists from DB using the IDs in the group struct
 		for _, shoppingListID := range group.ShoppingLists {
 			shoppingList, err := Firebase.ReturnCacheShoppingList(shoppingListID)
@@ -72,6 +74,7 @@ func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			shoppingLists = append(shoppingLists, shoppingList)
+			log.Printf("Shopping list: %v", shoppingList)
 		}
 	}
 
@@ -79,6 +82,7 @@ func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 	err := EncodeJSONBody(w, r, shoppingLists)
 	if err != nil {
 		http.Error(w, "Error while encoding JSON: "+err.Error(), http.StatusBadRequest)
+		log.Printf("Error while encoding JSON: " + err.Error())
 		return
 	}
 }
