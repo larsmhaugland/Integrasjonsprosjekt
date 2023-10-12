@@ -2,7 +2,7 @@
 let MAXRESULTS = 9;
 let page = 0;
 let Recipes = [];
-const IMAGEDIR = "/usr/local/apache2/images";
+const IMAGEDIR = "/usr/local/apache2/images/";
 
 //DOM elements:
 let resultDiv = document.querySelector("#results");
@@ -114,11 +114,9 @@ retrieveGroups();
 
 async function loadRecipes(){
     if (!await checkAuthToken()) return;
-    console.log("GET RECIPES")
     await getRecipes(Recipes);
-    console.log(Recipes);
-    console.log("DISPLAY-RECIPES")
     await displayResults(Recipes);
+    displayPages();
 }
 
 loadRecipes().then(r => console.log("Recipes loaded"));
@@ -241,8 +239,67 @@ async function newRecipe() {
     }
 }
 
+//Display the pages
+function displayPages() {
+    let pag = [];
+    if (searchField.value === "")
+        pag = pagination(page, Math.ceil(Recipes.length / MAXRESULTS));
+    else
+        pag = pagination(page, Math.ceil(filterRecipes(searchRecipes(searchField.value)) / MAXRESULTS));
 
+    let paginationDiv = document.querySelector("#recipe-nav");
+    paginationDiv.innerHTML = "";
+    for (let i = 0; i < pag.length; i++) {
+        let button = document.createElement("button");
+        button.setAttribute("class", "pagination-button");
+        button.setAttribute("onclick", "changePage(" + i + ")");
+        button.textContent = pag[i];
+        paginationDiv.appendChild(button);
+    }
+}
 
+//Change page
+function changePage(p) {
+    let pages = document.querySelectorAll(".pagination-button");
+    for (let i = 0; i < pages.length; i++) {
+        pages[i].classList.remove("active");
+    }
+    pages[p].classList.add("active");
+    page = p;
+    displayResults(filterRecipes(searchRecipes(searchField.value)));
+}
+
+//Get which pages that should be displayed
+function pagination(c, m) {
+    let current = c,
+        last = m,
+        delta = 2,
+        left = current - delta,
+        right = current + delta + 1,
+        range = [],
+        rangeWithDots = [],
+        l;
+
+    for (let i = 1; i <= last; i++) {
+        if (i === 1 || i === last || i >= left && i < right) {
+            range.push(i);
+        }
+    }
+
+    for (let i of range) {
+        if (l) {
+            if (i - l === 2) {
+                rangeWithDots.push(l + 1);
+            } else if (i - l !== 1) {
+                rangeWithDots.push('...');
+            }
+        }
+        rangeWithDots.push(i);
+        l = i;
+    }
+
+    return rangeWithDots;
+}
 
 function searchRecipes(text) {
     matches = Recipes.filter((data) => {
@@ -270,7 +327,7 @@ function isDuplicate(list, item) {
 async function displayResults(filteredList){
     //Clear results
     resultDiv.innerHTML = "";
-    console.log("Recipes = " + filteredList);
+
     //Display
     if (filteredList.length === 0) {
         resultDiv.appendChild(document.createTextNode("Du har ingen oppskrifter lagret"));
@@ -290,32 +347,41 @@ async function displayResults(filteredList){
     for (let i = 0; i < displayedRecipes.length; i++) {
         let recipe = displayedRecipes[i];
         let recipeBlock = document.createElement("div");
-        recipeBlock.setAttribute("class", "result_" + (i + 1));
-        recipeBlock.setAttribute("id", "result_" + (i + 1));
-        let recipeImage = document.createElement("img");
-        recipeImage.setAttribute("src", IMAGEDIR + "/" + recipe.image);
-        recipeImage.setAttribute("alt", recipe.name);
-        recipeImage.setAttribute("class", "result-image");
+        recipeBlock.classList.add("result_" + (i + 1));
+        recipeBlock.classList.add("results");
+
+        recipeBlock.setAttribute("id", recipe.documentID)
+
         let recipeName = document.createElement("h3");
         recipeName.setAttribute("class", "result-name");
         recipeName.textContent = recipe.name;
+        recipeBlock.appendChild(recipeName);
+        if (recipe.image !== "" && recipe.image !== null) {
+            let recipeImage = document.createElement("img");
+            recipeImage.setAttribute("src", IMAGEDIR + "/" + recipe.image);
+            recipeImage.setAttribute("alt", recipe.name);
+            recipeImage.setAttribute("class", "result-image");
+            recipeBlock.appendChild(recipeImage);
+        }
         let recipeURL = document.createElement("a");
         recipeURL.setAttribute("href", recipe.URL);
         recipeURL.setAttribute("target", "_blank")
         recipeURL.setAttribute("class", "result-url");
         recipeURL.textContent = recipe.URL;
+
         let recipeDifficulty = document.createElement("p");
         recipeDifficulty.setAttribute("class", "result-difficulty");
         recipeDifficulty.textContent = "Vanskelighetsgrad: " + recipe.difficulty;
+
         let recipeTime = document.createElement("p");
         recipeTime.setAttribute("class", "result-time");
         recipeTime.textContent = "Tid: " + recipe.time + " minutter";
 
-        recipeBlock.appendChild(recipeName);
-        recipeBlock.appendChild(recipeImage);
+
+
         recipeBlock.appendChild(recipeURL);
         recipeBlock.appendChild(recipeDifficulty);
+        recipeBlock.appendChild(recipeTime);
         resultDiv.appendChild(recipeBlock);
     }
-    console.log("FERDIG");
 }

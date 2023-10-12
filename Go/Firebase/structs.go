@@ -5,11 +5,11 @@ import (
 )
 
 type Recipe struct {
-	ID           string            `json:"id"`
+	DocumentID   string            `json:"documentID"`
 	Name         string            `json:"name"`
 	Time         int               `json:"time"`
-	Picture      string            `json:"picture"`
 	Description  string            `json:"description"`
+	Difficulty   int               `json:"difficulty"`
 	URL          string            `json:"URL"`
 	Ingredients  map[string]string `json:"ingredients"`
 	Instructions []string          `json:"instructions"`
@@ -20,7 +20,6 @@ type Recipe struct {
 }
 
 type User struct {
-	ID            string   `json:"id"`
 	Username      string   `json:"username"`
 	Password      string   `json:"password"`
 	Groups        []string `json:"groups"`
@@ -41,7 +40,7 @@ type GroupRecipe struct {
 }
 
 type Group struct {
-	ID            string                 `json:"id"`
+	DocumentID    string                 `json:"documentID"`
 	Members       map[string]string      `json:"members"`
 	Owner         string                 `json:"owner"`
 	Name          string                 `json:"name"`
@@ -57,9 +56,9 @@ type ShoppingListItem struct {
 }
 
 type ShoppingList struct {
-	ID        string                      `json:"id"`
-	Assignees []string                    `json:"assignees"`
-	List      map[string]ShoppingListItem `json:"list"`
+	DocumentID string                      `json:"documentID"`
+	Assignees  []string                    `json:"assignees"`
+	List       map[string]ShoppingListItem `json:"list"`
 }
 
 type CacheData struct {

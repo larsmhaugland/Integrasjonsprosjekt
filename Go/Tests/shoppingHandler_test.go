@@ -114,7 +114,7 @@ func TestShoppingHandler(t *testing.T) {
 	})
 
 	t.Run("TestShoppingDelete", func(t *testing.T) {
-		fmt.Println("Shopping list ID: " + shoppingListID)
+		fmt.Println("Shopping list DocumentID: " + shoppingListID)
 		err := Firebase.DeleteCacheShoppingList(shoppingListID)
 		if err != nil {
 			t.Errorf("Error when deleting shopping list: %v", err)

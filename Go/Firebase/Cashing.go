@@ -30,23 +30,24 @@ func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
 			return CacheData{}, false
 		}
 		CacheHits++
+	} else {
+		CacheMisses++
 	}
-	CacheMisses++
 	return val, ok
 }
 
 /*****************				USER FUNCTIONS				*****************/
 
-func ReturnCacheUser(userID string) (User, error) {
-	user, ok := GetCacheData(UserCache, userID)
+func ReturnCacheUser(username string) (User, error) {
+	user, ok := GetCacheData(UserCache, username)
 	if ok {
 		return user.Data.(User), nil
 	}
-	retUser, err := GetUserData(userID)
+	retUser, err := GetUserData(username)
 	if err != nil {
 		return User{}, err
 	}
-	UserCache[userID] = CacheData{retUser, time.Now()}
+	UserCache[username] = CacheData{retUser, time.Now()}
 	return retUser, nil
 }
 
@@ -88,7 +89,7 @@ func PatchCacheGroup(group Group) error {
 	if err != nil {
 		return err
 	}
-	GroupCache[group.ID] = CacheData{group, time.Now()}
+	GroupCache[group.DocumentID] = CacheData{group, time.Now()}
 	return nil
 }
 
@@ -121,7 +122,7 @@ func PatchCacheRecipe(recipe Recipe) error {
 	if err != nil {
 		return err
 	}
-	RecipeCache[recipe.ID] = CacheData{recipe, time.Now()}
+	RecipeCache[recipe.DocumentID] = CacheData{recipe, time.Now()}
 	return nil
 }
 
@@ -154,7 +155,7 @@ func PatchCacheShoppingList(list ShoppingList) error {
 	if err != nil {
 		return err
 	}
-	ShoppingCache[list.ID] = CacheData{list, time.Now()}
+	ShoppingCache[list.DocumentID] = CacheData{list, time.Now()}
 	return nil
 }
 

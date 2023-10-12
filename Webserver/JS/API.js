@@ -10,13 +10,17 @@ async function getRecipes(Recipes) {
         });
 
         if (response.status === 200) {
-            console.log("SUCCESS");
             const data = await response.json();
-
-            for (let i = 0; i < data.length; i++) {
-                Recipes.push(data[i]);
+            if (data["userRecipes"] !== null) {
+                for (let i = 0; i < data["userRecipes"].length; i++) {
+                    Recipes.push(data["userRecipes"][i]);
+                }
             }
-            console.log(Recipes);
+            if (data["groupRecipes"] !== null) {
+                for (let i = 0; i < data["groupRecipes"].length; i++) {
+                    Recipes.push(data["groupRecipes"][i]);
+                }
+            }
         } else {
             console.log("Error when fetching recipes");
         }
@@ -24,7 +28,6 @@ async function getRecipes(Recipes) {
         console.log("Error when fetching recipes");
         console.log(error);
     }
-    console.log("FERDIG");
 }
 
 function retrieveGroups(){

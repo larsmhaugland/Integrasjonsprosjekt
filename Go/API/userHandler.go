@@ -279,7 +279,7 @@ func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := Firebase.ReturnCacheUser(username)
 
 	listId := user.ShoppingLists[0]
-	log.Printf("List ID: %v\n", listId)
+	log.Printf("List DocumentID: %v\n", listId)
 	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
 	if err != nil {
 		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
