@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const url = `${API_IP}/group/leaveGroup?groupID=${groupID}&username=${LoggedInUsername}`;
         const redirectURL = "../index.html";
         if (LoggedInUsername == GroupOwner){
-            alert("The owner cannot leave the group");
+            alert("Eieren kan ikke forlate gruppa.");
             return;
         }
         const confirmation = window.confirm("Er du sikker på at du vil forlate gruppa?");
@@ -75,10 +75,10 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then((response) => {
             if (response.status === 200) {
-                alert("Group left successfully.");
+                alert("Du forlot gruppa.");
                 window.location.href = redirectURL;
             } else {
-                alert("Error leaving group.");
+                alert("Serverfeil med å forlate gruppe.");
             }
         })
         .catch((error) => {
