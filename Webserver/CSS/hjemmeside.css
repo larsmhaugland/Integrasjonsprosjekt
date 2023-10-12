@@ -1,7 +1,7 @@
 #btn-image{
     border: none;
     color: white;
-    width: 100px;
+    width: 50px;
     height: auto;
 }
 
@@ -23,4 +23,9 @@ button{
     margin: 10px;
     width: 200px;
     height: 200px;
+}
+
+#top-field{
+    display: flex;
+    flex-direction: row;
 }

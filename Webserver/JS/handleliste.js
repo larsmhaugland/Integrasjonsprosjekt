@@ -2,6 +2,24 @@ retrieveGroups();
 retrieveShoppingList();
 //retrieveDinnerList();
 
+//Save the selected option in the dropdown menu to session storage for reloading the page
+const dropdown = document.getElementById('group-dropdown');
+const selectedOption = sessionStorage.getItem('selectedOption');
+if (selectedOption) {
+    dropdown.value = selectedOption;
+}
+dropdown.addEventListener('change', function () {
+    const selectedValue = dropdown.value;
+    sessionStorage.setItem('selectedOption', selectedValue);
+});
+window.addEventListener('load', function () {
+    const selectedOption = sessionStorage.getItem('selectedOption');
+    if (selectedOption) {
+        const dropdown = document.getElementById('group-dropdown');
+        dropdown.value = selectedOption;
+        retrieveShoppingList();
+    }
+});
 
 
 //Add groups + user to the dropdown menu
@@ -74,7 +92,8 @@ function retrieveShoppingList() {
             }
         }).then(data=>{
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
-            displayShoppingList(data);});
+            if(data !== null)
+                displayShoppingList(data);});
     }
     }
 
@@ -94,8 +113,9 @@ function displayShoppingList(shoppinglist){
 
     for (let itemName in shoppinglist[0].list) {
         let quantity = shoppinglist[0].list[itemName].quantity;
+        let complete = shoppinglist[0].list[itemName].complete;
 
-        if (quantity && itemName) {
+        if (complete === false){
             let formattedItem = quantity + " " + itemName;
             let li = document.createElement("li");
             li.setAttribute("id", "list-item");
@@ -106,6 +126,20 @@ function displayShoppingList(shoppinglist){
             li.appendChild(checkbox);
             li.appendChild(document.createTextNode(formattedItem));
             display.appendChild(li);
+        }
+        else if(complete == true){
+            let finishedlist = document.querySelector("#finished-list");
+            let formattedItem = quantity + " " + itemName;
+            let li = document.createElement("li");
+            li.setAttribute("id", "finished-item");
+
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("id", "finished-checkbox");
+            checkbox.setAttribute("checked", "checked");
+            li.appendChild(checkbox);
+            li.appendChild(document.createTextNode(formattedItem));
+            finishedlist.appendChild(li);
         }
     }
 }
@@ -187,7 +221,7 @@ function addNewItemToList(){
 
 let list = document.querySelector("#shopping-list");
 list.addEventListener("click", (event) => {
-    if(event.target.id === "checkbox"){
+    if(event.target.id === "checkbox" || event.target.id === "finished-checkbox"){
         removeItemFromList();
     }
 });
@@ -198,7 +232,7 @@ function removeItemFromList(){
     let items = list.querySelectorAll("#list-item");
 
     let finishedList = document.querySelector("#finished-list");
-    let finishedItems = finishedList.querySelectorAll("#list-item");
+    let finishedItems = finishedList.querySelectorAll("#finished-item");
 
     let sessionList = JSON.parse(sessionStorage.getItem("shoppinglist"));
     items.forEach(item => {
@@ -216,6 +250,7 @@ function removeItemFromList(){
 
 
             let newitem = item.cloneNode(true);
+            newitem.id = "finished-item"
             let clonedCheckbox = newitem.querySelector("input[type='checkbox']");
             clonedCheckbox.id = "finished-checkbox";
             finishedList.appendChild(newitem);
@@ -238,13 +273,13 @@ function removeItemFromList(){
             });
 
             let newitem = item.cloneNode(true);
+            newitem.id = "list-item"
             let clonedCheckbox = newitem.querySelector("input[type='checkbox']");
             clonedCheckbox.id = "checkbox";
             list.appendChild(newitem);
             finishedList.removeChild(item);
         }
     });
-    console.log(sessionList);
     sessionStorage.setItem("shoppinglist", JSON.stringify(sessionList));
     patchShoppingList();
 }
@@ -294,7 +329,6 @@ function patchShoppingList(){
     let option = document.querySelector("#group-dropdown").value;
     let userName = sessionStorage.getItem("username");
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
-    console.log(shoppinglist)
     let shoppingListObject = {
         id: shoppinglist.id,
         assignees: [],
@@ -360,6 +394,11 @@ function patchShoppingList(){
 function removeList(){
     let list = document.querySelector("#shopping-list");
     let items = list.querySelectorAll("#list-item");
+    items.forEach(item => {
+        list.removeChild(item);
+    });
+    list = document.querySelector("#finished-list");
+    items = list.querySelectorAll("#finished-item");
     items.forEach(item => {
         list.removeChild(item);
     });

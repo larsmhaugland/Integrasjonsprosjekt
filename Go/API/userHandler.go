@@ -171,7 +171,7 @@ func UserGroupGetHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	groups, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
-		http.Error(w, "Error while getting user groups", http.StatusBadRequest)
+		http.Error(w, "Error while getting user", http.StatusBadRequest)
 		return
 	}
 
@@ -244,13 +244,26 @@ func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Groups = append(user.Groups, groupID)
-	Firebase.PatchUser(user)
-	if err != nil {
-		http.Error(w, "Error while updating user", http.StatusBadRequest)
-		log.Printf("Error while updating user: %v\n", err)
-		return
+	// Use a map to keep track of unique groupIDs
+	uniqueGroups := make(map[string]bool)
+
+	for _, id := range user.Groups {
+		uniqueGroups[id] = true
 	}
+
+	if !uniqueGroups[groupID] {
+		// Append the new groupID to user.Groups only if it's not already present
+		user.Groups = append(user.Groups, groupID)
+
+		// Now, update the user in the database
+		err = Firebase.PatchUser(user)
+		if err != nil {
+			http.Error(w, "Error while updating user", http.StatusBadRequest)
+			log.Printf("Error while updating user: %v\n", err)
+			return
+		}
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -279,7 +292,7 @@ func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := Firebase.ReturnCacheUser(username)
 
 	listId := user.ShoppingLists[0]
-	log.Printf("List DocumentID: %v\n", listId)
+	log.Printf("List ID: %v\n", listId)
 	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
 	if err != nil {
 		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
