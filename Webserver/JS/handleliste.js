@@ -2,6 +2,24 @@ retrieveGroups();
 retrieveShoppingList();
 //retrieveDinnerList();
 
+//Save the selected option in the dropdown menu to session storage for reloading the page
+const dropdown = document.getElementById('group-dropdown');
+const selectedOption = sessionStorage.getItem('selectedOption');
+if (selectedOption) {
+    dropdown.value = selectedOption;
+}
+dropdown.addEventListener('change', function () {
+    const selectedValue = dropdown.value;
+    sessionStorage.setItem('selectedOption', selectedValue);
+});
+window.addEventListener('load', function () {
+    const selectedOption = sessionStorage.getItem('selectedOption');
+    if (selectedOption) {
+        const dropdown = document.getElementById('group-dropdown');
+        dropdown.value = selectedOption;
+        retrieveShoppingList();
+    }
+});
 
 
 //Add groups + user to the dropdown menu
@@ -262,7 +280,6 @@ function removeItemFromList(){
             finishedList.removeChild(item);
         }
     });
-    console.log(sessionList);
     sessionStorage.setItem("shoppinglist", JSON.stringify(sessionList));
     patchShoppingList();
 }
@@ -312,7 +329,6 @@ function patchShoppingList(){
     let option = document.querySelector("#group-dropdown").value;
     let userName = sessionStorage.getItem("username");
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
-    console.log(shoppinglist)
     let shoppingListObject = {
         id: shoppinglist.id,
         assignees: [],

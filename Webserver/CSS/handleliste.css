@@ -14,10 +14,22 @@ main{
 
 #middag-uke{
     grid-area: middag-uke;
-    background-color: grey;
-    padding-left: 10px;
+    border: 2px solid black;
+    padding: 10px;
     border-radius: 25px;
-    min-height: 500px;
+    min-height: 800px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    grid-template-rows: repeat(4, 1fr); /* 4 rows */
+    gap: 10px; /* Spacing between items */
+    overflow: hidden;
+}
+
+h3, p {
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide content that overflows */
+    text-overflow: ellipsis; /* Display an ellipsis (...) when content overflows */
+    font-size: 16px; /* Set a default font size */
 }
 
 li{
