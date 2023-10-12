@@ -10,12 +10,13 @@ async function getRecipes(Recipes) {
         });
 
         if (response.status === 200) {
+            console.log("SUCCESS");
             const data = await response.json();
-            console.log(data);
 
             for (let i = 0; i < data.length; i++) {
                 Recipes.push(data[i]);
             }
+            console.log(Recipes);
         } else {
             console.log("Error when fetching recipes");
         }
@@ -23,7 +24,7 @@ async function getRecipes(Recipes) {
         console.log("Error when fetching recipes");
         console.log(error);
     }
-    return Recipes;
+    console.log("FERDIG");
 }
 
 function retrieveGroups(){

@@ -101,7 +101,6 @@ function login(){
             loginForm.style.display = "none";
             wrongpassword.style.display = "none";
             updateLoginStatus();
-
         } else {
             wrongpassword.style.display = "block";
         }

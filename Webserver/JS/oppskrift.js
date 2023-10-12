@@ -113,13 +113,15 @@ retrieveGroups();
 
 
 async function loadRecipes(){
+    if (!await checkAuthToken()) return;
     console.log("GET RECIPES")
     await getRecipes(Recipes);
-    console.log("DISPLAY-RECIPES")
     console.log(Recipes);
-    displayResults(Recipes);
+    console.log("DISPLAY-RECIPES")
+    await displayResults(Recipes);
 }
-loadRecipes();
+
+loadRecipes().then(r => console.log("Recipes loaded"));
 
 
 
@@ -285,11 +287,11 @@ async function displayResults(filteredList){
 
 
 
-    for (let i = 0; i < displayedRecipes.length; i++){
+    for (let i = 0; i < displayedRecipes.length; i++) {
         let recipe = displayedRecipes[i];
         let recipeBlock = document.createElement("div");
-        recipeBlock.setAttribute("class","result_"+(i+1));
-        recipeBlock.setAttribute("id","result_"+(i+1));
+        recipeBlock.setAttribute("class", "result_" + (i + 1));
+        recipeBlock.setAttribute("id", "result_" + (i + 1));
         let recipeImage = document.createElement("img");
         recipeImage.setAttribute("src", IMAGEDIR + "/" + recipe.image);
         recipeImage.setAttribute("alt", recipe.name);
@@ -315,4 +317,5 @@ async function displayResults(filteredList){
         recipeBlock.appendChild(recipeDifficulty);
         resultDiv.appendChild(recipeBlock);
     }
+    console.log("FERDIG");
 }
