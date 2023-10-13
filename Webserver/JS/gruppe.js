@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.onload = async function () {
         const urlParams = new URLSearchParams(window.location.search);
         groupID = urlParams.get('groupID');
-        console.log("gruppe id" + groupID);
         if (groupID){
             const groupName = await getGroupName(groupID);
             groupNamePass = groupName;

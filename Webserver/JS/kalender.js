@@ -8,9 +8,12 @@ let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "son
 let Recipes = [];
 let calendar = [[]];
 let groups = [];
+let groupIDSentAsParam = "";
 
 
 window.onload = async function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    groupIDSentAsParam = urlParams.get('groupID');
     await getRecipes(Recipes);
     await retrieveGroups();
     groups = JSON.parse(sessionStorage.getItem("groups"));
@@ -226,7 +229,15 @@ function displayGroups(groups){
         let option = document.createElement("option");
         option.value = group.name;
         option.textContent = group.name;
+
+        if (groupIDSentAsParam){
+            if (groups[i].documentID === groupIDSentAsParam) {
+                option.selected = true; // Set the option as selected
+            }
+        }
+
         dropdown.appendChild(option);
     });
+    
 }
 
