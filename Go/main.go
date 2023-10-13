@@ -32,6 +32,7 @@ func startHTTPserver() {
 	}
 
 	Firebase.InitCache()
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { return })
 	http.HandleFunc("/stats/", statsHandler)
 	http.HandleFunc("/image/", ImageHandler)
 	http.HandleFunc("/group/", API.GroupBaseHandler)
