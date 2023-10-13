@@ -48,9 +48,8 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
-window.onload = function (){
-    updateLoginStatus();
-};
+//window.onload(updateLoginStatus());
+
 
 function loginRegisterToggle(){
     let loginForm = document.querySelector("#log-in-popup");
@@ -117,6 +116,7 @@ function login(){
             let loginForm = document.querySelector("#log-in-popup");
             loginForm.style.display = "none";
             wrongpassword.style.display = "none";
+            updateLoginStatus()
             location.reload();
         } else {
             wrongpassword.style.display = "block";
@@ -131,9 +131,7 @@ function login(){
 function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
-    sessionStorage.removeItem("groups");
     updateLoginStatus();
-    location.reload();
 }
 
 function updateLoginStatus(){
