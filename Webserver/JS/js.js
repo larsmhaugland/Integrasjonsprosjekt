@@ -48,7 +48,9 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
-window.onload(updateLoginStatus());
+window.onload(function (){
+    updateLoginStatus();
+});
 
 function loginRegisterToggle(){
     let loginForm = document.querySelector("#log-in-popup");
@@ -131,6 +133,7 @@ function logout(){
     sessionStorage.setItem("loggedIn", "false");
     sessionStorage.removeItem("groups");
     updateLoginStatus();
+    location.reload();
 }
 
 function updateLoginStatus(){
