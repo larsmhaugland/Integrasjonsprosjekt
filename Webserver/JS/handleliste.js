@@ -2,6 +2,10 @@
 retrieveGroups();
 retrieveShoppingList();
 //retrieveDinnerList();
+// Get the 
+const urlParams = new URLSearchParams(window.location.search);
+const groupIDSentAsParam = urlParams.get('groupID');
+
 
 //EVENT LISTENERS:
 //Save the selected option in the dropdown menu to session storage for reloading the page
@@ -72,6 +76,14 @@ function displayGroups(groups){
         let option = document.createElement("option");
         option.value = groups[i].name;
         option.textContent = groups[i].name;
+
+        // Check if the current group matches the groupID sent as a parameter to the page
+        if (groupIDSentAsParam){
+            if (groups[i].documentID === groupIDSentAsParam) {
+                option.selected = true; // Set the option as selected
+            }
+        }
+
         dropdown.appendChild(option);
     }
 
