@@ -23,14 +23,21 @@ document.addEventListener("DOMContentLoaded", function () {
     var GroupOwner;
     var groupName;
     const Administrators = [];
+    const redirectURL = "../index.html";
 
     // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
     // the group name was set in the html so it became undefined.
     window.onload = async function () {
-        groupID = tmpGroupID; 
+        const urlParams = new URLSearchParams(window.location.search);
+        const groupID = urlParams.get('groupID');
+        if (groupID){
         const groupName = await getGroupName(groupID);
         groupNameElement.textContent = "Settings for: " + groupName;
         fetchGroupMembers(groupID);
+        } else {
+            alert("No groupID was passed to the groupSettings.html page");
+            window.location.href = redirectURL;
+        }
     };
     
     // Open the modal when the button is clicked

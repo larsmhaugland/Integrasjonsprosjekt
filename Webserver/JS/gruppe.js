@@ -4,20 +4,26 @@ document.addEventListener("DOMContentLoaded", function () {
     const editButton = document.getElementById("edit-button");
     const groupNameElement = document.getElementById("group-name");
     let groupNamePass;
-
+    const redirectURL = "../index.html";
     // Global variables and constants
-    const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
+    //const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
     var groupID;
     //const API_IP = "https://" + window.location.hostname + ":8080";
 
     // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
     // the group name was set in the html so it became undefined.
     window.onload = async function () {
-        groupID = tmpGroupID; 
-        const groupName = await getGroupName(groupID);
-        groupNamePass = groupName;
-        groupNameElement.textContent = "Settings for: " + groupName;
-        fetchGroupMembers(groupID);
+        const urlParams = new URLSearchParams(window.location.search);
+        const groupID = urlParams.get('groupID');
+        if (groupID){
+            const groupName = await getGroupName(groupID);
+            groupNamePass = groupName;
+            groupNameElement.textContent = "Settings for: " + groupName;
+            fetchGroupMembers(groupID);
+        } else {
+            alert("No groupID was passed to the groupSettings.html page");
+            window.location.href = redirectURL;
+        }
     };
 
     // Add a click event listener to the button
