@@ -132,6 +132,7 @@ function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
     updateLoginStatus();
+    location.reload();
 }
 
 function updateLoginStatus(){
