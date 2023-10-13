@@ -49,7 +49,6 @@ let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
 window.onload = function () {
-    checkAuthToken(); 
     updateLoginStatus();
 };
 
