@@ -308,7 +308,7 @@ func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	shoppingList.Assignees = newshoppinglist.Assignees
 	shoppingList.List = newshoppinglist.List
 
-	Firebase.PatchShoppingList(shoppingList)
+	Firebase.PatchCacheShoppingList(shoppingList)
 	if err != nil {
 		http.Error(w, "Error while updating shopping lists", http.StatusBadRequest)
 		return

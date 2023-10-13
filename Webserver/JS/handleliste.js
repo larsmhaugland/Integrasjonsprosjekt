@@ -31,6 +31,8 @@ submit.addEventListener("keydown", (event)=> {
         addNewItemToList();
         event.preventDefault();
         submit.value = "";
+        let qt = document.querySelector("#newqttxt");
+        qt.value = "";
     }
 });
 
@@ -365,7 +367,7 @@ function patchShoppingList(){
         let groups = JSON.parse(sessionStorage.getItem("groups"));
         let group = groups.find(group => group.name === option);
         if (group) {
-            parameters = group.id;
+            parameters = group.documentID;
         }
         fetch(API_IP + `/group/shopping?groupID=${parameters}`, {
             method: "PATCH",

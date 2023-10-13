@@ -49,7 +49,6 @@ func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error while getting group: "+err.Error(), http.StatusBadRequest)
 			return
 		}
-		log.Printf("Group Shopping List IDs: %v", group.ShoppingLists)
 		//Get all shopping lists from DB using the IDs in the group struct
 		for _, shoppingListID := range group.ShoppingLists {
 			shoppingList, err := Firebase.ReturnCacheShoppingList(shoppingListID)

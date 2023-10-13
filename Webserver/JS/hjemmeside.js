@@ -1,7 +1,36 @@
+//CALL ON START/RELOAD
+retrieveGroups();
+
+//EVENT LISTENERS:
+//On click, display pop-up window
+let btn = document.querySelector("#new-group-btn");
+btn.addEventListener("click", (event)=> {event.preventDefault();
+    document.getElementById("new-group-popup").style.display = "block";});
+
+
+//On submit create new group
+btn = document.querySelector("#submit-group-btn");
+btn.addEventListener("click", (event) => {
+    event.preventDefault();
+    /*if (!checkAuthToken()) {
+        alert("Du er ikke innlogget!")
+        return;
+    }*/
+    const groupName = document.querySelector("#gruppenavn").value;
+    newGroup(groupName);
+
+});
+
+//On click, close pop-up window
+btn = document.querySelector("#close-group-popup");
+btn.addEventListener("click", (event)=> {event.preventDefault();
+    document.getElementById("new-group-popup").style.display = "none";});
+
+
+//FUNCTIONS:
 /*
-    RETRIEVE GROUPS FROM SESSION STORAGE OR DATABASE
-*/
-retrieveGroups(); 
+    RETRIEVE GROUPS
+ */
 function retrieveGroups(){
 
     if (!checkAuthToken()) return;
@@ -57,36 +86,9 @@ function displayGroups(groups){
 };
 
 /*
-    POP-UP WINDOW
-    Create new groups
+   ADD NEW GROUP AND PATCH USER INFO
 */
-let btn = document.querySelector("#new-group-btn");
-btn.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("new-group-popup").style.display = "block";});
-
-
-//ON SUBMIT CREATE NEW GROUP AND GENERATE GROUP ID
-    btn = document.querySelector("#submit-group-btn");
-    btn.addEventListener("click", (event) => {
-        event.preventDefault();
-        /*if (!checkAuthToken()) {
-            alert("Du er ikke innlogget!")
-            return;
-        }*/
-        const groupName = document.querySelector("#gruppenavn").value;
-        newGroup(groupName);
-
-    });
-
-    btn = document.querySelector("#close-group-popup");
-    btn.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("new-group-popup").style.display = "none";});
-
-/*
-    NEW GROUP
-    Adds new group to groups-container, registers group in database
-*/
-//TODO: Add the groupID to the user's list of groups
+//TODO: Fix duplicate group ids in user when patching
 function newGroup(groupName){
     const groupId = generateRandomId(20);
     const group = {
