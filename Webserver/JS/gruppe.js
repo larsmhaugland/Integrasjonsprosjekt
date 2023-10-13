@@ -6,15 +6,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let groupNamePass;
     const redirectURL = "../index.html";
     // Global variables and constants
-    //const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
     var groupID;
-    //const API_IP = "https://" + window.location.hostname + ":8080";
 
     // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
     // the group name was set in the html so it became undefined.
     window.onload = async function () {
         const urlParams = new URLSearchParams(window.location.search);
-        const groupID = urlParams.get('groupID');
+        groupID = urlParams.get('groupID');
         console.log("gruppe id" + groupID);
         if (groupID){
             const groupName = await getGroupName(groupID);
