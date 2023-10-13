@@ -6,8 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/google/uuid"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"prog-2052/API"
 	"prog-2052/Firebase"
 )
@@ -108,50 +110,45 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == http.MethodOptions {
 		return
 	}
-	//Mock response
-	w.WriteHeader(http.StatusOK)
-	//Write Hello world in response (json)
-	w.Write([]byte("Hello world"))
 
-	/*
-		// Parse the uploaded file
-		file, _, err := r.FormFile("file") // "file" is the name of the file input field in the request
-		if err != nil {
-			log.Println("Error retrieving file from form data: ", err)
-			http.Error(w, "Error retrieving file", http.StatusBadRequest)
-			return
-		}
-		defer file.Close()
-		id, err := generateUniqueID()
-		if err != nil {
-			log.Println("Error generating unique DocumentID: ", err)
-			http.Error(w, "Error generating unique DocumentID", http.StatusInternalServerError)
-			return
-		}
+	// Parse the uploaded file
+	file, _, err := r.FormFile("file") // "file" is the name of the file input field in the request
+	if err != nil {
+		log.Println("Error retrieving file from form data: ", err)
+		http.Error(w, "Error retrieving file", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+	id, err := generateUniqueID()
+	if err != nil {
+		log.Println("Error generating unique DocumentID: ", err)
+		http.Error(w, "Error generating unique DocumentID", http.StatusInternalServerError)
+		return
+	}
 
-		// Create a new file on the server to save the uploaded file
-		uploadedFile, err := os.Create("/Images/" + id + ".jpeg") // Specify the desired file name
-		if err != nil {
-			log.Println("Error creating file: ", err)
-			http.Error(w, "Unable to create the file for writing", http.StatusInternalServerError)
-			return
-		}
-		defer uploadedFile.Close()
+	// Create a new file on the server to save the uploaded file
+	uploadedFile, err := os.Create("/Images/" + id + ".jpeg") // Specify the desired file name
+	if err != nil {
+		log.Println("Error creating file: ", err)
+		http.Error(w, "Unable to create the file for writing", http.StatusInternalServerError)
+		return
+	}
+	defer uploadedFile.Close()
 
-		// Copy the uploaded file to the new file on the server
-		_, err = io.Copy(uploadedFile, file)
-		if err != nil {
-			log.Println("Error copying file: ", err)
-			http.Error(w, "Unable to copy file", http.StatusInternalServerError)
-			return
-		}
+	// Copy the uploaded file to the new file on the server
+	_, err = io.Copy(uploadedFile, file)
+	if err != nil {
+		log.Println("Error copying file: ", err)
+		http.Error(w, "Unable to copy file", http.StatusInternalServerError)
+		return
+	}
 
-		err = API.EncodeJSONBody(w, r, id)
-		if err != nil {
-			log.Println("Error encoding response: ", err)
-			http.Error(w, "Error while encoding response: "+err.Error(), http.StatusInternalServerError)
-			return
-		}*/
+	err = API.EncodeJSONBody(w, r, id)
+	if err != nil {
+		log.Println("Error encoding response: ", err)
+		http.Error(w, "Error while encoding response: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func generateUniqueID() (string, error) {
