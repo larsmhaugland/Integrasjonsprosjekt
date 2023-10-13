@@ -83,6 +83,13 @@
     font-size: 15px;
     font-weight: lighter;
     height: 20px;
+    transition: 0.3s;
+}
+
+#search-bar:hover {
+    background: #DDDDDD;
+    border-color: #DDDDDD;
+    transition: 0.3s
 }
 
 #new-recipe-btn {

@@ -18,7 +18,7 @@ let imageInput = document.querySelector("#recipe-image");
 
 //Event listeners:
 newRecipeBtn.addEventListener("click", function (event){
-    if(!checkAuthToken()){
+    if(sessionStorage.getItem("loggedIn") !== "true"){
         alert("Du må logge inn for å legge til oppskrifter");
         return;
     }

@@ -20,9 +20,23 @@ b.addEventListener("click", (event)=> {event.preventDefault();
 
 let loginBtn = document.querySelector("#log-in-submit");
 loginBtn.addEventListener("click", login);
+let loginPassword = document.querySelector("#password");
+loginPassword.addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) { //Enter key
+        event.preventDefault();
+        loginBtn.click();
+    }
+});
+
 let registerUserBtn = document.querySelector("#register-user-submit");
 registerUserBtn.addEventListener("click", registerUser);
-
+let registerPassword = document.querySelector("#password-reg-conf");
+registerPassword.addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) { //Enter key
+        event.preventDefault();
+        registerUserBtn.click();
+    }
+});
 let registerSwitchBtn = document.querySelector("#register-switch-btn");
 registerSwitchBtn.addEventListener("click", loginRegisterToggle);
 let closeRegisterBtn = document.querySelector("#close-register-popup");
@@ -33,7 +47,7 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
-
+window.onload(updateLoginStatus());
 
 function loginRegisterToggle(){
     let loginForm = document.querySelector("#log-in-popup");
