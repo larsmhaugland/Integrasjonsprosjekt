@@ -36,12 +36,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     handlelisteLink.addEventListener("click", function () {
-        const url = `./Handleliste/index.html?groupID=${encodeURIComponent(groupID)}`;
+        const url = `../Handleliste/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
     });
 
     kalenderLink.addEventListener("click", function () {
-        const url = `./Kalender/index.html?groupID=${encodeURIComponent(groupID)}`;
+        const url = `../Kalender/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
     });
 
