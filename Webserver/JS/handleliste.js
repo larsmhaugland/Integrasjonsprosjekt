@@ -118,7 +118,8 @@ function retrieveShoppingList() {
         let groups = JSON.parse(sessionStorage.getItem("groups"));
         let group = groups.find(group => group.name === option);
         if (group){
-            let groupId = group.id;
+            let groupId = group.documentID;
+            console.log(groupId);
         fetch(API_IP + `/shopping/${groupId}?userOrGroup=group`, {
             method: "GET",
             headers: {
