@@ -3,23 +3,44 @@
     Log in
 */
 //TEST
-const API_IP = "https://" + window.location.hostname + ":8080";
+let API_IP = "";
+if (window.location.hostname === "localhost"){
+     API_IP = "http://" + window.location.hostname + ":8080";
+} else{
+    API_IP = "https://" + window.location.hostname + ":8080";
+}
+
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "block";});
 
-b = document.querySelector("#close-login-btn");
+b = document.querySelector("#close-login-popup");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "none";});
 
 let loginBtn = document.querySelector("#log-in-submit");
 loginBtn.addEventListener("click", login);
+let loginPassword = document.querySelector("#password");
+loginPassword.addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) { //Enter key
+        event.preventDefault();
+        loginBtn.click();
+    }
+});
+
 let registerUserBtn = document.querySelector("#register-user-submit");
 registerUserBtn.addEventListener("click", registerUser);
+let registerPassword = document.querySelector("#password-reg-conf");
+registerPassword.addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) { //Enter key
+        event.preventDefault();
+        registerUserBtn.click();
+    }
+});
 
 let registerSwitchBtn = document.querySelector("#register-switch-btn");
 registerSwitchBtn.addEventListener("click", loginRegisterToggle);
-let closeRegisterBtn = document.querySelector("#close-register-btn");
+let closeRegisterBtn = document.querySelector("#close-register-popup");
 closeRegisterBtn.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("register-popup").style.display = "none";});
 let loginSwitchBtn = document.querySelector("#login-switch-btn");
@@ -27,6 +48,10 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
+window.onload = function () {
+    checkAuthToken();
+    updateLoginStatus();
+};
 
 
 function loginRegisterToggle(){
@@ -41,34 +66,32 @@ function loginRegisterToggle(){
     }
 }
 //Check login cookie
-function checkAuthToken(){
-    let username = localStorage.getItem("username");
-    let cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i].trim();
-        if (cookie.startsWith("AuthToken=")) {
-            var authToken = cookie.split("=")[1].trim();
+async function checkAuthToken(){
+    let username = sessionStorage.getItem("username");
+    let loggedIn = sessionStorage.getItem("loggedIn");
 
-            fetch (API_IP + "/user/credentials/checkCookie", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }).then(response => {
-                if (response.status === 200){
-                    console.log("Logged in using cookie as: " + username);
-                    sessionStorage.setItem("username", username);
-                    updateLoginStatus();
-                } else {
-                    console.log("Wrong username or password");
-                    console.log(response.status);
-                }
-            })
-            .catch(error => {
-                console.log("Error when sending HTTPS request");
-                console.log(error);
-            });
-        }
+    if(loggedIn){
+        return true;
+    }
+    if (username === null){
+        return false;
+    }
+
+    const response = await fetch (API_IP + "/user/credentials/checkCookie", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (response.status === 200){
+        sessionStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("username", username);
+        console.log("Logged in using authtoken as: " + username);
+        updateLoginStatus();
+        return true;
+    } else {
+        console.log("Invalid Auth token");
+        return false;
     }
 }
 
@@ -77,11 +100,9 @@ function login(){
     let username = document.querySelector("#username").value;
     let password = document.querySelector("#password").value;
 
-    //Vi burde vel egt ha kryptering før vi sender passordet rundt, men det finner vi ut av senere :)
-    //Det fikses forsåvidt hvis vi går over til https
     let credentials = {"username": username, "password": password};
     console.log(credentials);
-
+    navigator.cookieEnabled = true;
     fetch(API_IP + "/user/credentials/login", {
         method: "POST",
         headers: {
@@ -92,12 +113,13 @@ function login(){
         let wrongpassword = document.querySelector("#wrong-password");
 
         if (response.status === 200){
+            sessionStorage.setItem("loggedIn", "true");
             sessionStorage.setItem("username", username);
             console.log("Logged in as: " + username);
             let loginForm = document.querySelector("#log-in-popup");
             loginForm.style.display = "none";
             wrongpassword.style.display = "none";
-            updateLoginStatus();
+            location.reload();
         } else {
             wrongpassword.style.display = "block";
         }
@@ -110,14 +132,16 @@ function login(){
 
 function logout(){
     sessionStorage.removeItem("username");
-    updateLoginStatus();
+    sessionStorage.setItem("loggedIn", "false");
+    location.reload();
 }
 
 function updateLoginStatus(){
-    let username = sessionStorage.getItem("username");
+    let loggedIn = sessionStorage.getItem("loggedIn");
     let loginBtn = document.querySelector("#log-in-btn");
     let logoutBtn = document.querySelector("#log-out-btn");
-    if (username !== null){
+    console.log("Log in Status.: " + loggedIn);
+    if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
     } else {
@@ -130,13 +154,14 @@ function registerUser(){
     let username = document.querySelector("#username-reg").value;
     let password = document.querySelector("#password-reg").value;
     let passwordConf = document.querySelector("#password-reg-conf").value;
+    let name = document.querySelector("#name-reg").value;
     let passwordMismatch = document.querySelector("#password-mismatch");
     if (password !== passwordConf){
         passwordMismatch.style.display = "block";
         console.log("Passwords do not match");
         return;
     }
-    let credentials = {"username": username, "password": password};
+    let credentials = {"username": username, "password": password, "name": name};
 
     fetch(API_IP + "/user/credentials/register", {
         method: "POST",
@@ -160,8 +185,32 @@ function registerUser(){
         }
     })
     .catch(error => {
+        alertDBconnectionRefused()
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
 
+}
+
+function alertDBconnectionRefused(){
+    alert("Could not connect to database");
+}
+
+function generateRandomId(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+/*
+    PASS GROUP NAME FROM GROUP PAGE TO SHOPPING LIST PAGE
+ */
+function sendDropdownValue(groupName){
+    const dropdown = document.querySelector("#dropdown");
+    dropdown.value = groupName;
+    retrieveShoppingList();
 }

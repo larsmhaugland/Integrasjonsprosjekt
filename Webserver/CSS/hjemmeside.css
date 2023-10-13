@@ -1,12 +1,31 @@
-#new-group-popup{
-    display:none;
-    position: relative;
-    border: 10px solid #000000;
-    background-color:palevioletred;
-    grid-area: main;
+#btn-image{
+    border: none;
+    color: white;
+    width: 50px;
+    height: auto;
 }
 
-#btn-image{
-    width: 100px;
-    height: auto;
+button{
+    border:none;
+    background-color:white;
+}
+
+.groups-container{
+    display:flex;
+    flex-direction:row;
+    flex-wrap: wrap;
+    justify-content:start;
+    flex-grow: 1;
+}
+
+#group-block{
+    border: 2px solid black;
+    margin: 10px;
+    width: 200px;
+    height: 200px;
+}
+
+#top-field{
+    display: flex;
+    flex-direction: row;
 }

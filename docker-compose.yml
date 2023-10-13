@@ -21,8 +21,12 @@ services:
     image: db:deploy
     ports:
       - "8080:8080"
+    volumes:
+      - type: bind
+        source: /web_images
+        target: /Images
     deploy:
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: on-failure
         delay: 5s
