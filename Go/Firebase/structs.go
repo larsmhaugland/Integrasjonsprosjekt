@@ -30,8 +30,9 @@ type User struct {
 }
 
 type Dinner struct {
-	Recipe      string   `json:"recipe"`
-	Responsible []string `json:"responsible"`
+	CustomRecipe string   `json:"customRecipe"`
+	Recipe       string   `json:"recipe"`
+	Responsible  []string `json:"responsible"`
 }
 
 type GroupRecipe struct {

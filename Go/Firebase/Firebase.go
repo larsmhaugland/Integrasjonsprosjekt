@@ -585,7 +585,7 @@ func DeleteRecipe(recipeID string) error {
 	return nil
 }
 
-/*****************				RECIPE FUNCTIONS				*****************/
+/*****************				SHOPPING LIST FUNCTIONS				*****************/
 
 func GetShoppingListData(listID string) (ShoppingList, error) {
 	ctx := context.Background()
