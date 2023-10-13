@@ -31,9 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         const groupID = urlParams.get('groupID');
         if (groupID){
-        const groupName = await getGroupName(groupID);
-        groupNameElement.textContent = "Settings for: " + groupName;
-        fetchGroupMembers(groupID);
+            const groupName = await getGroupName(groupID);
+            groupNameElement.textContent = "Settings for: " + groupName;
+            fetchGroupMembers(groupID);
         } else {
             alert("No groupID was passed to the groupSettings.html page");
             window.location.href = redirectURL;

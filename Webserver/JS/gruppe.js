@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.onload = async function () {
         const urlParams = new URLSearchParams(window.location.search);
         const groupID = urlParams.get('groupID');
+        console.log("gruppe id" + groupID);
         if (groupID){
             const groupName = await getGroupName(groupID);
             groupNamePass = groupName;
@@ -62,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error('Error fetching group members:', error);
                 alert("Server error when trying to get group members");
             });
-        } 
+    } 
 
     // Function to render the group members based on the retrieved data
     function renderGroupMembers(groupMembers) {
