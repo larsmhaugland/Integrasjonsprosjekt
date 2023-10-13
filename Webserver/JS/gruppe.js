@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
     // DOM elements
     const groupMembersList = document.querySelector("#group-members-list");
-    const editButton = document.getElementById("edit-button");
-    const groupNameElement = document.getElementById("group-name");
+    const editButton = document.querySelector("#edit-button");
+    const groupNameElement = document.querySelector("#group-name");
+    const handlelisteLink = document.querySelector("#handleliste-link");
+    const kalenderLink = document.querySelector("#kalender-link");
     let groupNamePass;
     const redirectURL = "../index.html";
     // Global variables and constants
@@ -30,6 +32,16 @@ document.addEventListener("DOMContentLoaded", function () {
         // Construct the URL with the groupID parameter
         const url = `groupSettings.html?groupID=${encodeURIComponent(groupID)}`;
         // Redirect to the groupSettings.html page with the groupID parameter
+        window.location.href = url;
+    });
+
+    handlelisteLink.addEventListener("click", function () {
+        const url = `./Handleliste/index.html?groupID=${encodeURIComponent(groupID)}`;
+        window.location.href = url;
+    });
+
+    kalenderLink.addEventListener("click", function () {
+        const url = `./Kalender/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
     });
 
@@ -89,10 +101,4 @@ document.addEventListener("DOMContentLoaded", function () {
             groupMembersList.appendChild(listItem);
         });
     }
-});
-
-let handlelisteLink = document.querySelector("#handleliste-link");
-handlelisteLink.addEventListener("click", function(event){
-    event.preventDefault();
-    sendDropdownValue(groupNamePass);
 });
