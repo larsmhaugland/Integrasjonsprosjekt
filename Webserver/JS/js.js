@@ -48,7 +48,10 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
-//window.onload(updateLoginStatus());
+window.onload = function () {
+    checkAuthToken(); 
+    updateLoginStatus();
+};
 
 
 function loginRegisterToggle(){
@@ -116,7 +119,6 @@ function login(){
             let loginForm = document.querySelector("#log-in-popup");
             loginForm.style.display = "none";
             wrongpassword.style.display = "none";
-            updateLoginStatus()
             location.reload();
         } else {
             wrongpassword.style.display = "block";
@@ -131,7 +133,6 @@ function login(){
 function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
-    updateLoginStatus();
     location.reload();
 }
 
@@ -139,6 +140,7 @@ function updateLoginStatus(){
     let loggedIn = sessionStorage.getItem("loggedIn");
     let loginBtn = document.querySelector("#log-in-btn");
     let logoutBtn = document.querySelector("#log-out-btn");
+    console.log("Log in Status.: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
