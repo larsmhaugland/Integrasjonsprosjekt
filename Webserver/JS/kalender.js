@@ -231,7 +231,7 @@ function displayGroups(groups){
         option.textContent = group.name;
 
         if (groupIDSentAsParam){
-            if (groups[i].documentID === groupIDSentAsParam) {
+            if (group.documentID === groupIDSentAsParam) {
                 option.selected = true; // Set the option as selected
             }
         }
