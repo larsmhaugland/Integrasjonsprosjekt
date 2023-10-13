@@ -50,6 +50,7 @@ logoutBtn.addEventListener("click", logout);
 
 window.onload = function () {
     checkAuthToken();
+    updateLoginStatus();
 };
 
 
