@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const groupMembersList = document.querySelector("#group-members-list");
     const editButton = document.getElementById("edit-button");
     const groupNameElement = document.getElementById("group-name");
+    let groupNamePass;
 
     // Global variables and constants
     const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.onload = async function () {
         groupID = tmpGroupID; 
         const groupName = await getGroupName(groupID);
+        groupNamePass = groupName;
         groupNameElement.textContent = "Settings for: " + groupName;
         fetchGroupMembers(groupID);
     };
@@ -83,3 +85,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+let handlelisteLink = document.querySelector("#handleliste-link");
+handlelisteLink.addEventListener("click", function(event){
+    event.preventDefault();
+    sendDropdownValue(groupNamePass);
+}

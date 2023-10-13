@@ -185,3 +185,12 @@ function generateRandomId(length) {
     }
     return result;
 }
+
+/*
+    PASS GROUP NAME FROM GROUP PAGE TO SHOPPING LIST PAGE
+ */
+function sendDropdownValue(groupName){
+const dropdown = document.querySelector("#dropdown");
+dropdown.value = groupName;
+retrieveShoppingList();
+}
