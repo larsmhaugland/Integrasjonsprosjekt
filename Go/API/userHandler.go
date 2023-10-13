@@ -243,6 +243,14 @@ func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error while decoding JSON body: %v\n", err)
 		return
 	}
+
+	for _, group := range user.Groups {
+		if group == groupID {
+			http.Error(w, "User already in group", http.StatusBadRequest)
+			log.Printf("User already in group\n")
+			return
+		}
+	}
 	user.Groups = append(user.Groups, groupID)
 
 	// Now, update the user in the database

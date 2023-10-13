@@ -192,6 +192,16 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when fetching user data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	duplicate := false
+	for _, recipeID := range user.Recipes {
+		if recipeID == id {
+			duplicate = true
+		}
+	}
+	if duplicate {
+		http.Error(w, "Error; Recipe already exists", http.StatusBadRequest)
+		return
+	}
 	user.Recipes = append(user.Recipes, id)
 	err = Firebase.PatchCacheUser(user)
 	if err != nil {

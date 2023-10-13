@@ -61,12 +61,27 @@ func GetUserData(userID string) (User, error) {
 			log.Println("Error; Failed to iterate")
 			return User{}, err
 		}
-		err = doc.DataTo(&user)
+
 		user.DocumentID = doc.Ref.ID
-		if err != nil {
-			log.Println("Error converting document:", err)
-			return User{}, err
+
+		if _, ok := doc.Data()["username"].(string); ok {
+			user.Username = doc.Data()["username"].(string)
+		} else {
+			log.Println("Error; Failed to convert username to string")
 		}
+
+		if _, ok := doc.Data()["password"].(string); ok {
+			user.Password = doc.Data()["password"].(string)
+		} else {
+			log.Println("Error; Failed to convert password to string")
+		}
+
+		if _, ok := doc.Data()["name"].(string); ok {
+			user.Name = doc.Data()["name"].(string)
+		} else {
+			log.Println("Error; Failed to convert name to string")
+		}
+
 		//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string
 		if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
 
