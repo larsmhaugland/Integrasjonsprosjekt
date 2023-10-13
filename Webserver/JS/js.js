@@ -128,6 +128,7 @@ function login(){
 function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
+    sessionStorage.removeItem("groups");
     updateLoginStatus();
 }
 

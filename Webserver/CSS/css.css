@@ -36,7 +36,7 @@ a:visited{
 nav{
     display: flex;
     justify-content: end;
-    gap: 20%;
+    gap: 50px;
 }
 
 #logo{
