@@ -133,6 +133,7 @@ async function loadRecipes(){
     if (!await checkAuthToken()) return;
     await getRecipes(Recipes);
     await displayResults(Recipes);
+    console.log(Recipes);
     displayPages();
 }
 
@@ -234,8 +235,8 @@ async function newRecipe() {
 
     let recipe = {
         "name": name,
-        "difficulty": difficulty,
-        "time": time,
+        "difficulty": parseInt(difficulty),
+        "time": parseInt(time),
         "image": filename,
     };
 
@@ -368,7 +369,7 @@ function filterRecipes(list) {
 
 function isDuplicate(list, item) {
     for (let i = 0; i < list.length; i++){
-        if (list[i].id === item.id) return true;
+        if (list[i].documentID === item.documentID) return true;
     }
     return false;
 }
@@ -377,6 +378,7 @@ async function displayResults(filteredList){
     //Clear results
     resultDiv.innerHTML = "";
 
+    console.log(filteredList)
     //Display
     if (filteredList.length === 0) {
         resultDiv.appendChild(document.createTextNode("Du har ingen oppskrifter lagret"));
@@ -390,8 +392,6 @@ async function displayResults(filteredList){
         if (isDuplicate(displayedRecipes, filteredList[i] + page * MAXRESULTS)) continue;
         displayedRecipes.push(filteredList[i + page * MAXRESULTS]);
     }
-
-
 
     for (let i = 0; i < displayedRecipes.length; i++) {
         let recipe = displayedRecipes[i];
@@ -430,10 +430,6 @@ async function displayResults(filteredList){
         recipeTime.setAttribute("class", "result-time");
         recipeTime.textContent = "Tid: " + recipe.time + " minutter";
         recipeBlock.appendChild(recipeTime);
-
-
-
-
 
         resultDiv.appendChild(recipeBlock);
     }

@@ -219,6 +219,9 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 			Owner:     user.Username,
 			LastEaten: time.Now(),
 		}
+		if group.Recipes == nil {
+			group.Recipes = make(map[string]Firebase.GroupRecipe)
+		}
 		group.Recipes[id] = recipe
 		err = Firebase.PatchCacheGroup(group)
 		if err != nil {
