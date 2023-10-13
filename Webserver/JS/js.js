@@ -49,7 +49,7 @@ let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
 window.onload = function () {
-    updateLoginStatus();
+    checkAuthToken();
 };
 
 
@@ -209,7 +209,7 @@ function generateRandomId(length) {
     PASS GROUP NAME FROM GROUP PAGE TO SHOPPING LIST PAGE
  */
 function sendDropdownValue(groupName){
-const dropdown = document.querySelector("#dropdown");
-dropdown.value = groupName;
-retrieveShoppingList();
+    const dropdown = document.querySelector("#dropdown");
+    dropdown.value = groupName;
+    retrieveShoppingList();
 }
