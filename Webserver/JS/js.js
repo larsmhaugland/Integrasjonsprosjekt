@@ -48,9 +48,9 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
-window.onload(function (){
+window.onload = function (){
     updateLoginStatus();
-});
+};
 
 function loginRegisterToggle(){
     let loginForm = document.querySelector("#log-in-popup");
