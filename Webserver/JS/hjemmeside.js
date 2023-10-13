@@ -69,6 +69,8 @@ function retrieveGroups(){
 function displayGroups(groups){
     let display = document.querySelector(".groups-container");
        for(let i = 0; i < groups.length; i++){
+           let groupContainer = document.createElement("a");
+              groupContainer.setAttribute("href", "./Grupper/index.html");
            let groupBlock = document.createElement("div");
            groupBlock.setAttribute("id","group-block");
            let groupNameParagraph = document.createElement("p");
@@ -76,12 +78,12 @@ function displayGroups(groups){
 
 
            let groupIdParagraph = document.createElement("p");
-           groupIdParagraph.textContent = "Gruppe-ID: " + groups[i].id;
+           groupIdParagraph.textContent = "Gruppe-ID: " + groups[i].documentID;
 
            groupBlock.appendChild(groupNameParagraph);
            groupBlock.appendChild(groupIdParagraph);
-
-           display.appendChild(groupBlock);
+            groupContainer.appendChild(groupBlock);
+           display.appendChild(groupContainer);
     };
 };
 
@@ -92,7 +94,7 @@ function displayGroups(groups){
 function newGroup(groupName){
     const groupId = generateRandomId(20);
     const group = {
-        id: groupId,
+        documentID: groupId,
         name: groupName,
         owner: sessionStorage.getItem("username"),
     };
@@ -122,20 +124,22 @@ function newGroup(groupName){
             sessionStorage.setItem("groups", JSON.stringify(groups));
             console.log("Group added to session storage:", groups);
 
-                let display = document.querySelector(".groups-container");
-                let groupBlock = document.createElement("div");
+            let display = document.querySelector(".groups-container");
+            let groupContainer = document.createElement("a");
+            groupContainer.setAttribute("href", "#");
+            let groupBlock = document.createElement("div");
+            groupBlock.setAttribute("id","group-block");
+            let groupNameParagraph = document.createElement("p");
+            groupNameParagraph.textContent = "Gruppenavn: " + groups[i].name;
 
-                groupBlock.setAttribute("id","group-block");
-                let groupNameParagraph = document.createElement("p");
-                groupNameParagraph.textContent = "Gruppenavn: " + groupName;
 
-                let groupIdParagraph = document.createElement("p");
-                groupIdParagraph.textContent = "Gruppe-ID: " + groupId;
+            let groupIdParagraph = document.createElement("p");
+            groupIdParagraph.textContent = "Gruppe-ID: " + groups[i].documentID;
 
-                groupBlock.appendChild(groupNameParagraph);
-                groupBlock.appendChild(groupIdParagraph);
-
-                display.appendChild(groupBlock);
+            groupBlock.appendChild(groupNameParagraph);
+            groupBlock.appendChild(groupIdParagraph);
+            groupContainer.appendChild(groupBlock);
+            display.appendChild(groupContainer);
 
 
             fetch(API_IP + `/user/groups?username=${username}`, {
@@ -153,6 +157,13 @@ function newGroup(groupName){
                         console.log("Error adding group to user");
                         throw new Error("Failed to add group to user");
                     }
+                })
+                .then((data) => {
+                    console.log("User updated with new group");
+                    console.log(data);
+                })
+                .catch((error) => {
+                    console.log("Error adding group to user: " + error);
                 })
         })
         .catch((error) => {
