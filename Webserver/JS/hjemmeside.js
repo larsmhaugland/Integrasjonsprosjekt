@@ -70,7 +70,8 @@ function displayGroups(groups){
     let display = document.querySelector(".groups-container");
        for(let i = 0; i < groups.length; i++){
            let groupContainer = document.createElement("a");
-              groupContainer.setAttribute("href", "./Grupper/index.html");
+           const url = `./Grupper/index.html?groupID=${encodeURIComponent(groups[i].documentID)}`;
+           groupContainer.setAttribute("href", url);
            let groupBlock = document.createElement("div");
            groupBlock.setAttribute("id","group-block");
            let groupNameParagraph = document.createElement("p");
@@ -82,7 +83,7 @@ function displayGroups(groups){
 
            groupBlock.appendChild(groupNameParagraph);
            groupBlock.appendChild(groupIdParagraph);
-            groupContainer.appendChild(groupBlock);
+           groupContainer.appendChild(groupBlock);
            display.appendChild(groupContainer);
     };
 };

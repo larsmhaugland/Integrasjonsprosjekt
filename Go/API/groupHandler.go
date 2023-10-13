@@ -72,6 +72,7 @@ func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		
 	} else {
 		http.Error(w, "Error: Method not supported", http.StatusBadRequest)
 	}

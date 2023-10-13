@@ -90,4 +90,4 @@ let handlelisteLink = document.querySelector("#handleliste-link");
 handlelisteLink.addEventListener("click", function(event){
     event.preventDefault();
     sendDropdownValue(groupNamePass);
-}
+});
