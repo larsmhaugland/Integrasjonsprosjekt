@@ -1,7 +1,9 @@
+//CALL ON START/RELOAD
 retrieveGroups();
 retrieveShoppingList();
 //retrieveDinnerList();
 
+//EVENT LISTENERS:
 //Save the selected option in the dropdown menu to session storage for reloading the page
 const dropdown = document.getElementById('group-dropdown');
 const selectedOption = sessionStorage.getItem('selectedOption');
@@ -21,8 +23,46 @@ window.addEventListener('load', function () {
     }
 });
 
+//Call addNewItemToList() when the user clicks enter in the input field
+let submit = document.querySelector("#newitemtxt");
+submit.addEventListener("keydown", (event)=> {
+    if (event.
+        key === "Enter") {
+        addNewItemToList();
+        event.preventDefault();
+        submit.value = "";
+    }
+});
 
-//Add groups + user to the dropdown menu
+//Call removeItemFromList() when checkboxes for items are clicked
+//Shopping list
+let list = document.querySelector("#shopping-list");
+list.addEventListener("click", (event) => {
+    if(event.target.id === "checkbox"){
+        removeItemFromList();
+    }
+});
+//Finished list
+let finishedlist = document.querySelector("#finished-list");
+finishedlist.addEventListener("click", (event) => {
+    if(event.target.id === "finished-checkbox"){
+        removeItemFromList();
+    }
+});
+
+//Hide display of finished list if checkbox is checked
+let hideFinished = document.querySelector("#hide-complete-checkbox");
+hideFinished.addEventListener("click", (event) => {
+    if(event.target.checked){
+        document.querySelector("#finished-list").style.display = "none";
+    }else{
+        document.querySelector("#finished-list").style.display = "block";
+    }});
+
+//FUNCTIONS:
+/*
+    DISPLAY GROUPS IN DROPDOWN MENU
+ */
 function displayGroups(groups){
     let dropdown = document.querySelector("#group-dropdown");
 
@@ -40,7 +80,9 @@ function displayGroups(groups){
     dropdown.appendChild(option);
 }
 
-//Retrieve shopping list from the database/storage session and display it
+/*
+    RETRIEVE SHOPPING LIST FROM DATABASE
+ */
 function retrieveShoppingList() {
     //if(!checkAuthToken()) return;
     removeList();
@@ -96,24 +138,18 @@ function retrieveShoppingList() {
                 displayShoppingList(data);});
     }
     }
-
-
-   /* //TODO: find a better way to double check which group/user the storage session is for
-    let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist"));
-
-    if(shoppinglist && shoppinglist.length > 0){
-        displayShoppingList(shoppinglist);
-    }else{
-        //TODO: API fetch
-    }*/
 }
 
+/*
+    DISPLAY SHOPPING ITEMS IN ONE OF THE TWO LISTS
+ */
 function displayShoppingList(shoppinglist){
     let display = document.querySelector("#shopping-list");
 
     for (let itemName in shoppinglist[0].list) {
         let quantity = shoppinglist[0].list[itemName].quantity;
         let complete = shoppinglist[0].list[itemName].complete;
+        console.log(itemName + " " + quantity + " " + complete);
 
         if (complete === false){
             let formattedItem = quantity + " " + itemName;
@@ -144,40 +180,9 @@ function displayShoppingList(shoppinglist){
     }
 }
 
-function retrieveDinnerList(){
-    //Retrieve dinner list from the database/storage session and display it
-   // if(!checkAuthToken()) return;
-    
-    let dinner = JSON.parse(sessionStorage.getItem("dinner"));  //TODO: check proper variable name
-
-    if(dinner && dinner.length > 0){
-        displayDinner(dinner);
-    }else {
-        //TODO: API fetch
-    }
-}
-
-function displayDinner(dinner){
-    let display = document.querySelector("#middag-uke");
-    dinner.forEach(dinner => {
-        let block = document.createElement("div");
-        block.setAttribute("id","middag-blokk");
-        block.textContent = dinner.name;
-        display.appendChild(block);
-    });
-}
-
-//Call addNewItemToList() when the user clicks enter in the input field
-let submit = document.querySelector("#newitemtxt");
-submit.addEventListener("keydown", (event)=> {
-    if (event.
-        key === "Enter") {
-        addNewItemToList();
-        event.preventDefault(); 
-        submit.value = "";
-    }
-});
-
+/*
+    ADD NEW ITEM TO LIST AND UPDATE STORAGE SESSION/DATABASE
+ */
 function addNewItemToList(){
     let newItem = document.querySelector("#newitemtxt").value;
     let newQuantity = document.querySelector("#newqttxt").value;
@@ -219,14 +224,9 @@ function addNewItemToList(){
     patchShoppingList();
 }
 
-let list = document.querySelector("#shopping-list");
-list.addEventListener("click", (event) => {
-    if(event.target.id === "checkbox" || event.target.id === "finished-checkbox"){
-        removeItemFromList();
-    }
-});
-
-//Remove item from list if checkbox is checked and moves it to finished list
+/*
+    REMOVE ITEM FROM LIST AND MOVE TO FINISHED LIST (OR VICE VERSA)
+ */
 function removeItemFromList(){
     let list = document.querySelector("#shopping-list");
     let items = list.querySelectorAll("#list-item");
@@ -284,15 +284,8 @@ function removeItemFromList(){
     patchShoppingList();
 }
 
-let finishedlist = document.querySelector("#finished-list");
-finishedlist.addEventListener("click", (event) => {
-    if(event.target.id === "finished-checkbox"){
-        removeItemFromList();
-    }
-});
-
 /*
-    RETRIEVE GROUPS FROM SESSION STORAGE OR DATABASE
+    RETRIEVE GROUPS FROM DATABASE
 */
 function retrieveGroups(){
 
@@ -324,7 +317,9 @@ function retrieveGroups(){
             });
     }
 };
-
+/*
+    PATCH SHOPPING LIST TO DATABASE
+ */
 function patchShoppingList(){
     let option = document.querySelector("#group-dropdown").value;
     let userName = sessionStorage.getItem("username");
@@ -390,7 +385,9 @@ function patchShoppingList(){
     }
 
 }
-
+/*
+    REMOVE LIST ON RELOAD (OR WHEN CHANGING GROUP)
+ */
 function removeList(){
     let list = document.querySelector("#shopping-list");
     let items = list.querySelectorAll("#list-item");
@@ -401,5 +398,29 @@ function removeList(){
     items = list.querySelectorAll("#finished-item");
     items.forEach(item => {
         list.removeChild(item);
+    });
+}
+
+//TODO: Retrieve dinner list from the database/storage session and display it
+function retrieveDinnerList(){
+    // if(!checkAuthToken()) return;
+
+    let dinner = JSON.parse(sessionStorage.getItem("dinner"));  //TODO: check proper variable name
+
+    if(dinner && dinner.length > 0){
+        displayDinner(dinner);
+    }else {
+        //TODO: API fetch
+    }
+}
+
+//TODO: Display the retrieved dinner list
+function displayDinner(dinner){
+    let display = document.querySelector("#middag-uke");
+    dinner.forEach(dinner => {
+        let block = document.createElement("div");
+        block.setAttribute("id","middag-blokk");
+        block.textContent = dinner.name;
+        display.appendChild(block);
     });
 }

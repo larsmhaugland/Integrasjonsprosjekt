@@ -34,6 +34,7 @@ h3, p {
 
 li{
     list-style-type: none;
+    font-size: 16px;
 }
 
 #newqttxt{
@@ -42,4 +43,19 @@ li{
 
 #finished-list{
     text-decoration: line-through;
+    block: display;
+}
+
+#complete-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.hide-complete{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-right: 10%;
 }
