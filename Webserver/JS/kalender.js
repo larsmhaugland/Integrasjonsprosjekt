@@ -7,11 +7,70 @@ let currentDay;
 let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "sondag"];
 let Recipes = [];
 let calendar = [[]];
+let groups = [];
+let groupIDSentAsParam = "";
 
-getRecipes(Recipes);
-retrieveGroups();
-let groups = JSON.parse(sessionStorage.getItem("groups"));
-displayGroups(groups);
+
+window.onload = async function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    groupIDSentAsParam = urlParams.get('groupID');
+    await getRecipes(Recipes);
+    await retrieveGroups();
+    groups = JSON.parse(sessionStorage.getItem("groups"));
+    displayGroups(groups);
+}
+
+sendCalendarToServer()
+
+// post request to send calendar to server
+
+function sendCalendarToServer() {
+    const dates = getDatesForCurrentWeek();
+    console.log(dates);
+    calendar.forEach((groupCalendar, gIndex) => {
+        if (groupCalendar) {
+            groupCalendar.forEach((dinner, dIndex) => {
+                if (dinner) {
+                    const date = dates[dIndex];
+                    const dateString = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+                    const group = groups[gIndex];
+                    const data = {
+                        "date": dateString,
+                        "dinner": dinner,
+                        "group": group
+                    };
+                    console.log(data);
+                    /*
+                    fetch(API_IP + "/calendar", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    */
+                }
+            });
+        }
+    });
+}
+
+function getDatesForCurrentWeek() {
+    const today = new Date();
+    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
+
+    const startDate = new Date(today); // Clone the current date
+    startDate.setDate(today.getDate() - currentDayOfWeek + 1); // Start of the week (Sunday as the last day)
+
+    const datesForWeek = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        datesForWeek.push(date);
+    }
+
+    return datesForWeek;
+}
 
 groupDropdown.addEventListener("change", function (event){
     console.log("dropdown changed");
@@ -66,16 +125,22 @@ closeDinnerPopup.addEventListener("click", function (event){
 dinnerForm.addEventListener("submit", function (event) {
     event.preventDefault();
 });
-
+//if(document.querySelector("#label"))
 function addDinnerToCalendar() {
     let dinnerName = document.querySelector("#dinner-name").value;
     if (event.key === "Enter") {
         console.log("dinnername: " + dinnerName);
-        let label = document.createElement("label");
-        label.innerHTML = '<br>' + dinnerName;
-        label.setAttribute("id", currentDay + " textbox");
-        let div = document.getElementById(currentDay);
-        div.appendChild(label);
+        let label = document.getElementById(currentDay + " textbox");
+        if (label) {
+            // If it exists, update its content
+            label.innerHTML = '<br>' + dinnerName;
+        } else {
+            label = document.createElement("label");
+            label.innerHTML = '<br>' + dinnerName;
+            label.setAttribute("id", currentDay + " textbox");
+            let div = document.getElementById(currentDay);
+            div.appendChild(label);
+        }
         event.preventDefault();
         dinnerPopup.style.display = "none";
         document.querySelector("#dinner-name").value = "";
@@ -92,6 +157,10 @@ function addDinnerToCalendar() {
                 }
             }
         }
+        sendCalendarToServer();
+    }
+    else{
+        autocomplete(currentDay, dinnerName);
     }
 }
 
@@ -102,9 +171,10 @@ function autocomplete(day, text){
     if (text.length > 0) {
         //TODO: Legg til forslag øverst i listen (2 forslag)
         //suggestions = GETFORSLAG()
-
         if(Recipes.length > 1){
             suggestions = suggestions.concat(Recipes[0], Recipes[1]);
+        }else if (Recipes.length > 0){
+            suggestions = suggestions.concat(Recipes[0]);
         }
         //Finner oppskrifter som matcher søket substring
         const filteredRecipes = Recipes.filter((data) => {
@@ -159,7 +229,15 @@ function displayGroups(groups){
         let option = document.createElement("option");
         option.value = group.name;
         option.textContent = group.name;
+
+        if (groupIDSentAsParam){
+            if (group.documentID === groupIDSentAsParam) {
+                option.selected = true; // Set the option as selected
+            }
+        }
+
         dropdown.appendChild(option);
     });
+    
 }
 

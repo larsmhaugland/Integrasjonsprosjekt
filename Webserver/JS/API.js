@@ -30,31 +30,27 @@ async function getRecipes(Recipes) {
     }
 }
 
-function retrieveGroups(){
+async function retrieveGroups(){
 
     //if (!checkAuthToken()) return;
     let userName = sessionStorage.getItem("username");
 
 
-    fetch(API_IP + `/user/groups?username=${userName}`, {
+    const response = await fetch(API_IP + `/user/groups?username=${userName}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
         }
-    }).then(response => {
-        if (response.status === 200){
-            console.log("Groups retrieved");
-            return response.json();
-        } else {
-            console.log("Error retrieving groups");
-            throw new Error("Failed to retrieve groups");
-        }
-    }).then(data=>{
-        sessionStorage.setItem("groups", JSON.stringify(data));
-    })
-    .catch(error => {
-        console.log("Error retrieving groups: " + error);
     });
+
+    if (response.status === 200){
+        const data = await response.json();
+        sessionStorage.setItem("groups", JSON.stringify(data));
+        console.log("Groups retrieved");
+    } else {
+        console.log("Error retrieving groups");
+        throw new Error("Failed to retrieve groups");
+    }
 
 }
 

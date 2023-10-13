@@ -37,6 +37,7 @@ registerPassword.addEventListener("keyup", function(event) {
         registerUserBtn.click();
     }
 });
+
 let registerSwitchBtn = document.querySelector("#register-switch-btn");
 registerSwitchBtn.addEventListener("click", loginRegisterToggle);
 let closeRegisterBtn = document.querySelector("#close-register-popup");
@@ -114,7 +115,7 @@ function login(){
             let loginForm = document.querySelector("#log-in-popup");
             loginForm.style.display = "none";
             wrongpassword.style.display = "none";
-            updateLoginStatus();
+            location.reload();
         } else {
             wrongpassword.style.display = "block";
         }
