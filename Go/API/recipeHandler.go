@@ -160,7 +160,6 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
 		}
 	}
-
 	err = EncodeJSONBody(w, r, recipes)
 	if err != nil {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)

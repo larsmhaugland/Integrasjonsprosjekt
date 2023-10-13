@@ -5,6 +5,7 @@ go 1.19
 require (
 	cloud.google.com/go/firestore v1.13.0
 	firebase.google.com/go v3.13.0+incompatible
+	github.com/google/uuid v1.3.1
 	google.golang.org/api v0.141.0
 )
 
@@ -19,7 +20,6 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
-	github.com/google/uuid v1.3.1 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	go.opencensus.io v0.24.0 // indirect

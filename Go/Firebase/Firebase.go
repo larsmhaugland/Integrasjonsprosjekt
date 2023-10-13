@@ -167,7 +167,7 @@ func PatchUser(user User) error {
 		"groups":         user.Groups,
 		"name":           user.Name,
 	}
-	_, err = client.Collection("users").Doc(user.ID).Set(ctx, data)
+	_, err = client.Collection("users").Doc(user.DocumentID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching user:", err)
 		return err
@@ -214,7 +214,7 @@ func AddGroup(group Group) (string, error) {
 		log.Println("error getting Firebase client:", err)
 		return "", err
 	}
-	docRef := client.Collection("groups").Doc(group.ID)
+	docRef := client.Collection("groups").Doc(group.DocumentID)
 	//Need to make a slice of members so that Firebase correctly adds the field
 	var tmpMemberSlice []string
 	tmpMemberSlice = append(tmpMemberSlice, group.Owner)
@@ -232,7 +232,7 @@ func AddGroup(group Group) (string, error) {
 		log.Println("Error adding group:", err)
 		return "", err
 	}
-	return group.ID, nil
+	return group.DocumentID, nil
 }
 
 func GetGroupData(groupID string) (Group, error) {
@@ -250,7 +250,7 @@ func GetGroupData(groupID string) (Group, error) {
 	}
 
 	err = doc.DataTo(&group)
-	group.ID = doc.Ref.ID
+	group.DocumentID = doc.Ref.ID
 	if err != nil {
 		log.Println("Error converting document:", err)
 		return Group{}, err
@@ -299,7 +299,7 @@ func PatchGroup(group Group) error {
 		"schedule":       group.Schedule,
 		"shopping-lists": group.ShoppingLists,
 	}
-	_, err = client.Collection("groups").Doc(group.ID).Set(ctx, data)
+	_, err = client.Collection("groups").Doc(group.DocumentID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching group:", err)
 		return err
@@ -486,14 +486,14 @@ func AddRecipe(recipe Recipe) (string, error) {
 	data := map[string]interface{}{
 		"name":         recipe.Name,
 		"time":         recipe.Time,
-		"picture":      recipe.Picture,
+		"image":        recipe.Image,
 		"description":  recipe.Description,
+		"difficulty":   recipe.Difficulty,
 		"URL":          recipe.URL,
 		"ingredients":  recipe.Ingredients,
 		"instructions": recipe.Instructions,
 		"categories":   recipe.Categories,
 		"portions":     recipe.Portions,
-		"image":        recipe.Image,
 	}
 
 	//Add recipe to recipes
@@ -520,6 +520,7 @@ func GetRecipeData(recipeID string) (Recipe, error) {
 		return Recipe{}, err
 	}
 	err = doc.DataTo(&recipe)
+	recipe.DocumentID = doc.Ref.ID
 	if err != nil {
 		log.Println("Error converting document:", err)
 		return Recipe{}, err
@@ -539,13 +540,14 @@ func PatchRecipe(recipe Recipe) error {
 		"time":         recipe.Time,
 		"image":        recipe.Image,
 		"description":  recipe.Description,
+		"difficulty":   recipe.Difficulty,
 		"URL":          recipe.URL,
 		"ingredients":  recipe.Ingredients,
 		"instructions": recipe.Instructions,
 		"categories":   recipe.Categories,
 		"portions":     recipe.Portions,
 	}
-	_, err = client.Collection("recipes").Doc(recipe.ID).Set(ctx, data)
+	_, err = client.Collection("recipes").Doc(recipe.DocumentID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching recipe:", err)
 		return err
@@ -584,7 +586,7 @@ func GetShoppingListData(listID string) (ShoppingList, error) {
 		return ShoppingList{}, err
 	}
 	err = doc.DataTo(&list)
-	list.ID = doc.Ref.ID
+	list.DocumentID = doc.Ref.ID
 
 	if err != nil {
 		log.Println("Error converting document:", err)
@@ -625,7 +627,7 @@ func PatchShoppingList(list ShoppingList) error {
 		"assignees": list.Assignees,
 		"list":      list.List,
 	}
-	_, err = client.Collection("shopping-list").Doc(list.ID).Set(ctx, data)
+	_, err = client.Collection("shopping-list").Doc(list.DocumentID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching shopping list:", err)
 		return err
