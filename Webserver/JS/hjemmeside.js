@@ -130,11 +130,11 @@ function newGroup(groupName){
             let groupBlock = document.createElement("div");
             groupBlock.setAttribute("id","group-block");
             let groupNameParagraph = document.createElement("p");
-            groupNameParagraph.textContent = "Gruppenavn: " + groups[i].name;
+            groupNameParagraph.textContent = "Gruppenavn: " + data.name;
 
 
             let groupIdParagraph = document.createElement("p");
-            groupIdParagraph.textContent = "Gruppe-ID: " + groups[i].documentID;
+            groupIdParagraph.textContent = "Gruppe-ID: " + data.documentID;
 
             groupBlock.appendChild(groupNameParagraph);
             groupBlock.appendChild(groupIdParagraph);

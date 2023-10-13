@@ -9,6 +9,9 @@ import (
 
 func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	SetCORSHeaders(w)
+	if r.Method == http.MethodOptions {
+		return
+	}
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {
 		http.Error(w, "Error; Incorrect usage of URL.", http.StatusBadRequest)
@@ -94,10 +97,6 @@ func GetGroupName(w http.ResponseWriter, r *http.Request) {
 }
 
 func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
-	//Return if CORS preflight
-	if r.Method == http.MethodOptions {
-		return
-	}
 	var group Firebase.Group
 	err := DecodeJSONBody(w, r, &group)
 	if err != nil {
@@ -128,8 +127,6 @@ func GroupMemberBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPatch:
 		GroupMemberPatchHandler(w, r)
 		break
-	case http.MethodOptions: // For CORS
-		return
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -221,8 +218,6 @@ func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPatch:
 		GroupSchedulePatchHandler(w, r)
 		break
-	case http.MethodOptions: // For CORS
-		return
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -259,8 +254,6 @@ func GroupShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPatch:
 		GroupShoppingPatchHandler(w, r)
 		break
-	case http.MethodOptions: // For CORS
-		return
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -268,8 +261,6 @@ func GroupShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GroupShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-	/*http.Error(w, "Not implemented", http.StatusNotImplemented)
 	//Retrieve shopping list for a group
 	groupID := r.URL.Query().Get("groupID")
 	shoppingList, err := Firebase.ReturnCacheGroup(groupID)
@@ -281,7 +272,7 @@ func GroupShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
 		return
-	}*/
+	}
 
 }
 
