@@ -5,7 +5,6 @@ retrieveShoppingList();
 // Get the 
 const urlParams = new URLSearchParams(window.location.search);
 const groupIDSentAsParam = urlParams.get('groupID');
-console.log("groupIDSentAsParam: " + groupIDSentAsParam);
 
 
 //EVENT LISTENERS:
@@ -80,7 +79,6 @@ function displayGroups(groups){
 
         // Check if the current group matches the groupID sent as a parameter to the page
         if (groupIDSentAsParam){
-            console.log("groupIDSentAsParam: " + groupIDSentAsParam + " groups[i].documentID: " + groups[i].documentID);
             if (groups[i].documentID === groupIDSentAsParam) {
                 option.selected = true; // Set the option as selected
             }

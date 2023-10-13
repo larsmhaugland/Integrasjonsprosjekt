@@ -14,7 +14,6 @@
                 <a href="">Chat</a>
                 <a href="../Kalender/index.html">Kalender</a>
                 <a href="../Oppskrifter/index.html">Oppskrifter</a>
-                <a href="../Grupper/index.html"> Grupper</a>
                 <button id="log-in-btn">Innlogging</button>
                 <button id="log-out-btn">Logg ut</button>
         </nav>
@@ -78,7 +77,14 @@
     </main>
 </body>
 <script src="../JS/gruppeInstillinger.js"></script>
-<script src="../JS/js.js"></script>
+<script src="../JS/js.js"></script>'
+<script>
+    window.onload = function() {
+        // Call the onload functions from both scripts
+        firstScriptOnload();
+        secondScriptOnload();
+    };
+</script>
 </html>
 
 <!--<li>
