@@ -1,0 +1,61 @@
+main{
+    display: grid;
+    grid-template-rows: 10px 10px auto auto;
+    grid-template-areas:
+    "padding padding"
+    "handleliste middag-uke";
+    align-items: self-start;
+}
+
+#handleliste{
+    grid-area: handleliste;
+    min-height: 500px;
+}
+
+#middag-uke{
+    grid-area: middag-uke;
+    border: 2px solid black;
+    padding: 10px;
+    border-radius: 25px;
+    min-height: 800px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    grid-template-rows: repeat(4, 1fr); /* 4 rows */
+    gap: 10px; /* Spacing between items */
+    overflow: hidden;
+}
+
+h3, p {
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide content that overflows */
+    text-overflow: ellipsis; /* Display an ellipsis (...) when content overflows */
+    font-size: 16px; /* Set a default font size */
+}
+
+li{
+    list-style-type: none;
+    font-size: 16px;
+}
+
+#newqttxt{
+    width: 40px;
+}
+
+#finished-list{
+    text-decoration: line-through;
+    block: display;
+}
+
+#complete-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.hide-complete{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-right: 10%;
+}
