@@ -246,7 +246,7 @@ async function newRecipe() {
     } else {
         let list = document.querySelectorAll("#recipe-ingredient-list li");
         list.forEach((item) => {
-            let ingredient = item.textContent;
+            let ingredient = item.getAttribute("name");
             ingredients[ingredient] = item.getAttribute("data-qty");
         });
         recipe.ingredients = ingredients;
