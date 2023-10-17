@@ -2,7 +2,7 @@
 let MAXRESULTS = 9;
 let page = 0;
 let Recipes = [];
-const IMAGEDIR = "/usr/local/apache2/images/";
+
 
 //DOM elements:
 let resultDiv = document.querySelector("#results");
@@ -161,6 +161,7 @@ function addNewItemToList(list){
         let quantity = document.querySelector("#recipe-ingredient-qty").value;
         //create a new Ingredient list item
         li.setAttribute("class", "ingredient-list-item");
+        li.setAttribute("name", newItem);
         li.setAttribute("data-qty", quantity);
         li.textContent = newItem;
         //create a checkbox for the list item
@@ -396,8 +397,8 @@ async function displayResults(filteredList){
     for (let i = 0; i < displayedRecipes.length; i++) {
         let recipe = displayedRecipes[i];
         let recipeBlock = document.createElement("a");
-        recipeBlock.classList.add("result_" + (i + 1));
         recipeBlock.classList.add("results");
+        recipeBlock.classList.add("result_" + (i + 1));
         recipeBlock.setAttribute("href", "Oppskrift/index.html?id=" + recipe.documentID);
 
         recipeBlock.setAttribute("id", recipe.documentID)

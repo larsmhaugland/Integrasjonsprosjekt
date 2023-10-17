@@ -4,6 +4,7 @@
 */
 //TEST
 let API_IP = "";
+const IMAGEDIR = "/usr/local/apache2/images/";
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
 } else{
@@ -48,9 +49,9 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
-window.onload(function (){
+window.onload = function (){
     updateLoginStatus();
-});
+};
 
 function loginRegisterToggle(){
     let loginForm = document.querySelector("#log-in-popup");
