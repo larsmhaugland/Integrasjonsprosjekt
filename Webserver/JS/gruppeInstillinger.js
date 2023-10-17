@@ -27,7 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
     // the group name was set in the html so it became undefined.
-    window.onload = async function () {
+    // TODO: Fix this to use window.onload without crashing with the window.onload in JS.js
+    onPageReload()
+    async function onPageReload() {
         const urlParams = new URLSearchParams(window.location.search);
         const groupID = urlParams.get('groupID');
         if (groupID){

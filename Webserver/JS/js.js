@@ -49,9 +49,11 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
-window.onload = function (){
+window.onload = function () {
+    checkAuthToken();
     updateLoginStatus();
 };
+
 
 function loginRegisterToggle(){
     let loginForm = document.querySelector("#log-in-popup");
@@ -141,6 +143,7 @@ function updateLoginStatus(){
     let loggedIn = sessionStorage.getItem("loggedIn");
     let loginBtn = document.querySelector("#log-in-btn");
     let logoutBtn = document.querySelector("#log-out-btn");
+    console.log("Log in Status.: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
@@ -210,7 +213,7 @@ function generateRandomId(length) {
     PASS GROUP NAME FROM GROUP PAGE TO SHOPPING LIST PAGE
  */
 function sendDropdownValue(groupName){
-const dropdown = document.querySelector("#dropdown");
-dropdown.value = groupName;
-retrieveShoppingList();
+    const dropdown = document.querySelector("#dropdown");
+    dropdown.value = groupName;
+    retrieveShoppingList();
 }

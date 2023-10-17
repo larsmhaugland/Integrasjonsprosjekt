@@ -72,7 +72,7 @@ func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		
+
 	} else {
 		http.Error(w, "Error: Method not supported", http.StatusBadRequest)
 	}
@@ -226,11 +226,61 @@ func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GroupScheduleGetHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	groupID := r.URL.Query().Get("groupID")
+	group, err := Firebase.ReturnCacheGroup(groupID)
+	if err != nil {
+		http.Error(w, "Error; Could not find group", http.StatusBadRequest)
+		return
+	}
+	err = EncodeJSONBody(w, r, group.Schedule)
+	if err != nil {
+		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		return
+	}
+
+	//http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
 func GroupSchedulePostHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
+	type input struct {
+		Date         string   `json:"date"`
+		CustomRecipe string   `json:"customRecipe"`
+		Recipe       string   `json:"recipe"`
+		Responsible  []string `json:"responsible"`
+	}
+	var requestBody input
+
+	err := DecodeJSONBody(w, r, &requestBody)
+	if err != nil {
+		http.Error(w, "Error; Could not decode JSON body", http.StatusBadRequest)
+		return
+	}
+
+	groupID := r.URL.Query().Get("groupID")
+	if groupID == "" {
+		http.Error(w, "Error; Could not find groupID", http.StatusBadRequest)
+		return
+	}
+	group, err := Firebase.ReturnCacheGroup(groupID)
+	if err != nil {
+		http.Error(w, "Error; Could not find group", http.StatusBadRequest)
+		return
+	}
+	if group.Schedule == nil {
+		group.Schedule = make(map[string]Firebase.Dinner)
+	}
+
+	group.Schedule[requestBody.Date] = Firebase.Dinner{
+		CustomRecipe: requestBody.CustomRecipe,
+		Recipe:       requestBody.Recipe,
+		Responsible:  requestBody.Responsible,
+	}
+	err = Firebase.PatchCacheGroup(group)
+	if err != nil {
+		http.Error(w, "Error; Could not patch group", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func GroupScheduleDeleteHandler(w http.ResponseWriter, r *http.Request) {
