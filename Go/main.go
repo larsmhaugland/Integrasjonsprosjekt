@@ -102,11 +102,15 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
+
 	// Check if the request is a POST request
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodPost && r.Method != http.MethodOptions {
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
+	} else if r.Method == http.MethodOptions {
+		return
 	}
+
 	// Parse the uploaded file
 	file, _, err := r.FormFile("file") // "file" is the name of the file input field in the request
 	if err != nil {

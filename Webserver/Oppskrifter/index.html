@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../CSS/css.css">
-    <link rel="stylesheet" href="../CSS/oppskrift.css">
+    <link rel="stylesheet" href="../CSS/oppskrifter.css">
     <title>Oppskrift</title>
 </head>
-<body>
+<body id="body-wrapper">
     <header class="main-nav">
         <a href="../index.html" id="logo">PLÆN</a>
         <nav>
@@ -87,11 +87,23 @@
                             <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
                             <button id="add-ingredient-btn">Legg til</button>
                             <ul id="recipe-ingredient-list">
-                                <!-- Ingredients get appended here -->
+                                <!-- Ingredients get appended here
+                                TODO:
+                                ENDRE PÅ INGREDIENSER
+                                -->
                             </ul>
                         </div>
-                        <label for="recipe-instructions"><br>Instruksjoner<br></label>
-                        <textarea id="recipe-instructions" placeholder="Instruksjoner"></textarea>
+                        <div id="new-recipe-instructions">
+                            <label for="recipe-instructions"><br>Instruksjoner<br></label>
+                            <input type="text" id="recipe-instructions" placeholder="Instruksjoner">
+                            <button id="add-instruction-btn">Legg til</button>
+                            <ol id="recipe-instructions-list">
+                                <!-- Instructions get appended here
+                                TODO:
+                                ENDRE PÅ INSTRUKSJONER
+                                 -->
+                            </ol>
+                        </div>
                     </div>
                     <div id="url-recipe">
                         <label for="recipe-url"><br> Full URL til oppskrift<br></label>
@@ -125,8 +137,10 @@
             </div>
 
             <div class="recipe-header-container">
-                <input type="text" id="search-bar" placeholder="Søk etter oppskrift">
-                <button id="new-recipe-btn"><img id="btn-image" src="../Images/add-square.svg" alt="Add new recipe"/></button>
+                <div class="recipe-header">
+                    <input type="text" id="search-bar" placeholder="Søk etter oppskrift">
+                    <button id="new-recipe-btn"><img id="btn-image" src="../Images/add-square.svg" alt="Add new recipe"/></button>
+                </div>
             </div>
             <div id="results" class="results-wrapper">
                 <!-- Results get appended here -->
@@ -141,5 +155,5 @@
 </body>
 <script src="../JS/js.js"></script>
 <script src="../JS/API.js"></script>
-<script src="../JS/oppskrift.js"></script>
+<script src="../JS/oppskrifter.js"></script>
 </html>

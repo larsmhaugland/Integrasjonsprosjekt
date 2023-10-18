@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
     // DOM elements
     const groupMembersList = document.querySelector("#group-members-list");
-    const editButton = document.getElementById("edit-button");
-    const groupNameElement = document.getElementById("group-name");
+    const editButton = document.querySelector("#edit-button");
+    const groupNameElement = document.querySelector("#group-name");
+    const handlelisteLink = document.querySelector("#handleliste-link");
+    const kalenderLink = document.querySelector("#kalender-link");
     let groupNamePass;
     const redirectURL = "../index.html";
     // Global variables and constants
@@ -10,10 +12,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
     // the group name was set in the html so it became undefined.
-    window.onload = async function () {
+    // TODO: Fix this to use window.onload without crashing with the window.onload in JS.js
+    onPageReloadGroup()
+    async function onPageReloadGroup() {
         const urlParams = new URLSearchParams(window.location.search);
         groupID = urlParams.get('groupID');
-        console.log("gruppe id" + groupID);
         if (groupID){
             const groupName = await getGroupName(groupID);
             groupNamePass = groupName;
@@ -30,6 +33,16 @@ document.addEventListener("DOMContentLoaded", function () {
         // Construct the URL with the groupID parameter
         const url = `groupSettings.html?groupID=${encodeURIComponent(groupID)}`;
         // Redirect to the groupSettings.html page with the groupID parameter
+        window.location.href = url;
+    });
+
+    handlelisteLink.addEventListener("click", function () {
+        const url = `../Handleliste/index.html?groupID=${encodeURIComponent(groupID)}`;
+        window.location.href = url;
+    });
+
+    kalenderLink.addEventListener("click", function () {
+        const url = `../Kalender/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
     });
 
@@ -89,10 +102,4 @@ document.addEventListener("DOMContentLoaded", function () {
             groupMembersList.appendChild(listItem);
         });
     }
-});
-
-let handlelisteLink = document.querySelector("#handleliste-link");
-handlelisteLink.addEventListener("click", function(event){
-    event.preventDefault();
-    sendDropdownValue(groupNamePass);
 });

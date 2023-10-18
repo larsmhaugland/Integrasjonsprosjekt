@@ -2,27 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../CSS/css.css">
-    <link rel="stylesheet" href="../CSS/grupper.css">
-    <title>Grupper</title>
+    <link rel="stylesheet" href="../../CSS/css.css">
+    <link rel="stylesheet" href="../../CSS/oppskrift.css">
+    <title>Oppskrift</title>
 </head>
 <body>
     <header class="main-nav">
         <a href="../index.html" id="logo">PLÆN</a>
         <nav>
-                <a href="../Handleliste/index.html">Handleliste</a>
+                <a href="../../Handleliste/index.html">Handleliste</a>
                 <a href="">Chat</a>
-                <a href="../Kalender/index.html">Kalender</a>
-                <a href="../Oppskrifter/index.html">Oppskrifter</a>
+                <a href="../../Kalender/index.html">Kalender</a>
+                <a href="../index.html">Oppskrifter</a>
                 <button id="log-in-btn">Innlogging</button>
                 <button id="log-out-btn">Logg ut</button>
         </nav>
     </header>
-
     <!--Pop-up login-->
     <div id="log-in-popup" class="popup-wrapper">
         <form id="log-in-form" class="popup-content">
-            <a id="close-login-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <a id="close-login-popup" class="close-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
             <h3>Brukernavn</h3>
             <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
             <h3>Passord</h3>
@@ -38,7 +37,7 @@
     <!--Pop-up register-->
     <div id="register-popup" class="popup-wrapper">
         <form id="register-user-form" class="popup-content">
-            <a id="close-register-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <a id="close-register-popup" class="close-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
             <h3>Navn</h3>
             <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
             <h3>Brukernavn</h3>
@@ -55,47 +54,21 @@
             <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
         </form>
     </div>
+
     <main>
-        <div class = "group-heading">
-            <h1 id="group-name"></h1> 
-            <button id="edit-button">
-                <img src="../Images/edit-icon.png" alt="Edit Group">
-            </button>
-        </div>
-        <div class="group-members">
-            <h2>Group Members</h2>
-            <ul class ="group-members-list" id="group-members-list">
-                <li>
-                    <img src="../Images/person-icon-transparent.png" alt="Member 1">
-                    <span>Member 1</span>
-                </li>
-                <li>
-                    <img src="../Images/person-icon-transparent.png" alt="Member 2">
-                    <span>Member 2</span>
-                </li>
-            </ul>
-        </div>
- 
-        <!-- Group Functionalities -->
-        <div class="group-functionalities">
-            <a class="square">
-                <div class="square-content" id="kalender-link">
-                    Måltidsplanlegger
-                </div>
-            </a>
-            <a class="square" id="handleliste-link">
-                <div class="square-content">
-                    Handleliste
-                </div>
-            </a>
-            <a class="square" href="#">
-                <div class="square-content">
-                    Chat
-                </div>
-            </a>
+        <div class="recipe-wrapper">
+            <div class="recipe-header">
+                <h1 id="recipe-name">Navn</h1>
+                <a id="edit-recipe-btn"><img src="../../Images/edit-icon.png" alt="Edit recipe"></a>
+            </div>
+            <div class="recipe-content" id="recipe-content">
+            </div>
         </div>
     </main>
+
+
 </body>
-<script src="../JS/gruppe.js"></script>
-<script src="../JS/js.js"></script>
+<script src="../../JS/js.js"></script>
+<script src="../../JS/API.js"></script>
+<script src="../../JS/oppskrift.js"></script>
 </html>

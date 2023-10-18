@@ -118,12 +118,28 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	group := r.URL.Query().Get("group")
+	single := r.URL.Query().Get("single")
 	parts := strings.Split(r.URL.Path, "/")
 	storedIn := parts[len(parts)-1]
 	if storedIn == "" {
 		http.Error(w, "Error; No id provided", http.StatusBadRequest)
 		return
 	}
+	//If only a single recipe is requested, return it
+	if single == "true" {
+		recipe, err := Firebase.ReturnCacheRecipe(storedIn)
+		if err != nil {
+			http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = EncodeJSONBody(w, r, recipe)
+		if err != nil {
+			http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
+	}
+
 	type outuput struct {
 		UserRecipes  []Firebase.Recipe `json:"userRecipes"`
 		GroupRecipes []Firebase.Recipe `json:"groupRecipes"`
@@ -218,6 +234,9 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		recipe := Firebase.GroupRecipe{
 			Owner:     user.Username,
 			LastEaten: time.Now(),
+		}
+		if group.Recipes == nil {
+			group.Recipes = make(map[string]Firebase.GroupRecipe)
 		}
 		group.Recipes[id] = recipe
 		err = Firebase.PatchCacheGroup(group)
