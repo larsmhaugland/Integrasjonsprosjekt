@@ -15,6 +15,7 @@ main{
     grid-area: main;
 }
 
+
 /*Header and navigation*/
 a:link{
     text-decoration: none;
@@ -30,43 +31,46 @@ a:visited{
     justify-content: space-between;
     align-items: stretch;
     grid-area: head;
-    background-color: paleturquoise;
+    background-color: #80AB82;
+    /*padding-bottom: 5px;*/
 }
 
 nav{
     display: flex;
     justify-content: end;
     gap: 20%;
+    align-items: center;
 }
+
 
 #logo{
     font-size: xx-large;
 }
 
-.current-page{
-    background-color: palevioletred;
-}
+/*.current-page{
+    background-color: #0B5D1E;
+}*/
 
 /*TODO: make the font match with the rest of the header (global font settings?)*/
  #log-in-btn{
     padding: 0;
     border: 0;
-    background-color: paleturquoise;
+    background-color: #80AB82;
  }
 
 #log-in-btn:hover{
-    background-color: palevioletred;
+    background-color: #0B5D1E;
 }
 
 #log-out-btn{
     padding: 0;
     border: 0;
-    background-color: paleturquoise;
+    background-color: #80AB82;
     display: none;
 }
 
 #log-out-btn:hover{
-    background-color: palevioletred;
+    background-color: #0B5D1E;
 }
 
 /*used to deliver error messages to the user*/
