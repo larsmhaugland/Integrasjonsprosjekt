@@ -61,7 +61,7 @@ function displayRecipe(Recipe) {
     difficulty.innerHTML = "Vanskelighetsgrad: " + Recipe.difficulty;
     recipeContent.appendChild(difficulty);
 
-    if(Recipe.image !== null) {
+    if(Recipe.image !== null && Recipe.image !== "") {
         let image = document.createElement("img");
         image.src = IMAGEDIR + Recipe.image+".jpg";
         recipeContent.appendChild(image);

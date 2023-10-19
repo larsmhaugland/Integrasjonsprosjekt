@@ -102,12 +102,16 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
-
+	origin := r.Host
+	ImagePath := "/Images/"
+	if origin == "localhost:8080" {
+		ImagePath = "../Webserver/Images/"
+	}
 	// Check if the request is a POST request
-	if r.Method != http.MethodPost && r.Method != http.MethodOptions {
+	if r.Method != http.MethodPost && r.Method != http.MethodOptions && r.Method != http.MethodGet {
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
-	} else if r.Method == http.MethodOptions {
+	} else if r.Method == http.MethodOptions || r.Method == http.MethodGet {
 		return
 	}
 
@@ -127,7 +131,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a new file on the server to save the uploaded file
-	uploadedFile, err := os.Create("/Images/" + id + ".jpeg") // Specify the desired file name
+	uploadedFile, err := os.Create(ImagePath + id + ".jpeg") // Specify the desired file name
 	if err != nil {
 		log.Println("Error creating file: ", err)
 		http.Error(w, "Unable to create the file for writing", http.StatusInternalServerError)
@@ -142,8 +146,10 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to copy file", http.StatusInternalServerError)
 		return
 	}
-
-	err = API.EncodeJSONBody(w, r, id)
+	response := map[string]interface{}{
+		"filename": id,
+	}
+	err = API.EncodeJSONBody(w, r, response)
 	if err != nil {
 		log.Println("Error encoding response: ", err)
 		http.Error(w, "Error while encoding response: "+err.Error(), http.StatusInternalServerError)
