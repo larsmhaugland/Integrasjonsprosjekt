@@ -116,7 +116,7 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	group := r.URL.Query().Get("group")
+	groupQ := r.URL.Query().Get("group")
 	single := r.URL.Query().Get("single")
 	parts := strings.Split(r.URL.Path, "/")
 	storedIn := parts[len(parts)-1]
@@ -160,7 +160,24 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		recipes.UserRecipes = append(recipes.UserRecipes, recipe)
 	}
-	if group == "true" {
+
+	for _, groupID := range user.Groups {
+		group, err := Firebase.ReturnCacheGroup(groupID)
+		if err != nil {
+			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		for recipeID := range group.Recipes {
+			recipe, err := Firebase.ReturnCacheRecipe(recipeID)
+			if err != nil {
+				http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
+		}
+	}
+
+	if groupQ == "true" {
 		g, err := Firebase.ReturnCacheGroup(storedIn)
 		if err != nil {
 			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
