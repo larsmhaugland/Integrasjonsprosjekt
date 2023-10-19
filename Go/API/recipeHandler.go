@@ -1,7 +1,6 @@
 package API
 
 import (
-	"fmt"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -191,9 +190,6 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var data Input
 	err := DecodeJSONBody(w, r, &data)
-	fmt.Println(data.Recipe)
-	fmt.Println(data.Groups)
-	fmt.Println(data.Owner)
 	if err != nil {
 		http.Error(w, "Error when decoding POST: "+err.Error(), http.StatusBadRequest)
 		return
