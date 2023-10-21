@@ -76,3 +76,17 @@ type GroupMemberNameRole struct {
 	Username string `json:"username"`
 	Rolename string `json:"roleName"`
 }
+
+
+
+type Message struct {
+    Content   string    `json:"content"`
+    Sender    string    `json:"sender"`
+    Timestamp time.Time `json:"timestamp"`
+}
+
+type Chat struct {
+    Name     string    `json:"name"`
+    Messages []Message `json:"messages"`
+}
+
