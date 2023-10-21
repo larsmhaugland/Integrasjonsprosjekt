@@ -45,7 +45,7 @@ func startHTTPserver(socketServer *socketio.Server) {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 
 	// Start the socket server
-	http.Handle("/socket.io/", socketServer)
+	//http.Handle("/socket.io/", socketServer)
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
@@ -79,7 +79,7 @@ func startHTTPSserver(socketServer *socketio.Server) {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 
 	// Start the socket server
-	http.Handle("/chat/", socketServer)
+	//http.Handle("/chat/", socketServer)
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")

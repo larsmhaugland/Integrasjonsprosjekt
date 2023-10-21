@@ -31,9 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
     onPageReload()
     async function onPageReload() {
         const urlParams = new URLSearchParams(window.location.search);
-        const groupID = urlParams.get('groupID');
+        groupID = urlParams.get('groupID');
         if (groupID){
-            const groupName = await getGroupName(groupID);
+            groupName = await getGroupName(groupID);
             groupNameElement.textContent = "Settings for: " + groupName;
             fetchGroupMembers(groupID);
         } else {
@@ -189,41 +189,40 @@ document.addEventListener("DOMContentLoaded", function () {
         
         // Populate the suggestions list with results
         results.forEach(function (username) {
-        const listItem = document.createElement("li");
+            const listItem = document.createElement("li");
 
-        // Create the image element
-        const image = document.createElement("img");
-        image.src = "../Images/person-icon-transparent.png";
-        image.alt = username;
+            // Create the image element
+            const image = document.createElement("img");
+            image.src = "../Images/person-icon-transparent.png";
+            image.alt = username;
 
-        // Create the span element for the username
-        const usernameSpan = document.createElement("span");
-        usernameSpan.textContent = username;
+            // Create the span element for the username
+            const usernameSpan = document.createElement("span");
+            usernameSpan.textContent = username;
 
-        // Create the button for adding the member
-        const addButton = document.createElement("button");
-        addButton.className = "add-member-btn2";
+            // Create the button for adding the member
+            const addButton = document.createElement("button");
+            addButton.className = "add-member-btn2";
 
-        const addImage = document.createElement("img");
-        addImage.src = "../Images/add-icon.png";
-        addImage.alt = "Add member";
+            const addImage = document.createElement("img");
+            addImage.src = "../Images/add-icon.png";
+            addImage.alt = "Add member";
 
-        addButton.appendChild(addImage);
+            addButton.appendChild(addImage);
 
-        // Add an event listener to handle adding a member to the group when clicking the icon
-        addButton.addEventListener("click", function () {
-            const username = addButton.parentElement.querySelector("span").textContent;
-            const groupID = tmpGroupID; // TODO: Must be changed to the actual dynamic groupID
-            addMemberToGroup(username, groupID);
+            // Add an event listener to handle adding a member to the group when clicking the icon
+            addButton.addEventListener("click", function () {
+                const username = addButton.parentElement.querySelector("span").textContent;
+                addMemberToGroup(username, groupID);
+            });
+
+            // Append the elements to the list item
+            listItem.appendChild(image);
+            listItem.appendChild(usernameSpan);
+            listItem.appendChild(addButton);
+
+            memberSuggestionsList.appendChild(listItem);
         });
-
-        // Append the elements to the list item
-        listItem.appendChild(image);
-        listItem.appendChild(usernameSpan);
-        listItem.appendChild(addButton);
-
-        memberSuggestionsList.appendChild(listItem);
-    });
     }
 
     /**
@@ -386,7 +385,6 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
-        const groupID = tmpGroupID; // TODO get current group id
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
     
         fetch(url, {
@@ -436,7 +434,6 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Only the owner can update the role of a member");
             return;
         }
-        const groupID = tmpGroupID// TODO dynamic group id
         const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
         fetch(url, {
             method: 'PATCH',

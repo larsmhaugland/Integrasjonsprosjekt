@@ -10,7 +10,7 @@
     <header class="main-nav">
         <a href="../index.html" id="logo">PLÆN</a>
         <nav>
-                <a href="../Handleliste/index.html">Handleliste</a>
+                <a href="index.html">Handleliste</a>
                 <a href="../Chat/index.html">Chat</a>
                 <a href="../Kalender/index.html">Kalender</a>
                 <a href="../Oppskrifter/index.html">Oppskrifter</a>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="chat-input">
                     <input type="text" placeholder="Type your message...">
-                    <button>Send</button>
+                    <button id="send-message-button">Send</button>
                 </div>
             </div>
         </div>
@@ -96,18 +96,27 @@
                 <form class="chat-form">
                     <label for="chat-name">Chat Name:</label>
                     <input type="text" id="chat-name" name="chat-name" required placeholder="Enter a name for the chat">
-                    
-                    <label for="members">Add Members:</label>
-                    <div class="member-input">
-                        <button type="button">Add Member</button>
+                
+                    <label for="member-input">Add Members:</label>
+                    <div class="member-input" id="member-input">
+                        <button type="button" id="add-member-button">Add Member</button>
                     </div>
-                    
+                    <span> <em>Click "Add Member" to include members in the chat.</em> </span>
                     <ul id="member-list" class="member-list">
-                        <li><em>Click "Add Member" to include members in the chat.</em></li>
                     </ul>
                     
                     <button type="submit" class="create-button">Create</button>
                 </form>
+            </div>
+        </div>
+
+        <div id="search-member-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Legge til meldemmer</h2>
+                <input type="text" id="search-input" placeholder="Enter member name...">
+                
+                <ul class="member-suggestions"></ul>
             </div>
         </div>
     </main>
