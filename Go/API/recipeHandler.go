@@ -140,8 +140,9 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type outuput struct {
-		UserRecipes  []Firebase.Recipe `json:"userRecipes"`
-		GroupRecipes []Firebase.Recipe `json:"groupRecipes"`
+		UserRecipes    []Firebase.Recipe `json:"userRecipes"`
+		GroupRecipes   []Firebase.Recipe `json:"groupRecipes"`
+		ExampleRecipes []Firebase.Recipe `json:"exampleRecipes"`
 	}
 
 	var recipes outuput
@@ -192,6 +193,9 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
 		}
 	}
+	//Add example recipes to the response
+	recipes.ExampleRecipes = ExampleRecipes
+
 	err = EncodeJSONBody(w, r, recipes)
 	if err != nil {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
@@ -264,4 +268,28 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+var ExampleRecipes = []Firebase.Recipe{
+	{
+		Name:        "Pasta",
+		Description: "Pasta med tomat saus",
+		URL:         "https://trinesmatblogg.no/recipe/spagetti-med-tomatsaus/",
+		Time:        60,
+		Difficulty:  2,
+	},
+	{
+		Name:        "Lasagne",
+		Description: "Lasagne med kjøttdeig",
+		URL:         "https://meny.no/oppskrifter/Pasta/Lasagne/hjemmelaget-lasagne/",
+		Time:        60,
+		Difficulty:  2,
+	},
+	{
+		Name:        "Pizza",
+		Description: "Pizza med kjøttdeig",
+		URL:         "https://www.tine.no/oppskrifter/middag-og-hovedretter/pizza-og-pai/pizza-med-kj%C3%B8ttdeig",
+		Time:        45,
+		Difficulty:  2,
+	},
 }
