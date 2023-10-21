@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../CSS/css.css">
+    <link rel="stylesheet" href="../CSS/chat.css">
+    <title>Grupper</title>
+</head>
+<body>
+    <header class="main-nav">
+        <a href="../index.html" id="logo">PLÆN</a>
+        <nav>
+                <a href="../Handleliste/index.html">Handleliste</a>
+                <a href="../Chat/index.html">Chat</a>
+                <a href="../Kalender/index.html">Kalender</a>
+                <a href="../Oppskrifter/index.html">Oppskrifter</a>
+                <button id="log-in-btn">Innlogging</button>
+                <button id="log-out-btn">Logg ut</button>
+        </nav>
+    </header>
+
+    <!--Pop-up login-->
+    <div id="log-in-popup" class="popup-wrapper">
+        <form id="log-in-form" class="popup-content">
+            <a id="close-login-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <h3>Brukernavn</h3>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+            <h3>Passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
+            <h3>Husk meg <input type="checkbox" name="remember" id="remember"></h3>
+            <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
+            <button type="button" class="btn" id="log-in-submit">Logg inn</button>
+            <br><br>
+            <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
+        </form>
+    </div>
+
+    <!--Pop-up register-->
+    <div id="register-popup" class="popup-wrapper">
+        <form id="register-user-form" class="popup-content">
+            <a id="close-register-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <h3>Navn</h3>
+            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
+            <h3>Brukernavn</h3>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
+            <a id="username-taken" class="error">Brukernavnet er opptatt</a>
+            <h3>Passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
+            <h3>Gjenta passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
+            <a id="password-mismatch" class="error">Passordene er ikke like</a>
+            <br><br>
+            <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+            <br><br>
+            <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+        </form>
+    </div>
+
+    <main>
+        <div class="chat-app">
+            <div class="chat-list">
+                <div class="chat-list-header">
+                    <h1>Chat Groups</h1>
+                    <button id="create-chat-button">
+                        <img src="../Images/add-icon.png" alt="Create new chat">
+                    </button>
+                </div>
+                <input type="text" placeholder="Search...">
+                <ul>
+                    <li class="chat-item">Group 1</li>
+                    <li class="chat-item">Group 2</li>
+                </ul>
+            </div>
+            <div class="chat-room">
+                <div class="chat-messages">
+                    <div class="message">
+                        <div class="message-header">
+                            <span class="message-sender">Aleksander:</span>
+                            <span class="message-timestamp">12:30 PM</span>
+                        </div>
+                        <div class="message-content">
+                            LA MEG SPILLE FRISBEEGOLF ALLEREDE AHHHHHHHHHHHHH
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" placeholder="Type your message...">
+                    <button>Send</button>
+                </div>
+            </div>
+        </div>
+        <div id="chat-popup" class="chat-popup">
+            <div class="popup-content">
+                <span class="close" id="close-chat-popup" >&times;</span>
+                <h2>Create a New Chat</h2>
+                <form class="chat-form">
+                    <label for="chat-name">Chat Name:</label>
+                    <input type="text" id="chat-name" name="chat-name" required placeholder="Enter a name for the chat">
+                    
+                    <label for="members">Add Members:</label>
+                    <div class="member-input">
+                        <button type="button">Add Member</button>
+                    </div>
+                    
+                    <ul id="member-list" class="member-list">
+                        <li><em>Click "Add Member" to include members in the chat.</em></li>
+                    </ul>
+                    
+                    <button type="submit" class="create-button">Create</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+<script src="../JS/chat.js"></script>
+<script src="../JS/js.js"></script>'
+</html>
