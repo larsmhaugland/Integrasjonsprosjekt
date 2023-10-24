@@ -30,7 +30,6 @@ func main() {
 	} else {
 		startHTTPserver(socketServer)
 	}
-	startHTTPserver(socketServer)
 
 }
 
@@ -49,6 +48,8 @@ func startHTTPserver(socketServer *socketio.Server) {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 
+
+	// Cors for websocket server
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
