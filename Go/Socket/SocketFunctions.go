@@ -2,13 +2,12 @@ package Socket
 
 import (
 	"log"
-	"net/http"
 	"time"
 
 	socketio "github.com/googollee/go-socket.io"
 )
 
-func InitSocketIOServer(mux *http.ServeMux) *socketio.Server {
+func InitSocketIOServer() *socketio.Server {
 
 	server := socketio.NewServer(nil)
 

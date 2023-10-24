@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
-	"flag"
+	//"flag"
 	"fmt"
 	"io"
 	"log"
@@ -21,14 +21,15 @@ import (
 
 func main() {
 
-	httpsFlag := flag.Bool("https", false, "Enable HTTPS")
-	flag.Parse()
-	socketServer := Socket.InitSocketIOServer(http.DefaultServeMux)
-	if *httpsFlag {
+	//httpsFlag := flag.Bool("https", false, "Enable HTTPS")
+	//flag.Parse()
+	socketServer := Socket.InitSocketIOServer()
+	/*if *httpsFlag {
 		startHTTPSserver(socketServer)
 	} else {
 		startHTTPserver(socketServer)
-	}
+	}*/
+	startHTTPserver(socketServer)
 
 }
 
