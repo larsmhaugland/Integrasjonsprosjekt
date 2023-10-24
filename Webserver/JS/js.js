@@ -134,6 +134,7 @@ function login(){
 function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
+    console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
     sessionStorage.removeItem("groups");
     updateLoginStatus();
     location.reload();

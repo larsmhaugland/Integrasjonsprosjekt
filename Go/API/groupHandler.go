@@ -109,6 +109,19 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Could not add group", http.StatusInternalServerError)
 		return
 	}
+
+	// Create a Chat struct with ChatOwner and Name
+	chat := Firebase.Chat{
+		ChatOwner: group.Owner,
+		Name:      group.Name,
+	}
+
+	err = Firebase.AddNewChat(chat, true)
+	if err != nil {
+		http.Error(w, "Error; Could not create the group chat", http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
 	//Add group id to body response
 	json.NewEncoder(w).Encode(id)
