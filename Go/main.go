@@ -21,7 +21,7 @@ import (
 )
 
 func main() {
-
+	
 	httpsFlag := flag.Bool("https", false, "Enable HTTPS")
 	flag.Parse()
 	socketServer := Socket.InitSocketIOServer()
@@ -93,8 +93,16 @@ func startHTTPSserver(socketServer *socketio.Server) {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 
+
+	// Cors for websocket server
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Origin", "Content-Type"},
+		AllowCredentials: true,
+	})
 	// Start the socket server
-	http.Handle("/socket.io/", socketServer)
+	http.Handle("/socket.io/", c.Handler(socketServer))
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
