@@ -10,8 +10,8 @@
     <header class="main-nav">
         <a href="../index.html" id="logo">PLÆN</a>
         <nav>
-                <a href="index.html">Handleliste</a>
-                <a href="../Chat/index.html">Chat</a>
+                <a href="../Handleliste/index.html">Handleliste</a>
+                <a href="index.html">Chat</a>
                 <a href="../Kalender/index.html">Kalender</a>
                 <a href="../Oppskrifter/index.html">Oppskrifter</a>
                 <button id="log-in-btn">Innlogging</button>
@@ -66,30 +66,33 @@
                     </button>
                 </div>
                 <input type="text" placeholder="Search...">
-                <ul>
-                    <li class="chat-item">Group 1</li>
-                    <li class="chat-item">Group 2</li>
+                <ul id="list-of-chats">
                 </ul>
             </div>
             <div class="chat-room">
-                <div class="chat-messages">
-                    <div class="message">
-                        <div class="message-header">
-                            <span class="message-sender">Aleksander:</span>
-                            <span class="message-timestamp">12:30 PM</span>
-                        </div>
-                        <div class="message-content">
-                            LA MEG SPILLE FRISBEEGOLF ALLEREDE AHHHHHHHHHHHHH
-                        </div>
-                    </div>
+                <div class="chat-room-header">
+                    <h4 id="chat-room-name">No chat selected</h4>
+                    <button id="leave-chat-button">
+                        Leave chat
+                    </button>
+                    <button id="edit-chat-button">
+                        <img src="../Images/edit-icon.png" alt="Edit chat">
+                    </button>
                 </div>
+                <ul class="chat-messages">
+                    <li>
+                        <div class="message">
+                            
+                        </div>
+                    </li>
+                </ul>
                 <div class="chat-input">
-                    <input type="text" placeholder="Type your message...">
+                    <input type="text" id="message-input" placeholder="Type your message...">
                     <button id="send-message-button">Send</button>
                 </div>
             </div>
         </div>
-        <div id="chat-popup" class="chat-popup">
+        <div id="chat-popup" class="popup">
             <div class="popup-content">
                 <span class="close" id="close-chat-popup" >&times;</span>
                 <h2>Create a New Chat</h2>
@@ -105,11 +108,31 @@
                     <ul id="member-list" class="member-list">
                     </ul>
                     
-                    <button type="submit" class="create-button">Create</button>
+                    <button type="submit" class="create-button" >Create</button>
                 </form>
             </div>
+            
         </div>
 
+        <div id="edit-chat-popup" class="popup">
+            <div class="popup-content">
+                <span class="close-popup" id="close-edit-chat-popup">&times;</span>
+                <h2>Edit Chat</h2>
+                <ul id="current-members-list">
+                    <li>
+                        <input type="checkbox" id="member-1" />
+                        <label for="member-1">Member 1</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="member-2" />
+                        <label for="member-2">Member 2</label>
+                    </li>
+                </ul>
+                <button id="remove-members-button">Remove Selected Members</button>
+                <button id="add-members-button">Add Members</button>
+            </div>
+        </div>
+        
         <div id="search-member-modal" class="modal">
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
@@ -120,7 +143,9 @@
             </div>
         </div>
     </main>
+    <!-- use cloudflare for downloading the socket.io library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="../JS/chat.js"></script>
+    <script src="../JS/js.js"></script>
 </body>
-<script src="../JS/chat.js"></script>
-<script src="../JS/js.js"></script>'
 </html>

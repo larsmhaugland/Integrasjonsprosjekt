@@ -13,6 +13,8 @@ import (
 	"prog-2052/Firebase"
 	"prog-2052/Socket"
 
+	"github.com/rs/cors"
+
 	"github.com/google/uuid"
 	socketio "github.com/googollee/go-socket.io"
 )
@@ -43,9 +45,18 @@ func startHTTPserver(socketServer *socketio.Server) {
 	http.HandleFunc("/user/", API.UserBaseHandler)
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
+	http.HandleFunc("/chat/", API.ChatBaseHandler)
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Origin", "Content-Type"},
+		AllowCredentials: true,
+	})
 
 	// Start the socket server
-	//http.Handle("/socket.io/", socketServer)
+	http.Handle("/socket.io/", c.Handler(socketServer))
+	log.Println("Socket IO server url: ")
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
@@ -77,9 +88,10 @@ func startHTTPSserver(socketServer *socketio.Server) {
 	http.HandleFunc("/user/", API.UserBaseHandler)
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
+	http.HandleFunc("/chat/", API.ChatBaseHandler)
 
 	// Start the socket server
-	//http.Handle("/chat/", socketServer)
+	http.Handle("/socket.io/", socketServer)
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")

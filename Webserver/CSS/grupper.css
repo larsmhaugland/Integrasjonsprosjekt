@@ -164,7 +164,6 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 999;
@@ -173,6 +172,8 @@
 /* Style for the modal content */
 .modal-content {
     background-color: grey;
+    display: flex;
+    flex-direction: column;
     border-radius: 10px;
     padding: 20px;
     width: 40vw;

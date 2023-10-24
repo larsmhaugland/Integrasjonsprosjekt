@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    // DOM elements
     const createChatCloseButton = document.querySelector("#close-chat-popup");
     const createChatOpenButton = document.querySelector("#create-chat-button");
     const createChatPopup = document.querySelector("#chat-popup");
@@ -7,16 +8,89 @@ document.addEventListener("DOMContentLoaded", function () {
     const openModalButton = document.querySelector("#add-member-button");
     const closeModalButton = modal.querySelector(".close-modal");
     const sendMessageButton = document.querySelector("#send-message-button");
+    const messageInput = document.querySelector("#message-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
     const searchInput = document.querySelector("#search-input");
     const memberList = document.querySelector("#member-list");
+    const chatList = document.querySelector("#list-of-chats");
+    const form = document.querySelector(".chat-form");
+    const chatListContainer = document.querySelector(".chat-list");
+    const messageList = document.querySelector(".chat-messages");
+    const chatNameElement = document.querySelector("#chat-room-name"); // Assuming chat name should go here
+    const editChatOpenButton = document.querySelector("#edit-chat-button");
+    const editChatCloseButton = document.querySelector("#close-edit-chat-popup");
+    const editChatPopup = document.querySelector("#edit-chat-popup");
+    const removeSelectedMembers = document.querySelector("#remove-members-button");
+    const currentMembersList = document.querySelector("#current-members-list");
+    const addMembersButton = document.querySelector("#add-members-button");
 
+
+    // variables
+    var username;
+    let activeChatID = "";
+    let chatOwner;
+    let editChat;
+    const socket = io("http://localhost:63342//socket.io/"); 
+    console.log("socket: " + socket);
+    console.log("socket.connected: " + socket.connected);
+    console.log("socket url: " + socket.io.uri);
+    socket.on("connect", () => {
+        console.log("WebSocket connected");
+        console.log("socket: " + socket);
+        console.log("socket.connected: " + socket.connected);
+    });
+    socket.on("connect_error", (error) => {
+        console.error("WebSocket connection error:", error);
+    });
+    socket.on("connect_timeout", (timeout) => {
+        console.error("WebSocket connection timeout:", timeout);
+    });
+    onPageRelod();
+
+    async function onPageRelod() {
+        username = sessionStorage.getItem("username");
+        if (sessionStorage.getItem("loggedIn") === "true"){
+            console.log("username: " + username);
+            displayUserChats(username);
+        } else {
+            const noChatsMessage = document.createElement("span");
+            noChatsMessage.textContent = "Du må være logget inn for å vise chatter";
+            noChatsMessage.classList.add("no-chats-to-display");
+            chatListContainer.appendChild(noChatsMessage);
+        }
+        console.log("User id: " + username);
+    }
+
+    // Event listeners
     createChatOpenButton.addEventListener("click", function () {
-        createChatPopup.style.display = "block";
+        if (sessionStorage.getItem("loggedIn") === "false"){
+            alert("You need to be logged in to create a chat");
+        } else  {
+            editChat = false,
+            createChatPopup.style.display = "block";
+        }
     });
 
     createChatCloseButton.addEventListener("click", function () {
         createChatPopup.style.display = "none";
+    });
+
+    editChatOpenButton.addEventListener("click", function () {
+        if (activeChatID === undefined || activeChatID === null) {
+            return;
+        }
+        else if (username !== chatOwner){
+            alert("Only the chat owner can edit the chat");
+        } 
+         else  {
+            getChatMembers(activeChatID);
+            editChat = true;
+            editChatPopup.style.display = "block";
+        }
+    });
+
+    editChatCloseButton.addEventListener("click", function () {
+        editChatPopup.style.display = "none";
     });
 
     // Close the modal when the close button is clicked
@@ -27,6 +101,76 @@ document.addEventListener("DOMContentLoaded", function () {
     openModalButton.addEventListener("click", function () {
         modal.style.display = "block";
     });
+
+    sendMessageButton.addEventListener("click", function () {
+        const message = messageInput.value.trim();
+        messageInput.value = "";
+        sendMessage(message);
+        if (socket.connected){
+            sendMessageSocket(message);
+        } else {
+            console.error("Not connected to WebSocket server");
+        }
+    });
+
+    removeSelectedMembers.addEventListener("click", function () {
+        const selectedMembers = document.querySelectorAll("#current-members-list input[type='checkbox']:checked");
+        selectedMembers.forEach(member => {
+            // Find the label associated with the checkbox
+            const labelElement = member.nextElementSibling;
+
+            // Get the member name from the label
+            const username = labelElement.textContent;
+
+            // Remove the member
+            removeMemberFromChat(username);
+        });
+    });
+
+    addMembersButton.addEventListener("click", function () {
+        modal.style.display = "block";
+    });
+
+
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+        const URL = `${API_IP}/chat/chat`;
+        const chatID = generateRandomId(20);
+        // Get the form elements by their IDs
+        const chatName = document.getElementById("chat-name").value;
+        // Create an array of member names from the list 
+        const memberList = Array.from(document.querySelectorAll(".member-list li")).map(li => li.textContent);
+        memberList.push(username);
+        // Prepare the data to be sent to the API endpoint
+        const data = {
+            name: chatName,
+            members: memberList, 
+            chatOwner: username,
+            documentID: chatID, 
+        };
+
+        // Send a POST request to your API endpoint
+        fetch(URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (response.status === 201) {
+               location.reload();
+            } else {
+                window.alert("Error creating chat");
+            }
+        })
+        .catch(error => {
+            console.error("API Error:", error);
+            window.alert("Error creating chat");
+        });
+    });
+
 
     // Handle search input changes
     searchInput.addEventListener("input", function () {
@@ -41,20 +185,29 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 // Update the member suggestions list with the results
-                updateMemberSuggestions(data);
+                updateMemberSuggestions(data, editChat);
             })
             .catch(error => {
                 console.error("Error fetching search results from database:", error);
             });
     });
 
+    // Function to send a message through the websocket
+    function sendMessageSocket(message) {
+        const messageData = {
+            sender: username,
+            content: message,
+            activeChatID: activeChatID,
+        };
+        socket.emit("chatMessage", messageData); // Send the message to the server
+    }
 
     /**
      * Updates the suggestions for members to add after the user have entered in partial or full
      * username of the person they wish to add to their group
      * @param {*} results - The usernames of the users that corresponded to the search
      */
-    function updateMemberSuggestions(results) {
+    function updateMemberSuggestions(results, editChat) {
 
         // Clear existing suggestions
         while (memberSuggestionsList.firstChild) {
@@ -95,7 +248,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Add an event listener to handle adding a member to the group when clicking the icon
             addButton.addEventListener("click", function () {
                 const username = addButton.parentElement.querySelector("span").textContent;
-                addMemberToList(username);
+                if (!editChat){
+                    addMemberToAddList(username);
+                } else {
+                    addUserToChat(username);
+                }
                 modal.style.display = "none";
             });
 
@@ -108,7 +265,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function addMemberToList(username) {
+    function addMemberToAddList(username) {
         // Get the list of members
         const memberListItem = document.createElement("li");
         const memberName = document.createElement("span");
@@ -140,4 +297,285 @@ document.addEventListener("DOMContentLoaded", function () {
         memberList.removeChild(memberListItem);
     }
 
+
+    function addChatToList(chat) {
+        const chatList = document.querySelector("#list-of-chats");
+    
+        const chatItem = document.createElement("li");
+        chatItem.classList.add("chat-item");
+        chatItem.textContent = chat.name; // Display the chat name
+        
+        // Add an event listener to each chat item for handling chat selection or navigation
+        chatItem.addEventListener("click", function () {
+            // Leave the current chat room
+            socket.emit("leaveChat", activeChatID);
+            // Join the new chat room
+            socket.emit("joinChat", chat.documentID);
+            displayChatMessages(chat);
+        });
+    
+        // Append the chat item to the chat list
+        chatList.appendChild(chatItem);
+    }
+
+    function displayChatMessages(chat) {
+        // Clear existing messages
+        if (messageList) {
+            while (messageList.firstChild) {
+                messageList.removeChild(messageList.firstChild);
+            }
+        }
+        activeChatID = chat.documentID;
+        chatOwner = chat.chatOwner;
+  
+        chatNameElement.textContent = chat.name; 
+
+        // Display the messages
+        const messages = chat.messages;
+        if (messages) {
+            messages.forEach(message => {
+                addMessageToList(message);
+            });
+        } else {
+            const noMessagesItem = document.createElement("li");
+
+            const messageContainer = document.createElement("div");
+            messageContainer.classList.add("message");
+
+            const noMessagesMessage = document.createElement("span");
+            noMessagesMessage.textContent = "No messages to display...";
+
+            messageContainer.appendChild(noMessagesMessage);
+            noMessagesItem.appendChild(messageContainer);
+            if (!messageList) {
+                console.error("messageList is null or doesn't exist.");
+            }
+            messageList.appendChild(noMessagesItem);
+        }
+    }
+
+    function addMessageToList(message) {
+        // Get the chat messages list
+        const messageList = document.querySelector(".chat-messages");
+    
+        // Create the message list item
+        const messageItem = document.createElement("li");
+    
+        // Create the message container
+        const messageContainer = document.createElement("div");
+        messageContainer.classList.add("message");
+    
+        // Create the message header
+        const messageHeader = document.createElement("div");
+        messageHeader.classList.add("message-header");
+    
+        // Create the sender span
+        const senderSpan = document.createElement("span");
+        senderSpan.classList.add("message-sender");
+        senderSpan.textContent = message.sender + ":";
+    
+        // Create the timestamp span
+        const timestampSpan = document.createElement("span");
+        timestampSpan.classList.add("message-timestamp");
+        const formattedTimestamp = formatGoTimeStamp(message.timestamp)
+        timestampSpan.textContent = formattedTimestamp;
+    
+        // Create the message content
+        const messageContent = document.createElement("div");
+        messageContent.classList.add("message-content");
+        messageContent.textContent = message.content;
+    
+        // Append elements to the appropriate parent elements
+        messageHeader.appendChild(senderSpan);
+        messageHeader.appendChild(timestampSpan);
+        messageContainer.appendChild(messageHeader);
+        messageContainer.appendChild(messageContent);
+        messageItem.appendChild(messageContainer);
+    
+        // Append the message item to the message list
+        messageList.appendChild(messageItem);
+    }
+
+    function displayUserChats(username) {
+        const URL = `${API_IP}/chat/chat?username=${username}`;
+        fetch(URL) 
+        .then((response) => response.json())
+        .then((data) => {
+            const chats = data;
+            // Clear existing chat list
+            if (chatList) {
+                while (chatList.firstChild) {
+                    chatList.removeChild(chatList.firstChild);
+                }
+            } else {
+                console.error("chatList is null or doesn't exist.");
+            }
+
+            // Iterate through the chats and add them to the chat list
+            if (chats.length === 0) {
+                const noChatsMessage = document.createElement("span");
+                noChatsMessage.textContent = "Du er ikke medlem av noen chatter... opprett en ny chat ovenfor";
+                noChatsMessage.classList.add("no-chats-to-display");
+                chatListContainer.appendChild(noChatsMessage);
+                return;
+            }
+
+            chats.forEach(chat => {
+                addChatToList(chat);
+            });
+        })
+        .catch((error) => {
+            console.error('Error fetching chats:', error);
+            alert("Server error when trying to get chats")
+        });
+    } 
+
+    function sendMessage(message) {
+        // Get the chat ID
+        const URL = `${API_IP}/chat/messages?chatID=${activeChatID}`;
+
+        const data = {
+            sender: username,
+            content: message,
+        };
+
+        fetch(URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (response.status === 201) {
+                //location.reload();
+            } else {
+                window.alert("Error sending message");
+            }
+        })
+        .catch(error => {
+            console.error("API Error:", error);
+            window.alert("Error sending message");
+        });
+    }
+
+    function removeMemberFromChat(username) {
+
+        const url = `${API_IP}/chat/members?chatID=${activeChatID}&username=${username}`;
+    
+        // Send a DELETE request to the backend API
+        fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then(response => {
+                if (response.status === 204) {
+                    console.log(`Member ${username} removed.`);
+                    editChatPopup.style.display = "none";
+                } else {
+                    // Handle errors or non-successful responses
+                    console.error("Error removing member:", response.status);
+                }
+            })
+            .catch(error => {
+                console.error("API Error:", error);
+            });
+    }
+
+    function getChatMembers(chatID) {
+        console.log("Getting chat members for chatID: " + chatID);
+        const url = `${API_IP}/chat/members?chatID=${chatID}`;
+    
+        // Send a GET request to the backend API
+        fetch(url)
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    console.error("Error fetching chat members:", response.status);
+                }
+            })
+            .then(data => {
+                if (data) {
+                    updateChatMembersList(data);
+                } else {
+                    console.error("Invalid response data:", data);
+                }
+            })
+            .catch(error => {
+                console.error("API Error:", error);
+            });
+    }
+
+    function addUserToChat(username) {
+        const url = `${API_IP}/chat/members?chatID=${activeChatID}`; // Replace with your actual API URL
+        
+        const data = {
+            username: username,
+        };
+    
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => {
+                return response.json(); // Always parse the response as JSON
+            })
+            .then((responseData) => {
+                updateChatMembersList(responseData);
+            })
+            .catch((error) => {
+                console.error('API Error:', error);
+            });
+    }
+
+    function updateChatMembersList(members) {
+    
+        // Clear the existing list
+        while (currentMembersList.firstChild) {
+            currentMembersList.removeChild(currentMembersList.firstChild);
+        }
+    
+        // Iterate through the members and add them to the list
+        members.forEach(member => {
+            const listItem = document.createElement("li");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `${member}`;
+            const label = document.createElement("label");
+            label.htmlFor = `${member}`;
+            console.log("username: " + member);
+            label.textContent = member;
+            listItem.appendChild(checkbox);
+            listItem.appendChild(label);
+            currentMembersList.appendChild(listItem);
+        });
+    }
+
+    formatGoTimeStamp = (timestamp) => {
+        const jsDate = new Date(timestamp);
+        
+        const hours = jsDate.getHours();
+        const minutes = jsDate.getMinutes();
+        
+        // Digital format so for example 22:00 or 05:20
+        const formattedHours = String(hours).padStart(2, '0');
+        const formattedMinutes = String(minutes).padStart(2, '0');
+
+        return `${formattedHours}:${formattedMinutes}`;
+    }
+
+    /**************************  SOCKET functionality underneath ******************/
+
+    // When the websocket connection is established
+
+    // Handle incoming messages from the server
+    socket.on("/chat/socketServer/chatMessage", (data) => {
+        addMessageToList(data);
+    });
 });
