@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let activeChatID = "";
     let chatOwner;
     let editChat;
-    const socket = io("http://localhost:63342//socket.io/"); 
+    const socket = io("http://10.212.174.249:8080//socket.io/"); 
     console.log("socket: " + socket);
     console.log("socket.connected: " + socket.connected);
     console.log("socket url: " + socket.io.uri);
