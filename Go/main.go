@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 
-	//"flag"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -21,15 +21,15 @@ import (
 )
 
 func main() {
-	// test
-	//httpsFlag := flag.Bool("https", false, "Enable HTTPS")
-	//flag.Parse()
+
+	httpsFlag := flag.Bool("https", false, "Enable HTTPS")
+	flag.Parse()
 	socketServer := Socket.InitSocketIOServer()
-	/*if *httpsFlag {
+	if *httpsFlag {
 		startHTTPSserver(socketServer)
 	} else {
 		startHTTPserver(socketServer)
-	}*/
+	}
 	startHTTPserver(socketServer)
 
 }
@@ -93,7 +93,7 @@ func startHTTPSserver(socketServer *socketio.Server) {
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 
 	// Start the socket server
-	//http.Handle("/socket.io/", socketServer)
+	http.Handle("/socket.io/", socketServer)
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
