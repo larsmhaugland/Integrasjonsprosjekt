@@ -3,30 +3,37 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
+
 	"flag"
 	"fmt"
-	"github.com/google/uuid"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"prog-2052/API"
 	"prog-2052/Firebase"
+	"prog-2052/Socket"
+
+	"github.com/rs/cors"
+
+	"github.com/google/uuid"
+	socketio "github.com/googollee/go-socket.io"
 )
 
 func main() {
 
 	httpsFlag := flag.Bool("https", false, "Enable HTTPS")
 	flag.Parse()
+	socketServer := Socket.InitSocketIOServer()
 	if *httpsFlag {
-		startHTTPSserver()
+		startHTTPSserver(socketServer)
 	} else {
-		startHTTPserver()
+		startHTTPserver(socketServer)
 	}
 
 }
 
-func startHTTPserver() {
+func startHTTPserver(socketServer *socketio.Server) {
 	server := &http.Server{
 		Addr: ":8080",
 	}
@@ -39,13 +46,26 @@ func startHTTPserver() {
 	http.HandleFunc("/user/", API.UserBaseHandler)
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
+	http.HandleFunc("/chat/", API.ChatBaseHandler)
+
+	// Cors for websocket server
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"https://10.212.174.249"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Origin", "Content-Type"},
+		AllowCredentials: true,
+	})
+
+	// Start the socket server
+	http.Handle("/socket.io/", c.Handler(socketServer))
+	log.Println("Socket IO server url: ")
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
 	log.Fatal(server.ListenAndServe())
 }
 
-func startHTTPSserver() {
+func startHTTPSserver(socketServer *socketio.Server) {
 	certFile := "HTTPS/server.crt"
 	keyFile := "HTTPS/server.key"
 
@@ -70,6 +90,17 @@ func startHTTPSserver() {
 	http.HandleFunc("/user/", API.UserBaseHandler)
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
+	http.HandleFunc("/chat/", API.ChatBaseHandler)
+
+	// Cors for websocket server
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"https://10.212.174.249"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Origin", "Content-Type"},
+		AllowCredentials: true,
+	})
+	// Start the socket server
+	http.Handle("/socket.io/", c.Handler(socketServer))
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")

@@ -25,6 +25,7 @@ type User struct {
 	Groups        []string `json:"groups"`
 	ShoppingLists []string `json:"shopping-lists"`
 	Recipes       []string `json:"recipes"`
+	Chats         []string `json:"chats"`
 	Name          string   `json:"name"`
 	DocumentID    string   `json:"documentID"`
 }
@@ -76,3 +77,21 @@ type GroupMemberNameRole struct {
 	Username string `json:"username"`
 	Rolename string `json:"roleName"`
 }
+
+type Message struct {
+	Content   string    `json:"content"`
+	Sender    string    `json:"sender"`
+	Timestamp time.Time `json:"timestamp"`
+}
+type NewMemberChat struct {
+	Username string `json:"username"`
+}
+
+type Chat struct {
+	Name       string    `json:"name"`
+	Messages   []Message `json:"messages"`
+	Members    []string  `json:"members"`
+	ChatOwner  string    `json:"chatOwner"`
+	DocumentID string    `json:"documentID"`
+}
+

@@ -9,6 +9,7 @@ var UserCache map[string]CacheData
 var RecipeCache map[string]CacheData
 var GroupCache map[string]CacheData
 var ShoppingCache map[string]CacheData
+var ChatCache map[string]CacheData
 
 var CacheHits int
 var CacheMisses int
@@ -20,6 +21,7 @@ func InitCache() {
 	RecipeCache = make(map[string]CacheData)
 	GroupCache = make(map[string]CacheData)
 	ShoppingCache = make(map[string]CacheData)
+	ChatCache = make(map[string]CacheData)
 }
 
 func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
@@ -172,3 +174,17 @@ func DeleteCacheShoppingList(listID string) error {
 }
 
 //NOTE: Not removing from cache if recipe is deleted, will time out after 24 hours
+
+/*****************				CHAT FUNCTIONS				*****************/
+func ReturnCacheChat(chatID string) (Chat, error) {
+	chat, ok := GetCacheData(ChatCache, chatID)
+	if ok {
+		return chat.Data.(Chat), nil
+	}
+	chatData, err := GetChatData(chatID)
+	if err != nil {
+		return Chat{}, err
+	}
+	ChatCache[chatID] = CacheData{chatData, time.Now()}
+	return chatData, nil
+}
