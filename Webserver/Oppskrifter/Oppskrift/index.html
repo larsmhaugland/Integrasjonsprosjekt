@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../../CSS/css.css">
     <link rel="stylesheet" href="../../CSS/oppskrift.css">
+    <link rel="stylesheet" href="../../CSS/oppskrifter.css">
     <title>Oppskrift</title>
 </head>
 <body>
@@ -56,6 +57,69 @@
     </div>
 
     <main>
+        <div id="new-recipe-popup" class="new-recipe-popup">
+            <div class="new-recipe-content">
+
+                <h1 style="display: inline;">
+                    Ny oppskrift
+                </h1>
+                <a id="close-recipe-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+                <form id="new-recipe-form">
+                    <label for="edit-name">Navn på oppskrift<br></label>
+                    <input type="text" id="edit-name" placeholder="Skriv navn..." required>
+                    <label for="edit-description"><br>Beskrivelse<br></label>
+                    <input type="text" id="edit-description" placeholder="Skriv en kort beskrivelse..." required>
+                    <label for="edit-time"><br>Tid i minutter<br></label>
+                    <input type="number" id="edit-time" placeholder="Skriv tid..." required>
+                    <label for="edit-difficulty"><br>Vanskelighetsgrad:<br></label>
+                    <input type="range" min="1" max="5" id="edit-difficulty" required>
+                    <p id="difficulty-value-label" style="display: inline;">3</p>
+                    <label for="category-checkboxes"><br>Kategorier:<br></label>
+                    <div id="category-checkboxes">
+                        <p>Innmat kommer</p>
+                        <!-- Need to find out which categories we should have -->
+                    </div>
+
+                    <div id="manual-recipe">
+                        <div id="edit-recipe-ingredients">
+                            <label for="add-ingredient"><br>Ingredienser<br></label>
+                            <input type="text" id="add-ingredient" placeholder="Navn på ingrediens...">
+                            <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
+                            <button id="add-ingredient-btn">Legg til</button>
+                            <ul id="edit-ingredient-list">
+                                <!-- Ingredients get appended here
+                                TODO: ENDRE PÅ INGREDIENSER
+                                -->
+                            </ul>
+                        </div>
+                        <div id="edit-recipe-instructions">
+                            <label for="recipe-instructions"><br>Instruksjoner<br></label>
+                            <input type="text" id="recipe-instructions" placeholder="Instruksjoner">
+                            <button id="add-instruction-btn">Legg til</button>
+                            <ol id="recipe-instructions-list">
+                                <!-- Instructions get appended here
+                                TODO: ENDRE PÅ INSTRUKSJONER
+                                 -->
+                            </ol>
+                        </div>
+                    </div>
+                    <div id="url-recipe">
+                        <label for="recipe-url"><br> Full URL til oppskrift<br></label>
+                        <input type="url" id="recipe-url" placeholder="Eks: https://plaen.no">
+                    </div>
+                    <label for="recipe-image"><br>Bilde<br></label>
+                    <input type="file" id="recipe-image" accept="image/*">
+                    <br>
+                    <div id="recipe-image-preview">
+                        <img id="recipe-image-preview-img" src="" alt="Bilde av oppskrift">
+                    </div>
+                    <br>
+                    <button id="submit-new-recipe">Lagre oppskrift</button>
+                </form>
+
+            </div>
+        </div>
+
         <div class="recipe-wrapper">
             <div class="recipe-header">
                 <h1 id="recipe-name">Navn</h1>

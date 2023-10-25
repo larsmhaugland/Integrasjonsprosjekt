@@ -190,7 +190,6 @@ body{
 }
 
 .remove-item {
-    float: right;
     display: inline;
     top: 0;
     right: 0;

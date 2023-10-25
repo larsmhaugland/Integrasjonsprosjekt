@@ -361,6 +361,8 @@ function pagination(c, m) {
 function searchRecipes(text) {
     let primaryMatches = [];
     let secondaryMatches = [];
+    if(text === "") return filterRecipes(Recipes);
+
     //Starts with searchterm
     primaryMatches = Recipes.filter((data) => {
         return data.name.toLowerCase().startsWith(text.toLowerCase());
@@ -400,10 +402,10 @@ async function displayResults(filteredList){
 
     //Limit output to MAXRESULTS
     let displayedRecipes = [];
-    for (let i = 0; i < MAXRESULTS; i++){
-        if (filteredList.length <= i + page * MAXRESULTS) break;
-        if (isDuplicate(displayedRecipes, filteredList[i] + page * MAXRESULTS)) continue;
-        displayedRecipes.push(filteredList[i + page * MAXRESULTS]);
+    for (let i = 0; i < MAXRESULTS && filteredList.length > i + page * MAXRESULTS; i++){
+        if (!isDuplicate(displayedRecipes, filteredList[i + page * MAXRESULTS])) {
+            displayedRecipes.push(filteredList[i + page * MAXRESULTS]);
+        }
     }
 
     for (let i = 0; i < displayedRecipes.length; i++) {
@@ -442,7 +444,7 @@ async function displayResults(filteredList){
 
         let recipeTime = document.createElement("p");
         recipeTime.setAttribute("class", "result-time");
-        recipeTime.textContent = "Tid: " + recipe.time + " minutter";
+        recipeTime.textContent = "Tid: " + recipe.time + (recipe.time > 1 ? " minutter" : " minutt");
         recipeBlock.appendChild(recipeTime);
         recipeA.appendChild(recipeBlock);
         resultDiv.appendChild(recipeA);
