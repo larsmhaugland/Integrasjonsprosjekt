@@ -1,13 +1,34 @@
-#btn-image{
-    border: none;
-    color: white;
-    width: 50px;
-    height: auto;
+#top-field{
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;  /* Align items vertically in the center */
+    font-weight: lighter;
+    padding: 0;
+    height: 30px;
 }
 
-button{
-    border:none;
-    background-color:white;
+#header-text{
+    margin: 0;
+    font-size: 30px;
+}
+
+#new-group-btn{
+    margin-left: 20px;
+    border: none;
+    padding: 1px 1px;
+    cursor: pointer;
+    height: 100%;
+}
+
+#new-group-btn img{
+    width: 100%;
+    height: 100%;
+}
+
+#new-group-btn img:hover{
+    filter: invert(24%) sepia(0%) saturate(93%) hue-rotate(265deg) brightness(98%) contrast(87%);
+    transition: 0.3s;
 }
 
 .groups-container{
@@ -25,7 +46,3 @@ button{
     height: 200px;
 }
 
-#top-field{
-    display: flex;
-    flex-direction: row;
-}

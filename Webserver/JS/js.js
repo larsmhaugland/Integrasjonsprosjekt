@@ -4,11 +4,13 @@
 */
 //TEST
 let API_IP = "";
-const IMAGEDIR = "/usr/local/apache2/images/";
+let IMAGEDIR = "/usr/local/apache2/images/";
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
+    IMAGEDIR = "Images/";
 } else{
     API_IP = "https://" + window.location.hostname + ":8080";
+    IMAGEDIR = "/usr/local/apache2/images/";
 }
 
 let b = document.querySelector("#log-in-btn");
@@ -126,6 +128,7 @@ function login(){
         }
     })
     .catch(error => {
+        alert("Det skjedde en feil ved innlogging");
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
@@ -189,15 +192,11 @@ function registerUser(){
         }
     })
     .catch(error => {
-        alertDBconnectionRefused()
+        alert("Det skjedde en feil ved opprettelse av brukeren");
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
 
-}
-
-function alertDBconnectionRefused(){
-    alert("Could not connect to database");
 }
 
 function generateRandomId(length) {

@@ -180,12 +180,15 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	response := map[string]interface{}{
 		"filename": id,
 	}
+	w.WriteHeader(http.StatusOK)
 	err = API.EncodeJSONBody(w, r, response)
 	if err != nil {
 		log.Println("Error encoding response: ", err)
 		http.Error(w, "Error while encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	log.Println("File uploaded successfully: ", id)
 }
 
 func generateUniqueID() (string, error) {

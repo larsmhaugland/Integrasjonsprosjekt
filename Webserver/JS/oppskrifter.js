@@ -198,6 +198,7 @@ function addNewItemToList(list){
     list.appendChild(li);
 }
 
+
 async function newRecipe() {
     let name = document.querySelector("#recipe-name").value;
     let type = document.querySelector("#recipe-type-url");
@@ -206,7 +207,6 @@ async function newRecipe() {
     let url = "";
     let ingredients = {};
     let instructions = [];
-    let errorWithImage = false;
 
     let imageInput = document.querySelector("#recipe-image");
     let filename = "";
@@ -220,18 +220,22 @@ async function newRecipe() {
                 method: "POST",
                 body: formData,
             });
+            console.log("Response:", response);
+            if (!response.ok) {
+                console.log(`HTTP error! status: ${response.status}`);
+                alert("Det skjedde en feil med opplasting av bildet");
+                return;
+            }
+            console.log("Hei");
             const data = await response.json();
             console.log("Response:", data);
             filename = data["filename"];
             console.log("File: " + filename);
         } catch (error) {
-            errorWithImage = true;
             console.log(error);
+            alert("Det skjedde en feil med opplasting av bildet");
+            return;
         }
-    }
-    if(errorWithImage){
-        alert("Det skjedde en feil med opplasting av bildet");
-        return;
     }
 
     let username = sessionStorage.getItem("username");
@@ -272,18 +276,19 @@ async function newRecipe() {
         "groups": groups,
     };
 
-    const recipeResponse = await fetch(API_IP + "/recipe/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
-
-    if (recipeResponse.ok) {
-        console.log("Recipe added with id:", await recipeResponse.json());
-    } else {
-        console.log("Error when adding recipe", recipeResponse.status, "Error message:", await recipeResponse.json());
+    try {
+        const recipeResponse = await fetch(API_IP + "/recipe/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+        if (recipeResponse.ok) {
+            console.log("Recipe added with id:", await recipeResponse.json());
+        }
+    } catch (error) {
+        console.log(error);
     }
     location.reload();
 }
@@ -417,18 +422,12 @@ async function displayResults(filteredList){
         recipeA.setAttribute("id", recipe.documentID)
 
         let recipeBlock = document.createElement("div");
-
+        recipeBlock.setAttribute("class", "result-text");
         let recipeName = document.createElement("h3");
         recipeName.setAttribute("class", "result-name");
         recipeName.textContent = recipe.name;
         recipeBlock.appendChild(recipeName);
-        if (recipe.image !== "" && recipe.image !== null) {
-            let recipeImage = document.createElement("img");
-            recipeImage.setAttribute("src", IMAGEDIR + "/" + recipe.image);
-            recipeImage.setAttribute("alt", recipe.name);
-            recipeImage.setAttribute("class", "result-image");
-            recipeBlock.appendChild(recipeImage);
-        }
+
         if (recipe.URL !== "" && recipe.URL !== null) {
             let recipeURL = document.createElement("a");
             recipeURL.setAttribute("href", recipe.URL);
@@ -446,6 +445,13 @@ async function displayResults(filteredList){
         recipeTime.setAttribute("class", "result-time");
         recipeTime.textContent = "Tid: " + recipe.time + (recipe.time > 1 ? " minutter" : " minutt");
         recipeBlock.appendChild(recipeTime);
+        if (recipe.image !== "" && recipe.image !== null) {
+            let recipeImage = document.createElement("img");
+            recipeImage.setAttribute("src", "../" + IMAGEDIR + recipe.image + ".jpeg");
+            recipeImage.setAttribute("alt", recipe.name);
+            recipeImage.setAttribute("class", "result-image");
+            recipeA.appendChild(recipeImage);
+        }
         recipeA.appendChild(recipeBlock);
         resultDiv.appendChild(recipeA);
     }
