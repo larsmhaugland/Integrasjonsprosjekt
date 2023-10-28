@@ -46,6 +46,9 @@ func ChatChatBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		NewChat(w, r)
 
+	case http.MethodDelete:
+		DeleteChat(w, r)
+
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -84,6 +87,18 @@ func NewChat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func DeleteChat(w http.ResponseWriter, r *http.Request) {
+	chatID := r.URL.Query().Get("chatID")
+
+	err := Firebase.DeleteChat(chatID)
+	if err != nil {
+		http.Error(w, "Error; Could not delete chat", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func ChatMemberBaseHandler(w http.ResponseWriter, r *http.Request) {

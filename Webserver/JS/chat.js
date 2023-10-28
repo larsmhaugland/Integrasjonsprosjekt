@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const removeSelectedMembers = document.querySelector("#remove-members-button");
     const currentMembersList = document.querySelector("#current-members-list");
     const addMembersButton = document.querySelector("#add-members-button");
+    const deleteChatButton = document.querySelector("#delete-chat-button");
+    const leaveChatButton = document.querySelector("#leave-chat-button");
 
 
     // variables
@@ -59,6 +61,12 @@ document.addEventListener("DOMContentLoaded", function () {
             chatListContainer.appendChild(noChatsMessage);
         }
         console.log("User id: " + username);
+
+        if (activeChatID === "") {
+            leaveChatButton.style.display = "none";
+            editChatOpenButton.style.display = "none";
+        }
+        
     }
 
     // Event listeners
@@ -115,15 +123,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     removeSelectedMembers.addEventListener("click", function () {
         const selectedMembers = document.querySelectorAll("#current-members-list input[type='checkbox']:checked");
+        
+        editChatPopup.style.display = "none";
         selectedMembers.forEach(member => {
             // Find the label associated with the checkbox
             const labelElement = member.nextElementSibling;
 
             // Get the member name from the label
-            const username = labelElement.textContent;
+            const usernameLabel = labelElement.textContent;
 
             // Remove the member
-            removeMemberFromChat(username);
+            removeMemberFromChat(usernameLabel, false);
         });
     });
 
@@ -131,7 +141,19 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = "block";
     });
 
+    deleteChatButton.addEventListener("click", function () {
+      const confirmation = window.confirm("Are you sure you want to delete this chat?")
+       if (confirmation){
+           deleteChat(); 
+       }
+    });
 
+    leaveChatButton.addEventListener("click", function () {
+        const confirmation = window.confirm("Are you sure you want to leave this chat?")
+        if (confirmation){
+            removeMemberFromChat(username, true);
+        }
+    });
 
     form.addEventListener("submit", function (event) {
         event.preventDefault(); // Prevent the default form submission behavior
@@ -150,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
             documentID: chatID, 
         };
 
-        // Send a POST request to your API endpoint
+        // Send a POST request to the backend API
         fetch(URL, {
             method: "POST",
             headers: {
@@ -174,8 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle search input changes
     searchInput.addEventListener("input", function () {
-        const query = searchInput.value.trim();
-        console.log("Query is: " + query);
+        const query = searchInput.value.trim();;
         if (query.length === 0) {
             return;
         }
@@ -329,6 +350,13 @@ document.addEventListener("DOMContentLoaded", function () {
         chatOwner = chat.chatOwner;
   
         chatNameElement.textContent = chat.name; 
+        if (username === chat.chatOwner) {
+            leaveChatButton.style.display = "none";
+            editChatOpenButton.style.display = "block";
+        } else {
+            leaveChatButton.style.display = "block";
+            editChatOpenButton.style.display = "none";
+        }
 
         // Display the messages
         const messages = chat.messages;
@@ -459,7 +487,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function removeMemberFromChat(username) {
+    function removeMemberFromChat(username, leave) {
 
         const url = `${API_IP}/chat/members?chatID=${activeChatID}&username=${username}`;
     
@@ -473,9 +501,10 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => {
                 if (response.status === 204) {
                     console.log(`Member ${username} removed.`);
-                    editChatPopup.style.display = "none";
+                    if (leave === true) { 
+                        location.reload();
+                    }
                 } else {
-                    // Handle errors or non-successful responses
                     console.error("Error removing member:", response.status);
                 }
             })
@@ -555,6 +584,30 @@ document.addEventListener("DOMContentLoaded", function () {
             listItem.appendChild(label);
             currentMembersList.appendChild(listItem);
         });
+    }
+
+    function deleteChat() {
+        const url = `${API_IP}/chat/chat?chatID=${activeChatID}`;
+        
+        // Send a DELETE request to the backend API
+        fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then(response => {
+                if (response.status === 204) {
+                    console.log(`Chat ${activeChatID} deleted.`);
+                    location.reload();
+                } else {
+                    // Handle errors or non-successful responses
+                    console.error("Error deleting chat:", response.status);
+                }
+            })
+            .catch(error => {
+                console.error("API Error:", error);
+            });
     }
 
     formatGoTimeStamp = (timestamp) => {

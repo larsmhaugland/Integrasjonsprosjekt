@@ -341,6 +341,11 @@ func AddGroup(group Group) (string, error) {
 	members := map[string]string{
 		group.Owner: "owner",
 	}
+	for key := range group.Members {
+		if key != group.Owner {
+			members[key] = "member"
+		}
+	}
 	//Add group to database
 	_, err = docRef.Set(ctx, map[string]interface{}{
 		"members": members,
@@ -869,8 +874,7 @@ func AddNewChat(chat Chat, newGroup bool) error {
 			}
 		}
 	} else {
-		memberArray := make([]string, 0)
-		memberArray = append(memberArray, chat.ChatOwner)
+		memberArray := append(make([]string, 0), chat.Members...)
 		_, err = docRefNewGroup.Set(ctx, map[string]interface{}{
 			"members":   memberArray,
 			"chatOwner": chat.ChatOwner,
@@ -881,10 +885,12 @@ func AddNewChat(chat Chat, newGroup bool) error {
 			return err
 		}
 
-		err = AddChatToUser(chat.ChatOwner, docRefNewGroup.ID)
-		if err != nil {
-			log.Println("error adding chat to user", err)
-			return err
+		for _, member := range chat.Members {
+			err = AddChatToUser(member, docRefNewGroup.ID)
+			if err != nil {
+				log.Println("error adding chat to user", err)
+				return err
+			}
 		}
 	}
 	if err != nil {
@@ -972,6 +978,52 @@ func AddMemberToChat(chatID string, username string) ([]string, error) {
 	ChatCache[chatData.DocumentID] = CacheData{chatData, time.Now()}
 
 	return chatData.Members, nil
+}
+
+func DeleteChat(chatID string) error {
+
+	chatData, err := ReturnCacheChat(chatID)
+	if err != nil {
+		log.Println("error getting chat data from cache:", err)
+		return err
+	}
+
+	// Check if the chat data exists in the cache
+	_, ok := ChatCache[chatID]
+	if ok {
+		// If it is in the cache remove it
+		delete(ChatCache, chatID)
+	} else {
+		log.Println("error getting chat data from cache:")
+	}
+
+	// Update the Firestore document with the modified groups list
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client", err)
+		return err
+	}
+
+	// Reference to the specific document
+	chatRef := client.Collection("chat").Doc(chatID)
+
+	// Delete the document
+	_, err = chatRef.Delete(ctx)
+	if err != nil {
+		log.Println("Error deleting chat document:", err)
+		return err
+	}
+
+	for _, member := range chatData.Members {
+		err = RemoveChatFromMember(member, chatID)
+		if err != nil {
+			log.Println("error removing chat from user", err)
+			return err
+		}
+	}
+
+	return nil
 }
 
 /*****************				TODOS				*****************/

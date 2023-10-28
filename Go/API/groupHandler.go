@@ -2,6 +2,7 @@ package API
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -110,10 +111,16 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	chatMembers := make([]string, 0)
+	for key := range group.Members {
+		chatMembers = append(chatMembers, key)
+	}
+	log.Println("Chat members: ", chatMembers)
 	// Create a Chat struct with ChatOwner and Name
 	chat := Firebase.Chat{
 		ChatOwner: group.Owner,
 		Name:      group.Name,
+		Members:   chatMembers,
 	}
 
 	err = Firebase.AddNewChat(chat, true)
