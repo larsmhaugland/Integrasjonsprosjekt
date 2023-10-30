@@ -229,11 +229,6 @@ async function newRecipe() {
                 console.log(error);
                 alert("Det skjedde en feil med opplasting av bildet");
             });
-            if (!response.ok) {
-                console.log(`HTTP error! status: ${response.status}`);
-                alert("Det skjedde en feil med opplasting av bildet");
-                return;
-            }
             console.log("File: " + filename);
         } catch (error) {
             console.log(error);
