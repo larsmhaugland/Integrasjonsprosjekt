@@ -71,13 +71,14 @@ form.addEventListener("submit", function (event) {
 
     // Prepare the data to be sent to the API endpoint
     const groupId = generateRandomId(20);
+    const chatID = generateRandomId(20);
     const group = {
         documentID: groupId,
         name: groupName,
         owner: sessionStorage.getItem("username"),
         members: memberMap,
     };
-    fetch(API_IP + `/group/new?${groupName}`, {
+    fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -97,12 +98,29 @@ form.addEventListener("submit", function (event) {
         .then((data) => {
             console.log("I got here YAY");
             // Now, data contains the parsed JSON
+            console.log("Data returned from creating group: " + data);
             const groupNew = data;
-            const groups = JSON.parse(sessionStorage.getItem("groups") || "[]");
-            groups.push(groupNew);
+            console.log("GroupNew: " + groupNew);
+            const storedGroups = sessionStorage.getItem('groups');
+
+            let groups2;
+            console.log("Storedgroups: " + storedGroups)
+            if (storedGroups !== ""){
+                console.log("I got3 past null!");
+                groups2 = JSON.parse(storedGroups);
+            }
+            else {
+                console.log("I was2 null!");
+                groups2 = [];
+            }
+            
+            
+            //const groups = JSON.parse(sessionStorage.getItem("groups") || stringify([]));
+            groups2.push(groupNew);
+            console.log("I got past push!");
             let username = sessionStorage.getItem("username");
-            sessionStorage.setItem("groups", JSON.stringify(groups));
-            console.log("Group added to session storage:", groups);
+            sessionStorage.setItem("groups", JSON.stringify(groups2));
+            console.log("Group added to session storage:", groups2);
 
             let display = document.querySelector(".groups-container");
             let groupContainer = document.createElement("a");
@@ -317,12 +335,13 @@ function displayGroups(groups){
 //TODO: Fix duplicate group ids in user when patching
 function newGroup(groupName){
     const groupId = generateRandomId(20);
+    const chatID = generateRandomId(20);
     const group = {
         documentID: groupId,
         name: groupName,
         owner: sessionStorage.getItem("username"),
     };
-    fetch(API_IP + `/group/new?${groupName}`, {
+    fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -391,7 +410,7 @@ function newGroup(groupName){
                 })
         })
         .catch((error) => {
-            console.log("Error creating group: " + error);
+            console.log("Error creating group2: " + error);
         });
 }
 

@@ -263,6 +263,33 @@ func AddChatToUser(username string, chatID string) error {
 	return nil
 }
 
+func AddChatToGroup(groupID string, chatID string) error {
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting user data from cache:", err)
+		return err
+	}
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+
+	// Add the new group to the users groups field
+	_, err = client.Collection("groups").Doc(groupData.DocumentID).Update(ctx, []firestore.Update{
+		{Path: "chat", Value: groupData.Chat},
+	})
+	if err != nil {
+		log.Println("error updating user document:", err)
+		return err
+	}
+	groupData.Chat = chatID
+	// Update the cache with the modified user data
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
+	return nil
+}
+
 func GetUserChats(username string) ([]Chat, error) {
 	// Get the userdata with the chat ID's
 	userData, err := ReturnCacheUser(username)
@@ -326,7 +353,7 @@ func RemoveChatFromMember(username string, chatID string) error {
 
 /*****************				GROUP FUNCTIONS				*****************/
 
-func AddGroup(group Group) (string, error) {
+func AddGroup(group Group, chatID string) (string, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
@@ -351,12 +378,15 @@ func AddGroup(group Group) (string, error) {
 		"members": members,
 		"owner":   group.Owner,
 		"name":    group.Name,
+		"chat":    chatID,
 	})
 	//doc, _, err := client.Collection("groups").Add(ctx, data)
 	if err != nil {
 		log.Println("Error adding group:", err)
 		return "", err
 	}
+
+	log.Println("documentID on groupCreation: ", group.DocumentID)
 	return group.DocumentID, nil
 }
 
@@ -423,6 +453,7 @@ func PatchGroup(group Group) error {
 		"recipes":        group.Recipes,
 		"schedule":       group.Schedule,
 		"shopping-lists": group.ShoppingLists,
+		"chat":           group.Chat,
 	}
 	_, err = client.Collection("groups").Doc(group.DocumentID).Set(ctx, data)
 	if err != nil {
@@ -843,66 +874,34 @@ func AddMessageToChat(message Message, chatID string) error {
 // Adds a new chat document to the firestore chat collection
 // parameters chat: the chat struct to be added to the database
 // parameters newGroup: bool to check if chat is created because a new group was created on the homepage
-func AddNewChat(chat Chat, newGroup bool) error {
+func AddNewChat(chat Chat) error {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client", err)
 		return err
 	}
-	// Used when group is created on the homepage
-	docRefNewGroup := client.Collection("chat").NewDoc()
-
 	docRefNewChat := client.Collection("chat").Doc(chat.DocumentID)
 
-	if !newGroup {
-		_, err = docRefNewChat.Set(ctx, map[string]interface{}{
-			"members":   chat.Members,
-			"chatOwner": chat.ChatOwner,
-			"name":      chat.Name,
-		})
-		if err != nil {
-			log.Println("error adding new chat document to the firestore database", err)
-			return err
-		}
-
-		for _, member := range chat.Members {
-			err = AddChatToUser(member, chat.DocumentID)
-			if err != nil {
-				log.Println("error adding chat to user", err)
-				return err
-			}
-		}
-	} else {
-		memberArray := append(make([]string, 0), chat.Members...)
-		_, err = docRefNewGroup.Set(ctx, map[string]interface{}{
-			"members":   memberArray,
-			"chatOwner": chat.ChatOwner,
-			"name":      chat.Name,
-		})
-		if err != nil {
-			log.Println("error adding new chat document to the firestore database", err)
-			return err
-		}
-
-		for _, member := range chat.Members {
-			err = AddChatToUser(member, docRefNewGroup.ID)
-			if err != nil {
-				log.Println("error adding chat to user", err)
-				return err
-			}
-		}
-	}
+	_, err = docRefNewChat.Set(ctx, map[string]interface{}{
+		"members":   chat.Members,
+		"chatOwner": chat.ChatOwner,
+		"name":      chat.Name,
+	})
 	if err != nil {
 		log.Println("error adding new chat document to the firestore database", err)
 		return err
 	}
 
-	if !newGroup {
-		chat.DocumentID = docRefNewChat.ID
-	} else {
-		chat.DocumentID = docRefNewGroup.ID
+	for _, member := range chat.Members {
+		err = AddChatToUser(member, chat.DocumentID)
+		if err != nil {
+			log.Println("error adding chat to user", err)
+			return err
+		}
 	}
+	// Pretty sure this line is not needed as they should be the same
+	chat.DocumentID = docRefNewChat.ID
 
 	ChatCache[chat.DocumentID] = CacheData{chat, time.Now()}
 
@@ -1024,6 +1023,22 @@ func DeleteChat(chatID string) error {
 	}
 
 	return nil
+}
+
+func GetGroupChat(groupID string) (Chat, error) {
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return Chat{}, err
+	}
+
+	chatData, err := ReturnCacheChat(groupData.Chat)
+	if err != nil {
+		log.Println("error getting chat data from cache:", err)
+		return Chat{}, err
+	}
+
+	return chatData, nil
 }
 
 /*****************				TODOS				*****************/

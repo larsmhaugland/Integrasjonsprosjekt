@@ -32,6 +32,9 @@ func ChatBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "name":
 		ChatMemberBaseHandler(w, r)
 
+	case "chatData":
+		GetChatData(w,r)
+
 	default:
 		http.Error(w, "Error; Endpoint not supported", http.StatusBadRequest)
 		return
@@ -80,7 +83,7 @@ func NewChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = Firebase.AddNewChat(chat, false)
+	err = Firebase.AddNewChat(chat)
 	if err != nil {
 		http.Error(w, "Error; Could not create new chat", http.StatusInternalServerError)
 		return
@@ -223,3 +226,20 @@ func ChatMembersPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func GetChatData(w  http.ResponseWriter, r *http.Request) {
+	groupID := r.URL.Query().Get("groupID")
+
+	chat, err := Firebase.GetGroupChat(groupID)
+	if err != nil {
+		http.Error(w, "Error while getting group chat: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = EncodeJSONBody(w, r, chat)
+	if err != nil {
+		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
+		return
+	}
+}
+

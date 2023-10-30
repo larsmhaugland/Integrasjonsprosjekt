@@ -25,12 +25,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const addMembersButton = document.querySelector("#add-members-button");
     const deleteChatButton = document.querySelector("#delete-chat-button");
     const leaveChatButton = document.querySelector("#leave-chat-button");
+    
 
 
     // variables
     var username;
     let activeChatID = "";
     let chatOwner;
+    let groupIDSentAsParam = "";
     let editChat;
     const socket = io("https://10.212.174.249:8080//socket.io/"); 
     console.log("socket: " + socket);
@@ -66,7 +68,13 @@ document.addEventListener("DOMContentLoaded", function () {
             leaveChatButton.style.display = "none";
             editChatOpenButton.style.display = "none";
         }
-        
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams) {
+            groupIDSentAsParam = urlParams.get('groupID');
+            if (groupIDSentAsParam !== "") {
+                getChatFromGroup(groupIDSentAsParam);
+            }
+        }
     }
 
     // Event listeners
@@ -607,6 +615,19 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("API Error:", error);
+            });
+    }
+
+    function getChatFromGroup(groupID) {
+        const url = `${API_IP}/chat/chatData?groupID=${groupID}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Update the member suggestions list with the results
+                displayChatMessages(data);
+            })
+            .catch(error => {
+                console.error("Error fetching search results from database:", error);
             });
     }
 

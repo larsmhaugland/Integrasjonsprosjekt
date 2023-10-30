@@ -39,6 +39,7 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	case "leaveGroup":
 		LeaveGroup(w, r)
+		
 	default:
 		http.Error(w, "Error; Endpoint not supported", http.StatusBadRequest)
 		return
@@ -100,12 +101,13 @@ func GetGroupName(w http.ResponseWriter, r *http.Request) {
 
 func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 	var group Firebase.Group
+	chatID := r.URL.Query().Get("chatID")
 	err := DecodeJSONBody(w, r, &group)
 	if err != nil {
 		http.Error(w, "Error; Could not decode JSON body", http.StatusBadRequest)
 		return
 	}
-	id, err := Firebase.AddGroup(group)
+	id, err := Firebase.AddGroup(group, chatID)
 	if err != nil {
 		http.Error(w, "Error; Could not add group", http.StatusInternalServerError)
 		return
@@ -118,12 +120,13 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Chat members: ", chatMembers)
 	// Create a Chat struct with ChatOwner and Name
 	chat := Firebase.Chat{
-		ChatOwner: group.Owner,
-		Name:      group.Name,
-		Members:   chatMembers,
+		ChatOwner:  group.Owner,
+		Name:       group.Name,
+		Members:    chatMembers,
+		DocumentID: chatID,
 	}
 
-	err = Firebase.AddNewChat(chat, true)
+	err = Firebase.AddNewChat(chat)
 	if err != nil {
 		http.Error(w, "Error; Could not create the group chat", http.StatusInternalServerError)
 		return

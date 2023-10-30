@@ -141,6 +141,7 @@
 
 /**************** CREATE CHAT POPUP *******************/
 
+/* Style for the entire popup*/
 .popup {
     display: none;
     position: fixed;
@@ -152,14 +153,98 @@
     z-index: 1;
 }
 
+/* Style for the content within the popup */
 .popup-content {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
+    padding: 2vw;
+    border-radius: 1vw;
     text-align: center;
 }
+<<<<<<< HEAD
 >>>>>>> 1add1f5 (Kan nå legge til medlemmer når man oppretter en gruppe)
+=======
+
+/* Popup close button */
+.popup-content .close {
+    position: absolute;
+    right: 0.5vw;
+    top: 0.8vh;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Style for the input fields */
+.create-group-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Remove member from list button */
+.remove-member-button {
+    background: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Labels within the form */
+.create-group-form label {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Content that says add member plus the button */
+.member-input {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+/* Button for adding members in the form */
+.member-input button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Style for the list in the form*/
+.member-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+/* Style for each individual list element in the form*/
+.member-list li {
+    background: #d1ecf1;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Style for the create button in the form */
+.create-button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 1vh;
+    cursor: pointer;
+    margin-top: 0.3vh;
+}
+>>>>>>> a9e5ded (Can add users when creating group and chat fixes)

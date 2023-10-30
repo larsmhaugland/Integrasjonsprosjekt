@@ -49,6 +49,7 @@ type Group struct {
 	Recipes       map[string]GroupRecipe `json:"recipes"`
 	Schedule      map[string]Dinner      `json:"schedule"`
 	ShoppingLists []string               `json:"shopping-lists"`
+	Chat          string                 `json:"chat"`
 }
 
 type ShoppingListItem struct {
@@ -94,4 +95,3 @@ type Chat struct {
 	ChatOwner  string    `json:"chatOwner"`
 	DocumentID string    `json:"documentID"`
 }
-

@@ -227,15 +227,6 @@
     justify-content: space-between;
 }
 
-.member-list li button {
-    background: #ff0000;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;
-}
 
 .create-button {
     background: #007bff;
