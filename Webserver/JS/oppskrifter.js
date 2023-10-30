@@ -447,11 +447,17 @@ async function displayResults(filteredList){
         recipeTime.textContent = "Tid: " + recipe.time + (recipe.time > 1 ? " minutter" : " minutt");
         recipeBlock.appendChild(recipeTime);
         if (recipe.image !== "" && recipe.image !== null) {
-            let recipeImage = document.createElement("img");
-            recipeImage.setAttribute("src", "../" + IMAGEDIR + recipe.image + ".jpeg");
-            recipeImage.setAttribute("alt", recipe.name);
-            recipeImage.setAttribute("class", "result-image");
-            recipeA.appendChild(recipeImage);
+            checkImageExists(IMAGEDIR + recipe.image + ".jpeg", function (exists) {
+                if (!exists) {
+                    return;
+                }
+                let recipeImage = document.createElement("img");
+                recipeImage.setAttribute("src", "../" + IMAGEDIR + recipe.image + ".jpeg");
+                recipeImage.setAttribute("alt", recipe.name);
+                recipeImage.setAttribute("class", "result-image");
+                recipeA.appendChild(recipeImage);
+            });
+
         }
         recipeA.appendChild(recipeBlock);
         resultDiv.appendChild(recipeA);

@@ -4,13 +4,11 @@
 */
 //TEST
 let API_IP = "";
-let IMAGEDIR = "/usr/local/apache2/images/";
+IMAGEDIR = "Images/";
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
-    IMAGEDIR = "Images/";
 } else{
     API_IP = "https://" + window.location.hostname + ":8080";
-    IMAGEDIR = "/usr/local/apache2/images/";
 }
 
 let b = document.querySelector("#log-in-btn");
@@ -209,6 +207,21 @@ function generateRandomId(length) {
     }
     return result;
 }
+
+function checkImageExists(url, callback) {
+    fetch(url, { method: 'HEAD' })
+        .then(response => {
+            if (response.ok) {
+                callback(true); // image exists
+            } else {
+                callback(false); // image does not exist
+            }
+        })
+        .catch(() => {
+            callback(false); // request failed, assume image does not exist
+        });
+}
+
 
 /*
     PASS GROUP NAME FROM GROUP PAGE TO SHOPPING LIST PAGE
