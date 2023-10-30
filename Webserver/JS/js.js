@@ -179,11 +179,12 @@ function registerUser(){
     }).then(response => {
         let usernameTaken = document.querySelector("#username-taken");
         passwordMismatch.style.display = "none";
-        if (response.status === 200){
+        if (response.status === 201){
             let registerForm = document.querySelector("#register-popup");
             registerForm.style.display = "none";
             usernameTaken.style.display = "none";
             console.log("Registered user: " + username);
+            sessionStorage.setItem("loggedIn", "true");
             updateLoginStatus();
         } else {
             usernameTaken.style.display = "block";

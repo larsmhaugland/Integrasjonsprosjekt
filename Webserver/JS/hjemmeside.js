@@ -101,26 +101,25 @@ form.addEventListener("submit", function (event) {
             console.log("Data returned from creating group: " + data);
             const groupNew = data;
             console.log("GroupNew: " + groupNew);
-            const storedGroups = sessionStorage.getItem('groups');
-
-            let groups2;
-            console.log("Storedgroups: " + storedGroups)
-            if (storedGroups !== ""){
-                console.log("I got3 past null!");
-                groups2 = JSON.parse(storedGroups);
+            let groups;
+            try {
+                groups = JSON.parse(sessionStorage.getItem('groups'));
+            } catch (e) {
+                console.log("I was null!");
+                groups = null;
             }
-            else {
-                console.log("I was2 null!");
-                groups2 = [];
+            console.log("groups: " + groups)
+            if (groups === null){
+                console.log("I was null!");
+                groups = [];
             }
-            
-            
+            console.log("Groups: " + groups);
             //const groups = JSON.parse(sessionStorage.getItem("groups") || stringify([]));
-            groups2.push(groupNew);
+            groups.push(groupNew);
             console.log("I got past push!");
             let username = sessionStorage.getItem("username");
-            sessionStorage.setItem("groups", JSON.stringify(groups2));
-            console.log("Group added to session storage:", groups2);
+            sessionStorage.setItem("groups", JSON.stringify(groups));
+            console.log("Group added to session storage:", groups);
 
             let display = document.querySelector(".groups-container");
             let groupContainer = document.createElement("a");
