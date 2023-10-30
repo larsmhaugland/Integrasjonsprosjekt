@@ -189,6 +189,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("File uploaded successfully: ", id)
+	log.Println("Response: ", response)
 }
 
 func generateUniqueID() (string, error) {

@@ -219,17 +219,21 @@ async function newRecipe() {
             const response = await fetch(API_IP + "/image/", {
                 method: "POST",
                 body: formData,
+            }).then((response) => {
+                console.log("Response:", response)
+                return response.json();
+            }).then((data) => {
+                console.log("Data:", data);
+                filename = data["filename"];
+            }).catch((error) => {
+                console.log(error);
+                alert("Det skjedde en feil med opplasting av bildet");
             });
-            console.log("Response:", response);
             if (!response.ok) {
                 console.log(`HTTP error! status: ${response.status}`);
                 alert("Det skjedde en feil med opplasting av bildet");
                 return;
             }
-            console.log("Hei");
-            const data = await response.json();
-            console.log("Response:", data);
-            filename = data["filename"];
             console.log("File: " + filename);
         } catch (error) {
             console.log(error);
@@ -286,6 +290,8 @@ async function newRecipe() {
         });
         if (recipeResponse.ok) {
             console.log("Recipe added with id:", await recipeResponse.json());
+        } else {
+            console.log("Error adding recipe", await recipeResponse.json());
         }
     } catch (error) {
         console.log(error);
