@@ -447,7 +447,7 @@ async function displayResults(filteredList){
         recipeTime.textContent = "Tid: " + recipe.time + (recipe.time > 1 ? " minutter" : " minutt");
         recipeBlock.appendChild(recipeTime);
         if (recipe.image !== "" && recipe.image !== null) {
-            checkImageExists(IMAGEDIR + recipe.image + ".jpeg", function (exists) {
+            checkImageExists("../" + IMAGEDIR + recipe.image + ".jpeg", function (exists) {
                 if (!exists) {
                     return;
                 }

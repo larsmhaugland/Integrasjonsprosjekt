@@ -182,6 +182,7 @@ function registerUser(){
             registerForm.style.display = "none";
             usernameTaken.style.display = "none";
             console.log("Registered user: " + username);
+            sessionStorage.setItem("username", username);
             sessionStorage.setItem("loggedIn", "true");
             updateLoginStatus();
         } else {
