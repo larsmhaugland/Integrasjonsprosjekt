@@ -134,7 +134,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
 	origin := r.Host
-	ImagePath := "/Images/"
+	ImagePath := "/UsrImages/"
 	if origin == "localhost:8080" {
 		ImagePath = "../Webserver/Images/"
 	}
