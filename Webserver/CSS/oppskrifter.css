@@ -9,9 +9,9 @@ body{
     grid-area: main;
     grid-template-areas:
         "header header header header"
-        "filter result_1 result_2 result_3"
-        "filter result_4 result_5 result_6"
-        "filter result_7 result_8 result_9"
+        "filter results results results"
+        "filter results results results"
+        "filter results results results"
         "nav nav nav nav";
     grid-template-columns: 1fr 3fr 3fr 3fr;
     grid-template-rows: 10% 1fr 1fr 1fr 5%;
@@ -19,6 +19,7 @@ body{
 }
 
 .filter-wrapper {
+    margin-top: 40px;
     display: grid;
     grid-area: filter;
     height: 100%;
@@ -37,77 +38,94 @@ body{
 }
 
 .recipe-header {
+    margin-top: 5px;
     display: flex;
     flex-direction: row;
-    font-size: 15px;
     font-weight: lighter;
-    margin: 0;
     padding: 0;
-    height: 20px;
+    height: 40px;
+}
+
+#new-recipe-btn {
+    border: none;
+    padding: 1px 1px;
+
+    width: 5%;
+}
+
+#new-recipe-btn img{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+}
+
+#new-recipe-btn img:hover {
+    filter: invert(24%) sepia(0%) saturate(93%) hue-rotate(265deg) brightness(98%) contrast(87%);
+    transition: 0.3s;
 }
 
 #search-bar {
-    background: #EEEEEE;
-    border: 3px solid #EEEEEE;
+    background: #DDDDDD;
+    border: 3px solid #DDDDDD;
     border-radius: 10px;
     padding: 1px 1px;
     cursor: pointer;
     width: 60%;
-    font-size: 15px;
+    font-size: 25px;
     font-weight: lighter;
-    height: 20px;
+    height: 100%;
     transition: 0.3s;
 }
 
 #search-bar:hover {
-    background: #DDDDDD;
-    border-color: #DDDDDD;
+    background: #CCCCCC;
+    border-color: #CCCCCC;
     transition: 0.3s
 }
 
-#new-recipe-btn {
-    background: #FFFFFF;
-    border: none;
-    padding: 1px 1px;
-    cursor: pointer;
-    width: 30px;
-}
-#new-recipe-btn img{
-     width: 20px;
-     height: 20px;
- }
-
 .results {
-    display: grid;
+    margin-top: 40px;
+    display: flex;
+    grid-area: results;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    justify-content: flex-start;
+    gap: 20px 20px;
+
+}
+
+.result {
+    display: flex;
+    align-items: center;
     border: 2px solid #AAAAAA;
     border-radius: 5px;
-    box-sizing: border-box;
     transition: 0.3s;
     background: #EEEEEE;
+    flex-basis: 32%;
+    max-height: 200px;
 }
 
-.results:hover {
+.result:hover {
     background: #DDDDDD;
     transition: 0.3s;
 }
 
-.result_1 { grid-area: result_1; }
+.result-text {
+    margin-right: 10px;
+}
 
-.result_2 { grid-area: result_2; }
-
-.result_3 { grid-area: result_3; }
-
-.result_4 { grid-area: result_4; }
-
-.result_5 { grid-area: result_5; }
-
-.result_6 { grid-area: result_6; }
-
-.result_7 { grid-area: result_7; }
-
-.result_8 { grid-area: result_8; }
-
-.result_9 { grid-area: result_9; }
+.result-image{
+    display: inline;
+    float: right;
+    right: 0;
+    width: 40%;
+    height: 90%;
+}
 
 .recipe-nav {
     display: grid;
@@ -117,6 +135,7 @@ body{
     width: 90vw;
     height: 5%;
 }
+
 .pagination-button {
     display: inline-block;
     border: 1px solid #EEEEEE;
@@ -183,7 +202,6 @@ body{
 }
 
 .remove-item {
-    float: right;
     display: inline;
     top: 0;
     right: 0;

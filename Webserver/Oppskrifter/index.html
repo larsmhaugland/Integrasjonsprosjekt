@@ -11,7 +11,7 @@
         <a href="../index.html" id="logo">PLÆN</a>
         <nav>
                 <a href="../Handleliste/index.html">Handleliste</a>
-                <a href="">Chat</a>
+                <a href="../Chat/index.html">Chat</a>
                 <a href="../Kalender/index.html">Kalender</a>
                 <a href="index.html" class="current-page">Oppskrifter</a>
                 <button id="log-in-btn">Innlogging</button>
@@ -65,11 +65,11 @@
                 <a id="close-recipe-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
                 <form id="new-recipe-form">
                     <label for="recipe-name">Navn på oppskrift<br></label>
-                    <input type="text" id="recipe-name" placeholder="Skriv navn..." required>
+                    <input type="text" id="recipe-name" placeholder="Skriv navn..." required value="Frode">
                     <label for="recipe-description"><br>Beskrivelse<br></label>
-                    <input type="text" id="recipe-description" placeholder="Skriv en kort beskrivelse..." required>
+                    <input type="text" id="recipe-description" placeholder="Skriv en kort beskrivelse..." required value="En gud">
                     <label for="recipe-time"><br>Tid i minutter<br></label>
-                    <input type="number" id="recipe-time" placeholder="Skriv tid..." required>
+                    <input type="number" id="recipe-time" placeholder="Skriv tid..." required value="123">
                     <label for="recipe-difficulty"><br>Vanskelighetsgrad:<br></label>
                     <input type="range" min="1" max="5" id="recipe-difficulty" required>
                     <p id="difficulty-value-label" style="display: inline;">3</p>
@@ -79,7 +79,7 @@
                         <!-- Need to find out which categories we should have -->
                     </div>
                     <label for="recipe-type-url"><br>Vil du legge til oppskrift med kun URL? </label>
-                    <input type="checkbox" id="recipe-type-url">
+                    <input type="checkbox" id="recipe-type-url" checked="checked">
                     <div id="manual-recipe">
                         <div id="new-recipe-ingredients">
                             <label for="recipe-ingredient"><br>Ingredienser<br></label>
@@ -88,8 +88,7 @@
                             <button id="add-ingredient-btn">Legg til</button>
                             <ul id="recipe-ingredient-list">
                                 <!-- Ingredients get appended here
-                                TODO:
-                                ENDRE PÅ INGREDIENSER
+                                TODO: ENDRE PÅ INGREDIENSER
                                 -->
                             </ul>
                         </div>
@@ -99,15 +98,14 @@
                             <button id="add-instruction-btn">Legg til</button>
                             <ol id="recipe-instructions-list">
                                 <!-- Instructions get appended here
-                                TODO:
-                                ENDRE PÅ INSTRUKSJONER
+                                TODO: ENDRE PÅ INSTRUKSJONER
                                  -->
                             </ol>
                         </div>
                     </div>
                     <div id="url-recipe">
                         <label for="recipe-url"><br> Full URL til oppskrift<br></label>
-                        <input type="url" id="recipe-url" placeholder="Eks: https://plaen.no">
+                        <input type="url" id="recipe-url" placeholder="Eks: https://plaen.no" value="https://matprat.no">
                     </div>
                     <label for="recipe-image"><br>Bilde<br></label>
                     <input type="file" id="recipe-image" accept="image/*">
@@ -118,7 +116,6 @@
                     <br>
                     <label for="share-with-groups">Hvilke grupper vil lagre oppskriften i?</label>
                     <ul id="share-with-groups">
-
                         <!-- Need to find out which groups the user is in -->
                     </ul>
                     <button id="submit-new-recipe">Legg til oppskrift</button>
@@ -139,10 +136,10 @@
             <div class="recipe-header-container">
                 <div class="recipe-header">
                     <input type="text" id="search-bar" placeholder="Søk etter oppskrift">
-                    <button id="new-recipe-btn"><img id="btn-image" src="../Images/add-square.svg" alt="Add new recipe"/></button>
+                    <a id="new-recipe-btn"><img id="btn-image" src="../Images/add-square.svg" alt="Add new recipe"/></a>
                 </div>
             </div>
-            <div id="results" class="results-wrapper">
+            <div id="results" class="results">
                 <!-- Results get appended here -->
             </div>
 

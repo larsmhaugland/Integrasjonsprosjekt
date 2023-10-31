@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const groupNameElement = document.querySelector("#group-name");
     const handlelisteLink = document.querySelector("#handleliste-link");
     const kalenderLink = document.querySelector("#kalender-link");
+    const chatLink = document.querySelector("#chat-link");
     let groupNamePass;
     const redirectURL = "../index.html";
     // Global variables and constants
@@ -43,6 +44,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     kalenderLink.addEventListener("click", function () {
         const url = `../Kalender/index.html?groupID=${encodeURIComponent(groupID)}`;
+        window.location.href = url;
+    });
+
+    chatLink.addEventListener("click", function () {
+        const url = `../Chat/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
     });
 

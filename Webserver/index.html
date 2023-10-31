@@ -11,7 +11,7 @@
     <a href="index.html" id="logo">PLÆN</a>
     <nav>
             <a href="Handleliste/index.html">Handleliste</a>
-            <a href="">Chat</a>
+            <a href="Chat/index.html">Chat</a>
             <a href="Kalender/index.html">Kalender</a>
             <a href="Oppskrifter/index.html">Oppskrifter</a>
             <button id="log-in-btn">Innlogging</button>
@@ -34,14 +34,46 @@
             <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
         </form>
     </div>
-<div id="new-group-popup" class="popup-wrapper">
+<!--<div id="new-group-popup" class="popup-wrapper">
     <form class="popup-content">
         <h3>Gruppenavn:</h3>
         <a id="close-group-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
         <input type="text" placeholder="Skriv inn nytt gruppenavn" name="gruppenavn" id="gruppenavn" required>
         <button type="button" class="btn" id="submit-group-btn">Lag gruppe</button>
     </form>
-</div>
+</div>-->
+
+    <div id="new-group-popup" class="popup">
+        <div class="popup-content">
+            <span class="close" id="close-group-popup" >&times;</span>
+            <h2>Create a New Chat</h2>
+            <form class="create-group-form">
+                <label for="group-name">Group Name:</label>
+                <input type="text" id="group-name" name="group-name" required placeholder="Enter a name for the group">
+            
+                <label for="member-input">Add Members:</label>
+                <div class="member-input" id="member-input">
+                    <button type="button" id="add-member-button">Add Member</button>
+                </div>
+                <span> <em>Click "Add Member" to include members in the chat.</em> </span>
+                <ul id="member-list" class="member-list">
+                </ul>
+                
+                <button type="submit" class="create-button" >Create</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="search-member-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Legge til meldemmer</h2>
+            <input type="text" id="search-input" placeholder="Enter member name...">
+            
+            <ul class="member-suggestions"></ul>
+        </div>
+    </div>
+
     <!--Pop-up register-->
     <div id="register-popup" class="popup-wrapper">
         <form id="register-user-form" class="popup-content">
@@ -65,9 +97,9 @@
 
 <main>
     <div id="top-field">
-    <h1>Oversikt</h1>
+    <h1 id="header-text">Oversikt</h1>
     <!--All svg vectors from svgrepo.com-->
-    <button id="new-group-btn"><a href=""><img id="btn-image" src="Images/add-square.svg" alt="Create new group"/></a></button>
+        <a id="new-group-btn"><img src="Images/add-square.svg" alt="Create new group"/></a>
     </div>
     <div class="groups-container"></div>
 </main>

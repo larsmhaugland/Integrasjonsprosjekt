@@ -1,7 +1,6 @@
 package API
 
 import (
-	"fmt"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -117,7 +116,7 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	group := r.URL.Query().Get("group")
+	groupQ := r.URL.Query().Get("group")
 	single := r.URL.Query().Get("single")
 	parts := strings.Split(r.URL.Path, "/")
 	storedIn := parts[len(parts)-1]
@@ -125,6 +124,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; No id provided", http.StatusBadRequest)
 		return
 	}
+
 	//If only a single recipe is requested, return it
 	if single == "true" {
 		recipe, err := Firebase.ReturnCacheRecipe(storedIn)
@@ -141,8 +141,9 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type outuput struct {
-		UserRecipes  []Firebase.Recipe `json:"userRecipes"`
-		GroupRecipes []Firebase.Recipe `json:"groupRecipes"`
+		UserRecipes    []Firebase.Recipe `json:"userRecipes"`
+		GroupRecipes   []Firebase.Recipe `json:"groupRecipes"`
+		ExampleRecipes []Firebase.Recipe `json:"exampleRecipes"`
 	}
 
 	var recipes outuput
@@ -161,7 +162,8 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		recipes.UserRecipes = append(recipes.UserRecipes, recipe)
 	}
-	if group == "true" {
+
+	if groupQ == "true" {
 		g, err := Firebase.ReturnCacheGroup(storedIn)
 		if err != nil {
 			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
@@ -176,6 +178,9 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
 		}
 	}
+	//Add example recipes to the response
+	recipes.ExampleRecipes = ExampleRecipes
+
 	err = EncodeJSONBody(w, r, recipes)
 	if err != nil {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
@@ -191,9 +196,6 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var data Input
 	err := DecodeJSONBody(w, r, &data)
-	fmt.Println(data.Recipe)
-	fmt.Println(data.Groups)
-	fmt.Println(data.Owner)
 	if err != nil {
 		http.Error(w, "Error when decoding POST: "+err.Error(), http.StatusBadRequest)
 		return
@@ -251,4 +253,28 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+var ExampleRecipes = []Firebase.Recipe{
+	{
+		Name:        "Pasta",
+		Description: "Pasta med tomat saus",
+		URL:         "https://trinesmatblogg.no/recipe/spagetti-med-tomatsaus/",
+		Time:        15,
+		Difficulty:  2,
+	},
+	{
+		Name:        "Lasagne",
+		Description: "Lasagne med kjøttdeig",
+		URL:         "https://meny.no/oppskrifter/Pasta/Lasagne/hjemmelaget-lasagne/",
+		Time:        65,
+		Difficulty:  2,
+	},
+	{
+		Name:        "Pizza",
+		Description: "Pizza med kjøttdeig",
+		URL:         "https://www.tine.no/oppskrifter/middag-og-hovedretter/pizza-og-pai/pizza-med-kj%C3%B8ttdeig",
+		Time:        45,
+		Difficulty:  2,
+	},
 }

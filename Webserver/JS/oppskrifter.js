@@ -46,6 +46,8 @@ newRecipeBtn.addEventListener("click", function (event){
         listItem.appendChild(label);
         groupDiv.appendChild(listItem);
     }
+    let recipeImage = document.querySelector("#recipe-image-preview-img");
+    recipeImage.style.display = "none";
     newRecipePopup.style.display = "block";
 });
 closeRecipePopup.addEventListener("click", function (event){
@@ -75,9 +77,11 @@ imageInput.addEventListener("change", function (event){
     if(this.files.length === 1){
         let image = document.querySelector("#recipe-image-preview-img");
         image.setAttribute("src", URL.createObjectURL(this.files[0]));
+        image.style.display = "block";
     } else {
         let image = document.querySelector("#recipe-image-preview-img");
         image.setAttribute("src", "");
+        image.style.display = "none";
     }
 });
 let ingredientInputBtn = document.querySelector("#add-ingredient-btn");
@@ -133,11 +137,10 @@ async function loadRecipes(){
     if (!await checkAuthToken()) return;
     await getRecipes(Recipes);
     await displayResults(Recipes);
-    console.log(Recipes);
     displayPages();
 }
 
-loadRecipes().then(r => console.log("Recipes loaded"));
+loadRecipes();
 
 
 
@@ -195,6 +198,7 @@ function addNewItemToList(list){
     list.appendChild(li);
 }
 
+
 async function newRecipe() {
     let name = document.querySelector("#recipe-name").value;
     let type = document.querySelector("#recipe-type-url");
@@ -210,18 +214,26 @@ async function newRecipe() {
         // Create a new FormData object
         const formData = new FormData();
         formData.append("file", imageInput.files[0]);
-
-        const imageResponse = await fetch(API_IP + "/image/", {
-            method: "POST",
-            body: formData,
-        });
-
-        if (imageResponse.ok) {
-            const imageData = await imageResponse.json();
-            console.log("Image uploaded");
-            filename = imageData.filename;
-        } else {
-            console.log("Error when uploading image", imageResponse.status, "Error message:", await imageResponse.json());
+        // Send the form data to the API
+        try {
+            const response = await fetch(API_IP + "/image/", {
+                method: "POST",
+                body: formData,
+            }).then((response) => {
+                console.log("Response:", response)
+                return response.json();
+            }).then((data) => {
+                console.log("Data:", data);
+                filename = data["filename"];
+            }).catch((error) => {
+                console.log(error);
+                alert("Det skjedde en feil med opplasting av bildet");
+            });
+            console.log("File: " + filename);
+        } catch (error) {
+            console.log(error);
+            alert("Det skjedde en feil med opplasting av bildet");
+            return;
         }
     }
 
@@ -263,23 +275,23 @@ async function newRecipe() {
         "groups": groups,
     };
 
-    console.log(data.owner);
-    console.log(data.recipe);
-    console.log(data.groups);
-
-    const recipeResponse = await fetch(API_IP + "/recipe/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
-
-    if (recipeResponse.ok) {
-        console.log("Recipe added with id:", await recipeResponse.json());
-    } else {
-        console.log("Error when adding recipe", recipeResponse.status, "Error message:", await recipeResponse.json());
+    try {
+        const recipeResponse = await fetch(API_IP + "/recipe/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+        if (recipeResponse.ok) {
+            console.log("Recipe added with id:", await recipeResponse.json());
+        } else {
+            console.log("Error adding recipe", await recipeResponse.json());
+        }
+    } catch (error) {
+        console.log(error);
     }
+    location.reload();
 }
 
 //Display the pages
@@ -353,10 +365,19 @@ function pagination(c, m) {
 }
 
 function searchRecipes(text) {
-    matches = Recipes.filter((data) => {
-        return data.name.toLowerCase().includes(text.toLowerCase());
+    let primaryMatches = [];
+    let secondaryMatches = [];
+    if(text === "") return filterRecipes(Recipes);
+
+    //Starts with searchterm
+    primaryMatches = Recipes.filter((data) => {
+        return data.name.toLowerCase().startsWith(text.toLowerCase());
     });
-    return matches;
+    //Contains searchterm
+    secondaryMatches = Recipes.filter((data) => {
+        return data.name.toLowerCase().includes(text.toLowerCase()) && !data.name.toLowerCase().startsWith(text.toLowerCase());
+    });
+    return primaryMatches.concat(secondaryMatches);
 }
 
 function submitFilter() {
@@ -379,7 +400,6 @@ async function displayResults(filteredList){
     //Clear results
     resultDiv.innerHTML = "";
 
-    console.log(filteredList)
     //Display
     if (filteredList.length === 0) {
         resultDiv.appendChild(document.createTextNode("Du har ingen oppskrifter lagret"));
@@ -388,32 +408,27 @@ async function displayResults(filteredList){
 
     //Limit output to MAXRESULTS
     let displayedRecipes = [];
-    for (let i = 0; i < MAXRESULTS; i++){
-        if (filteredList.length <= i + page * MAXRESULTS) break;
-        if (isDuplicate(displayedRecipes, filteredList[i] + page * MAXRESULTS)) continue;
-        displayedRecipes.push(filteredList[i + page * MAXRESULTS]);
+    for (let i = 0; i < MAXRESULTS && filteredList.length > i + page * MAXRESULTS; i++){
+        if (!isDuplicate(displayedRecipes, filteredList[i + page * MAXRESULTS])) {
+            displayedRecipes.push(filteredList[i + page * MAXRESULTS]);
+        }
     }
 
     for (let i = 0; i < displayedRecipes.length; i++) {
         let recipe = displayedRecipes[i];
-        let recipeBlock = document.createElement("a");
-        recipeBlock.classList.add("results");
-        recipeBlock.classList.add("result_" + (i + 1));
-        recipeBlock.setAttribute("href", "Oppskrift/index.html?id=" + recipe.documentID);
+        let recipeA = document.createElement("a");
+        //recipeBlock.classList.add("results");
+        recipeA.classList.add("result");
+        recipeA.setAttribute("href", "Oppskrift/index.html?id=" + recipe.documentID);
+        recipeA.setAttribute("id", recipe.documentID)
 
-        recipeBlock.setAttribute("id", recipe.documentID)
-
+        let recipeBlock = document.createElement("div");
+        recipeBlock.setAttribute("class", "result-text");
         let recipeName = document.createElement("h3");
         recipeName.setAttribute("class", "result-name");
         recipeName.textContent = recipe.name;
         recipeBlock.appendChild(recipeName);
-        if (recipe.image !== "" && recipe.image !== null) {
-            let recipeImage = document.createElement("img");
-            recipeImage.setAttribute("src", IMAGEDIR + "/" + recipe.image);
-            recipeImage.setAttribute("alt", recipe.name);
-            recipeImage.setAttribute("class", "result-image");
-            recipeBlock.appendChild(recipeImage);
-        }
+
         if (recipe.URL !== "" && recipe.URL !== null) {
             let recipeURL = document.createElement("a");
             recipeURL.setAttribute("href", recipe.URL);
@@ -429,9 +444,22 @@ async function displayResults(filteredList){
 
         let recipeTime = document.createElement("p");
         recipeTime.setAttribute("class", "result-time");
-        recipeTime.textContent = "Tid: " + recipe.time + " minutter";
+        recipeTime.textContent = "Tid: " + recipe.time + (recipe.time > 1 ? " minutter" : " minutt");
         recipeBlock.appendChild(recipeTime);
+        if (recipe.image !== "" && recipe.image !== null) {
+            checkImageExists(IMAGEDIR + recipe.image + ".jpeg", function (exists) {
+                if (!exists) {
+                    return;
+                }
+                let recipeImage = document.createElement("img");
+                recipeImage.setAttribute("src", "../" + IMAGEDIR + recipe.image + ".jpeg");
+                recipeImage.setAttribute("alt", recipe.name);
+                recipeImage.setAttribute("class", "result-image");
+                recipeA.appendChild(recipeImage);
+            });
 
-        resultDiv.appendChild(recipeBlock);
+        }
+        recipeA.appendChild(recipeBlock);
+        resultDiv.appendChild(recipeA);
     }
 }
