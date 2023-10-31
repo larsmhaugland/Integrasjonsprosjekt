@@ -16,7 +16,6 @@ func SetCORSHeaders(w http.ResponseWriter) {
 
 	// Allow the "Content-Type" and "username" header
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, username")
-
 }
 
 func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {

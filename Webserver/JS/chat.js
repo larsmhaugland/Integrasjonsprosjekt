@@ -34,21 +34,31 @@ document.addEventListener("DOMContentLoaded", function () {
     let chatOwner;
     let groupIDSentAsParam = "";
     let editChat;
-    const socket = io("https://10.212.174.249:8080/socket.io/"); 
+    const socket = new WebSocket("ws://localhost:8080/ws");
     console.log("socket: " + socket);
-    console.log("socket.connected: " + socket.connected);
-    console.log("socket url: " + socket.io.uri);
-    socket.on("connect", () => {
+    
+    /***************** Websocket event listeners ******************/
+     // Handle WebSocket open event
+     /*socket.addEventListener("open", () => {
         console.log("WebSocket connected");
-        console.log("socket: " + socket);
-        console.log("socket.connected: " + socket.connected);
-    });
-    socket.on("connect_error", (error) => {
+    });*/
+    // Handle WebSocket error event
+    socket.addEventListener("error", (error) => {
         console.error("WebSocket connection error:", error);
     });
-    socket.on("connect_timeout", (timeout) => {
-        console.error("WebSocket connection timeout:", timeout);
+    // Handle WebSocket message event
+    socket.addEventListener("message", (event) => {
+        console.log("Message received from server: ", event.data);
+        const messageData = JSON.parse(event.data);
+        const formattedMessage = {
+            sender: messageData.sender,
+            content: messageData.content,
+            timestamp: messageData.timestamp
+        };
+        addMessageToList(formattedMessage);
     });
+    /***************  ******************************/
+
     onPageRelod();
 
     async function onPageRelod() {
@@ -71,8 +81,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams) {
             groupIDSentAsParam = urlParams.get('groupID');
-            if (groupIDSentAsParam !== "") {
-                getChatFromGroup(groupIDSentAsParam);
+            if (groupIDSentAsParam !== null) {
+                getChatFromGroupAsync(groupIDSentAsParam)
+                    .then(() => {
+                        console.log("ActiveChatID: " + activeChatID);
+                        console.log("Socket ready state: " + socket.readyState);
+                        const joinMessage = {
+                            event: "joinChat",
+                            activeChatID: activeChatID,
+                        };
+                        socket.send(JSON.stringify(joinMessage));
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
             }
         }
     }
@@ -122,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const message = messageInput.value.trim();
         messageInput.value = "";
         sendMessage(message);
-        if (socket.connected){
+        if (socket.readyState === WebSocket.OPEN){
             sendMessageSocket(message);
         } else {
             console.error("Not connected to WebSocket server");
@@ -224,11 +246,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to send a message through the websocket
     function sendMessageSocket(message) {
         const messageData = {
-            sender: username,
-            content: message,
-            activeChatID: activeChatID,
+            event: "chatMessage",
+            message: {
+                sender: username,
+                content: message,
+                activeChatID: activeChatID,
+            }
         };
-        socket.emit("chatMessage", messageData); // Send the message to the server
+        socket.send(JSON.stringify(messageData));
+        console.log("Message sent through websocket");
     }
 
     /**
@@ -337,9 +363,17 @@ document.addEventListener("DOMContentLoaded", function () {
         // Add an event listener to each chat item for handling chat selection or navigation
         chatItem.addEventListener("click", function () {
             // Leave the current chat room
-            socket.emit("leaveChat", activeChatID);
+            const leaveMessage = {
+                event: "leaveChat",
+                activeChatID: activeChatID,
+            };
+            socket.send(JSON.stringify(leaveMessage));
             // Join the new chat room
-            socket.emit("joinChat", chat.documentID);
+            const joinMessage = {
+                event: "joinChat",
+                activeChatID: chat.documentID,
+            };
+            socket.send(JSON.stringify(joinMessage));
             displayChatMessages(chat);
         });
     
@@ -355,6 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
         activeChatID = chat.documentID;
+        console.log("Active chat id set: " + activeChatID);
         chatOwner = chat.chatOwner;
   
         chatNameElement.textContent = chat.name; 
@@ -618,6 +653,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    /*
     function getChatFromGroup(groupID) {
         const url = `${API_IP}/chat/chatData?groupID=${groupID}`;
         fetch(url)
@@ -629,6 +665,22 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => {
                 console.error("Error fetching search results from database:", error);
             });
+    }*/
+
+    async function getChatFromGroupAsync(groupID) {
+        const url = `${API_IP}/chat/chatData?groupID=${groupID}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+            const data = await response.json();
+            // Update the member suggestions list with the results
+            displayChatMessages(data);
+        } catch (error) {
+            console.error("Error fetching search results from database:", error);
+            throw error; // Re-throw the error to handle it at the caller's level
+        }
     }
 
     formatGoTimeStamp = (timestamp) => {
@@ -644,12 +696,4 @@ document.addEventListener("DOMContentLoaded", function () {
         return `${formattedHours}:${formattedMinutes}`;
     }
 
-    /**************************  SOCKET functionality underneath ******************/
-
-    // When the websocket connection is established
-
-    // Handle incoming messages from the server
-    socket.on("/chat/socketServer/chatMessage", (data) => {
-        addMessageToList(data);
-    });
 });

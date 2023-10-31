@@ -10,6 +10,11 @@ require (
 )
 
 require (
+	github.com/felixge/httpsnoop v1.0.1 // indirect
+	github.com/gorilla/handlers v1.5.1 // indirect
+)
+
+require (
 	cloud.google.com/go v0.110.6 // indirect
 	cloud.google.com/go/compute v1.23.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
@@ -25,7 +30,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/googollee/go-socket.io v1.7.0 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/rs/cors v1.10.1
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.13.0 // indirect

@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 
-	"flag"
+	//"flag"
 	"fmt"
 	"io"
 	"log"
@@ -14,26 +14,23 @@ import (
 	"prog-2052/Firebase"
 	"prog-2052/Socket"
 
-	"github.com/rs/cors"
-
 	"github.com/google/uuid"
-	socketio "github.com/googollee/go-socket.io"
 )
 
 func main() {
 
-	httpsFlag := flag.Bool("https", false, "Enable HTTPS")
-	flag.Parse()
-	socketServer := Socket.InitSocketIOServer()
-	if *httpsFlag {
-		startHTTPSserver(socketServer)
+	//httpsFlag := flag.Bool("https", false, "Enable HTTPS")
+	//flag.Parse()
+	/*if *httpsFlag {
+		startHTTPSserver()
 	} else {
-		startHTTPserver(socketServer)
-	}
+		startHTTPserver()
+	}*/
+	startHTTPserver()
 
 }
 
-func startHTTPserver(socketServer *socketio.Server) {
+func startHTTPserver() {
 	server := &http.Server{
 		Addr: ":8080",
 	}
@@ -47,25 +44,15 @@ func startHTTPserver(socketServer *socketio.Server) {
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
-
-	// Cors for websocket server
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://10.212.174.249"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Origin", "Content-Type"},
-		AllowCredentials: true,
-	})
-
-	// Start the socket server
-	http.Handle("/socket.io/", c.Handler(socketServer))
-	log.Println("Socket IO server url: ")
+	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	//http.HandleFunc("/ws", Socket.WsEndpoint)
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
 	log.Fatal(server.ListenAndServe())
 }
 
-func startHTTPSserver(socketServer *socketio.Server) {
+func startHTTPSserver() {
 	certFile := "HTTPS/server.crt"
 	keyFile := "HTTPS/server.key"
 
@@ -92,15 +79,14 @@ func startHTTPSserver(socketServer *socketio.Server) {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 
-	// Cors for websocket server
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://10.212.174.249"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Origin", "Content-Type"},
-		AllowCredentials: true,
+	http.HandleFunc("/socket", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := Socket.Upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer conn.Close()
 	})
-	// Start the socket server
-	http.Handle("/socket.io/", c.Handler(socketServer))
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
