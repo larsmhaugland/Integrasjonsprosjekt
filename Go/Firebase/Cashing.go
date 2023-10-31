@@ -188,3 +188,12 @@ func ReturnCacheChat(chatID string) (Chat, error) {
 	ChatCache[chatID] = CacheData{chatData, time.Now()}
 	return chatData, nil
 }
+
+func DeleteCacheChat(chatID string) error {
+	err := DeleteChat(chatID)
+	if err != nil {
+		return err
+	}
+	delete(ChatCache, chatID)
+	return nil
+}
