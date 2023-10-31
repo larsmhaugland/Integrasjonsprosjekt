@@ -1,5 +1,6 @@
 let dinnerPopup = document.querySelector("#dinner-popup");
 let newDinnerBtns = document.querySelectorAll(".dinner-btn");
+//let responsibleBtns = document.querySelectorAll(".responsible");
 let closeDinnerPopup = document.querySelector("#close-dinner-popup");
 let dinnerForm = document.querySelector("#new-dinner-form");
 let groupDropdown = document.querySelector("#group-dropdown");
@@ -7,6 +8,7 @@ let currentDay;
 let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "sondag"];
 let Recipes = [];
 let calendar = [[]];
+let responsibleCalendar = [];
 let inputCalendar;
 let groups = [];
 let groupIDSentAsParam = "";
@@ -49,7 +51,15 @@ function setCalendar(groupID){
     let options = document.querySelectorAll("#group-dropdown option");
     let labels = document.querySelectorAll("label");
     const dateKeys = Object.keys(inputCalendar);
-
+    if (labels.length > 0) {
+        labels.forEach(function (label) {
+            if (!label.textContent.includes( "Ansvarlig: ")){
+                label.remove();
+            }else{
+                label.textContent = "Ansvarlig: ";
+            }
+        });
+    }
     for (let j=0; j<options.length; j++){
         if (groupID === options[j].value) {
             console.log("group found");
@@ -65,23 +75,37 @@ function setCalendar(groupID){
                     let customDinner = dateData.customRecipe;
                     let dinner = dateData.recipe;
                     let responsible = dateData.responsible;
-
-
+                    if (!responsibleCalendar[j]) {
+                        responsibleCalendar[j] = [];
+                    }
+                    if (!responsibleCalendar[j][0]) {
+                        responsibleCalendar[j][0] = groupID;
+                    }
                     for (let k=0; k<dates.length; k++){
                         const currentDate = new Date(dates[k]);
                         currentDate.setHours(0, 0, 0, 0); // Set time to midnight
                         date.setHours(0, 0, 0, 0); // Set time to midnight for the date
                         if (currentDate.getTime() === date.getTime()){
                             console.log("date found");
-                            if(labels.length > 0){
-                                labels.forEach(function (label) {
-                                    label.remove();
-                                });
+                            let div = document.getElementById(allDays[k]);
+                            var label =div.querySelector('.selectedMemberLabel');
+                            // Add a label for "responsible" to the day's div
+                            label.innerHTML = "Ansvarlig: " + responsible;
+                            if (responsible !== "") {
+                                if (!responsibleCalendar[j][k + 1]) {
+                                    responsibleCalendar[j][k + 1] = responsible[0];
+                                } else {
+                                    // Handle the case where [j][k + 1] already exists
+                                    // You can decide how you want to handle this scenario
+                                    console.log(`Position [${j}][${k + 1}] already exists`);
+                                }
                             }
-                            let label = document.createElement("label");
+
+                            div.appendChild(label);
+
+                            label = document.createElement("label");
                             label.innerHTML = '<br>' + customDinner;
                             label.setAttribute("id", allDays[k] + " textbox");
-                            let div = document.getElementById(allDays[k]);
                             div.appendChild(label);
                             updateCalendarArray(groupID,k, customDinner);
                         }
@@ -118,12 +142,14 @@ function sendCalendarToServer() {
                     if(Recipes.find(recipe => recipe.name === dinner)){
                         dinnerID = Recipes.find(recipe => recipe.name === dinner).documentID;
                     }
-                    const matManneDame = [];
+                    const responsible = responsibleCalendar[gIndex][dIndex+1];
+                    //console.log(responsible[0]);
+                    console.log("responsible: " + responsible + " gIndex " + gIndex + " dIndex " + (dIndex + 1));
                     const data = {
                         "date": dateString,
                         "customRecipe": dinner,
                         "recipe": dinnerID,
-                        "responsible": matManneDame,
+                        "responsible": [responsible],
                     };
 
                     fetch(`${API_IP}/group/schedule?groupID=${group.documentID}`, {
@@ -180,6 +206,131 @@ newDinnerBtns.forEach (function (btn)
         dinnerPopup.style.display = "block";
     });
 });
+
+var allPopups = document.querySelectorAll('.popup');
+allPopups.forEach(function (popup) {
+    console.log("Closing popup");
+    console.log("Popup style before: " + popup.style.display);
+    popup.style.display = "none";
+    console.log("Popup style after: " + popup.style.display);
+});
+
+
+// Function to create a popup with group members
+function createMemberPopup(groupData, day) {
+    var daySection = document.getElementById(day);
+
+    // Check if there are members to display
+    if (groupData.members && Object.keys(groupData.members).length > 0) {
+        // Create the overlay
+        var overlay = document.createElement("div");
+        overlay.classList.add("overlay");
+        overlay.addEventListener("click", function () {
+            popup.style.display = "none";
+            overlay.style.display = "none";
+        });
+
+        // Create a popup div
+        var popup = document.createElement("div");
+        popup.classList.add("popup");
+
+        // Iterate through members using for...in loop
+        for (var memberKey in groupData.members) {
+            if (groupData.members.hasOwnProperty(memberKey)) {
+                // Create a closure to capture the correct memberKey value
+                (function (key) {
+                    var memberButton = document.createElement("button");
+                    memberButton.innerText = key;
+                    memberButton.addEventListener('click', function () {
+                        var label = daySection.querySelector('.selectedMemberLabel');
+                        console.log("Label: " + label);
+                        if (label) {
+                            console.log("Label exists");
+                            label.textContent = 'Ansvarlig: ' + key;
+                            popup.style.display = "none";
+                            overlay.style.display = "none";
+
+                            // Find the group in the first dimension
+                            let groupIndex = -1;
+                            console.log(responsibleCalendar.length);
+                            for (let i = 0; i < responsibleCalendar.length; i++) {
+                                if (responsibleCalendar[i][0] === groupData.documentID) {
+                                    groupIndex = i;
+                                    break;
+                                }
+                            }
+
+                            // If the group doesn't exist, create it
+                            if (groupIndex === -1) {
+                                groupIndex = responsibleCalendar.length;
+                                console.log("groupIndex: " + groupIndex);
+                                responsibleCalendar.push([groupData.documentID]);
+                            }
+
+                            // Ensure there are enough days (second dimension) for each group
+                            for (var i = 0; i < responsibleCalendar.length; i++) {
+                                while (responsibleCalendar[i].length < 8) {
+                                    responsibleCalendar[i].push([""]);
+                                }
+                            }
+                            // Add the memberKey to the group array in the second dimension
+                            responsibleCalendar[groupIndex][allDays.indexOf(day) + 1] = key;
+                            for (let i = 0; i < responsibleCalendar.length; i++) {
+                                for (let j = 0; j < responsibleCalendar[i].length; j++) {
+                                    console.log(`responsibleCalendar[${i}][${j}]: ${responsibleCalendar[i][j]}`);
+                                }
+                            }
+                            sendCalendarToServer();
+                        }
+                    });
+
+                    popup.appendChild(memberButton);
+                })(memberKey);
+            }
+        }
+
+
+
+        // Append the popup and overlay to the day section
+        daySection.appendChild(overlay);
+        daySection.appendChild(popup);
+
+        // Show the popup and overlay
+        popup.style.display = "block";
+        overlay.style.display = "block";
+    }
+}
+// Add click event listeners to "Responsible" buttons
+var responsibleButtons = document.querySelectorAll('.btn.responsible');
+
+responsibleButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+        var dropdown = document.getElementById("group-dropdown");
+        var selectedOption = dropdown.options[dropdown.selectedIndex];
+        var groupID = selectedOption.value
+        var selectedGroup = groups.find(function (group) {
+            return group.documentID === groupID;
+        });
+        var daySection = button.closest('[id]');
+
+        if (daySection) {
+            var id = daySection.id; // This will give you "tirsdag"
+            console.log("ID of the closest day section: " + id);
+        }
+        if (selectedGroup) {
+            //openPopup();
+            createMemberPopup(selectedGroup, id);
+        }
+    });
+});
+
+
+
+
+
+
+
+
 
 closeDinnerPopup.addEventListener("click", function (event){
     dinnerPopup.style.display = "none";
