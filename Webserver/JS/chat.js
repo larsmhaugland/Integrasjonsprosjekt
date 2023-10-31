@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const addMembersButton = document.querySelector("#add-members-button");
     const deleteChatButton = document.querySelector("#delete-chat-button");
     const leaveChatButton = document.querySelector("#leave-chat-button");
+    const filterChatList = document.querySelector("#filter-chats-list");
     
 
 
@@ -241,6 +242,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error fetching search results from database:", error);
             });
     });
+
+    filterChatList.addEventListener("input", (event) => {
+        const filterText = event.target.value.toLowerCase();
+        chatListArray = Array.from(chatList.getElementsByTagName("li"));
+        if (chatListArray.length !== 0) {
+            chatListArray.forEach((item) => {
+                const itemText = item.textContent.toLowerCase();
+                if (itemText.startsWith(filterText)) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        } 
+    });
+      
 
     // Function to send a message through the websocket
     function sendMessageSocket(message) {
