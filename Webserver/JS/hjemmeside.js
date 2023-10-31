@@ -150,15 +150,11 @@ form.addEventListener("submit", function (event) {
                     .then((response) => {
                         if (response.status === 200) {
                             console.log("Group added to user");
-                            return response.json();
+                            window.location.reload();
                         } else {
                             console.log("Error adding group to user");
                             throw new Error("Failed to add group to user");
                         }
-                    })
-                    .then((data) => {
-                        console.log("User updated with new group");
-                        console.log(data);
                     })
                     .catch((error) => {
                         console.log("Error adding group to user: " + error);
@@ -263,6 +259,21 @@ function addMemberToAddList(username) {
     memberListItem.appendChild(memberName);
     memberListItem.appendChild(removeButton);
     memberList.appendChild(memberListItem);
+}
+
+function removeMemberFromList(username){
+    var memberListItem;
+    const listItems = document.querySelectorAll("#member-list li");
+    for (const listItem of listItems) {
+        console.log(listItem)
+        const span = listItem.querySelector("span");
+        if (!span){console.log("span is null");}
+        if (span.textContent === username) {
+            // Found the list item with the matching username
+            memberListItem = listItem;
+        }
+    }
+    memberList.removeChild(memberListItem);
 }
 
 
