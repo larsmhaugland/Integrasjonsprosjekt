@@ -40,6 +40,7 @@ const memberList = document.querySelector("#member-list");
 const openModalButton = document.querySelector("#add-member-button");
 const closeModalButton = modal.querySelector(".close-modal");
 const createGroupCloseButton = document.querySelector("#close-group-popup");
+const imageInput = document.querySelector("#group-img");
 // Close the modal when the close button is clicked
 closeModalButton.addEventListener("click", function () {
     modal.style.display = "none";
@@ -194,6 +195,18 @@ form.addEventListener("submit", async function (event) {
         .catch((error) => {
             console.log("Error creating group: " + error);
         });
+});
+
+imageInput.addEventListener("change", function (event){
+    if(this.files.length === 1){
+        let image = document.querySelector("#group-img-preview img");
+        image.setAttribute("src", URL.createObjectURL(this.files[0]));
+        image.style.display = "inline-flex";
+    } else {
+        let image = document.querySelector("#group-img-preview img");
+        image.setAttribute("src", "");
+        image.style.display = "none";
+    }
 });
 
 // Handle search input changes

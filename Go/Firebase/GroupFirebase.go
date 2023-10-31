@@ -33,6 +33,7 @@ func AddGroup(group Group, chatID string) (string, error) {
 		"owner":   group.Owner,
 		"name":    group.Name,
 		"chat":    chatID,
+		"image":   group.Image,
 	})
 	//doc, _, err := client.Collection("groups").Add(ctx, data)
 	if err != nil {
@@ -108,6 +109,7 @@ func PatchGroup(group Group) error {
 		"schedule":       group.Schedule,
 		"shopping-lists": group.ShoppingLists,
 		"chat":           group.Chat,
+		"image":          group.Image,
 	}
 	_, err = client.Collection("groups").Doc(group.DocumentID).Set(ctx, data)
 	if err != nil {
