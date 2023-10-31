@@ -334,6 +334,10 @@ function retrieveGroups(){
   /* if(groups && groups.length > 0){
        displayGroups(groups);
     }  else */{
+    if(userName === null){
+        console.log("User not logged in");
+        return;
+    }
     fetch(API_IP + `/user/groups?username=${userName}`, {
         method: "GET",
         headers: {

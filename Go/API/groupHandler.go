@@ -68,6 +68,12 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				http.Error(w, "Could not delete the group from the user", http.StatusInternalServerError)
 			}
+
+			for i, chat := range user.Chats {
+				if chat == group.Chat {
+					user.Chats = append(user.Chats[:i], user.Chats[i+1:]...)
+				}
+			}
 			for i, group := range user.Groups {
 				if group == groupID {
 					user.Groups = append(user.Groups[:i], user.Groups[i+1:]...)
@@ -78,6 +84,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Could not patch user", http.StatusInternalServerError)
 			}
 		}
+		err = Firebase.DeleteCacheChat(group.Chat)
 		err = Firebase.DeleteCacheGroup(groupID)
 		if err != nil {
 			http.Error(w, "Could not delete the group", http.StatusInternalServerError)
@@ -94,10 +101,24 @@ func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 		// Retrieve the groupID from the query parameters
 		groupID := r.URL.Query().Get("groupID")
 		username := r.URL.Query().Get("username")
-		//TODO: Cache må oppdateres
+
 		err := Firebase.DeleteMemberFromGroup(groupID, username)
 		if err != nil {
 			http.Error(w, "Could not delete the user from the group", http.StatusInternalServerError)
+		}
+
+		// Delete the group if there are no members left
+		group, err := Firebase.ReturnCacheGroup(groupID)
+		if err != nil {
+			http.Error(w, "Could not get the group", http.StatusInternalServerError)
+		}
+
+		if len(group.Members) == 0 {
+			err = Firebase.DeleteCacheChat(group.Chat)
+			err = Firebase.DeleteCacheGroup(groupID)
+			if err != nil {
+				http.Error(w, "Could not delete the group", http.StatusInternalServerError)
+			}
 		}
 
 		w.WriteHeader(http.StatusOK)
