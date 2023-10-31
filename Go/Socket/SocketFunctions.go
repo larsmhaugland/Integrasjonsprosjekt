@@ -9,16 +9,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type SocketServer struct {
-	clients map[*websocket.Conn]bool
-	join    chan *websocket.Conn
-	leave   chan *websocket.Conn
-	message chan struct {
-		conn *websocket.Conn
-		data []byte
-	}
-}
-
 type ConnectionInfo struct {
 	Connection      *websocket.Conn
 	LastMessageTime time.Time
@@ -33,86 +23,16 @@ var Upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-/*func WsEndpoint(w http.ResponseWriter, r *http.Request){
-	Upgrader.CheckOrigin = func(r *http.Request) bool { return true }
-
-	ws, err := Upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-	}
-
-	server := InitSocketServer()
-	server.run()
-}*/
-
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	//server := InitSocketServer()
+
 	log.Println("WebSocketHandler() is running")
-	//server.run(conn)
 	handleMessage(conn)
 	defer conn.Close()
-	// Handle WebSocket connections here
-}
-
-func InitSocketServer() *SocketServer {
-	server := &SocketServer{
-		clients: make(map[*websocket.Conn]bool),
-		join:    make(chan *websocket.Conn),
-		leave:   make(chan *websocket.Conn),
-		message: make(chan struct {
-			conn *websocket.Conn
-			data []byte
-		}),
-	}
-	return server
-}
-
-/*
-func (s *SocketServer) run(conn *websocket.Conn) {
-	log.Println("Start of run function")
-	// Add the new WebSocket connection to the clients map
-	s.join <- conn
-	log.Println("No error with s.join <- conn")
-	// Defer removing the connection when it is closed
-	defer func() {
-		s.leave <- conn
-	}()
-	log.Println("run() is running")
-	for {
-		select {
-		case msg := <-s.message:
-			// Process the received message
-			handleMessage(msg.conn, s)
-		}
-	}
-
-}*/
-
-func (s *SocketServer) run(conn *websocket.Conn) {
-	log.Println("Start of run function")
-	for {
-		select {
-		case conn := <-s.join:
-			// A new client has connected
-			log.Println("New client has connected")
-			s.clients[conn] = true
-
-		case conn := <-s.leave:
-			// A client has disconnected
-			delete(s.clients, conn)
-			conn.Close()
-
-		case msg := <-s.message:
-			// Go routine to run handleMessage concurrently for all incoming messages
-			log.Println("Message recieved now handling it")
-			handleMessage(msg.conn)
-		}
-	}
 }
 
 func handleMessage(conn *websocket.Conn) {
@@ -224,6 +144,8 @@ func leaveChatRoom(connInfo *ConnectionInfo, activeChatID string) {
 	}
 }
 
+
+/*
 func chatRoomCleanup() {
 	for activeChatID, room := range chatRooms {
 		// Define a time threshold to determine if a room is idle (e.g., 30 minutes).
@@ -262,3 +184,4 @@ func closeChatRoom(activeChatID string) {
 		delete(chatRooms, activeChatID)
 	}
 }
+*/

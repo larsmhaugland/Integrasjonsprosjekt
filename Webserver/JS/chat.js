@@ -38,10 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("socket: " + socket);
     
     /***************** Websocket event listeners ******************/
-     // Handle WebSocket open event
-     /*socket.addEventListener("open", () => {
-        console.log("WebSocket connected");
-    });*/
     // Handle WebSocket error event
     socket.addEventListener("error", (error) => {
         console.error("WebSocket connection error:", error);
@@ -652,20 +648,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("API Error:", error);
             });
     }
-
-    /*
-    function getChatFromGroup(groupID) {
-        const url = `${API_IP}/chat/chatData?groupID=${groupID}`;
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                // Update the member suggestions list with the results
-                displayChatMessages(data);
-            })
-            .catch(error => {
-                console.error("Error fetching search results from database:", error);
-            });
-    }*/
 
     async function getChatFromGroupAsync(groupID) {
         const url = `${API_IP}/chat/chatData?groupID=${groupID}`;

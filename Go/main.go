@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 
-	//"flag"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -19,14 +19,14 @@ import (
 
 func main() {
 
-	//httpsFlag := flag.Bool("https", false, "Enable HTTPS")
-	//flag.Parse()
-	/*if *httpsFlag {
+	httpsFlag := flag.Bool("https", false, "Enable HTTPS")
+	flag.Parse()
+	if *httpsFlag {
 		startHTTPSserver()
 	} else {
 		startHTTPserver()
-	}*/
-	startHTTPserver()
+	}
+	//startHTTPserver()
 
 }
 
@@ -45,7 +45,6 @@ func startHTTPserver() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 	http.HandleFunc("/ws", Socket.WebSocketHandler)
-	//http.HandleFunc("/ws", Socket.WsEndpoint)
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
@@ -78,15 +77,7 @@ func startHTTPSserver() {
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
-
-	http.HandleFunc("/socket", func(w http.ResponseWriter, r *http.Request) {
-		conn, err := Socket.Upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		defer conn.Close()
-	})
+	http.HandleFunc("/ws", Socket.WebSocketHandler)
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
