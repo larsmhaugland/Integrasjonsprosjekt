@@ -17,11 +17,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Global variables and constants
    // let selectElementValue = "member";
     //const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
-    const tmpGroupID = "ysS2hJ2C5qhLBZC0k5DU";
     const roles = ['Owner', 'Administrator', 'Member'];
-    var groupID;
-    var GroupOwner;
-    var groupName;
+    let groupID;
+    let GroupOwner;
+    let groupName;
     const Administrators = [];
     const redirectURL = "../index.html";
 
@@ -31,16 +30,16 @@ document.addEventListener("DOMContentLoaded", function () {
     onPageReload()
     async function onPageReload() {
         const urlParams = new URLSearchParams(window.location.search);
-        const groupID = urlParams.get('groupID');
+        groupID = urlParams.get('groupID');
         if (groupID){
-            const groupName = await getGroupName(groupID);
+            groupName = await getGroupName(groupID);
             groupNameElement.textContent = "Settings for: " + groupName;
             fetchGroupMembers(groupID);
         } else {
             alert("No groupID was passed to the groupSettings.html page");
             window.location.href = redirectURL;
         }
-    };
+    }
     
     // Open the modal when the button is clicked
    /* openAddMemberButton.addEventListener('click', function () {
@@ -61,16 +60,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Function to retrieve URL parameter by name
-    function getUrlParameter(name) {
+    /*function getUrlParameter(name) {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name) || '';
-    }
+    }*/
 
 
     function leaveGroup(groupID) {
         const url = `${API_IP}/group/leaveGroup?groupID=${groupID}&username=${LoggedInUsername}`;
         const redirectURL = "../index.html";
-        if (LoggedInUsername == GroupOwner){
+        if (LoggedInUsername === GroupOwner){
             alert("Eieren kan ikke forlate gruppa.");
             return;
         }
@@ -104,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function deleteGroup(groupID) {
         const url = `${API_IP}/group/deleteGroup?groupID=${groupID}`;
         const redirectURL = "../index.html";
-        if (LoggedInUsername != GroupOwner){
+        if (LoggedInUsername !== GroupOwner){
             alert("Only the owner can delete the group");
             return;
         }
@@ -138,8 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            const data = await response.json();
-            return data;
+            return await response.json();
         } catch (error) {
             console.error("Error:", error);
             alert("Server error occurred, could not get the group name.");
@@ -189,41 +187,40 @@ document.addEventListener("DOMContentLoaded", function () {
         
         // Populate the suggestions list with results
         results.forEach(function (username) {
-        const listItem = document.createElement("li");
+            const listItem = document.createElement("li");
 
-        // Create the image element
-        const image = document.createElement("img");
-        image.src = "../Images/person-icon-transparent.png";
-        image.alt = username;
+            // Create the image element
+            const image = document.createElement("img");
+            image.src = "../Images/person-icon-transparent.png";
+            image.alt = username;
 
-        // Create the span element for the username
-        const usernameSpan = document.createElement("span");
-        usernameSpan.textContent = username;
+            // Create the span element for the username
+            const usernameSpan = document.createElement("span");
+            usernameSpan.textContent = username;
 
-        // Create the button for adding the member
-        const addButton = document.createElement("button");
-        addButton.className = "add-member-btn2";
+            // Create the button for adding the member
+            const addButton = document.createElement("button");
+            addButton.className = "add-member-btn2";
 
-        const addImage = document.createElement("img");
-        addImage.src = "../Images/add-icon.png";
-        addImage.alt = "Add member";
+            const addImage = document.createElement("img");
+            addImage.src = "../Images/add-icon.png";
+            addImage.alt = "Add member";
 
-        addButton.appendChild(addImage);
+            addButton.appendChild(addImage);
 
-        // Add an event listener to handle adding a member to the group when clicking the icon
-        addButton.addEventListener("click", function () {
-            const username = addButton.parentElement.querySelector("span").textContent;
-            const groupID = tmpGroupID; // TODO: Must be changed to the actual dynamic groupID
-            addMemberToGroup(username, groupID);
+            // Add an event listener to handle adding a member to the group when clicking the icon
+            addButton.addEventListener("click", function () {
+                const username = addButton.parentElement.querySelector("span").textContent;
+                addMemberToGroup(username, groupID);
+            });
+
+            // Append the elements to the list item
+            listItem.appendChild(image);
+            listItem.appendChild(usernameSpan);
+            listItem.appendChild(addButton);
+
+            memberSuggestionsList.appendChild(listItem);
         });
-
-        // Append the elements to the list item
-        listItem.appendChild(image);
-        listItem.appendChild(usernameSpan);
-        listItem.appendChild(addButton);
-
-        memberSuggestionsList.appendChild(listItem);
-    });
     }
 
     /**
@@ -233,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} groupID - ID of the group the user will be added to
      */
     function addMemberToGroup(username, groupID) {
-        if (LoggedInUsername != GroupOwner && !Administrators.includes(LoggedInUsername)){
+        if (LoggedInUsername !== GroupOwner && !Administrators.includes(LoggedInUsername)){
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
@@ -255,7 +252,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((response) => {
             if (response.status === 200) {
                 // Member added successfully
-                alert("Member added to the group successfully");
                 location.reload();
             } else {
                 alert("Error adding member to the group");
@@ -298,7 +294,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 groupMembersListSettings.removeChild(groupMembersListSettings.firstChild);
             }
         } else {
-            // Handle the case where groupMembersList is null or doesn't exist
             console.error("groupMembersListSettings is null or doesn't exist.");
         }
 
@@ -342,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
             
             // Set the selected option based on the member's role
             select.value = member.roleName.toLowerCase(); 
-            
+            console.log("select.value: " + member.roleName.toLowerCase());
             if (member.roleName.toLowerCase() === "owner"){
                 GroupOwner = member.username;
             }
@@ -382,11 +377,10 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {*} username username to delete from the group
      */
     function deleteMember(username) {
-        if (LoggedInUsername != GroupOwner && !Administrators.includes(LoggedInUsername)){
+        if (LoggedInUsername !== GroupOwner && !Administrators.includes(LoggedInUsername)){
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
-        const groupID = tmpGroupID; // TODO get current group id
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
     
         fetch(url, {
@@ -416,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateRoleForMember(username, newRole, initialValue){
         console.log("GroupOwner: " + GroupOwner);
         console.log("LoggedInUsername: " + LoggedInUsername);
-        if (LoggedInUsername != GroupOwner && !Administrators.includes(LoggedInUsername)){
+        if (LoggedInUsername !== GroupOwner && !Administrators.includes(LoggedInUsername)){
             // Get the list items inside the ul element
             const listItems = groupMembersListSettings.querySelectorAll("li");
             listItems.forEach((listItem) => {
@@ -436,7 +430,6 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Only the owner can update the role of a member");
             return;
         }
-        const groupID = tmpGroupID// TODO dynamic group id
         const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
         fetch(url, {
             method: 'PATCH',

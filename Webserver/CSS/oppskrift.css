@@ -1,9 +1,30 @@
-#edit-recipe-btn img{
+.recipe-header{
+margin-top: 30px;
+    background: #DDDDDD;
+}
+#recipe-name{
+    font-size: 30px;
+    font-weight: bold;
+    margin: 3px;
+    padding: 0;
     display: inline;
+    width: 20%;
+}
+
+#edit-recipe-btn {
+    float: right;
+    display: none;
+}
+#edit-recipe-btn img{
     margin-right: 10px;
-    background: #FFFFFF;
     border: none;
     padding: 1px 1px;
     cursor: pointer;
     width: 30px;
+    transition: 0.3s;
+}
+
+#edit-recipe-btn img:hover {
+    transition: 0.3s;
+    filter: invert(47%) sepia(71%) saturate(12%) hue-rotate(320deg) brightness(86%) contrast(87%);
 }

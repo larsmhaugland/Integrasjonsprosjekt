@@ -8,6 +8,7 @@ body{
     ". main main main ."
     ". main main main ."
     ". main main main .";
+    background-color:blanchedalmond;
 }
 
 
@@ -115,7 +116,8 @@ nav{
 }
 
 .close-svg {
-    width: 40px;
+    width: 100%;
+    cursor: pointer;
     filter: invert(78%) sepia(10%) saturate(22%) hue-rotate(14deg) brightness(88%) contrast(86%);
 }
 

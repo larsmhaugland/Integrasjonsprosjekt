@@ -17,7 +17,9 @@ beginning();
 async function beginning() {
     console.log("login status: " + sessionStorage.getItem("loggedIn"));
     const urlParams = new URLSearchParams(window.location.search);
-    groupIDSentAsParam = urlParams.get('groupID');
+    if (urlParams) {
+        groupIDSentAsParam = urlParams.get('groupID');
+    }
     await getRecipes(Recipes);
     await retrieveGroups();
     groups = JSON.parse(sessionStorage.getItem("groups"));

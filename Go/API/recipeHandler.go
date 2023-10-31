@@ -124,6 +124,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; No id provided", http.StatusBadRequest)
 		return
 	}
+
 	//If only a single recipe is requested, return it
 	if single == "true" {
 		recipe, err := Firebase.ReturnCacheRecipe(storedIn)
@@ -160,22 +161,6 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		recipes.UserRecipes = append(recipes.UserRecipes, recipe)
-	}
-
-	for _, groupID := range user.Groups {
-		group, err := Firebase.ReturnCacheGroup(groupID)
-		if err != nil {
-			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		for recipeID := range group.Recipes {
-			recipe, err := Firebase.ReturnCacheRecipe(recipeID)
-			if err != nil {
-				http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
-				return
-			}
-			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
-		}
 	}
 
 	if groupQ == "true" {
@@ -275,14 +260,14 @@ var ExampleRecipes = []Firebase.Recipe{
 		Name:        "Pasta",
 		Description: "Pasta med tomat saus",
 		URL:         "https://trinesmatblogg.no/recipe/spagetti-med-tomatsaus/",
-		Time:        60,
+		Time:        15,
 		Difficulty:  2,
 	},
 	{
 		Name:        "Lasagne",
 		Description: "Lasagne med kjøttdeig",
 		URL:         "https://meny.no/oppskrifter/Pasta/Lasagne/hjemmelaget-lasagne/",
-		Time:        60,
+		Time:        65,
 		Difficulty:  2,
 	},
 	{

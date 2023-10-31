@@ -229,6 +229,7 @@ func UserGroupDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
+	log.Print("Username: " + username)
 	user, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
 		http.Error(w, "Error while getting user", http.StatusBadRequest)

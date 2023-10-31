@@ -4,7 +4,7 @@
 */
 //TEST
 let API_IP = "";
-const IMAGEDIR = "/usr/local/apache2/images/";
+IMAGEDIR = "Images/";
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
 } else{
@@ -126,6 +126,7 @@ function login(){
         }
     })
     .catch(error => {
+        alert("Det skjedde en feil ved innlogging");
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
@@ -134,6 +135,7 @@ function login(){
 function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
+    console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
     sessionStorage.removeItem("groups");
     updateLoginStatus();
     location.reload();
@@ -175,11 +177,12 @@ function registerUser(){
     }).then(response => {
         let usernameTaken = document.querySelector("#username-taken");
         passwordMismatch.style.display = "none";
-        if (response.status === 200){
+        if (response.status === 201){
             let registerForm = document.querySelector("#register-popup");
             registerForm.style.display = "none";
             usernameTaken.style.display = "none";
             console.log("Registered user: " + username);
+            sessionStorage.setItem("loggedIn", "true");
             updateLoginStatus();
         } else {
             usernameTaken.style.display = "block";
@@ -188,15 +191,11 @@ function registerUser(){
         }
     })
     .catch(error => {
-        alertDBconnectionRefused()
+        alert("Det skjedde en feil ved opprettelse av brukeren");
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
 
-}
-
-function alertDBconnectionRefused(){
-    alert("Could not connect to database");
 }
 
 function generateRandomId(length) {
@@ -208,6 +207,21 @@ function generateRandomId(length) {
     }
     return result;
 }
+
+function checkImageExists(url, callback) {
+    fetch(url, { method: 'HEAD' })
+        .then(response => {
+            if (response.ok) {
+                callback(true); // image exists
+            } else {
+                callback(false); // image does not exist
+            }
+        })
+        .catch(() => {
+            callback(false); // request failed, assume image does not exist
+        });
+}
+
 
 /*
     PASS GROUP NAME FROM GROUP PAGE TO SHOPPING LIST PAGE
