@@ -258,7 +258,6 @@ document.addEventListener("DOMContentLoaded", function () {
         } 
     });
       
-
     // Function to send a message through the websocket
     function sendMessageSocket(message) {
         const messageData = {
