@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let chatOwner;
     let groupIDSentAsParam = "";
     let editChat;
-    const socket = io("https://10.212.174.249:8080/socket.io/"); 
+    const socket = io("wss://10.212.174.249:8080/socket.io/"); 
     console.log("socket: " + socket);
     console.log("socket.connected: " + socket.connected);
     console.log("socket url: " + socket.io.uri);
