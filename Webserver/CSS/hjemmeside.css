@@ -73,10 +73,24 @@
     z-index: -1; /* Place it behind the paragraph */
 }
 
-#group-block:hover{
+
+
+#group-block:hover:not(.has-img){
+    transform: scale(1.05);
+    box-shadow: 5px 5px 10px black;
+
+}
+
+.has-img::before{
+    background-color: #FFFFFF;
+    background-size: auto;
+}
+
+.has-img:hover::before{
     transform: scale(1.05);
     box-shadow: 5px 5px 10px black;
 }
+
 
 #top-field{
     display: flex;

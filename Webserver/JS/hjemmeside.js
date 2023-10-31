@@ -373,6 +373,19 @@ function displayGroups(groups){
            groupContainer.setAttribute("href", url);
            let groupBlock = document.createElement("div");
            groupBlock.setAttribute("id","group-block");
+
+           if (groups[i].image !== "") {
+               console.log("Image: " + groups[i].image);
+               checkImageExists(IMAGEDIR + groups[i].image + ".jpeg", function (exists) {
+                   if (exists) {
+                       groupBlock.classList.add("has-img");
+                       //groupBlock.style.setProperty('--group-background-image', `url(${IMAGEDIR}${groups[i].image}.jpeg)`)
+                       groupBlock.style.background = "none";
+                       groupBlock.style.backgroundColor = "#FFFFFF";
+                       groupBlock.style.backgroundImage = `url(${IMAGEDIR}${groups[i].image}.jpeg)`;
+                   }
+               });
+           }
            let groupNameParagraph = document.createElement("p");
            groupNameParagraph.textContent = groups[i].name;
 
@@ -384,8 +397,8 @@ function displayGroups(groups){
            //groupBlock.appendChild(groupIdParagraph);
            groupContainer.appendChild(groupBlock);
            display.appendChild(groupContainer);
-    };
-};
+    }
+}
 
 /*
    ADD NEW GROUP AND PATCH USER INFO

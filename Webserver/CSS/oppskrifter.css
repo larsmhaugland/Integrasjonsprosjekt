@@ -115,9 +115,19 @@ body{
     transition: 0.3s;
 }
 
+.result-text a:hover {
+    text-decoration: underline;
+    color: #80AB82;
+    transition: 0.3s;
+}
+
+
+
 .result-text {
     margin-right: 10px;
 }
+
+
 
 .result-image{
     display: inline;

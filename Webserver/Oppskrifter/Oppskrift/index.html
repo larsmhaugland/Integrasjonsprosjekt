@@ -12,14 +12,14 @@
 </head>
 <body>
     <header class="main-nav">
-        <a href="../../index.html" id="logo">PLÆN</a>
+        <a href="../../index.html"><img id="logo-image" src="../../Images/logo.png" alt="PLÆN-logo"/></a>
         <nav>
-                <a href="../../Handleliste/index.html">Handleliste</a>
-                <a href="">Chat</a>
-                <a href="../../Kalender/index.html">Kalender</a>
-                <a href="../index.html">Oppskrifter</a>
-                <button id="log-in-btn">Innlogging</button>
-                <button id="log-out-btn">Logg ut</button>
+            <a class= "nav" href="../../Handleliste/index.html">HANDLELISTE</a>
+            <a class= "nav" href="../../Chat/index.html">CHAT</a>
+            <a class= "nav" href="../../Kalender/index.html">KALENDER</a>
+            <a class= "nav" href="../index.html">OPPSKRIFTER</a>
+            <button class="log-btn" id="log-in-btn">INNLOGGING</button>
+            <button class="log-btn" id="log-out-btn">LOGG UT</button>
         </nav>
     </header>
     <!--Pop-up login-->
@@ -66,7 +66,7 @@
                 <h1 style="display: inline;">
                     Ny oppskrift
                 </h1>
-                <a id="close-recipe-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+                <a id="close-recipe-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
                 <form id="new-recipe-form">
                     <label for="edit-name">Navn på oppskrift<br></label>
                     <input type="text" id="edit-name" placeholder="Skriv navn..." required>
