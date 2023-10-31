@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let editChat;
     // USE THIS TO CONNECT TO THE WEBSOCKET WHEN NOT ON DEV DOCKER
     //const socket = new WebSocket("ws://localhost:8080/ws");
-    const socket = new WebSocket("ws://10.212.174.249:8080/ws");
+    const socket = new WebSocket("wss://10.212.174.249:8080/ws");
     console.log("socket: " + socket);
     
     /***************** Websocket event listeners ******************/
