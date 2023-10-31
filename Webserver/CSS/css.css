@@ -22,7 +22,6 @@ body{
 
 main{
     grid-area: main;
-    display: none;
 }
 
 /*Header and navigation*/
