@@ -4,7 +4,9 @@
 */
 //TEST
 let API_IP = "";
-IMAGEDIR = "Images/";
+const IMAGEDIR = "Images/";
+const USRIMGDIR = "UsrImages/";
+
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
 } else{
