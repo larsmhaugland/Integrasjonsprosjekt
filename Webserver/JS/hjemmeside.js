@@ -41,6 +41,7 @@ const memberList = document.querySelector("#member-list");
 const openModalButton = document.querySelector("#add-member-button");
 const closeModalButton = modal.querySelector(".close-modal");
 const createGroupCloseButton = document.querySelector("#close-group-popup");
+const imageInput = document.querySelector("#group-img");
 // Close the modal when the close button is clicked
 closeModalButton.addEventListener("click", function () {
     modal.style.display = "none";
@@ -55,7 +56,7 @@ createGroupCloseButton.addEventListener("click", function () {
 
 
 
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", async function (event) {
     event.preventDefault(); // Prevent the default form submission behavior
 
     // Get the form elements by their IDs
@@ -69,7 +70,36 @@ form.addEventListener("submit", function (event) {
         map[username] = 'member';
         return map;
       }, {});
+    let imgInput = document.getElementById("group-img");
+    let groupImage = "";
 
+    if (imgInput.files.length > 0) {
+        const file =  imgInput.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch(API_IP + "/image/", {
+                method: "POST",
+                body: formData,
+            }).then((response) => {
+                console.log("Response:", response)
+                return response.json();
+            }).then((data) => {
+                console.log("Data:", data);
+                groupImage = data["filename"];
+            }).catch((error) => {
+                console.log(error);
+                alert("Det skjedde en feil med opplasting av bildet");
+            });
+            console.log("File: " + groupImage);
+        } catch (error) {
+            console.log(error);
+            alert("Det skjedde en feil med opplasting av bildet");
+            return;
+        }
+
+    }
     // Prepare the data to be sent to the API endpoint
     const groupId = generateRandomId(20);
     const chatID = generateRandomId(20);
@@ -78,6 +108,7 @@ form.addEventListener("submit", function (event) {
         name: groupName,
         owner: sessionStorage.getItem("username"),
         members: memberMap,
+        image: groupImage,
     };
     fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
@@ -165,6 +196,18 @@ form.addEventListener("submit", function (event) {
         .catch((error) => {
             console.log("Error creating group: " + error);
         });
+});
+
+imageInput.addEventListener("change", function (event){
+    if(this.files.length === 1){
+        let image = document.querySelector("#group-img-preview img");
+        image.setAttribute("src", URL.createObjectURL(this.files[0]));
+        image.style.display = "inline-flex";
+    } else {
+        let image = document.querySelector("#group-img-preview img");
+        image.setAttribute("src", "");
+        image.style.display = "none";
+    }
 });
 
 // Handle search input changes

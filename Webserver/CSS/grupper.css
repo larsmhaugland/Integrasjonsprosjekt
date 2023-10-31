@@ -66,8 +66,8 @@
     background-color: #007bff;
     padding: 20px;
     border-radius: 15px; 
-    width: 150px;
-    height: 120px;
+    width: 20vw;
+    height: 11vw;
     margin: 30px;
     display: inline-block;
     grid-area: main;
@@ -79,10 +79,17 @@
  
 .square-content {
     color:white;
-    font-size: 20px;
+    font-size: 2vw;
     font-weight: bold;
 }
 
+.group-functionalities {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
 
 /* Elements specific to groupSettings.html */
  

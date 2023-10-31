@@ -211,6 +211,13 @@
     align-items: center;
 }
 
+#group-img-preview img {
+    max-width: 30%;
+    max-height: 30%;
+    object-fit: cover;
+    align-self: center;
+}
+
 /* Remove member from list button */
 .remove-member-button {
     background: #ff0000;

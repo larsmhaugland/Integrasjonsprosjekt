@@ -4,7 +4,9 @@
 */
 //TEST
 let API_IP = "";
-IMAGEDIR = "Images/";
+const IMAGEDIR = "Images/";
+const USRIMGDIR = "UsrImages/";
+
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
 } else{
@@ -17,6 +19,8 @@ b.addEventListener("click", (event)=> {event.preventDefault();
 
 b = document.querySelector("#close-login-popup");
 b.addEventListener("click", (event)=> {event.preventDefault();
+    let inputs = document.querySelectorAll("#log-in-popup input");
+    inputs.forEach(input => input.value = "");
     document.getElementById("log-in-popup").style.display = "none";});
 
 let loginBtn = document.querySelector("#log-in-submit");
@@ -43,6 +47,8 @@ let registerSwitchBtn = document.querySelector(".register-switch-btn");
 registerSwitchBtn.addEventListener("click", loginRegisterToggle);
 let closeRegisterBtn = document.querySelector("#close-register-popup");
 closeRegisterBtn.addEventListener("click", (event)=> {event.preventDefault();
+    let inputs = document.querySelectorAll("#register-popup input");
+    inputs.forEach(input => input.value = "");
     document.getElementById("register-popup").style.display = "none";});
 let loginSwitchBtn = document.querySelector("#login-switch-btn");
 loginSwitchBtn.addEventListener("click", loginRegisterToggle);
@@ -191,6 +197,7 @@ function registerUser(){
             registerForm.style.display = "none";
             usernameTaken.style.display = "none";
             console.log("Registered user: " + username);
+            sessionStorage.setItem("username", username);
             sessionStorage.setItem("loggedIn", "true");
             updateLoginStatus();
         } else {

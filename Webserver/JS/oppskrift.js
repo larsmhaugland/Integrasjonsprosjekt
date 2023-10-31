@@ -100,8 +100,13 @@ async function displayRecipe(Recipe) {
     recipeContent.appendChild(difficulty);
 
     if(Recipe.image !== null && Recipe.image !== "") {
-        let image = document.createElement("img");
-        image.src = IMAGEDIR + Recipe.image+".jpg";
-        recipeContent.appendChild(image);
+        checkImageExists("../" + USRIMGDIR + Recipe.image + ".jpeg", function (exists) {
+            if (!exists) {
+                return;
+            }
+            let image = document.createElement("img");
+            image.src = "../../" + USRIMGDIR + Recipe.image+".jpg";
+            recipeContent.appendChild(image);
+        });
     }
 }

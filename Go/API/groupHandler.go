@@ -3,10 +3,16 @@ package API
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
 )
+
+var DEFAULTIMAGES []string = []string{"defaultBackground1", "defaultBackground2", "defaultBackground3",
+	"defaultBackground4", "defaultBackground5", "defaultBackground6", "defaultBackground7",
+	"defaultBackground8", "defaultBackground9", "defaultBackground10", "defaultBackground11",
+	"defaultBackground12", "defaultBackground13", "defaultBackground14", "defaultBackground15"}
 
 func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	SetCORSHeaders(w)
@@ -39,7 +45,7 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	case "leaveGroup":
 		LeaveGroup(w, r)
-		
+
 	default:
 		http.Error(w, "Error; Endpoint not supported", http.StatusBadRequest)
 		return
@@ -106,6 +112,9 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error; Could not decode JSON body", http.StatusBadRequest)
 		return
+	}
+	if group.Image == "" {
+		group.Image = DEFAULTIMAGES[rand.Int()%len(DEFAULTIMAGES)]
 	}
 	id, err := Firebase.AddGroup(group, chatID)
 	if err != nil {

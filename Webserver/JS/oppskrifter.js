@@ -51,6 +51,10 @@ newRecipeBtn.addEventListener("click", function (event){
     newRecipePopup.style.display = "block";
 });
 closeRecipePopup.addEventListener("click", function (event){
+    let inputs = document.querySelectorAll("#new-recipe-popup input");
+    for (let i = 0; i < inputs.length; i++){
+        inputs[i].value = "";
+    }
     newRecipePopup.style.display = "none";
 });
 recipeDifficulty.addEventListener("input", function (event){
@@ -447,12 +451,12 @@ async function displayResults(filteredList){
         recipeTime.textContent = "Tid: " + recipe.time + (recipe.time > 1 ? " minutter" : " minutt");
         recipeBlock.appendChild(recipeTime);
         if (recipe.image !== "" && recipe.image !== null) {
-            checkImageExists(IMAGEDIR + recipe.image + ".jpeg", function (exists) {
+            checkImageExists("../" + USRIMGDIR + recipe.image + ".jpeg", function (exists) {
                 if (!exists) {
                     return;
                 }
                 let recipeImage = document.createElement("img");
-                recipeImage.setAttribute("src", "../" + IMAGEDIR + recipe.image + ".jpeg");
+                recipeImage.setAttribute("src", "../" + USRIMGDIR + recipe.image + ".jpeg");
                 recipeImage.setAttribute("alt", recipe.name);
                 recipeImage.setAttribute("class", "result-image");
                 recipeA.appendChild(recipeImage);
