@@ -151,22 +151,22 @@ function updateLoginStatus(){
     let loggedIn = sessionStorage.getItem("loggedIn");
     let loginBtn = document.querySelector("#log-in-btn");
     let logoutBtn = document.querySelector("#log-out-btn");
-    let notLoggedInDisplay = document.querySelector("#not-logged-in");
+    //let notLoggedInDisplay = document.querySelector("#not-logged-in");
     let mainDisplay = document.querySelector("#main-display");
     let body = document.querySelector("body");
     console.log("Log in Status.: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
-        notLoggedInDisplay.style.display = "none";
+        //notLoggedInDisplay.style.display = "none";
         mainDisplay.style.display = "block";
         body.style.backgroundColor = "white";
     } else {
         loginBtn.style.display = "block";
         logoutBtn.style.display = "none";
-        notLoggedInDisplay.style.display = "block"
-        mainDisplay.style.display = "none"
-        body.style.backgroundColor = "#80AB82";
+        //notLoggedInDisplay.style.display = "block"
+        //mainDisplay.style.display = "none"
+        //body.style.backgroundColor = "#80AB82";
     }
 }
 
