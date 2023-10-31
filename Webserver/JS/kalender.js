@@ -272,7 +272,7 @@ function createMemberPopup(groupData, day) {
                             // Ensure there are enough days (second dimension) for each group
                             for (var i = 0; i < responsibleCalendar.length; i++) {
                                 while (responsibleCalendar[i].length < 8) {
-                                    responsibleCalendar[i].push([""]);
+                                    responsibleCalendar[i].push("");
                                 }
                             }
                             // Add the memberKey to the group array in the second dimension
