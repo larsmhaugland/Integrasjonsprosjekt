@@ -2,6 +2,7 @@ package API
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 	"strings"
 )
 
-var DEFAULTIMAGES []string = []string{"defaultBackground1", "defaultBackground2", "defaultBackground3",
+var DEFAULTIMAGES = []string{"defaultBackground1", "defaultBackground2", "defaultBackground3",
 	"defaultBackground4", "defaultBackground5", "defaultBackground6", "defaultBackground7",
 	"defaultBackground8", "defaultBackground9", "defaultBackground10", "defaultBackground11",
 	"defaultBackground12", "defaultBackground13", "defaultBackground14", "defaultBackground15"}
@@ -56,8 +57,28 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
 		// Retrieve the groupID from the query parameters
 		groupID := r.URL.Query().Get("groupID")
-
-		err := Firebase.DeleteGroup(groupID)
+		group, err := Firebase.ReturnCacheGroup(groupID)
+		if err != nil {
+			http.Error(w, "Could not get the group", http.StatusInternalServerError)
+		}
+		// Delete the group from the users
+		for key, value := range group.Members {
+			fmt.Println(key, value)
+			user, err := Firebase.ReturnCacheUser(key)
+			if err != nil {
+				http.Error(w, "Could not delete the group from the user", http.StatusInternalServerError)
+			}
+			for i, group := range user.Groups {
+				if group == groupID {
+					user.Groups = append(user.Groups[:i], user.Groups[i+1:]...)
+				}
+			}
+			err = Firebase.PatchCacheUser(user)
+			if err != nil {
+				http.Error(w, "Could not patch user", http.StatusInternalServerError)
+			}
+		}
+		err = Firebase.DeleteCacheGroup(groupID)
 		if err != nil {
 			http.Error(w, "Could not delete the group", http.StatusInternalServerError)
 		}
@@ -73,7 +94,7 @@ func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 		// Retrieve the groupID from the query parameters
 		groupID := r.URL.Query().Get("groupID")
 		username := r.URL.Query().Get("username")
-
+		//TODO: Cache må oppdateres
 		err := Firebase.DeleteMemberFromGroup(groupID, username)
 		if err != nil {
 			http.Error(w, "Could not delete the user from the group", http.StatusInternalServerError)
@@ -182,6 +203,7 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// TODO: Er ikke denne lik LeaveGroup?
 func GroupMemberDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	groupID := r.URL.Query().Get("groupID")
 	username := r.URL.Query().Get("username")
