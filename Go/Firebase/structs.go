@@ -50,6 +50,7 @@ type Group struct {
 	Schedule      map[string]Dinner      `json:"schedule"`
 	ShoppingLists []string               `json:"shopping-lists"`
 	Chat          string                 `json:"chat"`
+	Image         string                 `json:"image"`
 }
 
 type ShoppingListItem struct {

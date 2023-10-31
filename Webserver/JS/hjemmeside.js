@@ -54,7 +54,7 @@ createGroupCloseButton.addEventListener("click", function () {
 
 
 
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", async function (event) {
     event.preventDefault(); // Prevent the default form submission behavior
 
     // Get the form elements by their IDs
@@ -68,7 +68,36 @@ form.addEventListener("submit", function (event) {
         map[username] = 'member';
         return map;
       }, {});
+    let imgInput = document.getElementById("group-img");
+    let groupImage = "";
 
+    if (imgInput.files.length > 0) {
+        const file =  imgInput.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch(API_IP + "/image/", {
+                method: "POST",
+                body: formData,
+            }).then((response) => {
+                console.log("Response:", response)
+                return response.json();
+            }).then((data) => {
+                console.log("Data:", data);
+                groupImage = data["filename"];
+            }).catch((error) => {
+                console.log(error);
+                alert("Det skjedde en feil med opplasting av bildet");
+            });
+            console.log("File: " + groupImage);
+        } catch (error) {
+            console.log(error);
+            alert("Det skjedde en feil med opplasting av bildet");
+            return;
+        }
+
+    }
     // Prepare the data to be sent to the API endpoint
     const groupId = generateRandomId(20);
     const chatID = generateRandomId(20);
@@ -77,6 +106,7 @@ form.addEventListener("submit", function (event) {
         name: groupName,
         owner: sessionStorage.getItem("username"),
         members: memberMap,
+        image: groupImage,
     };
     fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
