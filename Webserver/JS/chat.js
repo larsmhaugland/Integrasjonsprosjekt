@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (groupIDSentAsParam !== null) {
                 getChatFromGroupAsync(groupIDSentAsParam)
                     .then(() => {
+                        while (socket.readyState !== WebSocket.OPEN) {}
                         console.log("ActiveChatID: " + activeChatID);
                         console.log("Socket ready state: " + socket.readyState);
                         const joinMessage = {
