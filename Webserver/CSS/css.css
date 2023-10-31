@@ -1,3 +1,12 @@
+/*Removing border around website caused by browser*/
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-family: 'Open Sans', sans-serif;
+}
+
 /*Main body layout*/
 body{
     display:grid;
@@ -8,66 +17,89 @@ body{
     ". main main main ."
     ". main main main ."
     ". main main main .";
-    background-color:blanchedalmond;
+    background-color:white;
 }
-
 
 main{
     grid-area: main;
+    display: none;
 }
 
 /*Header and navigation*/
+/*Navigation link styling*/
 a:link{
     text-decoration: none;
     color: black;
+    position: relative;
+}
+a.nav:link::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s;
+}
+a.nav:link:hover::after,
+a.nav#current-page::after{
+    transform: scaleX(1); /* When hovering, expand the line to 100% width */
 }
 a:visited{
     color:black;
 }
 
+/*Flex display of navigation*/
 .main-nav{
     display:flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: stretch;
+    align-items: center;
     grid-area: head;
-    background-color: paleturquoise;
+    background-color: #80AB82;
+    height: 100px;
 }
-
 nav{
     display: flex;
     justify-content: end;
+    align-items: center;
     gap: 50px;
+    font-size: 32px;
+    font-weight: bolder;
+}
+#logo-image{
+    height: 100px;
+    width: auto;
 }
 
-#logo{
-    font-size: xx-large;
-}
-
-.current-page{
-    background-color: palevioletred;
-}
-
-/*TODO: make the font match with the rest of the header (global font settings?)*/
- #log-in-btn{
-    padding: 0;
-    border: 0;
-    background-color: paleturquoise;
+/*Styling of the log in and log out button*/
+ .log-btn{
+     margin-right: 19px;
+     padding: 0px;
+     width: 8em;
+     height: 65px;
+     border: 0px;
+     border-radius: 30px;
+    background-color: #FFFFFF;
+     font-weight: bold;
+     font-size: 24px;
+     align-self: center;
+     outline: 4px solid transparent;
+     cursor: pointer;
+     transition: outline 0.3s;
  }
-
-#log-in-btn:hover{
-    background-color: palevioletred;
+.log-btn:hover{
+    outline: 4px solid #0B5D1E;
 }
-
+.log-btn:hover::before{
+   opacity: 1;
+}
 #log-out-btn{
-    padding: 0;
-    border: 0;
-    background-color: paleturquoise;
-    display: none;
-}
-
-#log-out-btn:hover{
-    background-color: palevioletred;
+    display:none
 }
 
 /*used to deliver error messages to the user*/
@@ -76,10 +108,27 @@ nav{
     display: none;
 }
 
+/*Not logged in display*/
+#not-logged-in {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: #80AB82;
+    width: 100%;
+    height: 100vh;
+    top: 100px;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%);
+    z-index: 2;
+    position:fixed;
+}
+
+
  /*Log in pop-up window*/
  .popup-wrapper{
      position: fixed;
-     z-index: 1;
+     z-index: 3;
      left: 0;
      top: 0;
      width: 100%;
@@ -99,7 +148,7 @@ nav{
     font-weight: bolder;
 }
 
-#register-switch-btn:hover{
+.register-switch-btn:hover{
     color: darkred;
 }
 #login-switch-btn:hover{

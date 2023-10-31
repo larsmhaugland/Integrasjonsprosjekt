@@ -174,23 +174,6 @@ function sendCalendarToServer() {
     });
 }
 
-function getDatesForCurrentWeek() {
-    const today = new Date();
-    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
-
-    const startDate = new Date(today); // Clone the current date
-    startDate.setDate(today.getDate() - currentDayOfWeek + 1); // Start of the week (Sunday as the last day)
-
-    const datesForWeek = [];
-    for (let i = 0; i < 7; i++) {
-        const date = new Date(startDate);
-        date.setDate(startDate.getDate() + i);
-        datesForWeek.push(date);
-    }
-
-    return datesForWeek;
-}
-
 groupDropdown.addEventListener("change", async function (event){
     console.log("dropdown changed");
     await getCalenderData();
