@@ -51,6 +51,10 @@ newRecipeBtn.addEventListener("click", function (event){
     newRecipePopup.style.display = "block";
 });
 closeRecipePopup.addEventListener("click", function (event){
+    let inputs = document.querySelectorAll("#new-recipe-popup input");
+    for (let i = 0; i < inputs.length; i++){
+        inputs[i].value = "";
+    }
     newRecipePopup.style.display = "none";
 });
 recipeDifficulty.addEventListener("input", function (event){
