@@ -125,7 +125,10 @@ function retrieveShoppingList() {
             console.log(JSON.stringify(data));
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
             console.log(sessionStorage.getItem("shoppinglist"));
-            displayShoppingList(data);})
+            displayShoppingList(data);
+            retrieveDinnerList(userName, user = true);
+        }
+        )
     }
     else{
         //TODO: API fetch for specific group not just group in general
@@ -150,7 +153,9 @@ function retrieveShoppingList() {
         }).then(data=>{
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
             if(data !== null)
-                displayShoppingList(data);});
+                displayShoppingList(data);
+                retrieveDinnerList(groupId, user = false);
+        });
     }
     }
 }
@@ -417,25 +422,60 @@ function removeList(){
 }
 
 //TODO: Retrieve dinner list from the database/storage session and display it
-function retrieveDinnerList(){
+function retrieveDinnerList( option, user){
     // if(!checkAuthToken()) return;
-
-    let dinner = JSON.parse(sessionStorage.getItem("dinner"));  //TODO: check proper variable name
-
-    if(dinner && dinner.length > 0){
-        displayDinner(dinner);
-    }else {
-        //TODO: API fetch
+    if(user){
+        //TODO: Add when the calendar has a user function
+       /* fetch(API_IP + `/user/`, {*/
     }
+    else{
+        fetch(API_IP + `/group/schedule?groupID=${option}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            if (response.status === 200){
+                console.log("Dinner list retrieved");
+                return response.json();
+            } else {
+                console.log("Error retrieving dinner list");
+                throw new Error("Failed to retrieve dinner list");
+            }
+        }).then(data=>{
+            console.log(JSON.stringify(data));
+            displayDinner(JSON.stringify(data));
+        }
+        )
+    }
+
+
+    let value = document.querySelector("#group-dropdown").value;
 }
 
 //TODO: Display the retrieved dinner list
-function displayDinner(dinner){
+function displayDinner(dinner) {
     let display = document.querySelector("#middag-uke");
-    dinner.forEach(dinner => {
-        let block = document.createElement("div");
-        block.setAttribute("id","middag-blokk");
-        block.textContent = dinner.name;
-        display.appendChild(block);
-    });
+    const currentDate = new Date().toISOString().split('T')[0];
+    console.log("Current date: " + currentDate);
+
+    let datesForDays = getDatesForCurrentWeek(); // Get an array of dates for the current week
+    console.log("Dinner dates:" + dinner)
+
+    for (let i = 0; i < 7; i++) {
+        const dateForDay = datesForDays[i].toISOString().split('T')[0];; // Get the date for the current day
+        if (dinner[dateForDay] && dinner[dateForDay].customRecipe !== undefined) {
+            const customRecipe = dinner[dateForDay].customRecipe;
+            console.log("Date for day: " + dateForDay + ", Custom Recipe: " + customRecipe);
+
+            if (customRecipe !== "") {
+                const recipeDiv = document.createElement('div');
+                recipeDiv.textContent = customRecipe;
+                console.log(recipeDiv);
+                display.appendChild(recipeDiv);
+            }
+        }
+        }
+
 }
+

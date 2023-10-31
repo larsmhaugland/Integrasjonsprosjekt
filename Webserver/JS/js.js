@@ -39,7 +39,7 @@ registerPassword.addEventListener("keyup", function(event) {
     }
 });
 
-let registerSwitchBtn = document.querySelector("#register-switch-btn");
+let registerSwitchBtn = document.querySelector(".register-switch-btn");
 registerSwitchBtn.addEventListener("click", loginRegisterToggle);
 let closeRegisterBtn = document.querySelector("#close-register-popup");
 closeRegisterBtn.addEventListener("click", (event)=> {event.preventDefault();
@@ -145,13 +145,22 @@ function updateLoginStatus(){
     let loggedIn = sessionStorage.getItem("loggedIn");
     let loginBtn = document.querySelector("#log-in-btn");
     let logoutBtn = document.querySelector("#log-out-btn");
+    let notLoggedInDisplay = document.querySelector("#not-logged-in");
+    let mainDisplay = document.querySelector("#main-display");
+    let body = document.querySelector("body");
     console.log("Log in Status.: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
+        notLoggedInDisplay.style.display = "none";
+        mainDisplay.style.display = "block";
+        body.style.backgroundColor = "white";
     } else {
         loginBtn.style.display = "block";
         logoutBtn.style.display = "none";
+        notLoggedInDisplay.style.display = "block"
+        mainDisplay.style.display = "none"
+        body.style.backgroundColor = "#80AB82";
     }
 }
 
@@ -230,4 +239,24 @@ function sendDropdownValue(groupName){
     const dropdown = document.querySelector("#dropdown");
     dropdown.value = groupName;
     retrieveShoppingList();
+}
+
+/*
+    GET DATES FOR CURRENT WEEK
+ */
+function getDatesForCurrentWeek() {
+    const today = new Date();
+    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
+
+    const startDate = new Date(today); // Clone the current date
+    startDate.setDate(today.getDate() - currentDayOfWeek + 1); // Start of the week (Sunday as the last day)
+
+    const datesForWeek = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        datesForWeek.push(date);
+    }
+
+    return datesForWeek;
 }

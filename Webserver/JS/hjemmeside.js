@@ -2,6 +2,7 @@
 retrieveGroups();
 
 //EVENT LISTENERS:
+
 //On click, display pop-up window
 let btn = document.querySelector("#new-group-btn");
 btn.addEventListener("click", (event)=> {event.preventDefault();
@@ -326,14 +327,14 @@ function displayGroups(groups){
            let groupBlock = document.createElement("div");
            groupBlock.setAttribute("id","group-block");
            let groupNameParagraph = document.createElement("p");
-           groupNameParagraph.textContent = "Gruppenavn: " + groups[i].name;
+           groupNameParagraph.textContent = groups[i].name;
 
 
-           let groupIdParagraph = document.createElement("p");
-           groupIdParagraph.textContent = "Gruppe-ID: " + groups[i].documentID;
+           /*let groupIdParagraph = document.createElement("p");
+           groupIdParagraph.textContent = "Gruppe-ID: " + groups[i].documentID;*/
 
            groupBlock.appendChild(groupNameParagraph);
-           groupBlock.appendChild(groupIdParagraph);
+           //groupBlock.appendChild(groupIdParagraph);
            groupContainer.appendChild(groupBlock);
            display.appendChild(groupContainer);
     };
