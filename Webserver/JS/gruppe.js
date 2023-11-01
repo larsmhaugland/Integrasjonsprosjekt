@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (groupID){
             const groupName = await getGroupName(groupID);
             groupNamePass = groupName;
-            groupNameElement.textContent = "Settings for: " + groupName;
+            groupNameElement.textContent = "Instillinger for: " + groupName;
             fetchGroupMembers(groupID);
         } else {
             alert("No groupID was passed to the groupSettings.html page");
