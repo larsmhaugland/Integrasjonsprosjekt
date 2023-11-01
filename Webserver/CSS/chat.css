@@ -8,31 +8,39 @@
 .chat-list {
     width: min-content;
     max-width: 30.00vw;
-    background: #5177f3;
+    background: white;
     margin-top: 1.00vh;
     padding: 1.00vh;
     border-radius: 1.00vh;
     overflow-y: auto;
+    border: 2px solid black;
 }
 
 /* Styling for the chat list header */
 .chat-list-header {
     display: flex;
-    justify-content: space between;
+    justify-content: start;
     align-items: center;
-    margin-bottom: 10.00px;
+    margin-bottom: 10px;
+}
+
+/* Styling for the chat list search field */
+#filter-chats-list{
+    border: 2px solid black;
+
 }
 
 /* Styling for the "Create Chat" button */
 #create-chat-button {
     padding: 0;
+    margin-left: 10px;
     border: none;
     cursor: pointer;
     background: none;
 }
 
 #create-chat-button img {
-    width: 2.60vw;
+    width: 2vw;
     height: auto;
 }
 
@@ -48,7 +56,7 @@
 /* Styling for the message when there are no chats to display */
 .no-chats-to-display {
     text-align: center;
-    margin-top: 10.00px;
+    margin-top: 10px;
 }
 
 /* Styling for the chat list unordered list */
@@ -61,7 +69,7 @@
 
 /* Styling for individual chat items */
 .chat-item {
-    background: #dcdcdc;
+    background: #80AB82;
     margin-top: 2.00vh;
     padding: 5.00vh;
     border-radius: 1.00vh; 
@@ -74,10 +82,11 @@
     margin-top: 1.00vh;
     margin-left: 1.00vw;
     padding: 1.00vh;
-    background: #1eff00;
+    background: white;
     border-radius: 1.00vh;
     display: flex;
     flex-direction: column;
+    border: 2px solid black;
 }
 
 /* Styling for the chat room header */
@@ -113,7 +122,7 @@
 
 /* Styling for the "Edit Chat" button's icon */
 #edit-chat-button img {
-    width: 1.04vw;
+    width: 2.0vw;
     height: auto;
 }
 
@@ -126,7 +135,7 @@
 
 /* Styling for individual chat messages */
 .message {
-    background: #d1ecf1;
+    background: #80AB82;
     margin: 0.50vh; 
     padding: 1.00vh;
     border-radius: 1.00vh;
@@ -135,7 +144,7 @@
 /* Styling for the message header within chat messages */
 .message-header {
     display: flex;
-    justify-content: space between;
+    justify-content: space-between;
 }
 
 /* Styling for the sender's name in a message */
@@ -161,12 +170,14 @@
 
 /* Styling for the "Send" button within the chat input */
 .chat-input button {
-    background: #007bff;
+    background: #0B5D1E;
     color: #fff;
+    font-weight: bold;
     border: none;
     padding: 1.00vh 2.00vw;
     border-radius: 1.00vh;
     cursor: pointer;
+    margin-left: 1.00vw;
 }
 
 /* Styling for the "Edit Chat" popup */
@@ -215,7 +226,7 @@
 
 /* Styling for the "Add Member" button */
 .member-input button {
-    background: #007bff;
+    background: #0B5D1E;
     color: #fff;
     border: none;
     padding: 1.5vw 3vw;
