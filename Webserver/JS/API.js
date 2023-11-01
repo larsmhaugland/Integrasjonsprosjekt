@@ -55,11 +55,11 @@ async function retrieveGroups(){
 
 
 async function uploadImage(file) {
+    //Create formdata object
     let formData = new FormData();
     formData.append("file", file);
 
-
-    const response_remote = await fetch(API_REMOTE + "/image" , {
+    const response_remote = await fetch(API_REMOTE + "/image/" , {
         method: "POST",
         body: formData
     }).then(response => {

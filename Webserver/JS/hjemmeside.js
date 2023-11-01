@@ -384,14 +384,15 @@ function displayGroups(groups){
            groupBlock.setAttribute("id","group-block");
 
            if (groups[i].image !== "") {
-               console.log("Image: " + groups[i].image);
-               checkImageExists(IMAGEDIR + groups[i].image + ".jpeg", function (exists) {
+               //console.log("Image: " + groups[i].image);
+               checkImageExists(USRIMGDIR + groups[i].image + ".jpeg", function (exists) {
                    if (exists) {
                        groupBlock.classList.add("has-img");
                        //groupBlock.style.setProperty('--group-background-image', `url(${IMAGEDIR}${groups[i].image}.jpeg)`)
                        groupBlock.style.background = "none";
                        groupBlock.style.backgroundColor = "#FFFFFF";
-                       groupBlock.style.backgroundImage = `url(${IMAGEDIR}${groups[i].image}.jpeg)`;
+                       groupBlock.style.backgroundImage = `url(${USRIMGDIR}${groups[i].image}.jpeg)`;
+                       groupBlock.style.backgroundSize = "auto%";
                    }
                });
            }

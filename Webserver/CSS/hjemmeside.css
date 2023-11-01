@@ -83,7 +83,7 @@
 
 .has-img::before{
     background-color: #FFFFFF;
-    background-size: auto;
+    /*background-size: contain;*/
 }
 
 .has-img:hover::before{
