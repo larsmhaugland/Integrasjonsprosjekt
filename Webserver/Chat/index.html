@@ -60,20 +60,20 @@
         <div class="chat-app">
             <div class="chat-list">
                 <div class="chat-list-header">
-                    <h1>Chat Groups</h1>
+                    <h1>CHATTER</h1>
                     <button id="create-chat-button">
                         <img src="../Images/add-icon.png" alt="Create new chat">
                     </button>
                 </div>
-                <input type="text" id="filter-chats-list" placeholder="Search...">
+                <input type="text" id="filter-chats-list" placeholder="Søk...">
                 <ul id="list-of-chats">
                 </ul>
             </div>
             <div class="chat-room">
                 <div class="chat-room-header">
-                    <h4 id="chat-room-name">No chat selected</h4>
+                    <h4 id="chat-room-name">Du har ikke valgt en chat.</h4>
                     <button id="leave-chat-button">
-                        Leave chat
+                        Forlat chat
                     </button>
                     <button id="edit-chat-button">
                         <img src="../Images/edit-icon.png" alt="Edit chat">
@@ -87,7 +87,7 @@
                     </li>
                 </ul>
                 <div class="chat-input">
-                    <input type="text" id="message-input" placeholder="Type your message...">
+                    <input type="text" id="message-input" placeholder="Skriv her...">
                     <button id="send-message-button">Send</button>
                 </div>
             </div>
@@ -95,16 +95,16 @@
         <div id="chat-popup" class="popup">
             <div class="popup-content">
                 <span class="close" id="close-chat-popup" >&times;</span>
-                <h2>Create a New Chat</h2>
+                <h2>Opprett en ny chat</h2>
                 <form class="chat-form">
-                    <label for="chat-name">Chat Name:</label>
-                    <input type="text" id="chat-name" name="chat-name" required placeholder="Enter a name for the chat">
+                    <label for="chat-name">Navn:</label>
+                    <input type="text" id="chat-name" name="chat-name" required placeholder="Gi chatten et navn">
                 
-                    <label for="member-input">Add Members:</label>
+                    <label for="member-input">Legg til medlem:</label>
                     <div class="member-input" id="member-input">
-                        <button type="button" id="add-member-button">Add Member</button>
+                        <button type="button" id="add-member-button">Legg til</button>
                     </div>
-                    <span> <em>Click "Add Member" to include members in the chat.</em> </span>
+                    <span> <em>Trykk "Legg til" for å legge til medlemmer i chatten.</em> </span>
                     <ul id="member-list" class="member-list">
                     </ul>
                     
@@ -116,7 +116,7 @@
         <div id="edit-chat-popup" class="popup">
             <div class="popup-content">
                 <span class="close-popup" id="close-edit-chat-popup">&times;</span>
-                <h2>Edit Chat</h2>
+                <h2>Rediger Chat</h2>
                 <ul id="current-members-list">
                     <li>
                         <input type="checkbox" id="member-1" />
@@ -127,16 +127,16 @@
                         <label for="member-2">Member 2</label>
                     </li>
                 </ul>
-                <button id="remove-members-button">Remove Selected Members</button>
-                <button id="add-members-button">Add Members</button>
-                <button id="delete-chat-button">Delete Chat</button>
+                <button id="remove-members-button">Fjern valgte medlemmer</button>
+                <button id="add-members-button">Legg til medlemmer</button>
+                <button id="delete-chat-button">Slett chat</button>
             </div>
         </div>
         
         <div id="search-member-modal" class="modal">
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
-                <h2>Legge til meldemmer</h2>
+                <h2>Legge til medlemmer</h2>
                 <input type="text" id="search-input" placeholder="Enter member name...">
                 
                 <ul class="member-suggestions"></ul>
