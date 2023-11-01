@@ -58,6 +58,7 @@ async function uploadImage(file) {
     let formData = new FormData();
     formData.append("file", file);
 
+
     const response_remote = await fetch(API_REMOTE + "/image" , {
         method: "POST",
         body: formData
@@ -77,20 +78,22 @@ async function uploadImage(file) {
         return null;
     }
 
-    await fetch(API_LOCAL + "/image/" + response_remote["filename"], {
-        method: "POST",
-        body: formData
-    }).then(response => {
-        if (response.status === 200) {
-            console.log("Image uploaded");
-        } else {
-            console.log("Error uploading image");
-        }
-        console.log(response);
-        return response.json();
-    }).catch(error => {
-        console.log(error);
-    });
+    if(API_IP !== API_REMOTE) {
+        await fetch(API_LOCAL + "/image/" + response_remote["filename"], {
+            method: "POST",
+            body: formData
+        }).then(response => {
+            if (response.status === 200) {
+                console.log("Image uploaded");
+            } else {
+                console.log("Error uploading image");
+            }
+            console.log(response);
+            return response.json();
+        }).catch(error => {
+            console.log(error);
+        });
+    }
 
 
     return response_remote["filename"];
