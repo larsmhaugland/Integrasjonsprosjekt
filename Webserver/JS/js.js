@@ -6,6 +6,8 @@
 let API_IP = "";
 const IMAGEDIR = "Images/";
 const USRIMGDIR = "UsrImages/";
+const API_LOCAL = "http://localhost:8080";
+const API_REMOTE = "https://10.212.174.249:8080"; //PEKER PÅ DEV SERVER
 
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";

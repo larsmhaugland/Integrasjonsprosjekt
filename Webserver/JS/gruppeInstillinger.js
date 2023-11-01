@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         groupID = urlParams.get('groupID');
         if (groupID){
             groupName = await getGroupName(groupID);
-            groupNameElement.textContent = "Settings for: " + groupName;
+            groupNameElement.textContent = "Instillinger for: " + groupName;
             fetchGroupMembers(groupID);
         } else {
             alert("No groupID was passed to the groupSettings.html page");

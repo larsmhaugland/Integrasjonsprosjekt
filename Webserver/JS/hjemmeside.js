@@ -74,6 +74,13 @@ form.addEventListener("submit", async function (event) {
     let groupImage = "";
 
     if (imgInput.files.length > 0) {
+        groupImage = await uploadImage(imgInput.files[0]);
+        if(groupImage === null){
+            alert("Det skjedde en feil med opplasting av bildet");
+            return;
+        }
+
+        /*
         const file =  imgInput.files[0];
         const formData = new FormData();
         formData.append("file", file);
@@ -98,6 +105,8 @@ form.addEventListener("submit", async function (event) {
             alert("Det skjedde en feil med opplasting av bildet");
             return;
         }
+
+         */
 
     }
     // Prepare the data to be sent to the API endpoint

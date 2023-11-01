@@ -9,7 +9,7 @@ let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "son
 let Recipes = [];
 let calendar = [[]];
 let responsibleCalendar = [];
-let inputCalendar;
+let inputCalendar = null;
 let groups = [];
 let groupIDSentAsParam = "";
 
@@ -52,6 +52,11 @@ function setCalendar(groupID){
     let dates = getDatesForCurrentWeek();
     let options = document.querySelectorAll("#group-dropdown option");
     let labels = document.querySelectorAll("label");
+    if(inputCalendar == null){
+        console.log("inputCalendar is null");
+        //TODO: nullstille kalender
+        return;
+    }
     const dateKeys = Object.keys(inputCalendar);
     if (labels.length > 0) {
         labels.forEach(function (label) {
@@ -274,8 +279,6 @@ function createMemberPopup(groupData, day) {
             }
         }
 
-
-
         // Append the popup and overlay to the day section
         daySection.appendChild(overlay);
         daySection.appendChild(popup);
@@ -308,12 +311,6 @@ responsibleButtons.forEach(function (button) {
         }
     });
 });
-
-
-
-
-
-
 
 
 

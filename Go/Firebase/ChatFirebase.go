@@ -127,7 +127,9 @@ func RemoveMemberFromChat(chatID string, username string) error {
 			currentMembers = append(currentMembers, memberName)
 		}
 	}
-
+	if len(currentMembers) == 0 {
+		return DeleteChat(chatID)
+	}
 	chatData.Members = currentMembers
 
 	_, err = client.Collection("chat").Doc(chatID).Update(ctx, []firestore.Update{

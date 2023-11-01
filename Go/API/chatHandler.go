@@ -33,7 +33,7 @@ func ChatBaseHandler(w http.ResponseWriter, r *http.Request) {
 		ChatMemberBaseHandler(w, r)
 
 	case "chatData":
-		GetChatData(w,r)
+		GetChatData(w, r)
 
 	default:
 		http.Error(w, "Error; Endpoint not supported", http.StatusBadRequest)
@@ -227,7 +227,7 @@ func ChatMembersPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetChatData(w  http.ResponseWriter, r *http.Request) {
+func GetChatData(w http.ResponseWriter, r *http.Request) {
 	groupID := r.URL.Query().Get("groupID")
 
 	chat, err := Firebase.GetGroupChat(groupID)
@@ -242,4 +242,3 @@ func GetChatData(w  http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-

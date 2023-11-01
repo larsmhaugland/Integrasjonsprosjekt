@@ -110,6 +110,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
+	filename := r.URL.Path[len("/image/"):]
 	origin := r.Host
 	ImagePath := "/UsrImages/"
 	if origin == "localhost:8080" {
@@ -131,15 +132,17 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-	id, err := generateUniqueID()
-	if err != nil {
-		log.Println("Error generating unique DocumentID: ", err)
-		http.Error(w, "Error generating unique DocumentID", http.StatusInternalServerError)
-		return
-	}
 
+	if filename == "" {
+		filename, err = generateUniqueID()
+		if err != nil {
+			log.Println("Error generating unique DocumentID: ", err)
+			http.Error(w, "Error generating unique DocumentID", http.StatusInternalServerError)
+			return
+		}
+	}
 	// Create a new file on the server to save the uploaded file
-	uploadedFile, err := os.Create(ImagePath + id + ".jpeg") // Specify the desired file name
+	uploadedFile, err := os.Create(ImagePath + filename + ".jpeg") // Specify the desired file name
 	if err != nil {
 		log.Println("Error creating file: ", err)
 		http.Error(w, "Unable to create the file for writing", http.StatusInternalServerError)
@@ -155,7 +158,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response := map[string]interface{}{
-		"filename": id,
+		"filename": filename,
 	}
 	w.WriteHeader(http.StatusOK)
 	err = API.EncodeJSONBody(w, r, response)
@@ -165,7 +168,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("File uploaded successfully: ", id)
+	log.Println("File uploaded successfully: ", filename)
 	log.Println("Response: ", response)
 }
 
