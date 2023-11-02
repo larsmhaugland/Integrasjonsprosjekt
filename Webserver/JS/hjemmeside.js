@@ -385,14 +385,16 @@ function displayGroups(groups){
 
            if (groups[i].image !== "") {
                //console.log("Image: " + groups[i].image);
-               checkImageExists(USRIMGDIR + groups[i].image + ".jpeg", function (exists) {
+               checkImageExists(IMAGEDIR + groups[i].image + ".jpeg", function (exists) {
                    if (exists) {
                        groupBlock.classList.add("has-img");
                        //groupBlock.style.setProperty('--group-background-image', `url(${IMAGEDIR}${groups[i].image}.jpeg)`)
                        groupBlock.style.background = "none";
                        groupBlock.style.backgroundColor = "#FFFFFF";
-                       groupBlock.style.backgroundImage = `url(${USRIMGDIR}${groups[i].image}.jpeg)`;
-                       groupBlock.style.backgroundSize = "auto%";
+                       groupBlock.style.backgroundImage = `url(${IMAGEDIR}${groups[i].image}.jpeg)`;
+                       groupBlock.style.backgroundSize = "70% 70%";
+                       groupBlock.style.backgroundPosition = "center top";
+                       groupBlock.style.backgroundRepeat = "no-repeat";
                    }
                });
            }
