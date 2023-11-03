@@ -66,8 +66,9 @@ hideFinished.addEventListener("click", (event) => {
     }});
 
 //FUNCTIONS:
-/*
+/**
     DISPLAY GROUPS IN DROPDOWN MENU
+     @param groups: Array of groups
  */
 function displayGroups(groups){
     let dropdown = document.querySelector("#group-dropdown");
@@ -94,7 +95,7 @@ function displayGroups(groups){
     dropdown.appendChild(option);
 }
 
-/*
+/**
     RETRIEVE SHOPPING LIST FROM DATABASE
  */
 function retrieveShoppingList() {
@@ -160,7 +161,7 @@ function retrieveShoppingList() {
     }
 }
 
-/*
+/**
     DISPLAY SHOPPING ITEMS IN ONE OF THE TWO LISTS
  */
 function displayShoppingList(shoppinglist){
@@ -200,7 +201,7 @@ function displayShoppingList(shoppinglist){
     }
 }
 
-/*
+/**
     ADD NEW ITEM TO LIST AND UPDATE STORAGE SESSION/DATABASE
  */
 function addNewItemToList(){
@@ -244,7 +245,7 @@ function addNewItemToList(){
     patchShoppingList();
 }
 
-/*
+/**
     REMOVE ITEM FROM LIST AND MOVE TO FINISHED LIST (OR VICE VERSA)
  */
 function removeItemFromList(){
@@ -304,7 +305,7 @@ function removeItemFromList(){
     patchShoppingList();
 }
 
-/*
+/**
     RETRIEVE GROUPS FROM DATABASE
 */
 function retrieveGroups(){
@@ -337,7 +338,7 @@ function retrieveGroups(){
             });
     }
 };
-/*
+/**
     PATCH SHOPPING LIST TO DATABASE
  */
 function patchShoppingList(){
@@ -405,7 +406,7 @@ function patchShoppingList(){
     }
 
 }
-/*
+/**
     REMOVE LIST ON RELOAD (OR WHEN CHANGING GROUP)
  */
 function removeList(){
@@ -422,8 +423,13 @@ function removeList(){
 }
 
 //TODO: Retrieve dinner list from the database/storage session and display it
+/**
+ * Retrieve dinner list from the database/storage session and display it
+ * @param option - groupID or username
+ * @param user - boolean, true if the option is a username
+ */
 function retrieveDinnerList( option, user){
-    // if(!checkAuthToken()) return;
+    if(!checkAuthToken()) return;
     if(user){
         //TODO: Add when the calendar has a user function
        /* fetch(API_IP + `/user/`, {*/
@@ -454,6 +460,10 @@ function retrieveDinnerList( option, user){
 }
 
 //TODO: Display the retrieved dinner list
+/**
+ * Display the retrieved dinner list
+ * @param dinner - dinner list item fetched from database
+ */
 function displayDinner(dinner) {
     let display = document.querySelector("#middag-uke");
     const currentDate = new Date().toISOString().split('T')[0];
