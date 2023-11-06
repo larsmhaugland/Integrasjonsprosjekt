@@ -332,7 +332,7 @@ function removeMemberFromList(username){
 
 
 //FUNCTIONS:
-/*
+/**
     RETRIEVE GROUPS
  */
 function retrieveGroups(){
@@ -371,8 +371,9 @@ function retrieveGroups(){
 }
 ;
 
-/*
+/**
     DISPLAY GROUPS
+    @param groups - Array of groups
 */
 function displayGroups(groups){
     let display = document.querySelector(".groups-container");
@@ -412,8 +413,9 @@ function displayGroups(groups){
     }
 }
 
-/*
+/**
    ADD NEW GROUP AND PATCH USER INFO
+    @param groupName - Name of group
 */
 //TODO: Fix duplicate group ids in user when patching
 function newGroup(groupName){
