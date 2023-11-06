@@ -1,5 +1,5 @@
 //Global variables and constants:
-let MAXRESULTS = 9;
+let MAXRESULTS = 12;
 let page = 0;
 let Recipes = [];
 
@@ -69,12 +69,16 @@ recipeType.addEventListener("input", function (event){
         document.querySelector("#manual-recipe").style.display = "block";
     }
 });
-submitRecipeBtn.addEventListener("click", newRecipe);
+submitRecipeBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+    newRecipe();
+});
 searchField.addEventListener("input", function (event){
     page = 0;
     let searchlist = searchRecipes(this.value);
     let filteredList = filterRecipes(searchlist);
     displayResults(filteredList);
+    displayPages();
 });
 
 imageInput.addEventListener("change", function (event){
@@ -208,32 +212,31 @@ async function newRecipe() {
     let type = document.querySelector("#recipe-type-url");
     let difficulty = document.querySelector("#recipe-difficulty").value;
     let time = document.querySelector("#recipe-time").value;
-    let url = "";
+    let description = document.querySelector("#recipe-description").value;
     let ingredients = {};
     let instructions = [];
 
     let imageInput = document.querySelector("#recipe-image");
     let filename = "";
+
+    if(name === "" || difficulty === "" || time === "" || (type.checked && document.querySelector("#recipe-url").value === "")
+        || (!type.checked && document.querySelector("#recipe-ingredient-list").children.length === 0)
+        || (!type.checked && document.querySelector("#recipe-instructions-list").children.length === 0)){
+
+        alert("Alle nødvendige felt må fylles ut");
+        return;
+    }
+
+
     if (imageInput.files.length === 1) {
-        // Create a new FormData object
-        const formData = new FormData();
-        formData.append("file", imageInput.files[0]);
         // Send the form data to the API
         try {
-            const response = await fetch(API_IP + "/image/", {
-                method: "POST",
-                body: formData,
-            }).then((response) => {
-                console.log("Response:", response)
-                return response.json();
-            }).then((data) => {
-                console.log("Data:", data);
-                filename = data["filename"];
-            }).catch((error) => {
-                console.log(error);
-                alert("Det skjedde en feil med opplasting av bildet");
+            await uploadImage(imageInput.files[0], function (response) {
+                console.log("Kom meg hit jeg");
+                console.log(response);
+                filename = response.filename;
             });
-            console.log("File: " + filename);
+            console.log("Image uploaded");
         } catch (error) {
             console.log(error);
             alert("Det skjedde en feil med opplasting av bildet");
@@ -255,10 +258,12 @@ async function newRecipe() {
         "difficulty": parseInt(difficulty),
         "time": parseInt(time),
         "image": filename,
+        "description": description,
     };
 
     if (type.checked) {
-        recipe.URL = url;
+        console.log("URL recipe");
+        recipe.URL = document.querySelector("#recipe-url").value;
     } else {
         let list = document.querySelectorAll("#recipe-ingredient-list li");
         list.forEach((item) => {
@@ -278,6 +283,8 @@ async function newRecipe() {
         "recipe": recipe,
         "groups": groups,
     };
+
+    console.log(data.recipe);
 
     try {
         const recipeResponse = await fetch(API_IP + "/recipe/", {

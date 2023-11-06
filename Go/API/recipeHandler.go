@@ -1,6 +1,7 @@
 package API
 
 import (
+	"fmt"
 	"net/http"
 	"prog-2052/Firebase"
 	"strings"
@@ -102,8 +103,13 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 	var recipe Firebase.Recipe
+
+	docID := strings.Split(r.URL.Path, "/")[len(strings.Split(r.URL.Path, "/"))-1]
+
 	err := DecodeJSONBody(w, r, &recipe)
+	recipe.DocumentID = docID
 	if err != nil {
+		fmt.Println("Error when decoding request PATCH: "+err.Error(), http.StatusBadRequest)
 		http.Error(w, "Error when decoding request PATCH: "+err.Error(), http.StatusBadRequest)
 		return
 	}

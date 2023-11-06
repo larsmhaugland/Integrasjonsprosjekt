@@ -115,7 +115,7 @@ func ReturnCacheRecipe(recipeID string) (Recipe, error) {
 	if err != nil {
 		return Recipe{}, err
 	}
-	UserCache[recipeID] = CacheData{retRecipe, time.Now()}
+	RecipeCache[recipeID] = CacheData{retRecipe, time.Now()}
 	return retRecipe, nil
 }
 

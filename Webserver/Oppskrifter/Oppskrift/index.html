@@ -6,8 +6,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../CSS/css.css">
-    <link rel="stylesheet" href="../../CSS/oppskrift.css">
     <link rel="stylesheet" href="../../CSS/oppskrifter.css">
+    <link rel="stylesheet" href="../../CSS/oppskrift.css">
     <title>Oppskrift</title>
 </head>
 <body>
@@ -60,11 +60,11 @@
     </div>
 
     <main>
-        <div id="new-recipe-popup" class="new-recipe-popup">
+        <div id="edit-recipe-popup" class="new-recipe-popup">
             <div class="new-recipe-content">
 
                 <h1 style="display: inline;">
-                    Ny oppskrift
+                    Endre oppskrift
                 </h1>
                 <a id="close-recipe-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
                 <form id="new-recipe-form">
@@ -77,7 +77,7 @@
                     <label for="edit-difficulty"><br>Vanskelighetsgrad:<br></label>
                     <input type="range" min="1" max="5" id="edit-difficulty" required>
                     <p id="difficulty-value-label" style="display: inline;">3</p>
-                    <label for="category-checkboxes"><br>Kategorier:<br></label>
+                    <p for="category-checkboxes"><br>Kategorier:<br></p>
                     <div id="category-checkboxes">
                         <p>Innmat kommer</p>
                         <!-- Need to find out which categories we should have -->
@@ -99,7 +99,7 @@
                             <label for="recipe-instructions"><br>Instruksjoner<br></label>
                             <input type="text" id="recipe-instructions" placeholder="Instruksjoner">
                             <button id="add-instruction-btn">Legg til</button>
-                            <ol id="recipe-instructions-list">
+                            <ol id="edit-instructions-list">
                                 <!-- Instructions get appended here
                                 TODO: ENDRE PÅ INSTRUKSJONER
                                  -->
@@ -107,28 +107,32 @@
                         </div>
                     </div>
                     <div id="url-recipe">
-                        <label for="recipe-url"><br> Full URL til oppskrift<br></label>
-                        <input type="url" id="recipe-url" placeholder="Eks: https://plaen.no">
+                        <label for="edit-url"><br> Full URL til oppskrift<br></label>
+                        <input type="url" id="edit-url" placeholder="Eks: https://plaen.no">
                     </div>
-                    <label for="recipe-image"><br>Bilde<br></label>
-                    <input type="file" id="recipe-image" accept="image/*">
+                    <!---
+                    <label for="edit-image"><br>Bilde<br></label>
+                    <input type="file" id="edit-image" accept="image/*">
                     <br>
                     <div id="recipe-image-preview">
                         <img id="recipe-image-preview-img" src="" alt="Bilde av oppskrift">
                     </div>
+                    -->
                     <br>
-                    <button id="submit-new-recipe">Lagre oppskrift</button>
+                    <button id="submit-edit-recipe">Lagre oppskrift</button>
                 </form>
 
             </div>
         </div>
 
-        <div class="recipe-wrapper">
+        <div class="single-recipe-wrapper">
             <div class="recipe-header">
-                <h1 id="recipe-name">Navn</h1>
+                <h1 id="recipe-name"></h1>
                 <a id="edit-recipe-btn"><img src="../../Images/edit-icon.png" alt="Edit recipe"></a>
             </div>
-            <div class="recipe-content" id="recipe-content">
+            <div class="single-recipe-content" id="recipe-content">
+            </div>
+            <div id="recipe-image">
             </div>
         </div>
     </main>
