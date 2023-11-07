@@ -1,3 +1,7 @@
+// Firebase package includes all the functions necessary for communicating with the
+// firestore database. The functions are used by the API package to handle requests from
+// the javascript frontend, and then get the correct information from the database and return it to
+// the javascript frontend.
 package Firebase
 
 import (
@@ -13,7 +17,7 @@ import (
 )
 
 // CUSTOM ERROR CODES
-var ErrUserExists = errors.New("No user found")
+var ErrUserExists = errors.New("no user found")
 
 func GetFirestoreClient(ctx context.Context) (*firestore.Client, error) {
 

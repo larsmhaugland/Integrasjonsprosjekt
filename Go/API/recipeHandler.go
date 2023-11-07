@@ -10,6 +10,7 @@ import (
 
 func SetCORSHeaders(w http.ResponseWriter) {
 	// Allow requests from any origin
+	// TODO ADD only DEV and PROD docker for use
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// Allow the GET, POST, PUT, DELETE, OPTIONS methods
