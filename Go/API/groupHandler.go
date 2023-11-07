@@ -241,7 +241,7 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// TODO: Er ikke denne lik LeaveGroup?
+// TODO: Er ikke denne lik relativt lik LeaveGroup?
 func GroupMemberDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	groupID := r.URL.Query().Get("groupID")
 	username := r.URL.Query().Get("username")

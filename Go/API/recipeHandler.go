@@ -1,6 +1,7 @@
 package API
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"prog-2052/Firebase"
@@ -189,12 +190,11 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	for _, recipeID := range user.Recipes {
 		recipe, err := Firebase.ReturnCacheRecipe(recipeID)
 		if err != nil {
-			http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
-			return
+			log.Println("Error when fetching recipe: " + err.Error())
 		}
 		recipes.UserRecipes = append(recipes.UserRecipes, recipe)
 	}
-	//If group recipes are requested, get them from cache
+	//If a groups recipes are requested, get them from cache
 	if groupQ == "true" {
 		g, err := Firebase.ReturnCacheGroup(storedIn)
 		if err != nil {
@@ -204,8 +204,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		for recipeID := range g.Recipes {
 			recipe, err := Firebase.ReturnCacheRecipe(recipeID)
 			if err != nil {
-				http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
-				return
+				log.Println("Error when fetching recipe: " + err.Error())
 			}
 			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
 		}
