@@ -45,6 +45,7 @@ func startHTTPserver() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	http.HandleFunc("/clear/", clearCacheHandler)
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
@@ -78,10 +79,18 @@ func startHTTPSserver() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	http.HandleFunc("/clear/", clearCacheHandler)
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))
+}
+
+func clearCacheHandler(w http.ResponseWriter, r *http.Request) {
+	API.SetCORSHeaders(w)
+	Firebase.InitCache()
+	w.WriteHeader(http.StatusOK)
+	log.Println("Cache cleared")
 }
 
 // Tenker det hadde vært gøy å ha statistikk over hvor mye de forskjellige endpointsene blir brukt og antall cache hits/misses ellerno

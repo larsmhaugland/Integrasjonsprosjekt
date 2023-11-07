@@ -91,6 +91,7 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Hash the password
 	user.Password, err = HashPassword(user.Password)
+
 	if err != nil {
 		log.Println("Error while hashing password")
 		http.Error(w, "Error while hashing password", http.StatusBadRequest)
@@ -127,6 +128,7 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//Hash password
 	user.Password, err = HashPassword(user.Password)
+
 	if err != nil {
 		fmt.Println("Error while hashing password")
 		http.Error(w, "Error while hashing password", http.StatusBadRequest)
