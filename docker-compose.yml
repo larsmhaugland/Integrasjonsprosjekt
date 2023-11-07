@@ -26,7 +26,7 @@ services:
         source: /web_images
         target: /UsrImages
     deploy:
-      replicas: 2
+      replicas: 4
       restart_policy:
         condition: on-failure
         delay: 5s
