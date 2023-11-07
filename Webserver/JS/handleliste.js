@@ -513,11 +513,18 @@ function setCalendar(groupID){
                         date.setHours(0, 0, 0, 0); // Set time to midnight for the date
                         if (currentDate.getTime() === date.getTime() && recipe){
                             console.log("date found");
-                            let div = document.getElementById("display-middag");
+                            let div = document.getElementById("middag-uke");
                             let paragraph = document.createElement("div");
                             paragraph.setAttribute("class", "middag");
-                            paragraph.innerHTML = customDinner;
-                            console.log(customDinner);
+
+                            let NameParagraph = document.createElement("p");
+                            NameParagraph.textContent = customDinner;
+
+                            let button = document.createElement("button");
+                            button.setAttribute("class", "add-dinner-btn");
+                            button.textContent = "Legg til";
+                            paragraph.appendChild(NameParagraph);
+                            paragraph.appendChild(button);
                             div.appendChild(paragraph);
                         }
                     }
