@@ -96,14 +96,6 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error while hashing password", http.StatusBadRequest)
 		return
 	}
-	//Update the credentials
-	credentials.Password = user.Password
-	err = Firebase.PatchCacheUser(credentials)
-	if err != nil {
-		log.Println("Error while updating credentials")
-		http.Error(w, "Error while updating credentials", http.StatusBadRequest)
-		return
-	}
 
 	//Check if the credentials match
 	if user.Username == credentials.Username && user.Password == credentials.Password {
