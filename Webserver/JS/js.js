@@ -114,7 +114,6 @@ function login(){
     let password = document.querySelector("#password").value;
 
     let credentials = {"username": username, "password": password};
-    console.log(credentials);
     navigator.cookieEnabled = true;
     fetch(API_IP + "/user/credentials/login", {
         method: "POST",

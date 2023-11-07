@@ -98,6 +98,3 @@ async function uploadImage(file) {
 
     return response_remote["filename"];
 }
-
-
-

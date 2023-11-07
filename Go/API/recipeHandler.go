@@ -3,6 +3,7 @@ package API
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"prog-2052/Firebase"
 	"strings"
 	"time"
@@ -46,26 +47,44 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	type input struct {
-		RecipeID string   `json:"recipeID"`
-		Owner    string   `json:"owner"`
-		Groups   []string `json:"groups"`
-	}
-	var data input
-	err := DecodeJSONBody(w, r, &data)
+
+	var user Firebase.User
+	err := DecodeJSONBody(w, r, &user)
 	if err != nil {
 		http.Error(w, "Error when decoding request DELETE: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	user, err := Firebase.ReturnCacheUser(data.Owner)
+	recipeID := strings.Split(r.URL.Path, "/")[len(strings.Split(r.URL.Path, "/"))-1]
+	if recipeID == "" {
+		http.Error(w, "Error; No id provided", http.StatusBadRequest)
+		return
+	}
+	//Get recipe from cache
+	recipe, err := Firebase.ReturnCacheRecipe(recipeID)
+	if err != nil {
+		http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	ImagePath := "/UsrImages/"
+	if r.Host == "localhost:8080" {
+		ImagePath = "../Webserver/Images/"
+	}
+	//Remove recipe image from storage
+	err = os.Remove(ImagePath + recipe.Image + ".jpeg")
+	if err != nil {
+		http.Error(w, "Error when deleting image: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user, err = Firebase.ReturnCacheUser(user.Username)
 	if err != nil {
 		http.Error(w, "Error when fetching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	//Search for recipe in user
 	index := -1
-	for i, recipeID := range user.Recipes {
-		if recipeID == data.RecipeID {
+	for i, rID := range user.Recipes {
+		if rID == recipeID {
 			index = i
 			break
 		}
@@ -79,22 +98,25 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 	//Remove recipe from groups
-	for _, groupID := range data.Groups {
+	for _, groupID := range user.Groups {
 		group, err := Firebase.ReturnCacheGroup(groupID)
 		if err != nil {
 			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		delete(group.Recipes, data.RecipeID)
-		err = Firebase.PatchCacheGroup(group)
-		if err != nil {
-			http.Error(w, "Error when patching group: "+err.Error(), http.StatusInternalServerError)
-			return
+		if ok := group.Recipes[recipeID]; ok != (Firebase.GroupRecipe{}) {
+			delete(group.Recipes, recipeID)
+			err = Firebase.PatchCacheGroup(group)
+			if err != nil {
+				http.Error(w, "Error when patching group: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 	//Remove recipe from firebase
-	err = Firebase.DeleteRecipe(data.RecipeID)
+	err = Firebase.DeleteRecipe(recipeID)
 	if err != nil {
 		http.Error(w, "Error when deleting recipe: "+err.Error(), http.StatusInternalServerError)
 		return

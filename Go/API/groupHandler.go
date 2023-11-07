@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"prog-2052/Firebase"
 	"strings"
 )
@@ -61,6 +62,21 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, "Could not get the group", http.StatusInternalServerError)
 		}
+
+		//Remove image from server
+		ImagePath := "/UsrImages/"
+		if r.Host == "localhost:8080" {
+			ImagePath = "../Webserver/Images/"
+		}
+		if !strings.Contains(group.Image, "defaultBackground") {
+			//Remove recipe image from storage
+			err = os.Remove(ImagePath + group.Image + ".jpeg")
+			if err != nil {
+				http.Error(w, "Error when deleting image: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
 		// Delete the group from the users
 		for key, value := range group.Members {
 			fmt.Println(key, value)
@@ -84,6 +100,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Could not patch user", http.StatusInternalServerError)
 			}
 		}
+		//Delete the chat and group from Firebase
 		err = Firebase.DeleteCacheChat(group.Chat)
 		err = Firebase.DeleteCacheGroup(groupID)
 		if err != nil {

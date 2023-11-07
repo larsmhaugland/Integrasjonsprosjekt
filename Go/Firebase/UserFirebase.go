@@ -146,6 +146,7 @@ func AddUser(user User) error {
 	data := map[string]interface{}{
 		"username": user.Username,
 		"password": user.Password,
+		"name":     user.Name,
 	}
 	_, _, err = client.Collection("users").Add(ctx, data)
 	if err != nil {
