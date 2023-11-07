@@ -128,7 +128,6 @@ function retrieveShoppingList() {
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
             console.log(sessionStorage.getItem("shoppinglist"));
             displayShoppingList(data);
-            retrieveDinnerList(userName, user = true);
         }
         )
     }
@@ -156,6 +155,7 @@ function retrieveShoppingList() {
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
             if(data !== null)
                 displayShoppingList(data);
+            console.log(data);
                 retrieveDinnerList(groupId, user = false);
         });
     }
@@ -344,6 +344,7 @@ function retrieveGroups(){
  */
 function patchShoppingList(){
     let option = document.querySelector("#group-dropdown").value;
+    console.log("Groupid:" + option);
     let userName = sessionStorage.getItem("username");
     let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
     let shoppingListObject = {
