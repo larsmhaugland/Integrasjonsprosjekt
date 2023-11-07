@@ -18,6 +18,9 @@ if (window.location.hostname === "localhost"){
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "block";});
+b = document.querySelector("#log-in-btn2");
+b.addEventListener("click", (event)=> {event.preventDefault();
+    document.getElementById("log-in-popup").style.display = "block";});
 
 b = document.querySelector("#close-login-popup");
 b.addEventListener("click", (event)=> {event.preventDefault();
@@ -96,6 +99,7 @@ async function checkAuthToken(){
         sessionStorage.setItem("loggedIn", "true");
         sessionStorage.setItem("username", username);
         console.log("Logged in using authtoken as: " + username);
+
         updateLoginStatus();
         return true;
     } else {
@@ -153,22 +157,22 @@ function updateLoginStatus(){
     let loggedIn = sessionStorage.getItem("loggedIn");
     let loginBtn = document.querySelector("#log-in-btn");
     let logoutBtn = document.querySelector("#log-out-btn");
-    //let notLoggedInDisplay = document.querySelector("#not-logged-in");
-    //let mainDisplay = document.querySelector("#main-display");
-    //let body = document.querySelector("body");
+    let notLoggedInDisplay = document.querySelector("#not-logged-in");
+    let mainDisplay = document.querySelector("#main-display");
+    let body = document.querySelector("body");
     console.log("Log in Status.: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
-        //notLoggedInDisplay.style.display = "none";
-       // mainDisplay.style.display = "block";
-      //  body.style.backgroundColor = "white";
+        notLoggedInDisplay.style.cssText = "display: none !important";
+       mainDisplay.style.display = "block";
+      body.style.backgroundColor = "white";
     } else {
         loginBtn.style.display = "block";
         logoutBtn.style.display = "none";
-        //notLoggedInDisplay.style.display = "block"
-        //mainDisplay.style.display = "none"
-        //body.style.backgroundColor = "#80AB82";
+        notLoggedInDisplay.style.display = "block"
+        mainDisplay.style.display = "none"
+        body.style.backgroundColor = "#80AB82";
     }
 }
 
