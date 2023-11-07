@@ -24,6 +24,9 @@ main{
     gap: 10px; /* Spacing between items */
     overflow: hidden;
 }
+#display-middag{
+
+}
 
 h3, p {
     white-space: nowrap; /* Prevent text from wrapping */

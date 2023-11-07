@@ -139,14 +139,13 @@ nav{
  .popup-wrapper{
      position: fixed;
      z-index: 3;
-     left: 0;
-     top: 100px;
-     right:0;
+     top: 30%;
+     left: 30%;
      bottom:0;
+     right:0;
      width: 100%;
      height: auto;
      overflow: auto;
-     background-color: rgba(0, 0, 0, 0.4);
      display: none;
 }
 
