@@ -1,7 +1,6 @@
 package API
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"prog-2052/Firebase"
@@ -66,17 +65,20 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	//Set path based on if request coming from localhost or not
 	ImagePath := "/UsrImages/"
-	if r.Host == "localhost:8080" {
-		ImagePath = "../Webserver/Images/"
+	if recipe.Image != "" {
+		if r.Host == "localhost:8080" {
+			ImagePath = "../Webserver/Images/"
+		}
+		//Remove recipe image from storage
+		err = os.Remove(ImagePath + recipe.Image + ".jpeg")
+		if err != nil {
+			http.Error(w, "Error when deleting image: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
-	//Remove recipe image from storage
-	err = os.Remove(ImagePath + recipe.Image + ".jpeg")
-	if err != nil {
-		http.Error(w, "Error when deleting image: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
+	//Get user from cache
 	user, err = Firebase.ReturnCacheUser(user.Username)
 	if err != nil {
 		http.Error(w, "Error when fetching user: "+err.Error(), http.StatusInternalServerError)
@@ -107,6 +109,7 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
+		//If recipe is found, remove it from group
 		if ok := group.Recipes[recipeID]; ok != (Firebase.GroupRecipe{}) {
 			delete(group.Recipes, recipeID)
 			err = Firebase.PatchCacheGroup(group)
@@ -126,16 +129,16 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 	var recipe Firebase.Recipe
-
+	//Get recipe id from path
 	docID := strings.Split(r.URL.Path, "/")[len(strings.Split(r.URL.Path, "/"))-1]
-
+	//Decode request body
 	err := DecodeJSONBody(w, r, &recipe)
 	recipe.DocumentID = docID
 	if err != nil {
-		fmt.Println("Error when decoding request PATCH: "+err.Error(), http.StatusBadRequest)
 		http.Error(w, "Error when decoding request PATCH: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	//Patch recipe in firebase
 	err = Firebase.PatchCacheRecipe(recipe)
 	if err != nil {
 		http.Error(w, "Error when patching DB: "+err.Error(), http.StatusInternalServerError)
@@ -145,8 +148,8 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 
-	groupQ := r.URL.Query().Get("group")
-	single := r.URL.Query().Get("single")
+	groupQ := r.URL.Query().Get("group")  //If recipes in a group should be returned
+	single := r.URL.Query().Get("single") //If there should only be one recipe in the response
 	parts := strings.Split(r.URL.Path, "/")
 	storedIn := parts[len(parts)-1]
 	if storedIn == "" {
@@ -168,7 +171,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-
+	//Define output struct
 	type outuput struct {
 		UserRecipes    []Firebase.Recipe `json:"userRecipes"`
 		GroupRecipes   []Firebase.Recipe `json:"groupRecipes"`
@@ -176,13 +179,13 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var recipes outuput
-
+	//Get user from cache
 	user, err := Firebase.ReturnCacheUser(storedIn)
 	if err != nil {
 		http.Error(w, "Error when fetching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	//Get recipes from cache
 	for _, recipeID := range user.Recipes {
 		recipe, err := Firebase.ReturnCacheRecipe(recipeID)
 		if err != nil {
@@ -191,7 +194,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		recipes.UserRecipes = append(recipes.UserRecipes, recipe)
 	}
-
+	//If group recipes are requested, get them from cache
 	if groupQ == "true" {
 		g, err := Firebase.ReturnCacheGroup(storedIn)
 		if err != nil {
@@ -230,16 +233,19 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when decoding POST: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	//Add recipe to firebase
 	id, err := Firebase.AddRecipe(data.Recipe)
 	if err != nil {
 		http.Error(w, "Error when adding recipe to firebase: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	//Get user from cache
 	user, err := Firebase.GetUserData(data.Owner)
 	if err != nil {
 		http.Error(w, "Error when fetching user data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	//Check if recipe already exists in user
 	duplicate := false
 	for _, recipeID := range user.Recipes {
 		if recipeID == id {
@@ -250,13 +256,14 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Recipe already exists", http.StatusBadRequest)
 		return
 	}
+	//Update user
 	user.Recipes = append(user.Recipes, id)
 	err = Firebase.PatchCacheUser(user)
 	if err != nil {
 		http.Error(w, "Error when patching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	//Add recipe to groups
 	for _, groupID := range data.Groups {
 		group, err := Firebase.ReturnCacheGroup(groupID)
 		if err != nil {
@@ -267,6 +274,7 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 			Owner:     user.Username,
 			LastEaten: time.Now(),
 		}
+		//If recipes map is nil, create it
 		if group.Recipes == nil {
 			group.Recipes = make(map[string]Firebase.GroupRecipe)
 		}

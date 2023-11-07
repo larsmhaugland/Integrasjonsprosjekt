@@ -110,7 +110,10 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
+	//If filename is specified, it is at the end of the path
 	filename := r.URL.Path[len("/image/"):]
+
+	//Set path based on if request coming from localhost or not
 	origin := r.Host
 	ImagePath := "/UsrImages/"
 	if origin == "localhost:8080" {
@@ -132,7 +135,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-
+	// Generate a unique DocumentID for the uploaded file if name is not specified
 	if filename == "" {
 		filename, err = generateUniqueID()
 		if err != nil {
@@ -157,6 +160,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to copy file", http.StatusInternalServerError)
 		return
 	}
+	//Construct response
 	response := map[string]interface{}{
 		"filename": filename,
 	}
@@ -168,8 +172,6 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("File uploaded successfully: ", filename)
-	log.Println("Response: ", response)
 }
 
 func generateUniqueID() (string, error) {

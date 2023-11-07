@@ -77,7 +77,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// Delete the group from the users
+		// Delete the group and chat from the users
 		for key, value := range group.Members {
 			fmt.Println(key, value)
 			user, err := Firebase.ReturnCacheUser(key)

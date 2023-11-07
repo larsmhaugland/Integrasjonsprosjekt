@@ -211,37 +211,7 @@ func DeleteMemberFromGroup(groupID string, username string) error {
 		return err
 	}
 
-	// Remove the user from the groups members list, by adding all other user to a new variable
-	updatedMembers := make(map[string]string)
-	for key, value := range groupData.Members {
-		if key != username {
-			updatedMembers[key] = value
-		}
-	}
-
-	// Update the group data with the modified members list
-	groupData.Members = updatedMembers
-
-	// Update the cache with the modified group data
-	GroupCache[groupID] = CacheData{groupData, time.Now()}
-
-	ctx := context.Background()
-	client, err := GetFirestoreClient(ctx)
-	if err != nil {
-		log.Println("error getting Firebase client:", err)
-		return err
-	}
-
-	// Update the Firestore document with the modified members list
-	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
-		{Path: "members", Value: updatedMembers},
-	})
-	if err != nil {
-		log.Println("error updating group document:", err)
-		return err
-	}
-
-	// Same process, but for the user document instead
+	// Get the user data from cache/database
 	userData, err := ReturnCacheUser(username)
 	if err != nil {
 		log.Println("error getting user data from cache:", err)
@@ -262,12 +232,51 @@ func DeleteMemberFromGroup(groupID string, username string) error {
 	// Update the cache with the modified user data
 	UserCache[username] = CacheData{userData, time.Now()}
 
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
 	// Update the Firestore document with the modified groups list
 	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "groups", Value: updatedGroups},
 	})
 	if err != nil {
 		log.Println("error updating user document:", err)
+		return err
+	}
+
+	//If the owner is the one that is removed, as well as the only member, delete the group
+	if len(groupData.Members) == 1 && groupData.Owner == username {
+		err = DeleteGroup(groupID)
+		if err != nil {
+			log.Println("error deleting group:", err)
+			return err
+		}
+		return nil
+	}
+
+	// Remove the user from the groups members list, by adding all other user to a new variable
+	updatedMembers := make(map[string]string)
+	for key, value := range groupData.Members {
+		if key != username {
+			updatedMembers[key] = value
+		}
+	}
+
+	// Update the group data with the modified members list
+	groupData.Members = updatedMembers
+
+	// Update the cache with the modified group data
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
+
+	// Update the Firestore document with the modified members list
+	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
+		{Path: "members", Value: updatedMembers},
+	})
+	if err != nil {
+		log.Println("error updating group document:", err)
 		return err
 	}
 
@@ -290,6 +299,18 @@ func DeleteGroup(groupID string) error {
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
+	}
+
+	// Get the group data from cache/database
+	group, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+	}
+
+	// Delete the chat from cache/database
+	err = DeleteCacheChat(group.Chat)
+	if err != nil {
+		log.Println("error deleting chat from cache:", err)
 	}
 
 	// Reference to the specific group document
