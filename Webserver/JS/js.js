@@ -170,7 +170,8 @@ function updateLoginStatus(){
     } else {
         loginBtn.style.display = "block";
         logoutBtn.style.display = "none";
-        notLoggedInDisplay.style.display = "block"
+        notLoggedInDisplay.style.display= "block"
+        notLoggedInDisplay.style.cssText = "display: flex !important";
         mainDisplay.style.display = "none"
         body.style.backgroundColor = "#80AB82";
     }

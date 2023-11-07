@@ -110,7 +110,7 @@ nav{
 
 /*Not logged in display*/
 #not-logged-in {
-    display: flex !important;
+    display: none !important;
     flex-direction: column;
     align-items: center;
     justify-content: center;
