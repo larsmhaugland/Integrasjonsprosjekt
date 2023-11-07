@@ -107,9 +107,9 @@ func DeleteCacheGroup(groupID string) error {
 /*****************				RECIPE FUNCTIONS				*****************/
 
 func ReturnCacheRecipe(recipeID string) (Recipe, error) {
-	user, ok := GetCacheData(UserCache, recipeID)
+	recipe, ok := GetCacheData(RecipeCache, recipeID)
 	if ok {
-		return user.Data.(Recipe), nil
+		return recipe.Data.(Recipe), nil
 	}
 	retRecipe, err := GetRecipeData(recipeID)
 	if err != nil {
