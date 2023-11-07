@@ -5,6 +5,33 @@ import (
 	"log"
 )
 
+func GetAllRecipes() ([]Recipe, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return nil, err
+	}
+	var recipes []Recipe
+	iter := client.Collection("recipes").Documents(ctx)
+	for {
+		var recipe Recipe
+		doc, err := iter.Next()
+		if err != nil {
+			log.Println("Error getting next document:", err)
+			break
+		}
+		err = doc.DataTo(&recipe)
+		recipe.DocumentID = doc.Ref.ID
+		if err != nil {
+			log.Printf("Error converting document {%s}: %s\n", doc.Ref.ID, err)
+			break
+		}
+		recipes = append(recipes, recipe)
+	}
+	return recipes, nil
+}
+
 func AddRecipe(recipe Recipe) (string, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)

@@ -121,6 +121,7 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
+
 	groupQ := r.URL.Query().Get("group")
 	single := r.URL.Query().Get("single")
 	parts := strings.Split(r.URL.Path, "/")
@@ -183,6 +184,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
 		}
 	}
+
 	//Add example recipes to the response
 	recipes.ExampleRecipes = ExampleRecipes
 

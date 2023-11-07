@@ -2,6 +2,7 @@ package Firebase
 
 import (
 	"errors"
+	"log"
 	"time"
 )
 
@@ -22,6 +23,47 @@ func InitCache() {
 	GroupCache = make(map[string]CacheData)
 	ShoppingCache = make(map[string]CacheData)
 	ChatCache = make(map[string]CacheData)
+	users, err := GetAllUsers()
+	if err != nil {
+		log.Println("Error when warming cache users: ", err)
+	}
+	for _, user := range users {
+		UserCache[user.Username] = CacheData{user, time.Now()}
+	}
+
+	recipes, err := GetAllRecipes()
+	if err != nil {
+		log.Println("Error when warming cache recipes: ", err)
+	}
+	for _, recipe := range recipes {
+		RecipeCache[recipe.DocumentID] = CacheData{recipe, time.Now()}
+	}
+
+	groups, err := GetAllGroups()
+	if err != nil {
+		log.Println("Error when warming cache groups: ", err)
+	}
+	for _, group := range groups {
+		GroupCache[group.DocumentID] = CacheData{group, time.Now()}
+	}
+
+	shoppingLists, err := GetAllShoppingLists()
+	if err != nil {
+		log.Println("Error when warming cache shopping lists: ", err)
+	}
+	for _, list := range shoppingLists {
+		ShoppingCache[list.DocumentID] = CacheData{list, time.Now()}
+	}
+
+	chats, err := GetAllChats()
+	if err != nil {
+		log.Println("Error when warming cache chats: ", err)
+	}
+	for _, chat := range chats {
+		ChatCache[chat.DocumentID] = CacheData{chat, time.Now()}
+	}
+
+	log.Println("Cache warmed")
 }
 
 func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
@@ -107,9 +149,9 @@ func DeleteCacheGroup(groupID string) error {
 /*****************				RECIPE FUNCTIONS				*****************/
 
 func ReturnCacheRecipe(recipeID string) (Recipe, error) {
-	user, ok := GetCacheData(UserCache, recipeID)
+	recipe, ok := GetCacheData(RecipeCache, recipeID)
 	if ok {
-		return user.Data.(Recipe), nil
+		return recipe.Data.(Recipe), nil
 	}
 	retRecipe, err := GetRecipeData(recipeID)
 	if err != nil {

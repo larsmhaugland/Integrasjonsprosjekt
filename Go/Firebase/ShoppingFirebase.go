@@ -6,6 +6,33 @@ import (
 	"time"
 )
 
+func GetAllShoppingLists() ([]ShoppingList, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return nil, err
+	}
+	var lists []ShoppingList
+	iter := client.Collection("shopping-list").Documents(ctx)
+	for {
+		var list ShoppingList
+		doc, err := iter.Next()
+		if err != nil {
+			log.Println("Error getting next document:", err)
+			break
+		}
+		err = doc.DataTo(&list)
+		list.DocumentID = doc.Ref.ID
+		if err != nil {
+			log.Println("Error converting document:", err)
+			break
+		}
+		lists = append(lists, list)
+	}
+	return lists, nil
+}
+
 func GetShoppingListData(listID string) (ShoppingList, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
