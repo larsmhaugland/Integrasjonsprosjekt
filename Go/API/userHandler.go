@@ -92,12 +92,19 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	//Hash the password
 	user.Password, err = HashPassword(user.Password)
 	if err != nil {
-		fmt.Println("Error while hashing password")
+		log.Println("Error while hashing password")
 		http.Error(w, "Error while hashing password", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("User: " + user.Password)
-	fmt.Println("Credentials: " + credentials.Password)
+	//Update the credentials
+	credentials.Password = user.Password
+	err = Firebase.PatchCacheUser(credentials)
+	if err != nil {
+		log.Println("Error while updating credentials")
+		http.Error(w, "Error while updating credentials", http.StatusBadRequest)
+		return
+	}
+
 	//Check if the credentials match
 	if user.Username == credentials.Username && user.Password == credentials.Password {
 		// Create a new cookie
