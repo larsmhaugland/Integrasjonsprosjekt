@@ -7,6 +7,36 @@ import (
 	"time"
 )
 
+func GetAllChats() ([]Chat, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return nil, err
+	}
+
+	iter := client.Collection("chat").Documents(ctx)
+	defer iter.Stop()
+
+	var chats []Chat
+	for {
+		var chat Chat
+		doc, err := iter.Next()
+		if err != nil {
+			break
+		}
+		err = doc.DataTo(&chat)
+		chat.DocumentID = doc.Ref.ID
+		if err != nil {
+			log.Println("Error converting firebase document to chat struct", err)
+			return nil, err
+		}
+		chats = append(chats, chat)
+	}
+
+	return chats, nil
+}
+
 func GetChatData(chatID string) (Chat, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)

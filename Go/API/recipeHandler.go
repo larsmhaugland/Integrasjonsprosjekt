@@ -121,7 +121,7 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
-	startTime := time.Now()
+
 	groupQ := r.URL.Query().Get("group")
 	single := r.URL.Query().Get("single")
 	parts := strings.Split(r.URL.Path, "/")
@@ -160,8 +160,6 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Time to fetch user: ", time.Since(startTime))
-	newTime := time.Now()
 	for _, recipeID := range user.Recipes {
 		recipe, err := Firebase.ReturnCacheRecipe(recipeID)
 		if err != nil {
@@ -171,8 +169,6 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		recipes.UserRecipes = append(recipes.UserRecipes, recipe)
 	}
 
-	fmt.Println("Time to fetch user recipes: ", time.Since(newTime))
-	newTime = time.Now()
 	if groupQ == "true" {
 		g, err := Firebase.ReturnCacheGroup(storedIn)
 		if err != nil {
@@ -188,8 +184,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 			recipes.GroupRecipes = append(recipes.GroupRecipes, recipe)
 		}
 	}
-	fmt.Println("Time to fetch group recipes: ", time.Since(newTime))
-	newTime = time.Now()
+
 	//Add example recipes to the response
 	recipes.ExampleRecipes = ExampleRecipes
 
@@ -198,9 +193,6 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("Time to encode response: ", time.Since(newTime))
-
-	fmt.Println("Recipe GET took: ", time.Since(startTime))
 }
 
 func RecipePostHandler(w http.ResponseWriter, r *http.Request) {

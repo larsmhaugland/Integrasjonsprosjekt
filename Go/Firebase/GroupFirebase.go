@@ -7,6 +7,33 @@ import (
 	"time"
 )
 
+func GetAllGroups() ([]Group, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return nil, err
+	}
+	var groups []Group
+	iter := client.Collection("groups").Documents(ctx)
+	for {
+		var group Group
+		doc, err := iter.Next()
+		if err != nil {
+			log.Println("Error getting next document:", err)
+			break
+		}
+		err = doc.DataTo(&group)
+		group.DocumentID = doc.Ref.ID
+		if err != nil {
+			log.Println("Error converting document:", err)
+			break
+		}
+		groups = append(groups, group)
+	}
+	return groups, nil
+}
+
 func AddGroup(group Group, chatID string) (string, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)

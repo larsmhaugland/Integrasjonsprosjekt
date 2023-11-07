@@ -8,6 +8,33 @@ import (
 	"time"
 )
 
+func GetAllUsers() ([]User, error) {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return nil, err
+	}
+	var users []User
+	iter := client.Collection("users").Documents(ctx)
+	for {
+		var user User
+		doc, err := iter.Next()
+		if err != nil {
+			log.Println("Error getting next document:", err)
+			break
+		}
+		err = doc.DataTo(&user)
+		user.DocumentID = doc.Ref.ID
+		if err != nil {
+			log.Println("Error converting document:", err)
+			break
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
 func GetUserData(userID string) (User, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
