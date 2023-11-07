@@ -1,10 +1,11 @@
 //CALL ON START/RELOAD
 retrieveGroups();
 retrieveShoppingList();
-//retrieveDinnerList();
+retrieveDinnerList();
 // Get the 
 const urlParams = new URLSearchParams(window.location.search);
 const groupIDSentAsParam = urlParams.get('groupID');
+let inputCalendar = null;
 
 
 //EVENT LISTENERS:
@@ -430,10 +431,6 @@ function removeList(){
  */
 function retrieveDinnerList( option, user){
     if(!checkAuthToken()) return;
-    if(user){
-        //TODO: Add when the calendar has a user function
-       /* fetch(API_IP + `/user/`, {*/
-    }
     else{
         fetch(API_IP + `/group/schedule?groupID=${option}`, {
             method: "GET",
@@ -450,13 +447,12 @@ function retrieveDinnerList( option, user){
             }
         }).then(data=>{
             console.log(JSON.stringify(data));
-            displayDinner(JSON.stringify(data));
+           // displayDinner(JSON.stringify(data));
+            inputCalendar = data;
+            setCalendar(option);
         }
         )
     }
-
-
-    let value = document.querySelector("#group-dropdown").value;
 }
 
 //TODO: Display the retrieved dinner list
@@ -487,5 +483,52 @@ function displayDinner(dinner) {
         }
         }
 
+}
+
+/**
+ *
+ *      AURORA PRØVER UT NOE HER
+ * */
+function setCalendar(groupID){
+    let dates = getDatesForCurrentWeek();
+    let options = document.querySelector("#group-dropdown").value;
+    console.log(options);
+    console.log(groupID);
+    if(inputCalendar == null){
+        console.log("inputCalendar is null");
+        //TODO: nullstille kalender
+        return;
+    }
+    const dateKeys = Object.keys(inputCalendar);
+            // Loop through the date keys and access the data for each date
+            dateKeys.forEach(dateKey => {
+                if (dateKey in inputCalendar) {
+                    let dateData = inputCalendar[dateKey];
+                    let date = new Date(dateKey);
+                    let customDinner = dateData.customRecipe;
+                    let recipe = dateData.recipe;
+                    for (let k=0; k<dates.length; k++){
+                        const currentDate = new Date(dates[k]);
+                        currentDate.setHours(0, 0, 0, 0); // Set time to midnight
+                        date.setHours(0, 0, 0, 0); // Set time to midnight for the date
+                        if (currentDate.getTime() === date.getTime() && recipe){
+                            console.log("date found");
+                            let div = document.getElementById("middag-uke");
+                            let paragraph = document.createElement("div");
+                            paragraph.setAttribute("class", "middag");
+
+                            let NameParagraph = document.createElement("p");
+                            NameParagraph.textContent = customDinner;
+
+                            let button = document.createElement("button");
+                            button.setAttribute("class", "add-dinner-btn");
+                            button.textContent = "Legg til";
+                            paragraph.appendChild(NameParagraph);
+                            paragraph.appendChild(button);
+                            div.appendChild(paragraph);
+                        }
+                    }
+                }
+            });
 }
 

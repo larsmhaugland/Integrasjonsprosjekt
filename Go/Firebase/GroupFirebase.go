@@ -1,12 +1,14 @@
 package Firebase
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
 	"log"
 	"time"
+
+	"cloud.google.com/go/firestore"
 )
 
+// GetAllGroups returns a slice of all the groups in the firestore database
 func GetAllGroups() ([]Group, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -14,6 +16,8 @@ func GetAllGroups() ([]Group, error) {
 		log.Println("error getting Firebase client:", err)
 		return nil, err
 	}
+
+	// Go through all the groups in the firestore document and add them to a slice of group structs
 	var groups []Group
 	iter := client.Collection("groups").Documents(ctx)
 	for {
@@ -34,6 +38,8 @@ func GetAllGroups() ([]Group, error) {
 	return groups, nil
 }
 
+// AddGroup adds a new group to the firestore database and gives the document
+// the unique ID which is the chatID sent as a parameter and returns the firestore document ID.
 func AddGroup(group Group, chatID string) (string, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -41,20 +47,22 @@ func AddGroup(group Group, chatID string) (string, error) {
 		log.Println("error getting Firebase client:", err)
 		return "", err
 	}
-	docRef := client.Collection("groups").Doc(group.DocumentID)
-	//Need to make a slice of members so that Firebase correctly adds the field
-	var tmpMemberSlice []string
-	tmpMemberSlice = append(tmpMemberSlice, group.Owner)
 
+	// Create a reference to the document
+	docRef := client.Collection("groups").Doc(group.DocumentID)
+
+	// Set the first element in the members map to be the owner
 	members := map[string]string{
 		group.Owner: "owner",
 	}
+	// Set the rest of the members to be members by adding the username as key and "member" as value
 	for key := range group.Members {
 		if key != group.Owner {
 			members[key] = "member"
 		}
 	}
-	//Add group to database
+
+	// Set the data for the new group document
 	_, err = docRef.Set(ctx, map[string]interface{}{
 		"members": members,
 		"owner":   group.Owner,
@@ -62,16 +70,17 @@ func AddGroup(group Group, chatID string) (string, error) {
 		"chat":    chatID,
 		"image":   group.Image,
 	})
-	//doc, _, err := client.Collection("groups").Add(ctx, data)
 	if err != nil {
 		log.Println("Error adding group:", err)
 		return "", err
 	}
 
 	log.Println("documentID on groupCreation: ", group.DocumentID)
+	// Return the groups documentID
 	return group.DocumentID, nil
 }
 
+// GetGroupData returns the group data from the firestore database with the specified groupID
 func GetGroupData(groupID string) (Group, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -79,6 +88,8 @@ func GetGroupData(groupID string) (Group, error) {
 		log.Println("error getting Firebase client:", err)
 		return Group{}, err
 	}
+
+	// Get the data from the document with the specified groupID from firestore
 	var group Group
 	doc, err := client.Collection("groups").Doc(groupID).Get(ctx)
 	if err != nil {
@@ -86,6 +97,7 @@ func GetGroupData(groupID string) (Group, error) {
 		return Group{}, err
 	}
 
+	// Convert the data from the document to a Group struct
 	err = doc.DataTo(&group)
 	group.DocumentID = doc.Ref.ID
 	if err != nil {
@@ -93,7 +105,7 @@ func GetGroupData(groupID string) (Group, error) {
 		return Group{}, err
 	}
 
-	//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string x2
+	//Firebase stores arrays as []interface{} so we need to convert them to []string x2
 	if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
 		tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
 		for _, v := range tmpShoppingLists {
@@ -121,6 +133,7 @@ func GetGroupData(groupID string) (Group, error) {
 	return group, nil
 }
 
+// PatchGroup updates the group data in the firestore database with the specified groupID
 func PatchGroup(group Group) error {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -128,6 +141,8 @@ func PatchGroup(group Group) error {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
+
+	// Set the data members of the group that potentially needs to be updated
 	data := map[string]interface{}{
 		"members":        group.Members,
 		"owner":          group.Owner,
@@ -138,6 +153,8 @@ func PatchGroup(group Group) error {
 		"chat":           group.Chat,
 		"image":          group.Image,
 	}
+
+	// Update the group document with the new data
 	_, err = client.Collection("groups").Doc(group.DocumentID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching group:", err)
@@ -146,8 +163,9 @@ func PatchGroup(group Group) error {
 	return nil
 }
 
+// GetGroupName returns the name of the group with the specified groupID
 func GetGroupName(groupID string) (string, error) {
-	// Get the group data from cache (check ReturnCacheGroup documentation)
+	// Get the group data from cache/database
 	groupData, err := ReturnCacheGroup(groupID)
 	if err != nil {
 		log.Println("error getting group data from cache:", err)
@@ -156,8 +174,10 @@ func GetGroupName(groupID string) (string, error) {
 	return groupData.Name, nil
 }
 
+// GetGroupMembers returns a slice of the group members with each entry having a
+// username and a role
 func GetGroupMembers(groupID string) ([]GroupMemberNameRole, error) {
-	// Get the group data from cache (check ReturnCacheGroup documentation)
+	// Get the group data from cache/database
 	group, err := ReturnCacheGroup(groupID)
 	if err != nil {
 		log.Println("error getting user data from cache:", err)
@@ -181,9 +201,10 @@ func GetGroupMembers(groupID string) ([]GroupMemberNameRole, error) {
 	return groupMembersNameRole, nil
 }
 
+// DeleteMemberFromGroup removes the specified user from the specified group
 func DeleteMemberFromGroup(groupID string, username string) error {
 
-	// Get the group data from cache (check ReturnCacheGroup documentation)
+	// Get the group data from cache/database
 	groupData, err := ReturnCacheGroup(groupID)
 	if err != nil {
 		log.Println("error getting group data from cache:", err)
@@ -253,7 +274,9 @@ func DeleteMemberFromGroup(groupID string, username string) error {
 	return nil
 }
 
+// DeleteGroup deletes the group with the specified groupID
 func DeleteGroup(groupID string) error {
+
 	// Check if the group data exists in the cache
 	_, ok := GroupCache[groupID]
 	if ok {
@@ -261,7 +284,7 @@ func DeleteGroup(groupID string) error {
 		delete(GroupCache, groupID)
 	}
 
-	// Update the Firestore document with the modified groups list
+	// Get the firebase context and client
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
@@ -269,7 +292,7 @@ func DeleteGroup(groupID string) error {
 		return err
 	}
 
-	// Reference to the specific document
+	// Reference to the specific group document
 	groupRef := client.Collection("groups").Doc(groupID)
 
 	// Delete the document
@@ -282,24 +305,27 @@ func DeleteGroup(groupID string) error {
 	return nil
 }
 
+// UpdateMemberRole updates the specified users role in the specified group with the newRole
 func UpdateMemberRole(username string, newRole string, groupID string) error {
-	groupData, err := ReturnCacheGroup(groupID)
-	if err != nil {
-		log.Println("error getting group data from cache:", err)
-		return err
-	}
-
-	groupData.Members[username] = newRole
-
-	// Update the Firestore document with the modified groups list
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
+
+	//Get group data from cache/database
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return err
+	}
+
+	// Update the role for the user
+	groupData.Members[username] = newRole
+
 	memberToUpdate := "members." + username
-	// Update the role for the user in the specified group using Firestore
+	// Update the role for the user in the specified group in the firestore document
 	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
 		{Path: memberToUpdate, Value: newRole},
 	})
@@ -308,6 +334,7 @@ func UpdateMemberRole(username string, newRole string, groupID string) error {
 		return err
 	}
 
+	// Update the group cache with the new data
 	GroupCache[groupID] = CacheData{groupData, time.Now()}
 
 	return nil

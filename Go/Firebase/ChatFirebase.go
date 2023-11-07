@@ -1,10 +1,11 @@
 package Firebase
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
 	"log"
 	"time"
+
+	"cloud.google.com/go/firestore"
 )
 
 func GetAllChats() ([]Chat, error) {
@@ -37,6 +38,7 @@ func GetAllChats() ([]Chat, error) {
 	return chats, nil
 }
 
+// GetChatData returns the chat data from the firestore database for the chat with the specified chatID
 func GetChatData(chatID string) (Chat, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -45,6 +47,7 @@ func GetChatData(chatID string) (Chat, error) {
 		return Chat{}, err
 	}
 
+	// Declare the chat struct and get the document from the database
 	var chat Chat
 	doc, err := client.Collection("chat").Doc(chatID).Get(ctx)
 	if err != nil {
@@ -52,6 +55,7 @@ func GetChatData(chatID string) (Chat, error) {
 		return Chat{}, err
 	}
 
+	// Initialize the chat struct with the data from the database
 	err = doc.DataTo(&chat)
 	chat.DocumentID = doc.Ref.ID
 	if err != nil {
@@ -62,55 +66,62 @@ func GetChatData(chatID string) (Chat, error) {
 	return chat, nil
 }
 
+// AddMessageToChat adds a new message to the chat in firestore database
+// with the specified chatID.
 func AddMessageToChat(message Message, chatID string) error {
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
-
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
+
+	// Get the chat data from the cache/database
 	chatData, err := ReturnCacheChat(chatID)
 	if err != nil {
 		log.Println("error getting chat data from cache:", err)
 		return err
 	}
-	// In case there are no messages already in the chat
+
+	// Create the array if there are no messages already, otherwise append the new message
 	if chatData.Messages == nil {
 		chatData.Messages = append(make([]Message, 0), message)
 	} else {
 		chatData.Messages = append(chatData.Messages, message)
 	}
 
+	// Update the cache with the modified chat data
 	ChatCache[chatID] = CacheData{chatData, time.Now()}
 
 	chatDocRef := client.Collection("chat").Doc(chatID)
 
+	// Update the firestore documents messages path with the new data
 	_, err = chatDocRef.Update(ctx, []firestore.Update{
 		{Path: "messages", Value: chatData.Messages},
 	})
-
 	if err != nil {
 		log.Println("error updating chat document with new message", err)
 		return err
 	}
 
 	return nil
-
 }
 
-// Adds a new chat document to the firestore chat collection
-// parameters chat: the chat struct to be added to the database
-// parameters newGroup: bool to check if chat is created because a new group was created on the homepage
+// AddNewChat Adds a new chat document to the firestore chat collection
 func AddNewChat(chat Chat) error {
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client", err)
 		return err
 	}
+
+	// Get the reference to the new chat document added to the firestore database
 	docRefNewChat := client.Collection("chat").Doc(chat.DocumentID)
 
+	// Set the data for the new chat document
 	_, err = docRefNewChat.Set(ctx, map[string]interface{}{
 		"members":   chat.Members,
 		"chatOwner": chat.ChatOwner,
@@ -121,6 +132,7 @@ func AddNewChat(chat Chat) error {
 		return err
 	}
 
+	// For each member in the chat add the chat to their chats list
 	for _, member := range chat.Members {
 		err = AddChatToUser(member, chat.DocumentID)
 		if err != nil {
@@ -128,15 +140,18 @@ func AddNewChat(chat Chat) error {
 			return err
 		}
 	}
-	// Pretty sure this line is not needed as they should be the same
+
 	chat.DocumentID = docRefNewChat.ID
 
+	// Update the cache with the new chat data
 	ChatCache[chat.DocumentID] = CacheData{chat, time.Now()}
 
 	return nil
 }
 
+// RemoveMemberFromChat removes the member with the specified username from the chat with the specified chatID
 func RemoveMemberFromChat(chatID string, username string) error {
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
@@ -144,24 +159,26 @@ func RemoveMemberFromChat(chatID string, username string) error {
 		return err
 	}
 
+	// Get the chat data from the cache/database
 	chatData, err := ReturnCacheChat(chatID)
 	if err != nil {
 		log.Println("error getting chat data from cache:", err)
 		return err
 	}
 
+	// Remove the specified member from the chats members list
 	currentMembers := make([]string, 0)
-
 	for _, memberName := range chatData.Members {
 		if memberName != username {
 			currentMembers = append(currentMembers, memberName)
 		}
 	}
 	if len(currentMembers) == 0 {
-		return DeleteChat(chatID)
+		return DeleteChat(chatID) // If there are no members left in the chat, delete the chat
 	}
 	chatData.Members = currentMembers
 
+	// Update the firestore document with the modified members list
 	_, err = client.Collection("chat").Doc(chatID).Update(ctx, []firestore.Update{
 		{Path: "members", Value: currentMembers},
 	})
@@ -170,13 +187,16 @@ func RemoveMemberFromChat(chatID string, username string) error {
 		return err
 	}
 
+	// Remove the chat from the members document
 	RemoveChatFromMember(username, chatID)
-
+	// Update the cache with the new data
 	ChatCache[chatData.DocumentID] = CacheData{chatData, time.Now()}
 
 	return nil
 }
 
+// AddMemberToChat adds the specified username to the chat with the specified chatID
+// It returns the updated members list and potential error
 func AddMemberToChat(chatID string, username string) ([]string, error) {
 
 	ctx := context.Background()
@@ -186,14 +206,17 @@ func AddMemberToChat(chatID string, username string) ([]string, error) {
 		return nil, err
 	}
 
+	// Get the chat data from the cache/database
 	chatData, err := ReturnCacheChat(chatID)
 	if err != nil {
 		log.Println("error getting chat data from cache:", err)
 		return nil, err
 	}
 
+	// Add the new member to the chats members list
 	chatData.Members = append(chatData.Members, username)
 
+	// Update the firestore document with the modified members list
 	_, err = client.Collection("chat").Doc(chatID).Update(ctx, []firestore.Update{
 		{Path: "members", Value: chatData.Members},
 	})
@@ -202,15 +225,19 @@ func AddMemberToChat(chatID string, username string) ([]string, error) {
 		return nil, err
 	}
 
+	// Add the chat to the members document
 	AddChatToUser(username, chatID)
 
+	// Update the cache with the new data
 	ChatCache[chatData.DocumentID] = CacheData{chatData, time.Now()}
 
 	return chatData.Members, nil
 }
 
+// DeleteChat deletes the chat with the specified chatID from the firestore database
 func DeleteChat(chatID string) error {
 
+	// Get the chat data from the cache/database
 	chatData, err := ReturnCacheChat(chatID)
 	if err != nil {
 		log.Println("error getting chat data from cache:", err)
@@ -226,7 +253,7 @@ func DeleteChat(chatID string) error {
 		log.Println("error getting chat data from cache:")
 	}
 
-	// Update the Firestore document with the modified groups list
+	// Get the client and context for the firestore database
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
@@ -234,7 +261,7 @@ func DeleteChat(chatID string) error {
 		return err
 	}
 
-	// Reference to the specific document
+	// Reference to the specififed chat document
 	chatRef := client.Collection("chat").Doc(chatID)
 
 	// Delete the document
@@ -244,6 +271,7 @@ func DeleteChat(chatID string) error {
 		return err
 	}
 
+	// Remove the chat from the members chat list
 	for _, member := range chatData.Members {
 		err = RemoveChatFromMember(member, chatID)
 		if err != nil {
@@ -255,6 +283,7 @@ func DeleteChat(chatID string) error {
 	return nil
 }
 
+// GetGroupChat gets teh data for the group chat with the specified groupID
 func GetGroupChat(groupID string) (Chat, error) {
 	groupData, err := ReturnCacheGroup(groupID)
 	if err != nil {
