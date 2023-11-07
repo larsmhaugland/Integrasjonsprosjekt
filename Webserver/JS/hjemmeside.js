@@ -341,9 +341,6 @@ function retrieveGroups(){
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
-  /* if(groups && groups.length > 0){
-       displayGroups(groups);
-    }  else */{
     if(userName === null){
         console.log("User not logged in");
         return;
@@ -368,7 +365,6 @@ function retrieveGroups(){
         console.log("Error retrieving groups: " + error);
     });
 }
-}
 ;
 
 /**
@@ -385,11 +381,9 @@ function displayGroups(groups){
            groupBlock.setAttribute("id","group-block");
 
            if (groups[i].image !== "") {
-               //console.log("Image: " + groups[i].image);
                checkImageExists(IMAGEDIR + groups[i].image + ".jpeg", function (exists) {
                    if (exists) {
                        groupBlock.classList.add("has-img");
-                       //groupBlock.style.setProperty('--group-background-image', `url(${IMAGEDIR}${groups[i].image}.jpeg)`)
                        groupBlock.style.background = "none";
                        groupBlock.style.backgroundColor = "#FFFFFF";
                        groupBlock.style.backgroundImage = `url(${IMAGEDIR}${groups[i].image}.jpeg)`;
@@ -403,11 +397,9 @@ function displayGroups(groups){
            groupNameParagraph.textContent = groups[i].name;
 
 
-           /*let groupIdParagraph = document.createElement("p");
-           groupIdParagraph.textContent = "Gruppe-ID: " + groups[i].documentID;*/
+
 
            groupBlock.appendChild(groupNameParagraph);
-           //groupBlock.appendChild(groupIdParagraph);
            groupContainer.appendChild(groupBlock);
            display.appendChild(groupContainer);
     }

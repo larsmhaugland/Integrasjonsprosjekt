@@ -110,10 +110,11 @@ nav{
 
 /*Not logged in display*/
 #not-logged-in {
-    display: flex;
-    flex-direction: row;
+    display: none !important;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 1%;
     background-color: #80AB82;
     width: 100%;
     height: 100vh;
@@ -122,6 +123,15 @@ nav{
     transform: translateX(-50%);
     z-index: 2;
     position:fixed;
+}
+.register-btn{
+    color:white;
+    cursor: pointer;
+    transition: text-decoration 0.3s, font-weight 0.3s;
+}
+.register-btn:hover{
+    text-decoration: underline white;
+    font-weight: bold;
 }
 
 
