@@ -12,6 +12,23 @@ main{
     min-height: 500px;
 }
 
+#handleliste li{
+    font-size: 20px;
+}
+
+input{
+    padding-top: 1%;
+    font-size: 20px;
+    padding-left: 1%;
+}
+
+select{
+    font-size: 20px;
+    border: 2px solid black;
+    border-radius: 25px;
+    padding-left: 1%;
+}
+
 #middag-uke{
     grid-area: middag-uke;
     border: 2px solid black;
@@ -45,13 +62,17 @@ main{
 
 .middag button {
     padding: 10px;
-    bottom: 0;
+    bottom: 3%;
+    top:80%;
     left: 80%;
     position: absolute;
     font-size: 20px;
     border: #064412 5px solid;
-    border-radius: 30%;
+    border-radius: 25px;
     cursor: pointer;
+    background-color: white;
+    text-align: center;
+    line-height: 1%;
 }
 
 .middag::before {

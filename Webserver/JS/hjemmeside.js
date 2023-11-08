@@ -1,3 +1,4 @@
+//TODO: ADD SHOPPING LIST ID WHEN CREATING NEW GROUP AND POSTING A NEW EMPTY SHOPPING LIST
 //CALL ON START/RELOAD
 retrieveGroups();
 
@@ -112,13 +113,16 @@ form.addEventListener("submit", async function (event) {
     // Prepare the data to be sent to the API endpoint
     const groupId = generateRandomId(20);
     const chatID = generateRandomId(20);
+    const shoppingListID = generateRandomId(20);
     const group = {
         documentID: groupId,
         name: groupName,
         owner: sessionStorage.getItem("username"),
         members: memberMap,
         image: groupImage,
-    };
+        "shopping-lists": [shoppingListID],
+};
+    console.log("Group: " + group)
     fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
         headers: {
@@ -403,91 +407,5 @@ function displayGroups(groups){
            groupContainer.appendChild(groupBlock);
            display.appendChild(groupContainer);
     }
-}
-
-/**
-   ADD NEW GROUP AND PATCH USER INFO
-    @param groupName - Name of group
-*/
-//TODO: Fix duplicate group ids in user when patching
-function newGroup(groupName){
-    const groupId = generateRandomId(20);
-    const chatID = generateRandomId(20);
-    const group = {
-        documentID: groupId,
-        name: groupName,
-        owner: sessionStorage.getItem("username"),
-    };
-    fetch(API_IP + `/group/new?chatID=${chatID}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(group)
-    })
-        .then((response) => {
-            if (response.status === 201) {
-                console.log("Group created");
-                // Decode group id from response body
-                return response.json(); // Return the JSON parsing Promise
-            } else {
-                console.log("Error creating group");
-                throw new Error("Failed to create group");
-            }
-        })
-        .then((data) => {
-            // Now, data contains the parsed JSON
-            const groupNew = data;
-            const groups = JSON.parse(sessionStorage.getItem("groups") || "[]");
-            groups.push(groupNew);
-            let username = sessionStorage.getItem("username");
-            sessionStorage.setItem("groups", JSON.stringify(groups));
-            console.log("Group added to session storage:", groups);
-
-            let display = document.querySelector(".groups-container");
-            let groupContainer = document.createElement("a");
-            groupContainer.setAttribute("href", "#");
-            let groupBlock = document.createElement("div");
-            groupBlock.setAttribute("id","group-block");
-            let groupNameParagraph = document.createElement("p");
-            groupNameParagraph.textContent = "Gruppenavn: " + data.name;
-
-
-            let groupIdParagraph = document.createElement("p");
-            groupIdParagraph.textContent = "Gruppe-ID: " + data.documentID;
-
-            groupBlock.appendChild(groupNameParagraph);
-            groupBlock.appendChild(groupIdParagraph);
-            groupContainer.appendChild(groupBlock);
-            display.appendChild(groupContainer);
-
-
-            fetch(API_IP + `/user/groups?username=${username}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(groupId),
-            })
-                .then((response) => {
-                    if (response.status === 200) {
-                        console.log("Group added to user");
-                        return response.json();
-                    } else {
-                        console.log("Error adding group to user");
-                        throw new Error("Failed to add group to user");
-                    }
-                })
-                .then((data) => {
-                    console.log("User updated with new group");
-                    console.log(data);
-                })
-                .catch((error) => {
-                    console.log("Error adding group to user: " + error);
-                })
-        })
-        .catch((error) => {
-            console.log("Error creating group2: " + error);
-        });
 }
 

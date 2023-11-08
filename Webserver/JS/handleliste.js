@@ -1,7 +1,6 @@
 //CALL ON START/RELOAD
 retrieveGroups();
 retrieveShoppingList();
-retrieveDinnerList();
 // Get the 
 const urlParams = new URLSearchParams(window.location.search);
 const groupIDSentAsParam = urlParams.get('groupID');
@@ -18,6 +17,7 @@ if (selectedOption) {
 dropdown.addEventListener('change', function () {
     const selectedValue = dropdown.value;
     sessionStorage.setItem('selectedOption', selectedValue);
+    removeDinnerList();
 });
 window.addEventListener('load', function () {
     const selectedOption = sessionStorage.getItem('selectedOption');
@@ -137,7 +137,6 @@ function retrieveShoppingList() {
         let group = groups.find(group => group.name === option);
         if (group){
             let groupId = group.documentID;
-            console.log(groupId);
         fetch(API_IP + `/shopping/${groupId}?userOrGroup=group`, {
             method: "GET",
             headers: {
@@ -431,6 +430,7 @@ function removeList(){
  * @param user - boolean, true if the option is a username
  */
 function retrieveDinnerList( option, user){
+    removeDinnerList();
     if(!checkAuthToken()) return;
     else{
         fetch(API_IP + `/group/schedule?groupID=${option}`, {
@@ -456,40 +456,10 @@ function retrieveDinnerList( option, user){
     }
 }
 
-//TODO: Display the retrieved dinner list
 /**
- * Display the retrieved dinner list
- * @param dinner - dinner list item fetched from database
+ * Display dinner list
+ * @param groupID - id belonging to the group
  */
-function displayDinner(dinner) {
-    let display = document.querySelector("#middag-uke");
-    const currentDate = new Date().toISOString().split('T')[0];
-    console.log("Current date: " + currentDate);
-
-    let datesForDays = getDatesForCurrentWeek(); // Get an array of dates for the current week
-    console.log("Dinner dates:" + dinner)
-
-    for (let i = 0; i < 7; i++) {
-        const dateForDay = datesForDays[i].toISOString().split('T')[0];; // Get the date for the current day
-        if (dinner[dateForDay] && dinner[dateForDay].customRecipe !== undefined) {
-            const customRecipe = dinner[dateForDay].customRecipe;
-            console.log("Date for day: " + dateForDay + ", Custom Recipe: " + customRecipe);
-
-            if (customRecipe !== "") {
-                const recipeDiv = document.createElement('div');
-                recipeDiv.textContent = customRecipe;
-                console.log(recipeDiv);
-                display.appendChild(recipeDiv);
-            }
-        }
-        }
-
-}
-
-/**
- *
- *      AURORA PRØVER UT NOE HER
- * */
 function setCalendar(groupID){
     let dates = getDatesForCurrentWeek();
     let options = document.querySelector("#group-dropdown").value;
@@ -497,39 +467,75 @@ function setCalendar(groupID){
     console.log(groupID);
     if(inputCalendar == null){
         console.log("inputCalendar is null");
-        //TODO: nullstille kalender
         return;
     }
     const dateKeys = Object.keys(inputCalendar);
-            // Loop through the date keys and access the data for each date
-            dateKeys.forEach(dateKey => {
-                if (dateKey in inputCalendar) {
-                    let dateData = inputCalendar[dateKey];
-                    let date = new Date(dateKey);
-                    let customDinner = dateData.customRecipe;
-                    let recipe = dateData.recipe;
-                    for (let k=0; k<dates.length; k++){
-                        const currentDate = new Date(dates[k]);
-                        currentDate.setHours(0, 0, 0, 0); // Set time to midnight
-                        date.setHours(0, 0, 0, 0); // Set time to midnight for the date
-                        if (currentDate.getTime() === date.getTime() && recipe){
-                            console.log("date found");
-                            let div = document.getElementById("middag-uke");
-                            let paragraph = document.createElement("div");
-                            paragraph.setAttribute("class", "middag");
+    // Loop through the date keys and access the data for each date
+    dateKeys.forEach(dateKey => {
+        if (dateKey in inputCalendar) {
+            let dateData = inputCalendar[dateKey];
+            let date = new Date(dateKey);
+            let customDinner = dateData.customRecipe;
+            let recipe = dateData.recipe;
+            for (let k=0; k<dates.length; k++){
+                const currentDate = new Date(dates[k]);
+                currentDate.setHours(0, 0, 0, 0); // Set time to midnight
+                date.setHours(0, 0, 0, 0); // Set time to midnight for the date
+                if (currentDate.getTime() === date.getTime() && recipe){
+                    console.log("date found");
+                    let div = document.getElementById("middag-uke");
+                    let paragraph = document.createElement("div");
+                    paragraph.setAttribute("class", "middag");
 
-                            let NameParagraph = document.createElement("p");
-                            NameParagraph.textContent = customDinner;
+                    let NameParagraph = document.createElement("p");
+                    NameParagraph.textContent = customDinner;
 
-                            let button = document.createElement("button");
-                            button.setAttribute("class", "add-dinner-btn");
-                            button.textContent = "Legg til";
-                            paragraph.appendChild(NameParagraph);
-                            paragraph.appendChild(button);
-                            div.appendChild(paragraph);
-                        }
-                    }
+                    let button = document.createElement("button");
+                    button.setAttribute("class", "add-dinner-btn");
+                    button.textContent = "Legg til";
+                    paragraph.appendChild(NameParagraph);
+                    paragraph.appendChild(button);
+                    div.appendChild(paragraph);
+                    //Add an event listener to each button which sends the correct recipeID to the function
+                    button.addEventListener("click", () => addDinnerToList(recipe));
                 }
-            });
+            }
+        }
+    });
+}
+
+/**
+ * Remove dinner list on reload (or when changing group)
+ */
+function removeDinnerList(){
+    let dinnerItems = document.querySelectorAll(".middag");
+    dinnerItems.forEach(item => {
+        item.remove();
+    });
+}
+
+/**
+ * Fetch recipe for dinner and add it to the shopping list
+ */
+function addDinnerToList(){
+    //Fetch recipe with the same name as the dinner
+    let recipeID = sessionStorage.getItem("recipeID");
+    fetch(API_IP + `/recipe/${recipeID}?group=true&single=true`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(response => {
+        if (response.status === 200){
+            console.log("Recipe retrieved");
+            return response.json();
+        } else {
+            console.log("Error retrieving recipe");
+            throw new Error("Failed to retrieve recipe");
+        }
+    }).then(data=>{
+        console.log(JSON.stringify(data));
+        //Add ingredients to shopping list
+    });
 }
 
