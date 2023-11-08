@@ -30,6 +30,68 @@ func GetAllUsers() ([]User, error) {
 			log.Println("Error converting document:", err)
 			break
 		}
+
+		if _, ok := doc.Data()["username"].(string); ok {
+			user.Username = doc.Data()["username"].(string)
+		} else {
+			log.Println("Error; Failed to convert username to string")
+		}
+
+		if _, ok := doc.Data()["password"].(string); ok {
+			user.Password = doc.Data()["password"].(string)
+		} else {
+			log.Println("Error; Failed to convert password to string")
+		}
+
+		if _, ok := doc.Data()["name"].(string); ok {
+			user.Name = doc.Data()["name"].(string)
+		} else {
+			log.Println("Error; Failed to convert name to string")
+		}
+
+		//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string
+		if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
+
+			tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
+			for _, v := range tmpShoppingLists {
+				if str, ok := v.(string); ok {
+					user.ShoppingLists = append(user.ShoppingLists, str)
+				} else {
+					log.Println("Error; Failed to convert shopping list id to string" + err.Error())
+				}
+			}
+		}
+		if _, ok := doc.Data()["recipes"].([]interface{}); ok {
+			tmpRecipes := doc.Data()["recipes"].([]interface{})
+			for _, v := range tmpRecipes {
+				if str, ok := v.(string); ok {
+					user.Recipes = append(user.Recipes, str)
+				} else {
+					log.Println("Error; Failed to convert recipe id to string" + err.Error())
+				}
+			}
+		}
+		if _, ok := doc.Data()["chats"].([]interface{}); ok {
+			tmpGroupLists := doc.Data()["chats"].([]interface{})
+			for _, v := range tmpGroupLists {
+				if str, ok := v.(string); ok {
+					user.Chats = append(user.Chats, str)
+				} else {
+					log.Println("Error; Failed to convert chat id to string" + err.Error())
+				}
+			}
+		}
+		if _, ok := doc.Data()["groups"].([]interface{}); ok {
+			tmpGroupLists := doc.Data()["groups"].([]interface{})
+			for _, v := range tmpGroupLists {
+				if str, ok := v.(string); ok {
+					user.Groups = append(user.Groups, str)
+				} else {
+					log.Println("Error; Failed to convert group id to string" + err.Error())
+				}
+			}
+		}
+
 		users = append(users, user)
 	}
 	return users, nil
