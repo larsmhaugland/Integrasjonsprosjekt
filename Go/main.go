@@ -45,6 +45,7 @@ func startHTTPserver() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	http.HandleFunc("/clear/", clearCacheHandler)
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
@@ -78,10 +79,18 @@ func startHTTPSserver() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	http.HandleFunc("/clear/", clearCacheHandler)
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))
+}
+
+func clearCacheHandler(w http.ResponseWriter, r *http.Request) {
+	API.SetCORSHeaders(w)
+	Firebase.InitCache()
+	w.WriteHeader(http.StatusOK)
+	log.Println("Cache cleared")
 }
 
 // Tenker det hadde vært gøy å ha statistikk over hvor mye de forskjellige endpointsene blir brukt og antall cache hits/misses ellerno
@@ -110,7 +119,10 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
+	//If filename is specified, it is at the end of the path
 	filename := r.URL.Path[len("/image/"):]
+
+	//Set path based on if request coming from localhost or not
 	origin := r.Host
 	ImagePath := "/UsrImages/"
 	if origin == "localhost:8080" {
@@ -132,7 +144,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-
+	// Generate a unique DocumentID for the uploaded file if name is not specified
 	if filename == "" {
 		filename, err = generateUniqueID()
 		if err != nil {
@@ -157,6 +169,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to copy file", http.StatusInternalServerError)
 		return
 	}
+	//Construct response
 	response := map[string]interface{}{
 		"filename": filename,
 	}
@@ -168,8 +181,6 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("File uploaded successfully: ", filename)
-	log.Println("Response: ", response)
 }
 
 func generateUniqueID() (string, error) {

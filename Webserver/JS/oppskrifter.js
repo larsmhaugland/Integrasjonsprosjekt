@@ -231,7 +231,7 @@ async function newRecipe() {
     if (imageInput.files.length === 1) {
         // Send the form data to the API
         try {
-            await uploadImage(imageInput.files[0], function (response) {
+            filename = await uploadImage(imageInput.files[0], function (response) {
                 console.log("Kom meg hit jeg");
                 console.log(response);
                 filename = response.filename;

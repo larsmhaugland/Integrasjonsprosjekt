@@ -390,6 +390,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.status === 200) {
                     // Member deleted successfully
                     alert(`Member ${username} deleted from the group.`);
+                    //If user removed himself from the group, redirect to homepage
+                    if (username === sessionStorage.getItem("username")){
+                        window.location.replace("../index.html");
+                        return;
+                    }
                     // Update the group display
                     fetchGroupMembers(groupID);
                 } else {

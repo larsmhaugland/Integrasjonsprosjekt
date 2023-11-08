@@ -1,7 +1,10 @@
 package API
 
 import (
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"golang.org/x/crypto/sha3"
 	"log"
 	"net/http"
 	"prog-2052/Firebase"
@@ -86,6 +89,15 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Hash the password
+	user.Password, err = HashPassword(user.Password)
+
+	if err != nil {
+		log.Println("Error while hashing password")
+		http.Error(w, "Error while hashing password", http.StatusBadRequest)
+		return
+	}
+
 	//Check if the credentials match
 	if user.Username == credentials.Username && user.Password == credentials.Password {
 		// Create a new cookie
@@ -109,8 +121,17 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	//Decode the JSON body
 	var user Firebase.User
 	err := DecodeJSONBody(w, r, &user)
+	fmt.Println(user)
 	if err != nil {
 		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+	//Hash password
+	user.Password, err = HashPassword(user.Password)
+
+	if err != nil {
+		fmt.Println("Error while hashing password")
+		http.Error(w, "Error while hashing password", http.StatusBadRequest)
 		return
 	}
 	//Add the user to the database
@@ -134,6 +155,17 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	//Add the cookie to the response
 	http.SetCookie(w, &authCookie)
 	w.WriteHeader(http.StatusCreated)
+}
+
+func HashPassword(password string) (string, error) {
+	hash := sha3.New384()
+	_, err := hash.Write([]byte(password))
+	if err != nil {
+		return "", err
+	}
+	hashInBytes := hash.Sum(nil)
+	hashString := hex.EncodeToString(hashInBytes)
+	return hashString, nil
 }
 
 func UserCredentialDeleteHandler(w http.ResponseWriter, r *http.Request) {

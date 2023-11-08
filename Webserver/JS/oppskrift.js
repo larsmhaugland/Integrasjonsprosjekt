@@ -3,6 +3,8 @@ let editRecipePopup = document.querySelector("#edit-recipe-popup");
 let closeRecipePopup = document.querySelector("#close-recipe-popup");
 let recipeDifficulty = document.querySelector("#edit-difficulty");
 let displayedRecipe = null;
+let deleteRecipeBtn = document.querySelector("#delete-recipe");
+let owner = null;
 
 recipeEdit.addEventListener("click", function () {
     if(sessionStorage.getItem("loggedIn") !== "true"){
@@ -75,10 +77,43 @@ submitEditRecipeBtn.addEventListener("click", function(event ) {
 });
 
 
+deleteRecipeBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+    let url = window.location.search;
+    let confim = window.confirm("Er du sikker på at du vil slette oppskriften?");
+    if(!confim){
+        alert("Oppskrift ble IKKE slettet");
+        return;
+    }
+
+    const params = new URLSearchParams(url);
+    fetch(API_IP + "/recipe/" + params.get('id'), {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"username": owner})
+    }).then(response => {
+        console.log(response.status);
+        if (response.status === 200) {
+            alert("Oppskriften ble slettet");
+            window.location.href = "../index.html";
+        } else {
+            console.log(response.json());
+            alert("Kunne ikke slette oppskriften");
+        }
+    }).catch(error => {
+        alert("Det skjedde en feil ved sletting av oppskrift");
+        console.log("Error when sending HTTPS request");
+        console.log(error);
+
+    });
+});
 
 window.onload = function () {
 //    console.log("onload");
     getRecipe();
+    updateLoginStatus();
 };
 
 async function getRecipe() {
@@ -167,6 +202,7 @@ async function displayRecipe(Recipe) {
                 if (data.userRecipes[i].documentID === Recipe.documentID) {
                     ///console.log(data.userRecipes[i].documentID + " " + Recipe.documentID);
                     recipeEdit.style.display = "inline";
+                    owner = sessionStorage.getItem("username");
                 }
             }
         }
