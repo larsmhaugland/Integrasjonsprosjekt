@@ -33,6 +33,29 @@ func GetAllGroups() ([]Group, error) {
 			log.Println("Error converting document:", err)
 			break
 		}
+		//Firebase stores arrays as []interface{} so we need to convert them to []string x2
+		if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
+			tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
+			for _, v := range tmpShoppingLists {
+				if str, ok := v.(string); ok {
+					group.ShoppingLists = append(group.ShoppingLists, str)
+				} else {
+					log.Println("Error; Failed to convert shopping list id to string:", err)
+
+				}
+			}
+		}
+		if _, ok := doc.Data()["members"].(map[string]interface{}); ok {
+			tmpMembers := doc.Data()["members"].(map[string]interface{})
+			group.Members = make(map[string]string, len(tmpMembers))
+			for key, value := range tmpMembers {
+				if str, ok := value.(string); ok {
+					group.Members[key] = str
+				} else {
+					log.Println("Error; Failed to convert member id to string:", err)
+				}
+			}
+		}
 		groups = append(groups, group)
 	}
 	return groups, nil
