@@ -132,7 +132,6 @@ function retrieveShoppingList() {
         )
     }
     else{
-        //TODO: API fetch for specific group not just group in general
         let groups = JSON.parse(sessionStorage.getItem("groups"));
         let group = groups.find(group => group.name === option);
         if (group){

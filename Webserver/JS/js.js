@@ -244,16 +244,6 @@ function checkImageExists(url, callback) {
         });
 }
 
-
-/*
-    PASS GROUP NAME FROM GROUP PAGE TO SHOPPING LIST PAGE
- */
-function sendDropdownValue(groupName){
-    const dropdown = document.querySelector("#dropdown");
-    dropdown.value = groupName;
-    retrieveShoppingList();
-}
-
 /*
     GET DATES FOR CURRENT WEEK
  */
