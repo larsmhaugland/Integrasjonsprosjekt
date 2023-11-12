@@ -12,7 +12,7 @@ func ResetGroupData() {
 	if err != nil {
 		fmt.Println("Error when fetching user: " + err.Error())
 	}
-	group.Name = "testuser"
+	group.Name = "testgroup"
 	group.Members = map[string]string{"testuser": "owner"}
 	group.Recipes = map[string]Firebase.GroupRecipe{}
 	group.Recipes = make(map[string]Firebase.GroupRecipe)
@@ -21,6 +21,7 @@ func ResetGroupData() {
 	group.Schedule = map[string]Firebase.Dinner{}
 	group.Schedule = make(map[string]Firebase.Dinner)
 	group.Schedule["2020-01-01"] = Firebase.Dinner{Recipe: "testrecipe", Responsible: []string{"testuser"}}
+	group.Chat = "testchat"
 	err = Firebase.PatchCacheGroup(group)
 	if err != nil {
 		fmt.Println("Error when patching group: " + err.Error())

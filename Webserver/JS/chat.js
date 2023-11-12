@@ -419,7 +419,15 @@ document.addEventListener("DOMContentLoaded", function () {
         // Display the messages
         const messages = chat.messages;
         if (messages) {
+            let currentDate = null;
             messages.forEach(message => {
+                const messageDate = getMessageDate(message.timestamp);
+
+                if (currentDate !== messageDate) {
+                    const dateItem = createMessageDateItem(messageDate);
+                    messageList.appendChild(dateItem);
+                    currentDate = messageDate;
+                }
                 addMessageToList(message);
             });
         } else {
@@ -511,8 +519,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         })
         .catch((error) => {
-            console.error('Error fetching chats:', error);
-            alert("Server error when trying to get chats")
+            console.error('Not part of nay chats, or error fetching chats:', error);
         });
     } 
 
@@ -695,6 +702,26 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedMinutes = String(minutes).padStart(2, '0');
 
         return `${formattedHours}:${formattedMinutes}`;
+    }
+
+    function getMessageDate(timestamp) {
+        const jsDate = new Date(timestamp);
+        const year = jsDate.getFullYear();
+        const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+        const day = String(jsDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function createMessageDateItem(messageDate) {
+        const dateItem = document.createElement("li");
+        dateItem.classList.add("message-date");
+    
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = messageDate;
+    
+        dateItem.appendChild(dateSpan);
+    
+        return dateItem;
     }
 
 });

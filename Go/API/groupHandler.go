@@ -16,16 +16,25 @@ var DEFAULTIMAGES = []string{"defaultBackground1", "defaultBackground2", "defaul
 	"defaultBackground8", "defaultBackground9", "defaultBackground10", "defaultBackground11",
 	"defaultBackground12", "defaultBackground13", "defaultBackground14", "defaultBackground15"}
 
+// GroupBaseHandler handles all requests to the /group endpoint and reroutes them to the correct handler
 func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Set the CORS for the request
 	SetCORSHeaders(w)
+
+	// No options requests used on this endpooint, so just return
 	if r.Method == http.MethodOptions {
 		return
 	}
+
+	// Get the correct parts of the URL to correctly redirect the user
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {
 		http.Error(w, "Error; Incorrect usage of URL.", http.StatusBadRequest)
 		return
 	}
+
+	// Find the correct handler for the request
 	switch parts[2] {
 	case "members":
 		GroupMemberBaseHandler(w, r)
@@ -54,15 +63,24 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DeleteGroup deletes the group with the groupID sent as parameter from the database
 func DeleteGroup(w http.ResponseWriter, r *http.Request) {
+
+	// Only delete method supported
 	if r.Method == http.MethodDelete {
+
 		// Retrieve the groupID from the query parameters
 		groupID := r.URL.Query().Get("groupID")
+		if groupID == "" {
+			http.Error(w, "Error; Could not parse query parameters", http.StatusBadRequest)
+			return
+		}
+
+		// Get the data for the specified group from cache/database
 		group, err := Firebase.ReturnCacheGroup(groupID)
 		if err != nil {
 			http.Error(w, "Could not get the group", http.StatusInternalServerError)
 		}
-
 		//Remove image from server
 		ImagePath := "/UsrImages/"
 		if r.Host == "localhost:8080" {
@@ -100,11 +118,16 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Could not patch user", http.StatusInternalServerError)
 			}
 		}
+		
 		//Delete the chat and group from Firebase
 		err = Firebase.DeleteCacheChat(group.Chat)
+		if err != nil {
+			http.Error(w, "Could not delete the group chat from cache", http.StatusInternalServerError)
+		}
+
 		err = Firebase.DeleteCacheGroup(groupID)
 		if err != nil {
-			http.Error(w, "Could not delete the group", http.StatusInternalServerError)
+			http.Error(w, "Could not delete the group from cache", http.StatusInternalServerError)
 		}
 		// Respond with a success or error status
 		w.WriteHeader(http.StatusOK)
@@ -230,6 +253,10 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	newRole := r.URL.Query().Get("newRole")
 	groupID := r.URL.Query().Get("groupID")
+	if username == "" || newRole == "" || groupID == "" {
+		http.Error(w, "Error; Could not parse query parameters", http.StatusBadRequest)
+		return
+	}
 
 	err := Firebase.UpdateMemberRole(username, newRole, groupID)
 	if err != nil {
