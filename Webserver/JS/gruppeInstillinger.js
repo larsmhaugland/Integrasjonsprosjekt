@@ -34,7 +34,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (groupID){
             groupName = await getGroupName(groupID);
             groupNameElement.textContent = "Innstillinger for: " + groupName;
-            fetchGroupMembers(groupID);
+            await fetchGroupMembers(groupID);
+            hideLeaveIfOwner();
+            displayDeleteIfOwner();
         } else {
             alert("No groupID was passed to the groupSettings.html page");
             window.location.href = redirectURL;
@@ -267,17 +269,19 @@ document.addEventListener("DOMContentLoaded", function () {
      * Sends a GET request to the backend endpoint to retrieve the data for the group members
      * @param {*} groupID - the group to retrieve the members from
      */
-    function fetchGroupMembers(groupID) {
-    const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
-    fetch(url) 
-        .then((response) => response.json())
-        .then((data) => {
-            renderGroupMembers(data)
-        })
-        .catch((error) => {
+    async function fetchGroupMembers(groupID) {
+        const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Error with request to endpoint. Status: ${response.status}`);
+            }
+            const data = await response.json();
+            renderGroupMembers(data); // Move this line here to wait for the fetch operation to complete
+        } catch (error) {
             console.error('Error fetching group members:', error);
-            alert("Error when trying to get the group members from the databse")
-        });
+            alert("Server error when trying to get group members");
+        }
     } 
 
     
@@ -450,6 +454,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error", error);
                 alert("Server error when trying to update the role");
             })
+    }
+
+    function hideLeaveIfOwner() {;
+        if (LoggedInUsername === GroupOwner){
+            leaveGroupButton.style.display = "none";
+        }
+    }
+    function displayDeleteIfOwner() {
+        if (LoggedInUsername === GroupOwner){
+            deleteGroupButton.style.display = "block";
+        }
     }
 });
 
