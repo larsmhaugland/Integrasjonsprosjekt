@@ -107,13 +107,14 @@
 /* Styling for the "Leave Chat" button */
 #leave-chat-button {
     margin-left: 15.60vw; 
-    background-color: #ff0000;
+    background-color: #0B5D1E;
     color: black;
 }
 
 /* Styling for the "Edit Chat" button (with an icon) */
 #edit-chat-button {
     margin-left: 4.00vw;
+    width: 1vw;
     padding: 0;
     border: none;
     cursor: pointer;

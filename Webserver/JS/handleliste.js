@@ -535,6 +535,16 @@ function addDinnerToList(){
     }).then(data=>{
         console.log(JSON.stringify(data));
         //Add ingredients to shopping list
+        let ingredients = data.ingredients;
+        let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
+        let itemData = {};
+        ingredients.forEach(ingredient => {
+            itemData[ingredient.name] = {
+                complete: false,
+                quantity: ingredient.quantity,
+                category: ingredient.category,
+            };
+        });
     });
 }
 
