@@ -37,6 +37,10 @@ func TestShoppingHandler(t *testing.T) {
 		}
 		// Marshal the testShoppingList to JSON
 		jsonShoppingList, err := json.Marshal(testShoppingList)
+		if err != nil {
+			t.Errorf("Error when marshalling testShoppingList: %v", err)
+			t.Fatal(err)
+		}
 
 		// Prepare a request to pass to our handler.
 		req, err := http.NewRequest(http.MethodPost, "testuser", bytes.NewReader(jsonShoppingList))

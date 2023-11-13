@@ -152,6 +152,14 @@
     font-weight: bold;
 }
 
+/* Styling for the date dsipalyed between messages on new days */
+.message-date {
+    text-align: center;
+    color: #888; 
+    padding: 1 vh; 
+    margin-top: 0.5vh; 
+}
+
 /* Styling for the chat input container */
 .chat-input {
     display: flex;

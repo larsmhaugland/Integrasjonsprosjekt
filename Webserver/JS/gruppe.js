@@ -6,7 +6,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const handlelisteLink = document.querySelector("#handleliste-link");
     const kalenderLink = document.querySelector("#kalender-link");
     const chatLink = document.querySelector("#chat-link");
+    const LoggedInUsername = sessionStorage.getItem("username");
     let groupNamePass;
+    let GroupOwner;
+    const Administrators = [];
     const redirectURL = "../index.html";
     // Global variables and constants
     var groupID;
@@ -22,7 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const groupName = await getGroupName(groupID);
             groupNamePass = groupName;
             groupNameElement.textContent = "Instillinger for: " + groupName;
-            fetchGroupMembers(groupID);
+            await fetchGroupMembers(groupID);
+            displayEditIfOwner()
         } else {
             alert("No groupID was passed to the groupSettings.html page");
             window.location.href = redirectURL;
@@ -69,17 +73,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Function to fetch group members data
-    function fetchGroupMembers(groupID) {
+    async function fetchGroupMembers(groupID) {
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
-        fetch(url) 
-            .then((response) => response.json())
-            .then((data) => {
-                renderGroupMembers(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching group members:', error);
-                alert("Server error when trying to get group members");
-            });
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Error with request to endpoint. Status: ${response.status}`);
+            }
+            const data = await response.json();
+            renderGroupMembers(data); // Move this line here to wait for the fetch operation to complete
+        } catch (error) {
+            console.error('Error fetching group members:', error);
+            alert("Server error when trying to get group members");
+        }
     } 
 
     // Function to render the group members based on the retrieved data
@@ -106,6 +112,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Append the list item to the group members list
             groupMembersList.appendChild(listItem);
+
+            if (member.roleName.toLowerCase() === "owner"){
+                GroupOwner = member.username;
+            }
+            if (member.roleName.toLowerCase() === "administrator"){
+                Administrators.push(member.username);
+            }
         });
+    }
+    function displayEditIfOwner(){
+        console.log("GroupOwner: " + GroupOwner);
+        if (LoggedInUsername === GroupOwner || Administrators.includes(LoggedInUsername)){
+            editButton.style.display = "block";
+        }
     }
 });

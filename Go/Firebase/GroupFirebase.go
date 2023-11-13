@@ -383,3 +383,73 @@ func UpdateMemberRole(username string, newRole string, groupID string) error {
 
 	return nil
 }
+
+// AddUserToGroup adds the specified user to the specified group
+func AddUserToGroup(username string, groupID string) error {
+
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+
+	// Get the group data from cache/database
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting group data from cache:", err)
+		return err
+	}
+
+	// Add the new member to the map with the role member
+	groupData.Members[username] = "member"
+
+	// Update the firestore document with the new memebrs map
+	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
+		{Path: "members", Value: groupData.Members},
+	})
+	if err != nil {
+		log.Println("error updating group document:", err)
+		return err
+	}
+
+	// Update the cache with the modified group data
+	GroupCache[groupID] = CacheData{groupData, time.Now()}
+
+	return nil
+}
+
+// AddGroupToUser adds the specified group to the specified user
+func AddGroupToUser(username string, groupID string) error {
+
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+
+	// Get the user data from cache/database
+	userData, err := ReturnCacheUser(username)
+	if err != nil {
+		log.Println("error getting user data from cache:", err)
+		return err
+	}
+
+	// Add the new group to the user's groups list
+	userData.Groups = append(userData.Groups, groupID)
+
+	// Add the new group to the users groups field in the firestore document
+	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
+		{Path: "groups", Value: userData.Groups},
+	})
+	if err != nil {
+		log.Println("error updating user document:", err)
+		return err
+	}
+
+	// Update the cache with the modified user data
+	UserCache[username] = CacheData{userData, time.Now()}
+
+	return nil
+}

@@ -1,6 +1,5 @@
 let dinnerPopup = document.querySelector("#dinner-popup");
 let newDinnerBtns = document.querySelectorAll(".dinner-btn");
-//let responsibleBtns = document.querySelectorAll(".responsible");
 let closeDinnerPopup = document.querySelector("#close-dinner-popup");
 let dinnerForm = document.querySelector("#new-dinner-form");
 let groupDropdown = document.querySelector("#group-dropdown");
@@ -52,21 +51,38 @@ function setCalendar(groupID){
     let dates = getDatesForCurrentWeek();
     let options = document.querySelectorAll("#group-dropdown option");
     let labels = document.querySelectorAll("label");
-    if(inputCalendar == null){
-        console.log("inputCalendar is null");
-        //TODO: nullstille kalender
-        return;
-    }
-    const dateKeys = Object.keys(inputCalendar);
+    let links = document.querySelectorAll("a");
     if (labels.length > 0) {
         labels.forEach(function (label) {
-            if (!label.textContent.includes( "Ansvarlig: ")){
-                label.remove();
-            }else{
+            if (label.textContent.includes( "Ansvarlig: ")){
                 label.textContent = "Ansvarlig: ";
+            }else if (label.textContent.includes("Middag: ")){
+                label.innerHTML = '<br>' + "Middag: ";
             }
         });
     }
+    if(links.length > 0){
+        links.forEach(function (link) {
+            if (link.textContent.includes("Middag: ")) {
+                // Create a new label element
+                let label = document.createElement("label");
+                label.innerHTML = '<br>' + "Middag: ";
+
+                // Set the common attributes
+                label.setAttribute("id", link.id); // Copy the ID from the link to the new label
+
+                // Replace the link with the new label
+                link.parentNode.replaceChild(label, link);
+            }
+        });
+
+    }
+    if(inputCalendar == null){
+        console.log("inputCalendar is null");
+        return;
+    }
+    const dateKeys = Object.keys(inputCalendar);
+
     for (let j=0; j<options.length; j++){
         if (groupID === options[j].value) {
             console.log("group found");
@@ -92,10 +108,11 @@ function setCalendar(groupID){
                         const currentDate = new Date(dates[k]);
                         currentDate.setHours(0, 0, 0, 0); // Set time to midnight
                         date.setHours(0, 0, 0, 0); // Set time to midnight for the date
+                        let div = document.getElementById(allDays[k]);
                         if (currentDate.getTime() === date.getTime()){
                             console.log("date found");
-                            let div = document.getElementById(allDays[k]);
-                            var label =div.querySelector('.selectedMemberLabel');
+
+                            let label =div.querySelector('.selectedMemberLabel');
                             // Add a label for "responsible" to the day's div
                             label.innerHTML = "Ansvarlig: " + responsible;
                             if (responsible !== "") {
@@ -109,18 +126,48 @@ function setCalendar(groupID){
                             }
 
                             div.appendChild(label);
+                            let elementText = allDays[k] + "-textbox";
+                            let element = div.querySelector("#" + elementText);
+                            let recipe = findRecipesInCalendar(customDinner);
+                            if (recipe != null) {
+                                // Create a link
+                                if(!element){
+                                    element = document.createElement("a");
+                                }
+                                element.innerHTML = '<br>'+"Middag: " + customDinner;
+                                element.href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
+                                element.style.color = 'blue'; // Set the link color
+                                element.style.textDecoration = 'underline'; // Underline the link
+                            } else {
+                                // Create a label
+                                if(!element){
+                                    element = document.createElement("label");
+                                }
+                                element.innerHTML = '<br>' + "Middag: " + customDinner;
+                            }
 
-                            label = document.createElement("label");
-                            label.innerHTML = '<br>' + customDinner;
-                            label.setAttribute("id", allDays[k] + " textbox");
-                            div.appendChild(label);
+                            // Set the common attributes
+                            element.setAttribute("id", allDays[k] + "-textbox");
+
+                            // Append the created element to the 'div'
+                            div.appendChild(element);
                             updateCalendarArray(groupID,k, customDinner);
+                        }else{
+                            let elementText = allDays[k] + "-textbox";
+                            let element = div.querySelector("#" + elementText);
+                            if(!element){
+                                element = document.createElement("label");
+                                element.innerHTML = '<br>' + "Middag: ";
+                                element.setAttribute("id", allDays[k] + "-textbox");
+                                div.appendChild(element);
+                            }
                         }
                     }
                 }
             });
         }
     }
+
 }
 //update calendar array function
 function updateCalendarArray(groupID, index, dinner){
@@ -133,8 +180,8 @@ function updateCalendarArray(groupID, index, dinner){
         }
     });
 }
-// post request to send calendar to server
 
+// post request to send calendar to server
 function sendCalendarToServer() {
     console.log("sending calendar to server");
     const dates = getDatesForCurrentWeek();
@@ -191,13 +238,12 @@ newDinnerBtns.forEach (function (btn)
             alert("Du må logge inn for å legge til i kalenderen");
             return;
         }
-        let day = event.target.parentNode.id;
-        currentDay = day;
+        currentDay = event.target.parentNode.id;
         dinnerPopup.style.display = "block";
     });
 });
 
-var allPopups = document.querySelectorAll('.popup');
+let allPopups = document.querySelectorAll('.popup');
 allPopups.forEach(function (popup) {
     console.log("Closing popup");
     console.log("Popup style before: " + popup.style.display);
@@ -289,7 +335,7 @@ function createMemberPopup(groupData, day) {
     }
 }
 // Add click event listeners to "Responsible" buttons
-var responsibleButtons = document.querySelectorAll('.btn.responsible');
+let responsibleButtons = document.querySelectorAll('.btn.responsible');
 
 responsibleButtons.forEach(function (button) {
     button.addEventListener('click', function () {
@@ -332,18 +378,30 @@ function addDinnerToCalendar() {
         }
     });
     if (event.key === "Enter") {
-        console.log("dinnername: " + dinnerName);
-        let label = document.getElementById(currentDay + " textbox");
-        if (label) {
-            // If it exists, update its content
-            label.innerHTML = '<br>' + dinnerName;
-        } else {
-            label = document.createElement("label");
-            label.innerHTML = '<br>' + dinnerName;
-            label.setAttribute("id", currentDay + " textbox");
-            let div = document.getElementById(currentDay);
-            div.appendChild(label);
+        let element = document.getElementById(currentDay + "-textbox");
+        let recipe = findRecipesInCalendar(dinnerName);
+        if (!element) {
+            if(recipe != null){
+                // Create a link
+                element = document.createElement("a");
+            }else {
+                // Create a label
+                element = document.createElement("label");
+            }
         }
+        element.innerHTML = '<br>' + "Middag: " + dinnerName;
+        if (recipe != null) {
+            element.href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
+            element.style.color = 'blue'; // Set the link color
+            element.style.textDecoration = 'underline'; // Underline the link
+        }
+
+        // Set the common attributes
+        element.setAttribute("id", currentDay + " textbox");
+        let div = document.getElementById(currentDay);
+        // Append the created element to the 'div'
+        div.appendChild(element);
+
         event.preventDefault();
         dinnerPopup.style.display = "none";
         document.querySelector("#dinner-name").value = "";
@@ -413,6 +471,7 @@ function autocomplete(day, text){
         recipeList.innerHTML = "";
     }
 }
+
 function showSuggestions(list) {
     const recipeInput = document.getElementById("dinner-name");
     const resultsList = document.getElementById("search-results");
@@ -445,5 +504,22 @@ function displayGroups(groups){
 
         dropdown.appendChild(option);
     });
+}
+
+function findRecipesInCalendar(dinner) {
+    const matchingRecipes = [];
+
+    Recipes.forEach(recipe => {
+        if (recipe.name === dinner) {
+            matchingRecipes.push(recipe);
+        }
+    });
+
+    if (matchingRecipes.length > 0) {
+        return matchingRecipes[0];
+    }
+
+    console.log("No matches found");
+    return null;
 }
 

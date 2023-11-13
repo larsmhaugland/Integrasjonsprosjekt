@@ -82,6 +82,8 @@ func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
 
 /*****************				USER FUNCTIONS				*****************/
 
+// ReturnCacheUser returns the user with the specified username. It first checks if the user exists in the cache,
+// otherwise it gets the user from the database and adds it to the cache
 func ReturnCacheUser(username string) (User, error) {
 	user, ok := GetCacheData(UserCache, username)
 	if ok {
@@ -95,6 +97,7 @@ func ReturnCacheUser(username string) (User, error) {
 	return retUser, nil
 }
 
+// PatchCacheUser updates the user from the cache and also updates the user in the database
 func PatchCacheUser(user User) error {
 	err := PatchUser(user)
 	if err != nil {
@@ -104,6 +107,7 @@ func PatchCacheUser(user User) error {
 	return nil
 }
 
+// DeleteCacheUser deletes the user from the cache and also deletes the user from the database
 func DeleteCacheUser(userID string) error {
 	err := DeleteUser(userID)
 	if err != nil {
@@ -115,6 +119,8 @@ func DeleteCacheUser(userID string) error {
 
 /*****************				GROUP FUNCTIONS				*****************/
 
+// ReturnCacheGroup returns the group with the specified groupID. It first checks if the group exists in the cache,
+// otherwise it gets the group from the database and adds it to the cache
 func ReturnCacheGroup(groupID string) (Group, error) {
 	group, ok := GetCacheData(GroupCache, groupID)
 	if ok {
@@ -128,6 +134,7 @@ func ReturnCacheGroup(groupID string) (Group, error) {
 	return groupData, nil
 }
 
+// PatchCacheGroup updates the group from the cache and also updates the group in the database
 func PatchCacheGroup(group Group) error {
 	err := PatchGroup(group)
 	if err != nil {
@@ -137,6 +144,7 @@ func PatchCacheGroup(group Group) error {
 	return nil
 }
 
+// DeleteCacheGroup deletes the group from the cache and also deletes the group from the database
 func DeleteCacheGroup(groupID string) error {
 	err := DeleteGroup(groupID)
 	if err != nil {
@@ -148,6 +156,8 @@ func DeleteCacheGroup(groupID string) error {
 
 /*****************				RECIPE FUNCTIONS				*****************/
 
+// ReturnCacherecipe returns the recipe with the specified recipeID. It first checks if the recipe exists in the cache,
+// otherwise it gets the recipe from the database and adds it to the cache
 func ReturnCacheRecipe(recipeID string) (Recipe, error) {
 	recipe, ok := GetCacheData(RecipeCache, recipeID)
 	if ok {
@@ -161,6 +171,7 @@ func ReturnCacheRecipe(recipeID string) (Recipe, error) {
 	return retRecipe, nil
 }
 
+// PatchCacheRecipe updates the recipe from the cache and also updates the recipe in the database
 func PatchCacheRecipe(recipe Recipe) error {
 	err := PatchRecipe(recipe)
 	if err != nil {
@@ -170,6 +181,7 @@ func PatchCacheRecipe(recipe Recipe) error {
 	return nil
 }
 
+// DeleteCacheRecipe deletes the recipe from the cache and also deletes the recipe from the database
 func DeleteCacheRecipe(recipeID string) error {
 	err := DeleteRecipe(recipeID)
 	if err != nil {
@@ -181,6 +193,8 @@ func DeleteCacheRecipe(recipeID string) error {
 
 /*****************				SHOPPING FUNCTIONS				*****************/
 
+// ReturnCacheShoppingList returns the shopping list with the specified listID. It first checks if the
+// shopping list exists in the cache, otherwise it gets the shopping list from the database and adds it to the cache
 func ReturnCacheShoppingList(listID string) (ShoppingList, error) {
 	list, ok := GetCacheData(ShoppingCache, listID)
 	if ok {
@@ -194,6 +208,7 @@ func ReturnCacheShoppingList(listID string) (ShoppingList, error) {
 	return retList, nil
 }
 
+// PatchCacheShoppingList updates the shopping list from the cache and also updates the shopping list in the database
 func PatchCacheShoppingList(list ShoppingList) error {
 	err := PatchShoppingList(list)
 	if err != nil {
@@ -203,6 +218,7 @@ func PatchCacheShoppingList(list ShoppingList) error {
 	return nil
 }
 
+// DeleteCacheShoppingList deletes the shopping list from the cache and also deletes the shopping list from the database
 func DeleteCacheShoppingList(listID string) error {
 	if listID == "" {
 		return errors.New("listID cannot be empty")
@@ -218,6 +234,9 @@ func DeleteCacheShoppingList(listID string) error {
 //NOTE: Not removing from cache if recipe is deleted, will time out after 24 hours
 
 /*****************				CHAT FUNCTIONS				*****************/
+
+// ReturnCacheChat returns the chat with the specified chatID. It first checks if the chat exists in the cache,
+// otherwise it gets the chat from the database and adds it to the cache
 func ReturnCacheChat(chatID string) (Chat, error) {
 	chat, ok := GetCacheData(ChatCache, chatID)
 	if ok {
@@ -231,6 +250,17 @@ func ReturnCacheChat(chatID string) (Chat, error) {
 	return chatData, nil
 }
 
+
+func PatchCacheChat(chat Chat) error {
+	err := PatchChat(chat)
+	if err != nil {
+		return err
+	}
+	ChatCache[chat.DocumentID] = CacheData{chat, time.Now()}
+	return nil
+}
+
+// DeleteCacheChat deletes the chat from the cache and also deletes the chat from the database
 func DeleteCacheChat(chatID string) error {
 	err := DeleteChat(chatID)
 	if err != nil {

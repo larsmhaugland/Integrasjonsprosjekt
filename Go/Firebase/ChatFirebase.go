@@ -38,6 +38,32 @@ func GetAllChats() ([]Chat, error) {
 	return chats, nil
 }
 
+// PatchChat updates the chat data in the firestore database with the specified chatID
+func PatchChat(chat Chat) error {
+	ctx := context.Background()
+	client, err := GetFirestoreClient(ctx)
+	if err != nil {
+		log.Println("error getting Firebase client:", err)
+		return err
+	}
+
+	// Set the data members of the chat that potentially need to be updated
+	data := map[string]interface{}{
+		"name":      chat.Name,
+		"messages":  chat.Messages,
+		"members":   chat.Members,
+		"chatOwner": chat.ChatOwner,
+	}
+
+	// Update the chat document with the new data
+	_, err = client.Collection("chat").Doc(chat.DocumentID).Set(ctx, data)
+	if err != nil {
+		log.Println("Error patching chat:", err)
+		return err
+	}
+	return nil
+}
+
 // GetChatData returns the chat data from the firestore database for the chat with the specified chatID
 func GetChatData(chatID string) (Chat, error) {
 	ctx := context.Background()

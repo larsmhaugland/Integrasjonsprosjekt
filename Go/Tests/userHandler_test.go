@@ -16,6 +16,7 @@ func ResetUserData() {
 	user.Recipes = []string{}
 	user.ShoppingLists = []string{}
 	user.Groups = []string{}
+	user.Chats = []string{}
 	err = Firebase.PatchCacheUser(user)
 	if err != nil {
 		fmt.Println("Error when patching user: " + err.Error())

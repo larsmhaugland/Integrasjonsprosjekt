@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let chatOwner;
     let groupIDSentAsParam = "";
     let editChat;
+    let currentDate = null;
     // USE THIS TO CONNECT TO THE WEBSOCKET WHEN NOT ON DEV DOCKER
     //const socket = new WebSocket("ws://localhost:8080/ws");
     const socket = new WebSocket("wss://10.212.174.249:8080/ws");
@@ -54,8 +55,9 @@ document.addEventListener("DOMContentLoaded", function () {
             content: messageData.content,
             timestamp: messageData.timestamp
         };
-        addMessageToList(formattedMessage);
+        addMessageWithDateToList(formattedMessage);
     });
+
     /***************  ******************************/
 
     onPageRelod();
@@ -140,14 +142,31 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = "block";
     });
 
-    sendMessageButton.addEventListener("click", function () {
+    function sendMessageHandler() {
         const message = messageInput.value.trim();
         messageInput.value = "";
-        sendMessage(message);
-        if (socket.readyState === WebSocket.OPEN){
-            sendMessageSocket(message);
+        if (messageList.firstChild.span === "No messages to display...") {
+            messageList.removeChild(messageList.firstChild);
+        }
+        if (message !== "") {
+            sendMessage(message);
+            if (socket.readyState === WebSocket.OPEN) {
+                sendMessageSocket(message);
+            } else {
+                console.error("Not connected to WebSocket server");
+                window.alert("Not connected to WebSocket server, reload page to display the new message");
+            }
         } else {
-            console.error("Not connected to WebSocket server");
+            console.log("Message is empty, was not sent");
+        }
+    }
+    
+    sendMessageButton.addEventListener("click", sendMessageHandler);
+    
+    messageInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessageHandler();
         }
     });
 
@@ -418,9 +437,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Display the messages
         const messages = chat.messages;
+        date = null;
         if (messages) {
             messages.forEach(message => {
-                addMessageToList(message);
+                addMessageWithDateToList(message);
+                currentDate = getMessageDate(message.timestamp);
             });
         } else {
             const noMessagesItem = document.createElement("li");
@@ -511,8 +532,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         })
         .catch((error) => {
-            console.error('Error fetching chats:', error);
-            alert("Server error when trying to get chats")
+            console.error('Not part of nay chats, or error fetching chats:', error);
         });
     } 
 
@@ -533,9 +553,7 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify(data),
         })
         .then(response => {
-            if (response.status === 201) {
-                //location.reload();
-            } else {
+            if (response.status !== 201) {
                 window.alert("Error sending message");
             }
         })
@@ -695,6 +713,44 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedMinutes = String(minutes).padStart(2, '0');
 
         return `${formattedHours}:${formattedMinutes}`;
+    }
+
+    function getMessageDate(timestamp) {
+        const jsDate = new Date(timestamp);
+        const year = jsDate.getFullYear();
+
+        const months = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        const monthName = months[jsDate.getMonth()];
+
+        const day = String(jsDate.getDate()).padStart(2, '0');
+        return `${monthName} ${day}, ${year}`;
+    }
+
+    function createMessageDateItem(messageDate) {
+        const dateItem = document.createElement("li");
+        dateItem.classList.add("message-date");
+    
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = messageDate;
+    
+        dateItem.appendChild(dateSpan);
+    
+        return dateItem;
+    }
+
+    function addMessageWithDateToList(message) {
+        const messageDate = getMessageDate(message.timestamp);
+
+        if (currentDate !== messageDate) {
+            const dateItem = createMessageDateItem(messageDate);
+            messageList.appendChild(dateItem);
+            currentDate = messageDate;
+        }
+        addMessageToList(message);
     }
 
 });

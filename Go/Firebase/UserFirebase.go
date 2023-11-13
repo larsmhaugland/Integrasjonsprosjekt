@@ -1,13 +1,16 @@
 package Firebase
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
-	"google.golang.org/api/iterator"
 	"log"
 	"time"
+
+	"cloud.google.com/go/firestore"
+	"google.golang.org/api/iterator"
 )
 
+// GetAllUsers returns a slice with User structs,
+// this slice is all the users in the database.
 func GetAllUsers() ([]User, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -15,6 +18,9 @@ func GetAllUsers() ([]User, error) {
 		log.Println("error getting Firebase client:", err)
 		return nil, err
 	}
+
+	// Declare the slice of Users and got through all the documents in the 'users' collection
+	// and add each of them to the users slice
 	var users []User
 	iter := client.Collection("users").Documents(ctx)
 	for {
@@ -97,13 +103,17 @@ func GetAllUsers() ([]User, error) {
 	return users, nil
 }
 
+// GetUserData returns a User struct with the data of the user with the given userID.
 func GetUserData(userID string) (User, error) {
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return User{}, err
 	}
+
+	// Declare the user struct and go through the users collection to find the document with the correct user
 	var user User
 	iter := client.Collection("users").Where("username", "==", userID).Documents(ctx)
 	for {
@@ -137,7 +147,7 @@ func GetUserData(userID string) (User, error) {
 			log.Println("Error; Failed to convert name to string")
 		}
 
-		//Firebase is stupid and stores arrays as []interface{} so we need to convert them to []string
+		//Firebase stores arrays as []interface{} so we need to convert them to []string
 		if _, ok := doc.Data()["shopping-lists"].([]interface{}); ok {
 
 			tmpShoppingLists := doc.Data()["shopping-lists"].([]interface{})
@@ -184,13 +194,16 @@ func GetUserData(userID string) (User, error) {
 	}
 }
 
+// AddUser adds a user to the database.
 func AddUser(user User) error {
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
+
 	//Check if user already exists
 	iter := client.Collection("users").Where("username", "==", user.Username).Documents(ctx)
 	for {
@@ -204,6 +217,7 @@ func AddUser(user User) error {
 		}
 		return ErrUserExists
 	}
+
 	//Add user to database
 	data := map[string]interface{}{
 		"username": user.Username,
@@ -218,13 +232,17 @@ func AddUser(user User) error {
 	return nil
 }
 
+// DeleteUser deletes the user with the given userID from the database.
 func DeleteUser(userID string) error {
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
+
+	// Delete the document with the user to be deleted
 	_, err = client.Collection("users").Doc(userID).Delete(ctx)
 	if err != nil {
 		log.Println("Error deleting user:", err)
@@ -233,13 +251,17 @@ func DeleteUser(userID string) error {
 	return nil
 }
 
+// PatchUser updates the user in the database, with the given userID, with the new data.
 func PatchUser(user User) error {
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return err
 	}
+
+	// Set the data for the updated user document
 	data := map[string]interface{}{
 		"username":       user.Username,
 		"password":       user.Password,
@@ -249,6 +271,8 @@ func PatchUser(user User) error {
 		"name":           user.Name,
 		"chats":          user.Chats,
 	}
+
+	// Update the document with the new data
 	_, err = client.Collection("users").Doc(user.DocumentID).Set(ctx, data)
 	if err != nil {
 		log.Println("Error patching user:", err)
@@ -257,13 +281,16 @@ func PatchUser(user User) error {
 	return nil
 }
 
+// GetUsersFromPartialName returns a slice with usernames that contains the given partialUsername.
 func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
 		log.Println("error getting Firebase client:", err)
 		return nil, err
 	}
+
 	var results []string
 
 	// Get the documents where the partialUsername is found in the username field.
@@ -272,6 +299,7 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 	query := collection.Where("username", ">=", partialUsername).
 		Where("username", "<", partialUsername+"\uf8ff")
 
+	// Get the iterator for the query and go through all the documents in the users collection
 	iter := query.Documents(ctx)
 	for {
 		doc, err := iter.Next()
@@ -287,12 +315,9 @@ func GetUsernamesFromPartialName(partialUsername string) ([]string, error) {
 	return results, nil
 }
 
+// AddChatToUser adds the given chatID to the user with the given username.
 func AddChatToUser(username string, chatID string) error {
-	userData, err := ReturnCacheUser(username)
-	if err != nil {
-		log.Println("error getting user data from cache:", err)
-		return err
-	}
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
@@ -300,6 +325,14 @@ func AddChatToUser(username string, chatID string) error {
 		return err
 	}
 
+	// Get the userdata from cache/database
+	userData, err := ReturnCacheUser(username)
+	if err != nil {
+		log.Println("error getting user data from cache:", err)
+		return err
+	}
+
+	// Create a new slice if there is not already one
 	if userData.Chats == nil {
 		userData.Chats = make([]string, 0)
 	}
@@ -319,12 +352,9 @@ func AddChatToUser(username string, chatID string) error {
 	return nil
 }
 
+// AddChatTogroup creates the group chat for the newly created group.
 func AddChatToGroup(groupID string, chatID string) error {
-	groupData, err := ReturnCacheGroup(groupID)
-	if err != nil {
-		log.Println("error getting user data from cache:", err)
-		return err
-	}
+
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
 	if err != nil {
@@ -332,7 +362,14 @@ func AddChatToGroup(groupID string, chatID string) error {
 		return err
 	}
 
-	// Add the new group to the users groups field
+	// Get the groupdata from cache/database
+	groupData, err := ReturnCacheGroup(groupID)
+	if err != nil {
+		log.Println("error getting user data from cache:", err)
+		return err
+	}
+
+	// Add the chat to the groups chat field
 	_, err = client.Collection("groups").Doc(groupData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "chat", Value: groupData.Chat},
 	})
@@ -340,24 +377,31 @@ func AddChatToGroup(groupID string, chatID string) error {
 		log.Println("error updating user document:", err)
 		return err
 	}
+
 	groupData.Chat = chatID
 	// Update the cache with the modified user data
 	GroupCache[groupID] = CacheData{groupData, time.Now()}
+
 	return nil
 }
 
+// GetUserChats returns a slice with Chat structs,
+// this slice is all the chats the user with the given username is part of.
 func GetUserChats(username string) ([]Chat, error) {
-	// Get the userdata with the chat ID's
+
+	// Get the userdata for the specified user from cache/database
 	userData, err := ReturnCacheUser(username)
 	if err != nil {
 		log.Println("error getting user data from cache:", err)
 		return nil, err
 	}
+
 	// create array to hold the data for the chats
 	chats := make([]Chat, 0)
+
 	// Add all the chats the user is part of to the array
 	for _, chatID := range userData.Chats {
-		log.Println("chatID: ", chatID)
+		// Get the chat data for the current chat from cache/database
 		chatData, err := ReturnCacheChat(chatID)
 		if err != nil {
 			log.Println("error getting chat data from cache:", err)
@@ -369,6 +413,7 @@ func GetUserChats(username string) ([]Chat, error) {
 	return chats, nil
 }
 
+// RemoveChatFromMember removes the given chatID from the user with the given username.
 func RemoveChatFromMember(username string, chatID string) error {
 
 	ctx := context.Background()
@@ -378,20 +423,24 @@ func RemoveChatFromMember(username string, chatID string) error {
 		return err
 	}
 
+	// Get the userdata for the specified user from cache/database
 	userData, err := ReturnCacheUser(username)
 	if err != nil {
 		log.Println("error getting user data from cache:", err)
 		return err
 	}
 
+	// Slice to hold the updated chats
 	updatedChats := make([]string, 0)
 
+	// Add all the chats the user is part of to the slice, except the one to be removed
 	for _, currentChatID := range userData.Chats {
 		if currentChatID != chatID {
 			updatedChats = append(updatedChats, currentChatID)
 		}
 	}
 
+	// Update the users chats field with the new slice
 	_, err = client.Collection("users").Doc(userData.DocumentID).Update(ctx, []firestore.Update{
 		{Path: "chats", Value: updatedChats},
 	})
@@ -402,6 +451,7 @@ func RemoveChatFromMember(username string, chatID string) error {
 
 	userData.Chats = updatedChats
 
+	// Update the cache for the user with the new data
 	UserCache[username] = CacheData{userData, time.Now()}
 
 	return nil
