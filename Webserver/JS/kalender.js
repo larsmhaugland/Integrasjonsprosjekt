@@ -120,46 +120,34 @@ function setCalendar(groupID){
                                     responsibleCalendar[j][k + 1] = responsible[0];
                                 } else {
                                     // Handle the case where [j][k + 1] already exists
-                                    // You can decide how you want to handle this scenario
                                     console.log(`Position [${j}][${k + 1}] already exists`);
                                 }
                             }
-
-                            div.appendChild(label);
                             let elementText = allDays[k] + "-textbox";
-                            let element = div.querySelector("#" + elementText);
+                            let textDiv = div.querySelector("#" + elementText);
+                            textDiv.innerHTML = "";
+                            textDiv.appendChild(label);
                             let recipe = findRecipesInCalendar(customDinner);
                             if (recipe != null) {
                                 // Create a link
-                                if(!element){
-                                    element = document.createElement("a");
-                                }
-                                element.innerHTML = '<br>'+"Middag: " + customDinner;
-                                element.href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
-                                element.style.color = 'blue'; // Set the link color
-                                element.style.textDecoration = 'underline'; // Underline the link
-                            } else {
-                                // Create a label
-                                if(!element){
-                                    element = document.createElement("label");
-                                }
-                                element.innerHTML = '<br>' + "Middag: " + customDinner;
+                                let link = document.createElement("a");
+                                    link.setAttribute("class", "dinner-link")
+
+                                link.innerHTML = '<br>' + customDinner;
+                                let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
+                                link.setAttribute("href", href);
+                                textDiv.appendChild(link);
                             }
-
-                            // Set the common attributes
-                            element.setAttribute("id", allDays[k] + "-textbox");
-
                             // Append the created element to the 'div'
-                            div.appendChild(element);
+                            //div.appendChild(element);
                             updateCalendarArray(groupID,k, customDinner);
                         }else{
                             let elementText = allDays[k] + "-textbox";
-                            let element = div.querySelector("#" + elementText);
-                            if(!element){
-                                element = document.createElement("label");
-                                element.innerHTML = '<br>' + "Middag: ";
-                                element.setAttribute("id", allDays[k] + "-textbox");
-                                div.appendChild(element);
+                            let textDiv = div.querySelector("#" + elementText);
+                            if (textDiv.textContent.trim() === "") {
+                                let label = document.createElement("label");
+                                label.innerHTML = '<br>' + "Ingen middag valgt. ";
+                                textDiv.appendChild(label);
                             }
                         }
                     }

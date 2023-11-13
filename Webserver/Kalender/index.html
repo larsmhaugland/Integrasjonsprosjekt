@@ -16,7 +16,7 @@
         <nav>
                 <a class= "nav" href="../Handleliste/index.html">HANDLELISTE</a>
                 <a class= "nav" href="../Chat/index.html">CHAT</a>
-                <a class= "nav" href="index.html" class="current-page">KALENDER</a>
+                <a class= "nav" href="index.html" id="current-page">KALENDER</a>
                 <a class= "nav" href="../Oppskrifter/index.html">OPPSKRIFTER</a>
                 <button class="log-btn" id="log-in-btn">INNLOGGING</button>
                 <button class="log-btn" id="log-out-btn">LOGG UT</button>
@@ -85,79 +85,72 @@
         </div>
     <h1>Kalender</h1>
     <select name="group" id="group-dropdown">
+        <option>Velg gruppe...</option>
         <!-- Fylles automatisk-->
     </select>
     <div class="container">
-    <div id="mandag">Mandag
-        <button class="btn dinner-btn">Velg middag</button>
-        <!--<button class="btn responsible">Velg den som har ansvar for middagen</button>-->
-        <div class="popup-container">
-            <button class="btn responsible">Velg den som har ansvar for middagen</button>
-            <div class="popup">
-                <div class="member-list"></div>
+    <div id="mandag"><h1>MANDAG</h1>
+            <div id="mandag-textbox">
+                <label class="selectedMemberLabel"> </label>
             </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
         </div>
-        <label class="selectedMemberLabel">Ansvarlig: </label>
     </div>
-    <div id="tirsdag" >Tirsdag
-        <button class="btn dinner-btn">Velg middag</button>
-        <div class="popup-container">
-            <button class="btn responsible">Velg den som har ansvar for middagen</button>
-            <div class="popup">
-                <div class="member-list"></div>
+    <div id="tirsdag" ><h1>TIRSDAG</h1>
+            <div id="tirsdag-textbox">
+                <label class="selectedMemberLabel" </label>
             </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
         </div>
-        <label class="selectedMemberLabel">Ansvarlig: </label>
     </div>
-    <div id="onsdag">Onsdag
-        <button class="btn dinner-btn">Velg middag</button>
-        <div class="popup-container">
-            <button class="btn responsible">Velg den som har ansvar for middagen</button>
-            <div class="popup">
-                <div class="member-list"></div>
+        <div id="onsdag"><h1>ONSDAG</h1>
+            <div id="onsdag-textbox">
+                <label class="selectedMemberLabel"> </label>
             </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
         </div>
-        <label class="selectedMemberLabel">Ansvarlig: </label>
     </div>
-    <div id="torsdag">Torsdag
-        <button class="btn dinner-btn">Velg middag</button>
-        <div class="popup-container">
-            <button class="btn responsible">Velg den som har ansvar for middagen</button>
-            <div class="popup">
-                <div class="member-list"></div>
+    <div id="torsdag"><h1>TORSDAG</h1>
+            <div id="torsdag-textbox">
+                <label class="selectedMemberLabel"> </label>
             </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
         </div>
-        <label class="selectedMemberLabel">Ansvarlig: </label>
     </div>
-    <div id="fredag">Fredag
-        <button class="btn dinner-btn">Velg middag</button>
-        <div class="popup-container">
-            <button class="btn responsible">Velg den som har ansvar for middagen</button>
-            <div class="popup">
-                <div class="member-list"></div>
+    <div id="fredag"><h1>FREDAG</h1>
+            <div id="fredag-textbox">
+                <label class="selectedMemberLabel"> </label>
             </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
         </div>
-        <label class="selectedMemberLabel">Ansvarlig: </label>
     </div>
-    <div id="lordag">Lørdag
-        <button class="btn dinner-btn">Velg middag</button>
-        <div class="popup-container">
-            <button class="btn responsible">Velg den som har ansvar for middagen</button>
-            <div class="popup">
-                <div class="member-list"></div>
+    <div id="lordag"><h1>LØRDAG</h1>
+            <div id="lordag-textbox">
+                <label class="selectedMemberLabel"></label>
             </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
         </div>
-        <label class="selectedMemberLabel">Ansvarlig: </label>
     </div>
-    <div id="sondag">Søndag
-        <button class="btn dinner-btn">Velg middag</button>
-        <div class="popup-container">
-            <button class="btn responsible">Velg den som har ansvar for middagen</button>
-            <div class="popup">
-                <div class="member-list"></div>
+    <div id="sondag"><h1>SØNDAG</h1>
+            <div id="sondag-textbox">
+                <label class="selectedMemberLabel"> </label>
             </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
         </div>
-        <label class="selectedMemberLabel">Ansvarlig: </label>
     </div>
     </div>
     </main>
