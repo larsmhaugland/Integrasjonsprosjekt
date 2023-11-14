@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // USE THIS TO CONNECT TO THE WEBSOCKET WHEN NOT ON DEV DOCKER1
     //const socket = new WebSocket("ws://localhost:8080/ws");
-    const socket = new WebSocket("ws://10.212.174.249:8080/ws");
+    const socket = new WebSocket("wss://10.212.174.249:8080/ws");
     
     /***************** Websocket event listeners ******************/
     
