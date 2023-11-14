@@ -45,10 +45,11 @@ func startHTTPserver() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	log.Println("Websocket endpoint set up")
 	http.HandleFunc("/clear/", clearCacheHandler)
 
 	// coroutine that runs the chat room cleanup function
-	go Socket.RunChatRoomCleanup()
+	// Socket.RunChatRoomCleanup()
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
@@ -82,10 +83,11 @@ func startHTTPSserver() {
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
 	http.HandleFunc("/chat/", API.ChatBaseHandler)
 	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	log.Println("Websocket endpoint set up")
 	http.HandleFunc("/clear/", clearCacheHandler)
 
 	// coroutine that runs the chat room cleanup function
-	go Socket.RunChatRoomCleanup()
+	//go Socket.RunChatRoomCleanup()
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))

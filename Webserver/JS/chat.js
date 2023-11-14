@@ -37,12 +37,15 @@ document.addEventListener("DOMContentLoaded", function () {
     let editChat;
     let currentDate = null;
 
+
+     // USE THIS TO CONNECT TO THE WEBSOCKET WHEN NOT ON DEV DOCKER1
+    //const socket = new WebSocket("ws://localhost:8080/ws");
+    console.log("Connecting to websocket server...");
+    const socket = new WebSocket("wss://10.212.174.249:8080/ws");
+    console.log("Socket:", socket);
+    
     // Function is called when the page is reloaded
     onPageRelod();
-
-    // USE THIS TO CONNECT TO THE WEBSOCKET WHEN NOT ON DEV DOCKER1
-    //const socket = new WebSocket("ws://localhost:8080/ws");
-    const socket = new WebSocket("wss://10.212.174.249:8080/ws");
     
     /***************** Websocket event listeners ******************/
     
@@ -288,18 +291,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams) {
             groupIDSentAsParam = urlParams.get('groupID');
+            console.log("GroupID sent as para:" + groupIDSentAsParam)
             if (groupIDSentAsParam !== null) {
                 // Get the messages sent in the group
                 getChatFromGroupAsync(groupIDSentAsParam)
                     .then(() => {
                         // Make sure the socket is ready before sending the join message
-                        while (socket.readyState !== WebSocket.OPEN) {}
-                        const joinMessage = {
-                            event: "joinChat",
-                            activeChatID: activeChatID,
-                        };
-                        // Jin the chat room for the group
-                        socket.send(JSON.stringify(joinMessage));
+                        if (socket.readyState === WebSocket.OPEN) {
+                            const joinMessage = {
+                                event: "joinChat",
+                                activeChatID: activeChatID,
+                            };
+                            // Join the chat room for the group
+                            socket.send(JSON.stringify(joinMessage));
+                        }
                     })
                     .catch((error) => {
                         console.error("Error:", error);
