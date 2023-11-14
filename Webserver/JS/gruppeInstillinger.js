@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // DOM elements
     const modal = document.querySelector("#search-member-modal");
-    //const openAddMemberButton = document.querySelector("#add-member-btn");
     const closeModalButton = modal.querySelector(".close");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
@@ -15,8 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const leaveGroupButton = document.querySelector("#leave-group");
 
     // Global variables and constants
-   // let selectElementValue = "member";
-    //const roleDropdownMenu = document.querySelectorAll("#role-dropdown");
     const roles = ['Owner', 'Administrator', 'Member'];
     let groupID;
     let GroupOwner;
@@ -24,10 +21,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const Administrators = [];
     const redirectURL = "../index.html";
 
-    // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
-    // the group name was set in the html so it became undefined.
-    // TODO: Fix this to use window.onload without crashing with the window.onload in JS.js
     onPageReload()
+
+    /**
+     * Function that runs when the page is loaded. It retrieves the groupID from the URL parameter,
+     * then uses the groupID to retrieve the group name and the group members. It also hides the leave
+     * group button if the user is the owner of the group and displays the delete group button if the user
+     * is the owner of the group.
+     */
     async function onPageReload() {
         const urlParams = new URLSearchParams(window.location.search);
         groupID = urlParams.get('groupID');
@@ -42,110 +43,6 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = redirectURL;
         }
     }
-    
-    // Open the modal when the button is clicked
-   /* openAddMemberButton.addEventListener('click', function () {
-        modal.style.display = "block";
-    });*/
-
-    // Close the modal when the close button is clicked
-    closeModalButton.addEventListener("click", function () {
-        modal.style.display = "none";
-    });
-
-    deleteGroupButton.addEventListener("click", function(){
-        deleteGroup(groupID)
-    })
-    
-    leaveGroupButton.addEventListener("click", function(){
-        leaveGroup(groupID)
-    });
-
-    // Function to retrieve URL parameter by name
-    /*function getUrlParameter(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name) || '';
-    }*/
-
-
-    function leaveGroup(groupID) {
-        const url = `${API_IP}/group/leaveGroup?groupID=${groupID}&username=${LoggedInUsername}`;
-        const redirectURL = "../index.html";
-        if (LoggedInUsername === GroupOwner){
-            alert("Eieren kan ikke forlate gruppa.");
-            return;
-        }
-        const confirmation = window.confirm("Er du sikker på at du vil forlate gruppa?");
-        if (!confirmation){
-            return;
-        } 
-        // Send a DELETE request to the server
-        fetch(url, {
-            method: "DELETE",
-        })
-        .then((response) => {
-            if (response.status === 200) {
-                alert("Du forlot gruppa.");
-                window.location.href = redirectURL;
-            } else {
-                alert("Serverfeil med å forlate gruppe.");
-            }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-            alert("Server error occured, could not leave the group.");
-        });
-    }
-
-    /**
-     * Sends a DELETE request to the backend endpoint, that deletes the group specified
-     * @param {*} groupID - ID of the group to be deleted.
-     * @returns 
-     */
-    function deleteGroup(groupID) {
-        const url = `${API_IP}/group/deleteGroup?groupID=${groupID}`;
-        const redirectURL = "../index.html";
-        if (LoggedInUsername !== GroupOwner){
-            alert("Only the owner can delete the group");
-            return;
-        }
-        const confirmation = window.confirm("Er du sikker på at du vil slette gruppa?");
-        if (!confirmation){
-            return;
-        } 
-        // Send a DELETE request to the server
-        fetch(url, {
-            method: "DELETE",
-        })
-        .then((response) => {
-            if (response.status === 200) {
-                alert("Group deleted successfully.");
-                window.location.href = redirectURL;
-            } else {
-                alert("Error deleting group.");
-            }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-            alert("Server error occured, could not delete the group.");
-        });
-    }
-
-    // Needs to be async because it uses await to wait for the response from the server before returning the data.
-    async function getGroupName(groupID){
-        const url = `${API_IP}/group/groupName?groupID=${groupID}`;
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Server error occurred, could not get the group name.");
-        }
-    }
-
 
     // Handle search input changes
     searchInput.addEventListener("input", function () {
@@ -167,10 +64,129 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
+    // Close the modal when the close button is clicked
+    closeModalButton.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    // Delete the group when the deleteGroupButton is clicked
+    deleteGroupButton.addEventListener("click", function(){
+        deleteGroup(groupID)
+    })
+    
+    // Leave the group when the leaveGroupButton is clicked
+    leaveGroupButton.addEventListener("click", function(){
+        leaveGroup(groupID)
+    });
+
+    /**
+     * Removes the active user from the group by sending a delete request to the backend API with the
+     * appropriate username and groupID
+     * @param {string} groupID - Unique identifier of the group to leave
+     * @returns {void}
+     */
+    function leaveGroup(groupID) {
+        const url = `${API_IP}/group/leaveGroup?groupID=${groupID}&username=${LoggedInUsername}`;
+        
+        // URL the user is sent to after leaving the group
+        const redirectURL = "../index.html";
+        
+        if (LoggedInUsername === GroupOwner){
+            alert("Eieren kan ikke forlate gruppa.");
+            return;
+        }
+
+        // Make sure the user intended to leave the group
+        if (!window.confirm("Er du sikker på at du vil forlate gruppa?")){
+            return;
+        } 
+        
+        // Send a DELETE request to the server
+        fetch(url, {
+            method: "DELETE",
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                alert("Du forlot gruppa.");
+                window.location.href = redirectURL;
+            } else {
+                alert("Serverfeil med å forlate gruppe.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("Server error occured, could not leave the group.");
+        });
+    }
+
+    /**
+     * Deletes a group based on the provided group ID. Only the owner of the group
+     * can perform this action.
+     * @param {string} groupID - TRhe unique identifier of the group to delete
+     * @returns {void}
+     */
+    function deleteGroup(groupID) {
+        
+        const url = `${API_IP}/group/deleteGroup?groupID=${groupID}`;
+
+        // URL to send the user to after deleting the group
+        const redirectURL = "../index.html";
+
+        // Only owner can delete the group
+        if (LoggedInUsername !== GroupOwner){
+            alert("Only the owner can delete the group");
+            return;
+        }
+        
+        // Make sure the owner intended to delete the group
+        if (!window.confirm("Er du sikker på at du vil slette gruppa?")){
+            return;
+        } 
+
+        // Send a DELETE request to the server
+        fetch(url, {
+            method: "DELETE",
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                alert("Group deleted successfully.");
+                window.location.href = redirectURL;
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("Server error occured, could not delete the group.");
+        });
+    }
+
+    /**
+     * Gets the name of the group from the database based on the provided group ID
+     * @asyn - To make sure that the function waits for the response from the server
+     * @param {string} groupID - The unique identifier of the group to get the name for
+     * @returns {string} - The name of the group
+     */
+    async function getGroupName(groupID){
+        const url = `${API_IP}/group/groupName?groupID=${groupID}`;
+        
+        try {
+            // Send a GET request to the server
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            // Return the name of the group
+            return await response.json();
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Server error occurred, could not get the group name.");
+        }
+    }
+
     /**
      * Updates the suggestions for members to add after the user have entered in partial or full
      * username of the person they wish to add to their group
      * @param {*} results - The usernames of the users that corresponded to the search
+     * @returns {void}
      */
     function updateMemberSuggestions(results) {
 
@@ -230,12 +246,17 @@ document.addEventListener("DOMContentLoaded", function () {
      * then communicates and correctly adds the user to the group in the database.
      * @param {*} username - username for the user to be added to the group
      * @param {*} groupID - ID of the group the user will be added to
+     * @returns {void}
      */
     function addMemberToGroup(username, groupID) {
+        
+        // Only owner and administrators can add members to the group
         if (LoggedInUsername !== GroupOwner && !Administrators.includes(LoggedInUsername)){
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
+
+        // URL for the backend endpoint
         const url = `${API_IP}/group/members`;
         
         // Request body with the information needed for the backend to correctly add member to group
@@ -243,7 +264,8 @@ document.addEventListener("DOMContentLoaded", function () {
             username: username,
             groupID: groupID,
         });
-        // Send a POST request to the backend f
+
+        // Send a POST request to the backend endpoint
         fetch(url, {
             method: "POST",
             headers: {
@@ -267,17 +289,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /**
      * Sends a GET request to the backend endpoint to retrieve the data for the group members
+     * @async - needed to make sure the function waits for the response from the server before 
+     *          trying to renderthe group members
      * @param {*} groupID - the group to retrieve the members from
+     * @returns {void}
      */
     async function fetchGroupMembers(groupID) {
+        // Endpoint URL
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
+        
         try {
+            // Send a GET request to the server
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Error with request to endpoint. Status: ${response.status}`);
             }
             const data = await response.json();
-            renderGroupMembers(data); // Move this line here to wait for the fetch operation to complete
+            // Render the group members after the API response has been received
+            renderGroupMembers(data); 
         } catch (error) {
             console.error('Error fetching group members:', error);
             alert("Server error when trying to get group members");
@@ -289,6 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * Creates all the html elements to render for each group memeber and also gives them the correct
      * values and initializes eventlisteners where needed.
      * @param {*} groupMembers - the members of the group with their corresponding data fields
+     * @returns {void}
      */
     function renderGroupMembers(groupMembers) {
 
@@ -316,6 +346,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const select = document.createElement('select');
             select.className = 'role-dropdown';
 
+            // Add the roles to the dropdown
             roles.forEach((role) => {
                 const option = document.createElement('option');
                 option.value = role.toLowerCase(); // Use lowercase value for consistency
@@ -328,6 +359,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 initialValue = select.value;
             });
 
+            // Add an event listener to handle role updates
             select.addEventListener('change', (event) => {
                 // Get the selected role from the dropdown menu
                 const selectedRole = event.target.value;
@@ -336,18 +368,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 const parentElement = select.parentElement;
                 const username = parentElement.querySelector("span").textContent;
                 
+                // Function to update the role for the member
                 updateRoleForMember(username, selectedRole, initialValue);
             })
             
             // Set the selected option based on the member's role
             select.value = member.roleName.toLowerCase(); 
-            console.log("select.value: " + member.roleName.toLowerCase());
+            
+            // Store the owner and administrator usernames
             if (member.roleName.toLowerCase() === "owner"){
                 GroupOwner = member.username;
             }
             if (member.roleName.toLowerCase() === "administrator"){
                 Administrators.push(member.username);
             }
+
              // Create the delete button
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Fjern medlem';
@@ -355,7 +390,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Add an event listener to handle member deletion
             deleteButton.addEventListener('click', () => {
-                deleteMember(member.username);
+                if (LoggedInUsername !== member.username){
+                    deleteMember(member.username);
+                } else {
+                    alert("You cannot delete yourself from the group");
+                }
             });
 
             // Append the elements to the list item
@@ -367,6 +406,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // Append the list item to the group members list
             groupMembersListSettings.appendChild(listItem);
         });
+
+        // Create the add member button
         const addMemberButton = document.createElement('button');
         addMemberButton.textContent = 'Legg til medlem';
         addMemberButton.id = 'add-member-btn';
@@ -378,48 +419,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /**
      * Sends a DELETE request to the backend with the username of the user to delete from the group
-     * @param {*} username username to delete from the group
+     * @param {string} username - Unique username to delete from the group
+     * @returns {void}
      */
     function deleteMember(username) {
+        // Only owner and administrators can delete members from the group
         if (LoggedInUsername !== GroupOwner && !Administrators.includes(LoggedInUsername)){
             alert("Only an owner or administrator can add a member to the group");
             return;
         }
+
+        // URL for the backend endpoint
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}&username=${encodeURIComponent(username)}`;
-    
+        
+        // Send a DELETE request to the backend endpoint
         fetch(url, {
-            method: 'DELETE', // HTTP Delete method
+            method: 'DELETE', 
         })
-            .then((response) => {
-                if (response.status === 200) {
-                    // Member deleted successfully
-                    alert(`Member ${username} deleted from the group.`);
-                    //If user removed himself from the group, redirect to homepage
-                    if (username === sessionStorage.getItem("username")){
-                        window.location.replace("../index.html");
-                        return;
-                    }
-                    // Update the group display
-                    fetchGroupMembers(groupID);
-                } else {
-                    alert(`Error deleting member ${username} from the group.`);
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                alert("Server error when trying to delete the user from the datbase");
-            });
+        .then((response) => {
+            if (response.status === 200) {
+                // Member deleted successfully
+                alert(`Member ${username} deleted from the group.`);
+                // Update the group display
+                fetchGroupMembers(groupID);
+            } else {
+                alert(`Error deleting member ${username} from the group.`);
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("Server error when trying to delete the user from the datbase");
+        });
     }
 
     /**
      * Sends the PATCH request to the backend endpoint to update the role for the specficied user
-     * @param {*} username - username to update the role for
-     * @param {*} newRole - new role for the username
+     * @param {string} username     - username to update the role for
+     * @param {string} newRole      - new role for the username
+     * @param {string} initialValue - the initial role for the username
      */
     function updateRoleForMember(username, newRole, initialValue){
-        console.log("GroupOwner: " + GroupOwner);
-        console.log("LoggedInUsername: " + LoggedInUsername);
+        
+        // Make sure an administrator or owner is trying to update the role
         if (LoggedInUsername !== GroupOwner && !Administrators.includes(LoggedInUsername)){
+            
             // Get the list items inside the ul element
             const listItems = groupMembersListSettings.querySelectorAll("li");
             listItems.forEach((listItem) => {
@@ -439,7 +482,10 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Only the owner can update the role of a member");
             return;
         }
+
+        // URL for the backend endpoint
         const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
+        // Send a PATCH request to the backend endpoint
         fetch(url, {
             method: 'PATCH',
         })
@@ -456,11 +502,20 @@ document.addEventListener("DOMContentLoaded", function () {
             })
     }
 
+    /**
+     * Hides the leave group button if the user is the owner of the group
+     * @returns {void}
+     */
     function hideLeaveIfOwner() {;
         if (LoggedInUsername === GroupOwner){
             leaveGroupButton.style.display = "none";
         }
     }
+
+    /**
+     * Displays the delete group button if the user is the owner of the group
+     * @returns {void}
+     */
     function displayDeleteIfOwner() {
         if (LoggedInUsername === GroupOwner){
             deleteGroupButton.style.display = "block";

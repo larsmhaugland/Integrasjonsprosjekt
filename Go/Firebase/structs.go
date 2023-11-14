@@ -84,7 +84,7 @@ type AddGroupMember struct {
 	GroupID  string `json:"groupID"`
 }
 
-// GroupMemberNameRole is used when getting members of a group, 
+// GroupMemberNameRole is used when getting members of a group,
 // to get both the username and rolename as individual strings
 type GroupMemberNameRole struct {
 	Username string `json:"username"`

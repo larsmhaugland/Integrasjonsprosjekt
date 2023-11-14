@@ -9,6 +9,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var allowedIPAddress = "10.212.174.249:8080"
+
+// ConnectionInfo stores the websocket connection and the last message time
 type ConnectionInfo struct {
 	Connection      *websocket.Conn
 	LastMessageTime time.Time
@@ -17,64 +20,79 @@ type ConnectionInfo struct {
 // Map to track clients in chat rooms
 var chatRooms = make(map[string]map[*ConnectionInfo]bool)
 
+// Upgrader for the websocket connection
 var Upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true },
+	CheckOrigin: func(r *http.Request) bool {
+		remoteAddr := r.RemoteAddr
+		return remoteAddr == allowedIPAddress
+	},
 }
 
+// WebSocketHandler handles the websocket connection from the user
+// It upgrades the HTTP connection to a websocket connection and then runs
+// the handleMessage function
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Upgrade the HTTP connection to a websocket connection
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	log.Println("WebSocketHandler() is running")
+	// Listen to messages from the websocket connection
 	handleMessage(conn)
 	defer conn.Close()
 }
 
+// handleMessage listens to messages from the websocket connection
+// and handles them according to the event type of the message
 func handleMessage(conn *websocket.Conn) {
 
-	connectionInfo := &ConnectionInfo{
-		Connection:      conn,
-		LastMessageTime: time.Now(), // Set the initial LastMessageTime
-	}
+	// Unterminated loop that listens to messages and handles them
 	for {
-		messageType, p, err := conn.ReadMessage()
+
+		// Try to read a message from the websocket connection
+		messageType, data, err := conn.ReadMessage()
 		if err != nil {
 			log.Println("Error reading message:", err)
 			return
 		}
-		log.Println("Iam here")
+
+		// Make sure the message is a text message
 		if messageType == websocket.TextMessage {
-			log.Println("Received message:", string(p))
+			log.Println("Received message:", string(data))
+
+			// Set the lastMessageTime to the current time
+			connectionInfo := &ConnectionInfo{
+				Connection:      conn,
+				LastMessageTime: time.Now(),
+			}
+
 			// Parse the received JSON message
 			var messageData map[string]interface{}
-			if err := json.Unmarshal(p, &messageData); err != nil {
+			err := json.Unmarshal(data, &messageData)
+			if err != nil {
 				log.Println("Error unmarshaling JSON:", err)
 				continue
 			}
 
+			// Mesaage must have an event field to identify what to do with the message
 			event, ok := messageData["event"].(string)
 			if !ok {
 				log.Println("Received message without 'event' field.")
-				continue
+				break;
 			}
 
+			// Get the message data from the message
 			message, _ := messageData["message"].(map[string]interface{})
-			if !ok {
-				log.Println("Received message without 'message' field.")
-				continue
-			}
-			log.Println("message", message)
 
-			// Handle the event and message as needed
+			// Handle the message according to the event type
 			switch event {
 			case "joinChat":
 				// Handle the joinChat event
-				log.Println("Trying to get activeCHatID")
 				activeChatID, ok := messageData["activeChatID"].(string)
 				if ok {
 					joinChatRoom(connectionInfo, activeChatID)
@@ -102,18 +120,19 @@ func handleMessage(conn *websocket.Conn) {
 
 // Handle the chatMessage event
 func broadcastMessageToRoom(connInfo *ConnectionInfo, messageData map[string]interface{}) {
-	// Marshal the message to JSON
+
 	messageData["timestamp"] = time.Now()
-	log.Println("message: ", messageData)
+
+	// Marshal the message to JSON
 	messageJSON, jsonErr := json.Marshal(messageData)
 	if jsonErr != nil {
 		log.Println("Error marshaling messageData:", jsonErr)
 		return
 	}
 
-	for roomConnInfo := range chatRooms[messageData["activeChatID"].(string)] {
+	for roomConn := range chatRooms[messageData["activeChatID"].(string)] {
 		// Broadcast the message to clients in the same room
-		err := roomConnInfo.Connection.WriteMessage(websocket.TextMessage, messageJSON)
+		err := roomConn.Connection.WriteMessage(websocket.TextMessage, messageJSON)
 		if err != nil {
 			log.Printf("Error sending message to client: %v\n", err)
 		}
@@ -144,28 +163,39 @@ func leaveChatRoom(connInfo *ConnectionInfo, activeChatID string) {
 	}
 }
 
-
-/*
+// chatRoomCleanup checks when the last message was received in each chat room
+// and closes the room if it is idle for too long
 func chatRoomCleanup() {
 	for activeChatID, room := range chatRooms {
-		// Define a time threshold to determine if a room is idle (e.g., 30 minutes).
-		// You can adjust the duration as needed.
+
+		// Set the time threshold for a room to be considered idle
 		idleThreshold := time.Duration(30) * time.Minute
 
 		// Calculate the last time a message was received in this room.
-		// You need to keep track of the last message time in your application.
-		// For this example, we assume a global variable "lastMessageTime" is used.
 		lastMessageTime := getLastMessageTime(room)
 
+		// Close the room if it is idle.
 		if time.Since(lastMessageTime) > idleThreshold {
-			// The room is idle. Clean it up.
 			closeChatRoom(activeChatID)
 		}
 	}
 }
 
+// RunChatRoomCleanup periodiaqlly runs chat room cleanup in the background
+func RunChatRoomCleanup() {
+	// Unterminated loop that runs the cleanup function at regular intervals
+	for {
+		// Sleep for 5 minutes, so it runs with 5 minutes time intervals
+		time.Sleep(time.Duration(5) * time.Minute)
+		// Run the cleanup function
+		chatRoomCleanup()
+	}
+}
+
+// getLastMessageTime returns the time of the last message received in the room
 func getLastMessageTime(room map[*ConnectionInfo]bool) time.Time {
 	var latestTime time.Time
+	// Go through the connections in the room an check the last message time for each of them
 	for connInfo := range room {
 		if connInfo.LastMessageTime.After(latestTime) {
 			latestTime = connInfo.LastMessageTime
@@ -174,14 +204,16 @@ func getLastMessageTime(room map[*ConnectionInfo]bool) time.Time {
 	return latestTime
 }
 
+// closeChatRoom closes the specified chat room
 func closeChatRoom(activeChatID string) {
 	if chatRooms[activeChatID] != nil {
+
+		// CLose all the connections in the chatroom
 		for connInfo := range chatRooms[activeChatID] {
-			// Close and delete connections in the room.
 			connInfo.Connection.Close()
 		}
+
 		// Delete the room from the map.
 		delete(chatRooms, activeChatID)
 	}
 }
-*/
