@@ -65,8 +65,7 @@ func TestDeleteGroup(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// Call the DeleteGroup function with the request and response recorder
-	handler := http.HandlerFunc(DeleteGroupTest)
-	handler.ServeHTTP(rr, req)
+	DeleteGroupTest(rr, req)
 
 	// Check the status code of the response recorder
 	if status := rr.Code; status != http.StatusOK {

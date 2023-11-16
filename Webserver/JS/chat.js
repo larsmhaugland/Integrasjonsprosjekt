@@ -39,8 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
      // USE THIS TO CONNECT TO THE WEBSOCKET WHEN NOT ON DEV DOCKER1
-    const socket = new WebSocket("ws://localhost:8080/ws");
-    //const socket = new WebSocket("wss://10.212.174.249:8080/ws");
+    //const socket = new WebSocket("ws://localhost:8080/ws");
+    const socket = new WebSocket("wss://10.212.174.249:8080/ws");
     
     // Function is called when the page is reloaded
     onPageRelod();
