@@ -30,7 +30,6 @@ func GetAllUsers() ([]User, error) {
 			log.Println("Error getting next document:", err)
 			break
 		}
-		err = doc.DataTo(&user)
 		user.DocumentID = doc.Ref.ID
 		if err != nil {
 			log.Println("Error converting document:", err)
@@ -388,7 +387,6 @@ func AddChatToGroup(groupID string, chatID string) error {
 // GetUserChats returns a slice with Chat structs,
 // this slice is all the chats the user with the given username is part of.
 func GetUserChats(username string) ([]Chat, error) {
-
 	// Get the userdata for the specified user from cache/database
 	userData, err := ReturnCacheUser(username)
 	if err != nil {
@@ -405,9 +403,9 @@ func GetUserChats(username string) ([]Chat, error) {
 		chatData, err := ReturnCacheChat(chatID)
 		if err != nil {
 			log.Println("error getting chat data from cache:", err)
-			return nil, err
+		} else {
+			chats = append(chats, chatData)
 		}
-		chats = append(chats, chatData)
 	}
 
 	return chats, nil

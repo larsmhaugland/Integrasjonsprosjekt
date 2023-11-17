@@ -126,6 +126,8 @@ function login(){
 
         if (response.status === 200){
             sessionStorage.setItem("loggedIn", "true");
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("username", username);
             sessionStorage.setItem("username", username);
             console.log("Logged in as: " + username);
             let loginForm = document.querySelector("#log-in-popup");

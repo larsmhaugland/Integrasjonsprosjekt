@@ -118,7 +118,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Could not patch user", http.StatusInternalServerError)
 			}
 		}
-		
+
 		//Delete the chat and group from Firebase
 		err = Firebase.DeleteCacheChat(group.Chat)
 		if err != nil {
@@ -357,7 +357,6 @@ func GroupScheduleGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
 func GroupSchedulePostHandler(w http.ResponseWriter, r *http.Request) {

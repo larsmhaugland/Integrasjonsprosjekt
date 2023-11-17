@@ -75,3 +75,8 @@
     text-decoration: none;
 }
 
+.single-recipe-content li {
+    margin-left: 80px;
+    padding: 0;
+}
+
