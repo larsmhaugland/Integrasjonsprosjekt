@@ -184,6 +184,10 @@ function registerUser(){
     let passwordConf = document.querySelector("#password-reg-conf").value;
     let name = document.querySelector("#name-reg").value;
     let passwordMismatch = document.querySelector("#password-mismatch");
+    if (username === "" || password === "" || passwordConf === "" || name === ""){
+        alert("Alle feltene må fylles ut")
+        return;
+    }
     if (password !== passwordConf){
         passwordMismatch.style.display = "block";
         console.log("Passwords do not match");

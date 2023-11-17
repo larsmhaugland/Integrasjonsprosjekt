@@ -25,8 +25,9 @@ var Upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		remoteAddr := r.RemoteAddr
-		return remoteAddr == allowedIPAddress
+		return true
+		/*remoteAddr := r.RemoteAddr
+		return remoteAddr == allowedIPAddress*/
 	},
 }
 
@@ -34,23 +35,24 @@ var Upgrader = websocket.Upgrader{
 // It upgrades the HTTP connection to a websocket connection and then runs
 // the handleMessage function
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
-
+	log.Println("Received websocket connection request")
 	// Upgrade the HTTP connection to a websocket connection
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
+	log.Println("Upgraded connection to websocket")
 	// Listen to messages from the websocket connection
 	handleMessage(conn)
+
 	defer conn.Close()
 }
 
 // handleMessage listens to messages from the websocket connection
 // and handles them according to the event type of the message
 func handleMessage(conn *websocket.Conn) {
-
+	log.Println("Listening to messages from websocket connection")
 	// Unterminated loop that listens to messages and handles them
 	for {
 
@@ -83,7 +85,7 @@ func handleMessage(conn *websocket.Conn) {
 			event, ok := messageData["event"].(string)
 			if !ok {
 				log.Println("Received message without 'event' field.")
-				break;
+				break
 			}
 
 			// Get the message data from the message

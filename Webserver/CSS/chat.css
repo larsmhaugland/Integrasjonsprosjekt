@@ -1,14 +1,14 @@
 /* Styling for the main chat application container */
 .chat-app {
     display: flex;
-    height: 90.00vh;
+    height: 87.00vh;
 }
 
 /* Styling for the chat list on the left-hand side */
 .chat-list {
     width: min-content;
     max-width: 30.00vw;
-    background: white;
+    background-color: #bcffbf;
     margin-top: 1.00vh;
     padding: 1.00vh;
     border-radius: 1.00vh;
@@ -27,7 +27,6 @@
 /* Styling for the chat list search field */
 #filter-chats-list{
     border: 2px solid black;
-
 }
 
 /* Styling for the "Create Chat" button */
@@ -82,7 +81,7 @@
     margin-top: 1.00vh;
     margin-left: 1.00vw;
     padding: 1.00vh;
-    background: white;
+    background-color: #bcffbf;
     border-radius: 1.00vh;
     display: flex;
     flex-direction: column;
@@ -106,9 +105,14 @@
 
 /* Styling for the "Leave Chat" button */
 #leave-chat-button {
-    margin-left: 15.60vw; 
-    background-color: #0B5D1E;
-    color: black;
+    background: #0B5D1E;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 1.00vh 2.00vw;
+    border-radius: 1.00vh;
+    cursor: pointer;
+    margin-left: 15.00vw;
 }
 
 /* Styling for the "Edit Chat" button (with an icon) */
@@ -131,15 +135,37 @@
 .chat-messages {
     flex: 1;
     overflow-y: auto;
+    margin-top: 2.00vh;
     padding: 1.00vh;
+    border-radius: 1.0vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Styling for individual chat messages */
-.message {
-    background: #80AB82;
-    margin: 0.50vh; 
-    padding: 1.00vh;
+/* Styling for individual chat messages from other users */
+.message-received{
+    margin: 0.50vh;
     border-radius: 1.00vh;
+    padding: 1.00vh;
+    min-width: 20%; 
+    max-width: 55%; 
+    width: fit-content;  
+    word-wrap: break-word;
+    align-self: flex-start;
+    background: #80AB82; 
+}
+
+/* Styling for individual chat messages from sender */
+.message-sent {
+    margin: 0.50vh;
+    border-radius: 1.00vh;
+    padding: 1.00vh;
+    width: fit-content;  
+    min-width: 20%; 
+    max-width: 55%; 
+    word-wrap: break-word;
+    
+    background: #80AB82; 
 }
 
 /* Styling for the message header within chat messages */

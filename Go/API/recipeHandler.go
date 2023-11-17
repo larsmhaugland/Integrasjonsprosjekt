@@ -315,3 +315,4 @@ var ExampleRecipes = []Firebase.Recipe{
 		Difficulty:  2,
 	},
 }
+

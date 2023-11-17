@@ -37,12 +37,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let editChat;
     let currentDate = null;
 
+
+     // USE THIS TO CONNECT TO THE WEBSOCKET WHEN NOT ON DEV DOCKER1
+    //const socket = new WebSocket("ws://localhost:8080/ws");
+    const socket = new WebSocket("wss://10.212.174.249:8080/ws");
+    
     // Function is called when the page is reloaded
     onPageRelod();
-
-    // USE THIS TO CONNECT TO THE WEBSOCKET WHEN NOT ON DEV DOCKER1
-    //const socket = new WebSocket("ws://localhost:8080/ws");
-    const socket = new WebSocket("ws://10.212.174.249:8080/ws");
     
     /***************** Websocket event listeners ******************/
     
@@ -288,25 +289,56 @@ document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams) {
             groupIDSentAsParam = urlParams.get('groupID');
+            console.log("GroupID sent as para:" + groupIDSentAsParam)
             if (groupIDSentAsParam !== null) {
-                // Get the messages sent in the group
-                getChatFromGroupAsync(groupIDSentAsParam)
-                    .then(() => {
-                        // Make sure the socket is ready before sending the join message
-                        while (socket.readyState !== WebSocket.OPEN) {}
+                try {
+                    await getChatFromGroupAsync(groupIDSentAsParam);
+                    
+                    await waitForSocketOpenOrTimeout();
+                    
+                    // If the connection failed, do not send the join message to the websocket
+                    if (socket.readyState === WebSocket.OPEN) {
+                        console.log("Joining chat now");
                         const joinMessage = {
                             event: "joinChat",
                             activeChatID: activeChatID,
                         };
-                        // Jin the chat room for the group
+                        // Join the chat room for the group
                         socket.send(JSON.stringify(joinMessage));
-                    })
-                    .catch((error) => {
-                        console.error("Error:", error);
-                    });
+                    }
+
+                } catch (error) {
+                    console.error("Error:", error);
+                }
             }
         }
     }
+
+
+    /**
+     * Waits for the WebSocket connection to open before sending the join message
+     * @returns {void}
+     */
+    function waitForSocketOpenOrTimeout() {
+        return new Promise((resolve) => {
+            const maxTime = 5000; // Maximum time to wait in milliseconds (5 seconds)
+            const checkInterval = 500; // Check interval in milliseconds
+    
+            const interval = setInterval(() => {
+                if (socket.readyState === WebSocket.OPEN) {
+                    console.log("WebSocket connection open");
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, checkInterval);
+    
+            setTimeout(() => {
+                clearInterval(interval);
+                resolve();
+            }, maxTime);
+        });
+    }
+
 
     /**
      * Sends the message to the backend API and the websocket.
@@ -554,6 +586,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 addMessageWithDateToList(message);
                 currentDate = getMessageDate(message.timestamp);
             });
+            messageList.scrollTop = messageList.scrollHeight;
         } else {
 
             // If there are no chat messages display an message saying so
@@ -588,7 +621,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
         // Create the message container
         const messageContainer = document.createElement("div");
-        messageContainer.classList.add("message");
+        messageContainer.classList.add(message.sender === username ? "message-sent" : "message-received");
     
         // Create the message header
         const messageHeader = document.createElement("div");
@@ -597,7 +630,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Create the sender span
         const senderSpan = document.createElement("span");
         senderSpan.classList.add("message-sender");
-        senderSpan.textContent = message.sender + ":";
+        senderSpan.textContent = (message.sender === username) ? "You" + ":": message.sender + ":";
     
         // Create the timestamp span
         const timestampSpan = document.createElement("span");
@@ -959,6 +992,7 @@ document.addEventListener("DOMContentLoaded", function () {
             currentDate = messageDate;
         }
         addMessageToList(message);
+        messageList.scrollTop = messageList.scrollHeight;
     }
 
 });

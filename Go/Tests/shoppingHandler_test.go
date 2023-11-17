@@ -9,7 +9,7 @@ import (
 	"os"
 	"prog-2052/API"
 	"prog-2052/Firebase"
-	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -17,10 +17,8 @@ func TestShoppingHandler(t *testing.T) {
 	os.Chdir("../")
 	wd, _ := os.Getwd()
 	fmt.Println("Working directory: " + wd)
-	Firebase.InitCache()
 	var shoppingListID string
-	ResetUserData()
-	ResetGroupData()
+	ResetGroupData("testgroup", "testchat", "testuser", "testrecipe", false)
 
 	t.Run("TestShoppingPost", func(t *testing.T) {
 		testShoppingList := Firebase.ShoppingList{
@@ -68,7 +66,7 @@ func TestShoppingHandler(t *testing.T) {
 	})
 
 	t.Run("TestShoppingGet", func(t *testing.T) {
-		// Prepare a request to pass to our handler. We don't have any query parameters for now, so we'll pass 'nil' as the third parameter.
+		// Prepare a request to pass to our handler.
 		req, err := http.NewRequest(http.MethodGet, "testuser", nil)
 		if err != nil {
 			t.Fatal(err)
@@ -87,32 +85,19 @@ func TestShoppingHandler(t *testing.T) {
 				status, http.StatusOK)
 		}
 
-		// Check the response body is what we expect.
-		expected := Firebase.ShoppingList{
-			Assignees: []string{"testuser"},
-			List: map[string]Firebase.ShoppingListItem{
-				"Iste Rema": {
-					Quantity: "1",
-					Category: "necessity",
-				},
-				"Kjøttdeig": {
-					Quantity: "1",
-					Category: "Amundfôr",
-				},
-			},
-		}
+		expected := `[{"documentID":"testlist","assignees":["testuser"],"list":{"itemID2":{"complete":false,"quantity":"1","category":"test-category"}}},{"documentID":"","assignees":["testuser"],"list":{"Iste Rema":{"complete":false,"quantity":"1","category":"necessity"},"Kjøttdeig":{"complete":false,"quantity":"1","category":"Amundfôr"}}}]`
 		var actual []Firebase.ShoppingList
 		err = json.Unmarshal(rr.Body.Bytes(), &actual)
 		if err != nil {
 			t.Errorf("Error when unmarshalling response body: %v", err)
 		}
-		if len(actual) != 1 {
+		if len(actual) != 2 {
 			t.Errorf("handler returned wrong number of shopping lists: got %v want %v",
 				len(actual), 1)
 		} else {
-			if !reflect.DeepEqual(actual[0], expected) {
+			if strings.TrimSuffix(rr.Body.String(), "\n") != expected {
 				t.Errorf("handler returned unexpected body: got %v want %v",
-					actual, expected)
+					rr.Body.String(), expected)
 			}
 		}
 	})

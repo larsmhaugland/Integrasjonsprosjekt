@@ -81,6 +81,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, "Could not get the group", http.StatusInternalServerError)
 		}
+		
 		//Remove image from server
 		ImagePath := "/UsrImages/"
 		if r.Host == "localhost:8080" {
@@ -401,6 +402,7 @@ func GroupSchedulePostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+
 func GroupScheduleDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
@@ -456,6 +458,10 @@ func GroupShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 func GroupShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	groupID := r.URL.Query().Get("groupID")
 	group, err := Firebase.ReturnCacheGroup(groupID)
+	if err != nil {
+		http.Error(w, "Error while getting group: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	listId := group.ShoppingLists[0]
 	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
