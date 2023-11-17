@@ -308,7 +308,6 @@ func TestChatMembersPostHandler(t *testing.T) {
 
 func TestGetChatData(t *testing.T) {
 	ResetGroupData("testgroup", "testchat", "testuser", "testrecipe", false)
-	// Assume the groupID for testing
 	groupID := "testgroup"
 
 	// Create a request with the groupID parameter

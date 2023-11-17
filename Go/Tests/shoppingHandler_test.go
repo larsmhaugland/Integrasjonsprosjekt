@@ -66,7 +66,7 @@ func TestShoppingHandler(t *testing.T) {
 	})
 
 	t.Run("TestShoppingGet", func(t *testing.T) {
-		// Prepare a request to pass to our handler. We don't have any query parameters for now, so we'll pass 'nil' as the third parameter.
+		// Prepare a request to pass to our handler.
 		req, err := http.NewRequest(http.MethodGet, "testuser", nil)
 		if err != nil {
 			t.Fatal(err)

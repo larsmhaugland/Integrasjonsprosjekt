@@ -461,7 +461,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateRoleForMember(username, newRole, initialValue){
         
         // Make sure an administrator or owner is trying to update the role
-        if (LoggedInUsername !== GroupOwner && !Administrators.includes(LoggedInUsername)){
+        if (LoggedInUsername !== GroupOwner || newRole === "owner" || initialValue === "owner"){
             
             // Get the list items inside the ul element
             const listItems = groupMembersListSettings.querySelectorAll("li");
@@ -479,7 +479,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     roleSelect.value = initialValue;
                 }
             });
-            alert("Only the owner can update the role of a member");
+            alert("Only the owner can update a role, new role can not be owner, and owner can not get a new role");
             return;
         }
 
