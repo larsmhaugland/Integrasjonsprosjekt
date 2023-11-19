@@ -179,7 +179,7 @@ function addNewItemToList(list){
         let removeItem = document.createElement("a")
         let removeIcon = document.createElement("img");
         removeIcon.setAttribute("src", "../Images/trashcan.svg");
-        removeIcon.setAttribute("alt", "Slett");
+        removeIcon.setAttribute("alt", "Slett ingrediens");
         removeIcon.setAttribute("class", "close-svg");
         removeIcon.classList.add("remove-item");
         removeItem.appendChild(removeIcon);
@@ -197,6 +197,8 @@ function addNewItemToList(list){
         let removeIcon = document.createElement("img");
         removeIcon.setAttribute("src", "../Images/trashcan.svg");
         removeIcon.classList.add("remove-item");
+        removeIcon.setAttribute("alt", "Slett instruks");
+        removeIcon.classList.add("close-svg");
         removeItem.appendChild(removeIcon);
         removeItem.addEventListener("click", function (event) {
             list.removeChild(li);

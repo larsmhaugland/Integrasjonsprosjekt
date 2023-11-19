@@ -35,14 +35,46 @@ recipeEdit.addEventListener("click", function () {
     difficultyText.innerHTML = displayedRecipe.difficulty;
 
     if(displayedRecipe.URL === null || displayedRecipe.URL === "" && displayedRecipe.ingredients !== null  && displayedRecipe.instructions !== null) {
+        let instructions = document.querySelector("#edit-instructions-list");
+        instructions.innerHTML = "";
         for (let i = 0; i < displayedRecipe.instructions.length; i++) {
             let instruction = document.createElement("li");
-            instruction.innerHTML = displayedRecipe.instructions[i];
+            let label = document.createElement("label");
+            label.innerHTML = displayedRecipe.instructions[i];
+            instruction.appendChild(label);
+            //create a checkbox for the list item
+            let removeItem = document.createElement("a")
+            let removeIcon = document.createElement("img");
+            removeIcon.setAttribute("src", "../../Images/trashcan.svg");
+            removeIcon.setAttribute("alt", "Slett ingrediens");
+            removeIcon.setAttribute("class", "close-svg");
+            removeIcon.classList.add("remove-item");
+            removeItem.appendChild(removeIcon);
+            removeItem.addEventListener("click", function (event) {
+                instructions.removeChild(instruction);
+            });
+            instruction.appendChild(removeItem);
             instructions.appendChild(instruction);
         }
+        let ingredients = document.querySelector("#edit-ingredient-list");
+        ingredients.innerHTML = "";
         for (let [key, value] of Object.entries(displayedRecipe.ingredients)) {
             let ingredient = document.createElement("li");
-            ingredient.innerHTML = key + ": " + value;
+            let label = document.createElement("label");
+            label.innerHTML = key + ": " + value;
+            ingredient.appendChild(label);
+            //create a checkbox for the list item
+            let removeItem = document.createElement("a")
+            let removeIcon = document.createElement("img");
+            removeIcon.setAttribute("src", "../../Images/trashcan.svg");
+            removeIcon.setAttribute("alt", "Slett ingrediens");
+            removeIcon.setAttribute("class", "close-svg");
+            removeIcon.classList.add("remove-item");
+            removeItem.appendChild(removeIcon);
+            removeItem.addEventListener("click", function (event) {
+                ingredients.removeChild(ingredient);
+            });
+            ingredient.appendChild(removeItem);
             ingredients.appendChild(ingredient);
         }
         manualRecipeDiv.style.display = "block";
@@ -140,17 +172,18 @@ function editRecipe() {
     //let image = document.querySelector("#edit-image");
 
 
-    if(recipeName.value === "" || recipeURL.value === "" || description.value === "" || time.value === "" || difficulty.value === ""){
+    if(recipeName.value === "" || description.value === "" || time.value === "" || difficulty.value === ""){
         alert("Fyll ut alle feltene");
         return;
     }
     let instructions = [];
     for (let i = 0; i < instructionList.length; i++) {
-        instructions.push(instructionList[i].innerHTML);
+        instructions.push(instructionList[i].getElementsByTagName("label")[0].innerHTML);
     }
     let ingredients = {};
     for (let i = 0; i < ingredientList.length; i++) {
-        let ingredient = ingredientList[i].innerHTML.split(": ");
+
+        let ingredient = ingredientList[i].getElementsByTagName("label")[0].innerHTML.split(": ");
         ingredients[ingredient[0]] = ingredient[1];
     }
 
