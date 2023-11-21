@@ -105,20 +105,36 @@
 
 /* Styling for the list of current members within the "Edit Chat" popup */
 .member-list {
-    list-style: none;
     padding: 0;
-    margin-top: 2vw;
+    margin-top: 1vh;
+    overflow-y: auto;
 }
 
 /* Styling for individual member entries within the list above */
 .member-list li {
-    background: #d1ecf1;
+    background: #a2a3a3;
     margin: 1vw 0;
-    padding: 2.5vw;
-    border-radius: 1.5vw;
+    padding: 1vw;
+    border-radius: 1vw;
     display: flex;
+    width: 20vw;
     align-items: center;
     justify-content: space-between;
+}
+
+/* Style for the "remove" button for the add list in new chat poppup */
+.remove-member-button {
+    padding: 0.5vh 1vh;
+    margin-left: 2vw;
+    background-color: #d40e00;
+    color: rgb(0, 0, 0);
+    border-radius: 1vh;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.remove-member-button:hover {
+    background-color: #d32f2f;
 }
 
 /* Styling for the "Leave Chat" button */
@@ -215,7 +231,6 @@
     min-width: 20%; 
     max-width: 55%; 
     word-wrap: break-word;
-    
     background: #80AB82; 
 }
 

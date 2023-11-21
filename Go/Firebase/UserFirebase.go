@@ -405,6 +405,7 @@ func GetUserChats(username string) ([]Chat, error) {
 			log.Println("error getting chat data from cache:", err)
 		} else {
 			chats = append(chats, chatData)
+			log.Println("Chat name: " + chatData.Name)
 		}
 	}
 

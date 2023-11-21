@@ -35,6 +35,9 @@ func ChatBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case "members":
 		ChatMemberBaseHandler(w, r)
 
+	case "membersDelete":
+		ChatMembersDeleteHandler(w, r)
+
 	case "messages":
 		ChatMessagesBaseHandler(w, r)
 
@@ -145,9 +148,6 @@ func ChatMemberBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		ChatMembersPostHandler(w, r)
 
-	case http.MethodDelete:
-		ChatMembersDeleteHandler(w, r)
-
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -253,23 +253,34 @@ func ChatMembersGetHandler(w http.ResponseWriter, r *http.Request) {
 // ChatMebersDeleteHandler deletes a member from the chat with the specified chatID parameter
 func ChatMembersDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Get the chatID and username from the request URL
-	chatID := r.URL.Query().Get("chatID")
-	username := r.URL.Query().Get("username")
-	if chatID == "" || username == "" {
-		http.Error(w, "Error; No chatID or username provided", http.StatusBadRequest)
+	if r.Method == http.MethodPost {
+		// Get the chatID and username from the request URL
+
+		var request Firebase.RemoveMembersFromChat
+		err := DecodeJSONBody(w, r, &request)
+		if err != nil {
+			http.Error(w, "Error when decoding request POST: ", http.StatusBadRequest)
+			return
+		}
+
+		if request.ChatID == "" || len(request.Usernames) == 0 {
+			http.Error(w, "Invalid chatID or usernames", http.StatusBadRequest)
+			return
+		}
+
+		// Delete the member from the chat
+		err = Firebase.RemoveMemberFromChat(request.ChatID, request.Usernames)
+		if err != nil {
+			http.Error(w, "Error when deleting member: ", http.StatusInternalServerError)
+			return
+		}
+
+		// No response body needed
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
 	}
-
-	// Delete the member from the chat
-	err := Firebase.RemoveMemberFromChat(chatID, username)
-	if err != nil {
-		http.Error(w, "Error when deleting member: ", http.StatusInternalServerError)
-		return
-	}
-
-	// No response body needed
-	w.WriteHeader(http.StatusNoContent)
 }
 
 // ChatMembersPostHandler adds a new member to the chat with the specified chatID parameter
