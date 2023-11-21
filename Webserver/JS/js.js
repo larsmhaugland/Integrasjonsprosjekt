@@ -60,6 +60,11 @@ loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
+const registerTextPoppup = document.querySelector(".register-btn");
+registerTextPoppup.addEventListener("click", (event)=> {event.preventDefault();
+    document.getElementById("register-popup").style.display = "block";
+});
+
 window.onload = function () {
     checkAuthToken();
     updateLoginStatus();

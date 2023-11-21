@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
     removeSelectedMembers.addEventListener("click", function () {
         const selectedMembers = document.querySelectorAll("#current-members-list input[type='checkbox']:checked");
         
-        editChatPopup.style.display = "none";
+       // editChatPopup.style.display = "none";
         selectedMembers.forEach(member => {
             // Find the label associated with the checkbox
             const labelElement = member.nextElementSibling;
@@ -143,7 +143,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Remove the member
             removeMemberFromChat(usernameLabel, false);
-        });
+        })
+        getChatMembers(activeChatID);
     });
 
     // Event listener to show the addmember modal when the add members button is clicked
