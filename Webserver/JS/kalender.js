@@ -145,7 +145,7 @@ function setCalenderOnDate(day, dateData, div, j, k, groupID){
         let link = document.createElement("a");
         link.setAttribute("class", "dinner-link")
 
-        link.innerHTML = '<br>' + "Middag: " + customDinner;
+        link.innerHTML = '<br>' + customDinner;
         let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
         link.setAttribute("href", href);
         label.id = currentDay + "-dinner";
@@ -154,7 +154,7 @@ function setCalenderOnDate(day, dateData, div, j, k, groupID){
         // Create a label
         let label = document.createElement("label");
         label.setAttribute("id", elementText);
-        label.innerHTML = '<br>' + "Middag: " + customDinner;
+        label.innerHTML = '<br>' + customDinner;
         label.id = currentDay + "-dinner";
         textDiv.appendChild(label);
     }
@@ -416,12 +416,12 @@ function addDinnerToCalendar() {
 
 
             element.setAttribute("class", "dinner-link");
-            element.innerHTML = "Middag: " + dinnerName;
+            element.innerHTML = dinnerName;
             let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
             element.setAttribute("href", href);
         }else{
             console.log("could not find recipe");
-            element.innerHTML = '<br>' + "Middag: " + dinnerName;
+            element.innerHTML = '<br>' + dinnerName;
         }
 
         // Append the created element to the 'div'

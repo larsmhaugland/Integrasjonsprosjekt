@@ -447,7 +447,6 @@ function retrieveDinnerList( option, user){
             }
         }).then(data=>{
             console.log(JSON.stringify(data));
-           // displayDinner(JSON.stringify(data));
             inputCalendar = data;
             setCalendar(option);
         }
@@ -476,6 +475,7 @@ function setCalendar(groupID){
             let date = new Date(dateKey);
             let customDinner = dateData.customRecipe;
             let recipe = dateData.recipe;
+            console.log(recipe)
             for (let k=0; k<dates.length; k++){
                 const currentDate = new Date(dates[k]);
                 currentDate.setHours(0, 0, 0, 0); // Set time to midnight
@@ -516,35 +516,64 @@ function removeDinnerList(){
 /**
  * Fetch recipe for dinner and add it to the shopping list
  */
-function addDinnerToList(){
-    //Fetch recipe with the same name as the dinner
-    let recipeID = sessionStorage.getItem("recipeID");
+function addDinnerToList(recipeID) {
+    // Fetch recipe with the same name as the dinner
     fetch(API_IP + `/recipe/${recipeID}?group=true&single=true`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
         }
     }).then(response => {
-        if (response.status === 200){
+        if (response.status === 200) {
             console.log("Recipe retrieved");
             return response.json();
         } else {
             console.log("Error retrieving recipe");
             throw new Error("Failed to retrieve recipe");
         }
-    }).then(data=>{
+    }).then(data => {
         console.log(JSON.stringify(data));
-        //Add ingredients to shopping list
+
+        // Add ingredients to shopping list
         let ingredients = data.ingredients;
         let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];
         let itemData = {};
-        ingredients.forEach(ingredient => {
-            itemData[ingredient.name] = {
+        // Iterate over ingredients using for...of loop
+        for (let [name, quantity] of Object.entries(ingredients)) {
+            // Add to the shopping list UI
+            let list = document.querySelector("#shopping-list");
+            let li = document.createElement("li");
+            li.setAttribute("id", "list-item");
+
+            // Create a checkbox for the list item
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("id", "checkbox");
+            li.appendChild(checkbox);
+
+            let itemText = (quantity !== "") ? quantity + " " + name : name;
+            li.appendChild(document.createTextNode(itemText));
+
+            list.appendChild(li);
+            itemData[name] = {
                 complete: false,
-                quantity: ingredient.quantity,
-                category: ingredient.category,
+                quantity: quantity,
+                category: "",
             };
-        });
+            shoppinglist.push({
+                id: shoppinglist.id,
+                assignees: null,
+                list: itemData,
+            });
+        }
+
+        // Save updated shoppinglist to sessionStorage
+        sessionStorage.setItem("shoppinglist", JSON.stringify(shoppinglist));
+        patchShoppingList();
+    }).catch(error => {
+        console.error("Error during fetch:", error);
     });
 }
+
+
 
