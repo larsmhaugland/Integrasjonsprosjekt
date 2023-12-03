@@ -7,14 +7,13 @@ let currentDay;
 let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "sondag"];
 let Recipes = [];
 let calendar = [[]];
-let responsibleCalendar = [];
+let responsibleCalendar = [[]];
 let inputCalendar = null;
 let groups = [];
 let groupIDSentAsParam = "";
 
 beginning();
 async function beginning() {
-    console.log("login status: " + sessionStorage.getItem("loggedIn"));
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams) {
         groupIDSentAsParam = urlParams.get('groupID');
@@ -28,65 +27,59 @@ async function beginning() {
 
 
 async function getCalenderData(){
-    let groupID = groupDropdown.value;
-    fetch(`${API_IP}/group/schedule?groupID=${groupID}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    }).then(response => {
-        if (response.status === 200) {
-            response.json().then(data => {
-                inputCalendar = data;
-                setCalendar(groupID);
-            });
-        } else {
-            console.log("Error when fetching calendar");
-        }
-    });
+    if (groupDropdown.selectedIndex !== 0) {
+        let groupID = groupDropdown.value;
+        fetch(`${API_IP}/group/schedule?groupID=${groupID}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).then(response => {
+            if (response.status === 200) {
+                response.json().then(data => {
+                    inputCalendar = data;
+                    resetCalendarAndSetAllDays(groupID);
+                });
+            } else {
+                console.log("Error when fetching calendar");
+            }
+        });
+    }
 }
 
-function setCalendar(groupID){
+function resetCalendarAndSetAllDays(groupID) {
     console.log("setting calendar");
     let dates = getDatesForCurrentWeek();
-    let options = document.querySelectorAll("#group-dropdown option");
     let labels = document.querySelectorAll("label");
     let links = document.querySelectorAll("a");
+    let options = document.querySelectorAll("#group-dropdown option");
     if (labels.length > 0) {
         labels.forEach(function (label) {
-            if (label.textContent.includes( "Ansvarlig: ")){
-                label.textContent = "Ansvarlig: ";
-            }else if (label.textContent.includes("Middag: ")){
-                label.innerHTML = '<br>' + "Middag: ";
+            if (label.textContent.includes("Ansvarlig: ")) {
+                label.textContent = "";
+            } else if (label.textContent.includes("Middag: ")) {
+                label.parentNode.removeChild(label);
+            } else if (label.textContent.includes("Ingen middag valgt. ")) {
+                //delete label
+                label.parentNode.removeChild(label);
             }
         });
     }
-    if(links.length > 0){
+    if (links.length > 0) {
         links.forEach(function (link) {
             if (link.textContent.includes("Middag: ")) {
-                // Create a new label element
-                let label = document.createElement("label");
-                label.innerHTML = '<br>' + "Middag: ";
-
-                // Set the common attributes
-                label.setAttribute("id", link.id); // Copy the ID from the link to the new label
-
-                // Replace the link with the new label
-                link.parentNode.replaceChild(label, link);
+                link.parentNode.removeChild(link);
             }
         });
 
     }
-    if(inputCalendar == null){
+    if (inputCalendar == null) {
         console.log("inputCalendar is null");
         return;
     }
     const dateKeys = Object.keys(inputCalendar);
-
-    for (let j=0; j<options.length; j++){
-        if (groupID === options[j].value) {
-            console.log("group found");
-            // Loop through the date keys and access the data for each date
+    for (let j = 0; j < options.length-1; j++) {
+        if (groupID === options[j+1].value) {
             dateKeys.forEach(dateKey => {
                 if (dateKey in inputCalendar) {
                     let dateData = inputCalendar[dateKey];
@@ -95,76 +88,90 @@ function setCalendar(groupID){
                     let month = date.getMonth();
                     let year = date.getFullYear();
                     let dateString = year + "-" + (month + 1) + "-" + day;
-                    let customDinner = dateData.customRecipe;
                     let dinner = dateData.recipe;
-                    let responsible = dateData.responsible;
+
+                    console.log("group found");
                     if (!responsibleCalendar[j]) {
                         responsibleCalendar[j] = [];
                     }
                     if (!responsibleCalendar[j][0]) {
                         responsibleCalendar[j][0] = groupID;
                     }
-                    for (let k=0; k<dates.length; k++){
+
+                    // Loop through the date keys and access the data for each date
+                    for (let k = 0; k < dates.length; k++) {
                         const currentDate = new Date(dates[k]);
                         currentDate.setHours(0, 0, 0, 0); // Set time to midnight
                         date.setHours(0, 0, 0, 0); // Set time to midnight for the date
                         let div = document.getElementById(allDays[k]);
-                        if (currentDate.getTime() === date.getTime()){
-                            console.log("date found");
-
-                            let label =div.querySelector('.selectedMemberLabel');
-                            // Add a label for "responsible" to the day's div
-                            label.innerHTML = "Ansvarlig: " + responsible;
-                            if (responsible !== "") {
-                                if (!responsibleCalendar[j][k + 1]) {
-                                    responsibleCalendar[j][k + 1] = responsible[0];
-                                } else {
-                                    // Handle the case where [j][k + 1] already exists
-                                    console.log(`Position [${j}][${k + 1}] already exists`);
-                                }
-                            }
-                            let elementText = allDays[k] + "-textbox";
-                            let textDiv = div.querySelector("#" + elementText);
-                            textDiv.innerHTML = "";
-                            textDiv.appendChild(label);
-                            let recipe = findRecipesInCalendar(customDinner);
-                            if (recipe != null) {
-                                // Create a link
-                                let link = document.createElement("a");
-                                    link.setAttribute("class", "dinner-link")
-
-                                link.innerHTML = '<br>' + customDinner;
-                                let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
-                                link.setAttribute("href", href);
-                                textDiv.appendChild(link);
-                            }
-                            // Append the created element to the 'div'
-                            //div.appendChild(element);
-                            updateCalendarArray(groupID,k, customDinner);
-                        }else{
+                        if (currentDate.getTime() === date.getTime()) {
+                            setCalenderOnDate(allDays[k], dateData, div, j, k, groupID);
+                        } else {
                             let elementText = allDays[k] + "-textbox";
                             let textDiv = div.querySelector("#" + elementText);
                             if (textDiv.textContent.trim() === "") {
                                 let label = document.createElement("label");
                                 label.innerHTML = '<br>' + "Ingen middag valgt. ";
+                                label.id = allDays[k] + "-dinner";
                                 textDiv.appendChild(label);
                             }
                         }
                     }
                 }
+
             });
         }
     }
-
 }
+
+function setCalenderOnDate(day, dateData, div, j, k, groupID){
+
+    let customDinner = dateData.customRecipe;
+    let responsible = dateData.responsible;
+
+    let label = div.querySelector('.selectedMemberLabel');
+    // Add a label for "responsible" to the day's div
+    label.innerHTML = "Ansvarlig: " + responsible;
+    if (responsible !== "") {
+        responsibleCalendar[j][k + 1] = responsible[0];
+    }
+    let elementText = allDays[k] + "-textbox";
+    let textDiv = div.querySelector("#" + elementText);
+    textDiv.innerHTML = "";
+    textDiv.appendChild(label);
+    let recipe = findRecipesInCalendar(customDinner);
+    if (recipe != null) {
+        // Create a link
+        let link = document.createElement("a");
+        link.setAttribute("class", "dinner-link")
+
+        link.innerHTML = '<br>' + customDinner;
+        let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
+        link.setAttribute("href", href);
+        label.id = currentDay + "-dinner";
+        textDiv.appendChild(link);
+    }else{
+        // Create a label
+        let label = document.createElement("label");
+        label.setAttribute("id", elementText);
+        label.innerHTML = '<br>' + customDinner;
+        label.id = currentDay + "-dinner";
+        textDiv.appendChild(label);
+    }
+    updateCalendarArray(groupID,k, customDinner);
+}
+
 //update calendar array function
 function updateCalendarArray(groupID, index, dinner){
+    let options = document.querySelectorAll("#group-dropdown option");
     groups.forEach((group, i) => {
         if (group.documentID === groupID) {
             if (!calendar[i]) {
                 calendar[i] = [];
             }
-            calendar[i][index] = dinner;
+            if(group.documentID.name===options[i].value){
+                calendar[i][index] = dinner;
+            }
         }
     });
 }
@@ -184,9 +191,14 @@ function sendCalendarToServer() {
                     if(Recipes.find(recipe => recipe.name === dinner)){
                         dinnerID = Recipes.find(recipe => recipe.name === dinner).documentID;
                     }
-                    const responsible = responsibleCalendar[gIndex][dIndex+1];
-                    //console.log(responsible[0]);
-                    console.log("responsible: " + responsible + " gIndex " + gIndex + " dIndex " + (dIndex + 1));
+
+                    let responsible;
+                    if (!responsibleCalendar[gIndex] ||
+                        responsibleCalendar[gIndex].length <= dIndex+1){
+                        responsible = "";
+                    }else{
+                        responsible = responsibleCalendar[gIndex][dIndex+1];
+                    }
                     const data = {
                         "date": dateString,
                         "customRecipe": dinner,
@@ -214,6 +226,9 @@ function sendCalendarToServer() {
     });
 }
 
+
+
+
 groupDropdown.addEventListener("change", async function (event){
     console.log("dropdown changed");
     await getCalenderData();
@@ -226,7 +241,12 @@ newDinnerBtns.forEach (function (btn)
             alert("Du må logge inn for å legge til i kalenderen");
             return;
         }
-        currentDay = event.target.parentNode.id;
+        if (currentDay !== null) {
+            currentDay = event.target.parentNode.parentNode.id;
+            console.log("currentDay: " + currentDay);
+        } else {
+            console.error("Unable to get the parent node's id");
+        }
         dinnerPopup.style.display = "block";
     });
 });
@@ -234,78 +254,75 @@ newDinnerBtns.forEach (function (btn)
 let allPopups = document.querySelectorAll('.popup');
 allPopups.forEach(function (popup) {
     console.log("Closing popup");
-    console.log("Popup style before: " + popup.style.display);
     popup.style.display = "none";
-    console.log("Popup style after: " + popup.style.display);
 });
 
 
 // Function to create a popup with group members
 function createMemberPopup(groupData, day) {
-    var daySection = document.getElementById(day);
+    const daySection = document.getElementById(day);
 
     // Check if there are members to display
     if (groupData.members && Object.keys(groupData.members).length > 0) {
+
+        // Create a popup div
+        const popup = document.createElement("div");
         // Create the overlay
-        var overlay = document.createElement("div");
+        const overlay = document.createElement("div");
         overlay.classList.add("overlay");
         overlay.addEventListener("click", function () {
             popup.style.display = "none";
             overlay.style.display = "none";
         });
-
-        // Create a popup div
-        var popup = document.createElement("div");
         popup.classList.add("popup");
 
         // Iterate through members using for...in loop
-        for (var memberKey in groupData.members) {
+        for (const memberKey in groupData.members) {
             if (groupData.members.hasOwnProperty(memberKey)) {
                 // Create a closure to capture the correct memberKey value
                 (function (key) {
-                    var memberButton = document.createElement("button");
+                    const memberButton = document.createElement("button");
                     memberButton.innerText = key;
                     memberButton.addEventListener('click', function () {
-                        var label = daySection.querySelector('.selectedMemberLabel');
-                        console.log("Label: " + label);
-                        if (label) {
-                            console.log("Label exists");
-                            label.textContent = 'Ansvarlig: ' + key;
-                            popup.style.display = "none";
-                            overlay.style.display = "none";
+                        let label = daySection.querySelector('.selectedMemberLabel');
+                        if (!label) {
+                            const newLabel = document.createElement('label');
+                            newLabel.className = 'selectedMemberLabel';
+                            daySection.appendChild(newLabel);
+                            label = daySection.querySelector('.selectedMemberLabel');
+                        }
+                        label.textContent = 'Ansvarlig: ' + key;
+                        popup.style.display = "none";
+                        overlay.style.display = "none";
 
-                            // Find the group in the first dimension
-                            let groupIndex = -1;
-                            console.log(responsibleCalendar.length);
-                            for (let i = 0; i < responsibleCalendar.length; i++) {
-                                if (responsibleCalendar[i][0] === groupData.documentID) {
-                                    groupIndex = i;
-                                    break;
-                                }
+                        // Find the group in the first dimension
+                        let groupIndex = -1;
+                        for (let i = 0; i < responsibleCalendar.length; i++) {
+                            if (responsibleCalendar[i] && responsibleCalendar[i][0] === groupData.documentID) {
+                                groupIndex = i;
+                                break;
                             }
+                        }
 
-                            // If the group doesn't exist, create it
-                            if (groupIndex === -1) {
-                                groupIndex = responsibleCalendar.length;
-                                console.log("groupIndex: " + groupIndex);
-                                responsibleCalendar.push([groupData.documentID]);
-                            }
+                        // If the group doesn't exist, create it
+                        if (groupIndex === -1) {
+                            groupIndex = responsibleCalendar.length;
+                            responsibleCalendar.push([groupData.documentID]);
+                        }
 
-                            // Ensure there are enough days (second dimension) for each group
-                            for (var i = 0; i < responsibleCalendar.length; i++) {
+                        // Ensure there are enough days (second dimension) for each group
+                        for (let i = 0; i < responsibleCalendar.length; i++) {
+                            if(responsibleCalendar[i]){
                                 while (responsibleCalendar[i].length < 8) {
                                     responsibleCalendar[i].push("");
                                 }
                             }
-                            // Add the memberKey to the group array in the second dimension
-                            responsibleCalendar[groupIndex][allDays.indexOf(day) + 1] = key;
-                            for (let i = 0; i < responsibleCalendar.length; i++) {
-                                for (let j = 0; j < responsibleCalendar[i].length; j++) {
-                                    console.log(`responsibleCalendar[${i}][${j}]: ${responsibleCalendar[i][j]}`);
-                                }
-                            }
-                            sendCalendarToServer();
+
                         }
+                        // Add the memberKey to the group array in the second dimension
+                        responsibleCalendar[groupIndex][allDays.indexOf(day) + 1] = key;
+                        sendCalendarToServer();
+
                     });
 
                     popup.appendChild(memberButton);
@@ -327,21 +344,22 @@ let responsibleButtons = document.querySelectorAll('.btn.responsible');
 
 responsibleButtons.forEach(function (button) {
     button.addEventListener('click', function () {
-        var dropdown = document.getElementById("group-dropdown");
-        var selectedOption = dropdown.options[dropdown.selectedIndex];
-        var groupID = selectedOption.value
-        var selectedGroup = groups.find(function (group) {
-            return group.documentID === groupID;
-        });
-        var daySection = button.closest('[id]');
-
-        if (daySection) {
-            var id = daySection.id; // This will give you "tirsdag"
-            console.log("ID of the closest day section: " + id);
-        }
-        if (selectedGroup) {
-            //openPopup();
-            createMemberPopup(selectedGroup, id);
+        let dropdown = document.getElementById("group-dropdown");
+        if (dropdown.selectedIndex !== 0) {
+            let selectedOption = dropdown.options[dropdown.selectedIndex];
+            let groupID = selectedOption.value
+            let selectedGroup = groups.find(function (group) {
+                return group.documentID === groupID;
+            });
+            let daySection = button.closest('[id]');
+            let id = null;
+            if (daySection) {
+                id = daySection.id; // This will give you for example "tirsdag"
+            }
+            if (selectedGroup && id) {
+                //openPopup();
+                createMemberPopup(selectedGroup, id);
+            }
         }
     });
 });
@@ -366,36 +384,53 @@ function addDinnerToCalendar() {
         }
     });
     if (event.key === "Enter") {
-        let element = document.getElementById(currentDay + "-textbox");
+        let dayDiv = document.getElementById(currentDay);
+        let textDiv = dayDiv.querySelector("#" + currentDay + "-textbox");
+        let element = textDiv.querySelector("#" + currentDay + "-dinner");
+        let responsibleLabel = dayDiv.querySelector(".selectedMemberLabel");
+        responsibleLabel.textContent = "Ansvarlig: ";
+        console.log("element: " + element);
         let recipe = findRecipesInCalendar(dinnerName);
         if (!element) {
-            if(recipe != null){
+            if(recipe){
                 // Create a link
                 element = document.createElement("a");
+
             }else {
                 // Create a label
                 element = document.createElement("label");
             }
+            element.id = currentDay + "-dinner";
+            console.log("elementID: " + element.id);
         }
-        element.innerHTML = '<br>' + "Middag: " + dinnerName;
-        if (recipe != null) {
-            element.href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
-            element.style.color = 'blue'; // Set the link color
-            element.style.textDecoration = 'underline'; // Underline the link
+        if(recipe){
+            console.log("found recipe");
+
+            if(element instanceof HTMLLabelElement) { // Check if it's a label
+                element.parentNode.removeChild(element); // Remove the label
+                // Create a link
+                element = document.createElement("a");
+                element.id = currentDay + "-dinner";
+                textDiv.appendChild(element);
+            }
+
+
+            element.setAttribute("class", "dinner-link");
+            element.innerHTML = dinnerName;
+            let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
+            element.setAttribute("href", href);
+        }else{
+            console.log("could not find recipe");
+            element.innerHTML = '<br>' + dinnerName;
         }
 
-        // Set the common attributes
-        element.setAttribute("id", currentDay + " textbox");
-        let div = document.getElementById(currentDay);
         // Append the created element to the 'div'
-        div.appendChild(element);
+        dayDiv.appendChild(element);
 
         event.preventDefault();
         dinnerPopup.style.display = "none";
         document.querySelector("#dinner-name").value = "";
-        console.log(groups)
         for (let i = 0; i < groups.length; i++) {
-            console.log("group: " + groups[i].name + " groupDropdown: " + selectedGroup);
             if (groups[i].name === selectedGroup) {
                 for (let j = 0; j < allDays.length; j++) {
                     console.log("adding dinner to calendar");
@@ -463,16 +498,17 @@ function autocomplete(day, text){
 function showSuggestions(list) {
     const recipeInput = document.getElementById("dinner-name");
     const resultsList = document.getElementById("search-results");
-    let listData;
-    let userValue;
+    let listData = '';
 
     if (list.length <= 2) {
-        userValue = recipeInput.value;
-        listData = '<li>' + userValue + '</li>';
+        const userValue = recipeInput.value;
+        listData += '<li>' + userValue + '</li>';
     }
+
     listData += list.join('');
     resultsList.innerHTML = listData;
 }
+
 
 function displayGroups(groups){
     let dropdown = document.querySelector("#group-dropdown");

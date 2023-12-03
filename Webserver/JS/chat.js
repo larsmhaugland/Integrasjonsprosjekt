@@ -132,18 +132,21 @@ document.addEventListener("DOMContentLoaded", function () {
     // Event listener to remove the selected members from the chat when the remove members button is clicked
     removeSelectedMembers.addEventListener("click", function () {
         const selectedMembers = document.querySelectorAll("#current-members-list input[type='checkbox']:checked");
-        
-        editChatPopup.style.display = "none";
+        const usernamesToRemove = [];
         selectedMembers.forEach(member => {
             // Find the label associated with the checkbox
             const labelElement = member.nextElementSibling;
 
             // Get the member name from the label
             const usernameLabel = labelElement.textContent;
-
-            // Remove the member
-            removeMemberFromChat(usernameLabel, false);
-        });
+            
+            // Only owner can edit the chat so we can username, to make sure owner is not removed
+            if (usernameLabel !== username) {
+                // Remove the member
+                usernamesToRemove.push(usernameLabel);
+            }
+        })
+        removeMembersFromChat(usernamesToRemove, false);
     });
 
     // Event listener to show the addmember modal when the add members button is clicked
@@ -161,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Event listener to leave the chat when the leave chat button is clicked
     leaveChatButton.addEventListener("click", function () {
         if (window.confirm("Are you sure you want to leave this chat?")){
-            removeMemberFromChat(username, true);
+            removeMembersFromChat([username], true);
         }
     });
 
@@ -175,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const chatName = document.querySelector("#chat-name").value;
 
         // Create an array of member names from the list 
-        const memberList = Array.from(document.querySelectorAll(".member-list li")).map(li => li.textContent);
+        const memberList = Array.from(document.querySelectorAll(".member-list li span")).map(span => span.textContent);
         memberList.push(username);
 
         // Prepare the data to be sent to the API endpoint
@@ -475,6 +478,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Create a remove button for removing the member from add list
         const removeButton = document.createElement("button");
         removeButton.className = "remove-member-button";
+        removeButton.textContent = "Fjern";
+        
         // Add an event listener to the remove button to handle removing the member from the list
         removeButton.addEventListener("click", function () {
             removeMemberFromList(username);
@@ -517,6 +522,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const chatList = document.querySelector("#list-of-chats");
         const chatItem = document.createElement("li");
         chatItem.classList.add("chat-item");
+        console.log("chat nam:" + chat.name)
         chatItem.textContent = chat.name; // Display the chat name
         
         // Event Listener to display the clicked chat with its messages, and join the chat room
@@ -737,24 +743,26 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {bool} leave - If the user left the chat themself or was removed by the owner
      * @returns {void}
      */
-    function removeMemberFromChat(username, leave) {
+    async function removeMembersFromChat(usernames, leave) {
 
         // URL for the backend API endpoint
-        const url = `${API_IP}/chat/members?chatID=${activeChatID}&username=${username}`;
-    
+        const url = `${API_IP}/chat/membersDelete`;
+
         // Send a DELETE request to the backend API
         fetch(url, {
-            method: "DELETE",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
+            body: JSON.stringify({ chatID: activeChatID, usernames: usernames }),
         })
             .then(response => {
                 if (response.status === 204) {
-                    console.log(`Member ${username} removed.`);
                     // If the user left the chat themself, reload the page
                     if (leave === true) { 
                         location.reload();
+                    } else {
+                        getChatMembers(activeChatID);
                     }
                 } else {
                     console.error("Error removing member:", response.status);

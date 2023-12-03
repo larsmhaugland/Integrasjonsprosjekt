@@ -105,6 +105,42 @@ func TestUserCredentialPostHandler(t *testing.T) {
 	}
 }
 
+func TestUserCredentialPostHandlerUserAlreadyExists(t *testing.T) {
+
+	newUser := Firebase.User{
+		Username:   "testuser",
+		Password:   "testpassword",
+		Name:       "testuserlogin",
+		Recipes:    []string{"testrecipe"},
+		Groups:     []string{"testgroup"},
+		Chats:      []string{"testchat"},
+		DocumentID: "testuser",
+	}
+
+	// Encode the test user as JSON
+	jsonData, err := json.Marshal(newUser)
+	if err != nil {
+		t.Errorf("Error while encoding JSON data: %v", err)
+	}
+
+	// Create a new request with the JSON data
+	req, err := http.NewRequest("POST", "/register", bytes.NewBuffer(jsonData))
+	if err != nil {
+		t.Errorf("Error while creating request: %v", err)
+	}
+
+	// Create a new recorder to record the response
+	rr := httptest.NewRecorder()
+
+	// Call the handler function
+	handler := http.HandlerFunc(UserCredentialPostHandlerTest)
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	if status := rr.Code; status != http.StatusConflict {
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, http.StatusCreated)
+	}
+}
 func TestUserCredentialPostLoginHandler(t *testing.T) {
 
 	testuser, err := Firebase.ReturnCacheUser("testuserlogin")
@@ -164,6 +200,39 @@ func TestUserCredentialPostLoginHandler(t *testing.T) {
 	}
 
 	Firebase.DeleteUser("testuserlogin")
+}
+
+
+func TestUserCredentialPostLoginHandlerWrongCredentials(t *testing.T) {
+
+	testuser, err := Firebase.ReturnCacheUser("testuserlogin")
+	if err != nil {
+		t.Errorf("Error when fetching user: %v", err)
+	}
+	testuser.Password = "wrongpassword"
+	// Encode the test user as JSON
+	jsonData, err := json.Marshal(testuser)
+	if err != nil {
+		t.Errorf("Error while encoding JSON data: %v", err)
+	}
+
+	// Create a new request with the JSON data
+	req, err := http.NewRequest("POST", "/login", bytes.NewBuffer(jsonData))
+	if err != nil {
+		t.Errorf("Error while creating request: %v", err)
+	}
+
+	// Create a new recorder to record the response
+	rr := httptest.NewRecorder()
+
+	// Call the handler function
+	handler := http.HandlerFunc(UserCredentialPostLoginHandlerTest)
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	if status := rr.Code; status != http.StatusBadRequest {
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, http.StatusOK)
+	}
 }
 
 func TestUserGroupGetHandler(t *testing.T) {
@@ -256,6 +325,30 @@ func TestUserSearchHandler(t *testing.T) {
 	}
 }
 
+func TestUserSearchHandlerUserNotExist(t *testing.T) {
+	// Create a new request with a partial username as a query parameter
+	req, err := http.NewRequest("GET", "/search?partialUsername=Userthatdoesnotexist", nil)
+	if err != nil {
+		t.Errorf("Error while creating request: %v", err)
+	}
+
+	// Create a new recorder to record the response
+	rr := httptest.NewRecorder()
+
+	// Call the handler function
+	handler := http.HandlerFunc(API.UserSearchHandler)
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, http.StatusOK)
+	}
+	expectedBody := `null`
+	if strings.TrimSuffix(rr.Body.String(), "\n") != expectedBody {
+		t.Errorf("Handler returned wrong response body: got %v, want %v", rr.Body.String(), expectedBody)
+	}
+}
+
 func TestUserGroupPatchHandler(t *testing.T) {
 	// Reset user data before running the test
 	ResetUserData("testuser2", "testrecipe")
@@ -308,6 +401,52 @@ func TestUserGroupPatchHandler(t *testing.T) {
 		t.Errorf("Group was not added to the user's groups")
 	}
 }
+
+
+func TestUserGroupPatchHandlerUserAlreadyInGroup(t *testing.T) {
+	// Reset user data before running the test
+	ResetUserData("testuser", "testrecipe")
+	ResetGroupData("testgroup2", "testchat", "testuser", "testrecipe", false)
+	group, err := Firebase.ReturnCacheGroup("testgroup2")
+	if err != nil {
+		t.Errorf("Error when fetching group: %v", err)
+	}
+
+	testuser, err := Firebase.ReturnCacheUser("testuser")
+	if err != nil {
+		t.Errorf("Error when fetching user: %v", err)
+	}
+
+	err = Firebase.PatchCacheUser(testuser)
+	if err != nil {
+		t.Errorf("Error when setting user: %v", err)
+	}
+
+	// Encode the test group ID as JSON
+	jsonData, err := json.Marshal(group.DocumentID)
+	if err != nil {
+		t.Errorf("Error while encoding JSON data: %v", err)
+	}
+
+	// Create a new request with the test user's username as a query parameter
+	req, err := http.NewRequest("PATCH", "/groups?username=testuser2", bytes.NewBuffer(jsonData))
+	if err != nil {
+		t.Errorf("Error while creating request: %v", err)
+	}
+
+	// Create a new recorder to record the response
+	rr := httptest.NewRecorder()
+
+	// Call the handler function
+	handler := http.HandlerFunc(API.UserGroupPatchHandler)
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	if status := rr.Code; status != http.StatusBadRequest {
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, http.StatusOK)
+	}
+}
+
 func TestUserShoppingPatchHandler(t *testing.T) {
 	
 	// Reset user data before running the test

@@ -176,7 +176,7 @@ func AddNewChat(chat Chat) error {
 }
 
 // RemoveMemberFromChat removes the member with the specified username from the chat with the specified chatID
-func RemoveMemberFromChat(chatID string, username string) error {
+func RemoveMemberFromChat(chatID string, usernames []string) error {
 
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -192,18 +192,31 @@ func RemoveMemberFromChat(chatID string, username string) error {
 		return err
 	}
 
-	// Remove the specified member from the chats members list
-	currentMembers := make([]string, 0)
-	for _, memberName := range chatData.Members {
-		if memberName != username {
-			currentMembers = append(currentMembers, memberName)
+	// Map with users and if they should be deleted
+	usernameMap := make(map[string]bool)
+	for _, username := range usernames {
+		usernameMap[username] = true
+	}
+
+	// Filter out usernames to keep
+	var currentMembers []string
+	for _, member := range chatData.Members {
+		log.Println("usernameMap:", usernameMap[member])
+		if !usernameMap[member] {
+			log.Println("member: ", member)
+			currentMembers = append(currentMembers, member)
+		} else {
+			// Remove the chat from the members document
+			RemoveChatFromMember(member, chatID)
 		}
 	}
+
 	if len(currentMembers) == 0 {
 		return DeleteChat(chatID) // If there are no members left in the chat, delete the chat
 	}
 	chatData.Members = currentMembers
 
+	log.Println("currentMembers Before firestore update:", currentMembers)
 	// Update the firestore document with the modified members list
 	_, err = client.Collection("chat").Doc(chatID).Update(ctx, []firestore.Update{
 		{Path: "members", Value: currentMembers},
@@ -213,8 +226,6 @@ func RemoveMemberFromChat(chatID string, username string) error {
 		return err
 	}
 
-	// Remove the chat from the members document
-	RemoveChatFromMember(username, chatID)
 	// Update the cache with the new data
 	ChatCache[chatData.DocumentID] = CacheData{chatData, time.Now()}
 

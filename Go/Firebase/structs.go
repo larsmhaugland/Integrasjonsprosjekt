@@ -111,3 +111,8 @@ type Chat struct {
 	ChatOwner  string    `json:"chatOwner"`
 	DocumentID string    `json:"documentID"`
 }
+
+type RemoveMembersFromChat struct {
+    ChatID    string   `json:"chatID"`
+    Usernames []string `json:"usernames"`
+}

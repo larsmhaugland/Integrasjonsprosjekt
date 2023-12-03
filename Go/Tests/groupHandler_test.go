@@ -19,7 +19,7 @@ func ResetGroupData(name string, chat string, username string, recipe string, ex
 		fmt.Println("Error when fetching user: " + err.Error())
 	}
 	group.Name = name
-	if extraMembers{
+	if extraMembers {
 		group.Members = map[string]string{username: "owner", "testuser2": "member"}
 	} else {
 		group.Members = map[string]string{username: "owner"}
@@ -421,6 +421,40 @@ func TestGroupSchedulePostHandler(t *testing.T) {
 		t.Errorf("schedule was not added to group")
 	}
 }
+func TestGroupSchedulePostHandlerWrongdata(t *testing.T) {
+
+	type scheduleTest struct {
+		Date         string   `json:"date"`
+		CustomRecipe string   `json:"customRecipe"`
+		Recipe       string   `json:"recipe"`
+		Responsible  []string `json:"responsible"`
+	}
+	schedule := scheduleTest{
+		Date:         "2020-01-01",
+		CustomRecipe: "0",
+		Recipe:       "wrong",
+		Responsible:  []string{"testuser"},
+	}
+
+	jsonBody, err := json.Marshal(schedule)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, "/groupSchedulePost?groupID=test&date=", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Create a new response recorder
+	rr := httptest.NewRecorder()
+
+	API.GroupSchedulePostHandler(rr, req)
+	// Check the status code of the response recorder
+	if status := rr.Code; status != http.StatusBadRequest {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+}
 
 func TestGroupShoppingGetHandler(t *testing.T) {
 
@@ -462,8 +496,6 @@ func TestGroupShoppingGetHandler(t *testing.T) {
 }
 
 func TestGroupShoppingPatchHandler(t *testing.T) {
-	
-	// TODO Crashes test
 
 	ResetGroupData("testgroup", "testchat", "testuser", "testrecipe", false)
 
@@ -509,5 +541,40 @@ func TestGroupShoppingPatchHandler(t *testing.T) {
 	}
 	if len(shoppingList.List) != 2 {
 		t.Errorf("shopping list was not updated in cache")
+	}
+}
+
+func TestGroupShoppingPatchHandlerWrongGroup(t *testing.T) {
+
+	ResetGroupData("testgroup", "testchat", "testuser", "testrecipe", false)
+
+	newShoppingList := Firebase.ShoppingList{
+		DocumentID: "ListDoesNotexist",
+		Assignees:  []string{"testuser"},
+		List: map[string]Firebase.ShoppingListItem{
+			"item1": {Complete: false, Quantity: "1", Category: "category1"},
+			"item2": {Complete: false, Quantity: "1", Category: "category2"},
+		},
+	}
+
+	// Now you can encode this struct as JSON for the request body
+	body, err := json.Marshal(newShoppingList)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Create a new request with a PATCH method and a groupID query parameter
+	req, err := http.NewRequest(http.MethodPatch, "/groupShoppingPatch?groupID=groupnonexistent", bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Create a new response recorder
+	rr := httptest.NewRecorder()
+
+	API.GroupShoppingPatchHandler(rr, req)
+
+	// Check the status code of the response recorder
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 	}
 }
