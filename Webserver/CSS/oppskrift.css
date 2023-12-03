@@ -1,8 +1,11 @@
+body{
+    background-color: #80AB82;
+}
 .single-recipe-wrapper {
     margin: 0 auto;
     width: 80%;
     height: auto;
-    background: #DDDDDD;
+    background: white;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #777777;
@@ -15,7 +18,7 @@
 .recipe-header{
     grid-area: recipe-header;
     margin-top: 30px;
-    background: #DDDDDD;
+    background: white;
 }
 #recipe-name{
     font-size: 40px;
@@ -27,15 +30,15 @@
 }
 
 #edit-recipe-btn {
-    float: right;
     display: none;
+    position: absolute;
+    left: 80%;
 }
 #edit-recipe-btn img{
-    margin-right: 10px;
     border: none;
     padding: 1px 1px;
     cursor: pointer;
-    width: 30px;
+    width: 50px;
     transition: 0.3s;
 }
 
@@ -58,7 +61,7 @@
 .single-recipe-content {
     grid-area: recipe-content;
     margin-top: 30px;
-    background: #DDDDDD;
+    background: white;
     font-size: 30px;
     width: fit-content;
 }
