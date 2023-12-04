@@ -237,7 +237,7 @@ groupDropdown.addEventListener("change", async function (event){
 newDinnerBtns.forEach (function (btn)
 {
     btn.addEventListener("click", function (event){
-        if(!checkAuthToken()){
+        if(!checkLoginStatus()){
             alert("Du må logge inn for å legge til i kalenderen");
             return;
         }

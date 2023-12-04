@@ -309,7 +309,7 @@ function removeItemFromList(){
 */
 function retrieveGroups(){
 
-    if (!checkAuthToken()) return;
+    if (!checkLoginStatus()) return;
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
@@ -430,7 +430,7 @@ function removeList(){
  */
 function retrieveDinnerList( option, user){
     removeDinnerList();
-    if(!checkAuthToken()) return;
+    if(!checkLoginStatus()) return;
     else{
         fetch(API_IP + `/group/schedule?groupID=${option}`, {
             method: "GET",

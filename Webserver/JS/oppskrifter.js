@@ -142,7 +142,7 @@ retrieveGroups();
 
 
 async function loadRecipes(){
-    if (!await checkAuthToken()) return;
+    if (!await checkLoginStatus()) return;
     await getRecipes(Recipes);
     await displayResults(Recipes);
     displayPages();

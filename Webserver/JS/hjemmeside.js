@@ -341,7 +341,7 @@ function removeMemberFromList(username){
  */
 function retrieveGroups(){
 
-    if (!checkAuthToken()) return;
+    if (!checkLoginStatus()) return;
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 

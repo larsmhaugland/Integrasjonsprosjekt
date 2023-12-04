@@ -66,7 +66,7 @@ registerTextPoppup.addEventListener("click", (event)=> {event.preventDefault();
 });
 
 window.onload = function () {
-    checkAuthToken();
+    checkLoginStatus();
     updateLoginStatus();
 };
 
@@ -83,34 +83,16 @@ function loginRegisterToggle(){
     }
 }
 //Check login cookie
-async function checkAuthToken(){
+async function checkLoginStatus(){
     let username = sessionStorage.getItem("username");
     let loggedIn = sessionStorage.getItem("loggedIn");
 
-    if(loggedIn){
+    //Check if logged in
+    if(username && loggedIn === "true"){
         return true;
     }
-    if (username === null){
-        return false;
-    }
-
-    const response = await fetch (API_IP + "/user/credentials/checkCookie", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    if (response.status === 200){
-        sessionStorage.setItem("loggedIn", "true");
-        sessionStorage.setItem("username", username);
-        console.log("Logged in using authtoken as: " + username);
-
-        updateLoginStatus();
-        return true;
-    } else {
-        console.log("Invalid Auth token");
-        return false;
-    }
+    //Not logged in
+    return false;
 }
 
 //Check login credentials
