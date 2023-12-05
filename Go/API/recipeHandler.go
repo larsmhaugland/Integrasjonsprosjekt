@@ -121,7 +121,7 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	//Remove recipe from firebase
-	err = Firebase.DeleteRecipe(recipeID)
+	err = Firebase.DeleteCacheRecipe(recipeID)
 	if err != nil {
 		http.Error(w, "Error when deleting recipe: "+err.Error(), http.StatusInternalServerError)
 		return
