@@ -17,12 +17,16 @@ var CacheMisses int
 
 const CACHE_TIMEOUT = 48
 
+// InitCache initializes the cache maps and loads all data into the cache
 func InitCache() {
+	//Initialize maps
 	UserCache = make(map[string]CacheData)
 	RecipeCache = make(map[string]CacheData)
 	GroupCache = make(map[string]CacheData)
 	ShoppingCache = make(map[string]CacheData)
 	ChatCache = make(map[string]CacheData)
+
+	//Load all data into cache
 	users, err := GetAllUsers()
 	if err != nil {
 		log.Println("Error when warming cache users: ", err)
@@ -66,9 +70,12 @@ func InitCache() {
 	log.Println("Cache warmed")
 }
 
+// GetCacheData returns the data from the cache with the specified key, and a bool indicating if the data was found in the
 func GetCacheData(cache map[string]CacheData, key string) (CacheData, bool) {
+	//Check if the data is in the cache
 	val, ok := cache[key]
 	if ok {
+		//Check if the data is too old
 		if time.Since(val.cachedAt).Hours() > CACHE_TIMEOUT {
 			delete(cache, key)
 			return CacheData{}, false
@@ -156,7 +163,7 @@ func DeleteCacheGroup(groupID string) error {
 
 /*****************				RECIPE FUNCTIONS				*****************/
 
-// ReturnCacherecipe returns the recipe with the specified recipeID. It first checks if the recipe exists in the cache,
+// ReturnCacheRecipe returns the recipe with the specified recipeID. It first checks if the recipe exists in the cache,
 // otherwise it gets the recipe from the database and adds it to the cache
 func ReturnCacheRecipe(recipeID string) (Recipe, error) {
 	recipe, ok := GetCacheData(RecipeCache, recipeID)
@@ -250,7 +257,7 @@ func ReturnCacheChat(chatID string) (Chat, error) {
 	return chatData, nil
 }
 
-
+// PatchCacheChat updates the chat from the cache and also updates the chat in the database
 func PatchCacheChat(chat Chat) error {
 	err := PatchChat(chat)
 	if err != nil {

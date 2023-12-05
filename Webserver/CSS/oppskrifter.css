@@ -121,13 +121,9 @@ body{
     transition: 0.3s;
 }
 
-
-
 .result-text {
     margin-right: 10px;
 }
-
-
 
 .result-image{
     display: inline;
@@ -138,16 +134,17 @@ body{
 }
 
 .recipe-nav {
-    display: grid;
+    display: flex;
     grid-area: nav;
-    text-align: center;
-    place-items: center;
-    width: 90vw;
+    margin-top: 100px   ;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     height: 5%;
 }
 
 .pagination-button {
-    display: inline-block;
     border: 1px solid #EEEEEE;
     border-radius: 5px;
     padding: 5px 10px;
@@ -159,6 +156,13 @@ body{
     background-color: #EEEEEE;
     transition: ease-in 0.2s;
 }
+
+.pagination-button.active {
+    transition: ease-in 0.2s;
+    background-color: #AAAAAA;
+    border-color: #AAAAAA;
+}
+
 .pagination-button:hover:not(.active) {
     transition: ease-in 0.2s;
     background-color: paleturquoise;

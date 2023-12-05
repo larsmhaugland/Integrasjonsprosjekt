@@ -1,5 +1,5 @@
 //Global variables and constants:
-let MAXRESULTS = 12;
+let MAXRESULTS = 1;
 let page = 0;
 let Recipes = [];
 
@@ -29,6 +29,7 @@ newRecipeBtn.addEventListener("click", function (event){
     if (Groups === null){
         Groups = [];
     }
+    //Add groups to popup
     for(let i = 0; i < Groups.length; i++){
         let group = Groups[i];
         let listItem = document.createElement("li");
@@ -46,20 +47,28 @@ newRecipeBtn.addEventListener("click", function (event){
         listItem.appendChild(label);
         groupDiv.appendChild(listItem);
     }
+    //Clear preview image
     let recipeImage = document.querySelector("#recipe-image-preview-img");
     recipeImage.style.display = "none";
+    //Display popup
     newRecipePopup.style.display = "block";
 });
+
 closeRecipePopup.addEventListener("click", function (event){
+    //Clear popup inputs
     let inputs = document.querySelectorAll("#new-recipe-popup input");
     for (let i = 0; i < inputs.length; i++){
         inputs[i].value = "";
     }
     newRecipePopup.style.display = "none";
 });
+
+//Update difficulty text when slider is moved
 recipeDifficulty.addEventListener("input", function (event){
     recipeDifficultyText.innerHTML = recipeDifficulty.value;
 });
+
+//Toggle between URL and manual recipe
 recipeType.addEventListener("input", function (event){
     if (recipeType.checked){
         document.querySelector("#url-recipe").style.display = "block";
@@ -69,15 +78,24 @@ recipeType.addEventListener("input", function (event){
         document.querySelector("#manual-recipe").style.display = "block";
     }
 });
+
+//Submit new recipe
 submitRecipeBtn.addEventListener("click", function(event) {
     event.preventDefault();
     newRecipe();
 });
+
+//Search recipes
 searchField.addEventListener("input", function (event){
+    //Reset page
     page = 0;
+    //Search recipes
     let searchlist = searchRecipes(this.value);
+    //Filter recipes
     let filteredList = filterRecipes(searchlist);
+    //Display results
     displayResults(filteredList);
+    //Display pagination
     displayPages();
 });
 
@@ -307,32 +325,67 @@ async function newRecipe() {
     location.reload();
 }
 
-//Display the pages
+// Display the pages
 function displayPages() {
+    // Initialize pag variable
     let pag = [];
+
+    // Check if the search field is empty
     if (searchField.value === "") {
+        // Check if there is only one page or fewer
         if (Math.ceil(Recipes.length / MAXRESULTS) <= 1) {
-            return
+            return; // No need to display pagination
         }
+        // Calculate pagination for all recipes
         pag = pagination(page, Math.ceil(Recipes.length / MAXRESULTS));
-    }
-    else {
+    } else {
+        // Check if there is only one page or fewer for filtered recipes
         if (Math.ceil(Recipes.length / MAXRESULTS) <= 1) {
-            return
+            return; // No need to display pagination
         }
-        pag = pagination(page, Math.ceil(filterRecipes(searchRecipes(searchField.value)) / MAXRESULTS));
+        // Calculate pagination for filtered recipes
+        pag = pagination(page, Math.ceil(filterRecipes(searchRecipes(searchField.value)).length / MAXRESULTS));
     }
 
+    // Get the pagination div element
     let paginationDiv = document.querySelector("#recipe-nav");
-    paginationDiv.innerHTML = "";
-    for (let i = 0; i < pag.length; i++) {
+    paginationDiv.innerHTML = ""; // Clear existing pagination buttons
+
+    // Check if pagination buttons are more than 3 to decide whether to show previous and next buttons
+    if (pag.length > 3) {
+        // Display previous button if not on the first page
+        if (page > 0) {
+            addButton(paginationDiv, "<", "changePage(" + (page - 1) + ")");
+        }
+
+        // Display pagination buttons
+        for (let i = 0; i < pag.length; i++) {
+            addButton(paginationDiv, pag[i], "changePage(" + (pag[i] - 1) + ")", i === page, pag[i] === "...");
+        }
+
+        // Display next button if not on the last page
+        if (page < pag.length - 1) {
+            addButton(paginationDiv, ">", "changePage(" + (page + 1) + ")");
+        }
+    } else {
+        // Display pagination buttons without previous and next buttons
+        for (let i = 0; i < pag.length; i++) {
+            addButton(paginationDiv, pag[i], "changePage(" + (pag[i] - 1) + ")", i === page, pag[i] === "...");
+        }
+    }
+
+    // Helper function to create and append a button to the pagination div
+    function addButton(parent, text, onclick, isActive = false, isDisabled = false) {
         let button = document.createElement("button");
         button.setAttribute("class", "pagination-button");
-        button.setAttribute("onclick", "changePage(" + i + ")");
-        button.textContent = pag[i];
-        paginationDiv.appendChild(button);
+        button.setAttribute("onclick", onclick);
+        button.textContent = text;
+        if (isActive) button.classList.add("active");
+        if (isDisabled) button.classList.add("disabled");
+        parent.appendChild(button);
     }
 }
+
 
 //Change page
 function changePage(p) {
@@ -340,9 +393,9 @@ function changePage(p) {
     for (let i = 0; i < pages.length; i++) {
         pages[i].classList.remove("active");
     }
-    pages[p].classList.add("active");
     page = p;
     displayResults(filterRecipes(searchRecipes(searchField.value)));
+    displayPages();
 }
 
 //Get which pages that should be displayed
@@ -470,7 +523,6 @@ async function displayResults(filteredList){
                 recipeImage.setAttribute("class", "result-image");
                 recipeA.appendChild(recipeImage);
             });
-
         }
         recipeA.appendChild(recipeBlock);
         resultDiv.appendChild(recipeA);

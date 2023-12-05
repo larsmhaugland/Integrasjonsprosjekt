@@ -196,11 +196,13 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//If a groups recipes are requested, get them from cache
 	if groupQ == "true" {
+		//Get group from cache
 		g, err := Firebase.ReturnCacheGroup(storedIn)
 		if err != nil {
 			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
+		//Get recipes from cache
 		for recipeID := range g.Recipes {
 			recipe, err := Firebase.ReturnCacheRecipe(recipeID)
 			if err != nil {
@@ -292,6 +294,7 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ExampleRecipes is a list of recipes that are used as examples in the app
 var ExampleRecipes = []Firebase.Recipe{
 	{
 		Name:        "Pasta",
