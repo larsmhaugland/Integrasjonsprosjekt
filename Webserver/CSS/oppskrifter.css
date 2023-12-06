@@ -277,6 +277,7 @@ body{
 }
 
 #category-checkboxes :not(h3) {
+    font-weight: normal;
     display: inline;
     margin-right: 10px;
     font-size: 15px;

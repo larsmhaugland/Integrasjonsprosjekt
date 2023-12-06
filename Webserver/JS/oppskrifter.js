@@ -63,7 +63,6 @@ newRecipeBtn.addEventListener("click", function (event){
     for(const ex in Categories.exclusive){
         //Add category name
         let categoryName = document.createElement("h3");
-        categoryName.setAttribute("class", "category-name");
         categoryName.appendChild(document.createTextNode(ex));
         exclusiveCategories.appendChild(categoryName);
         //Add radio buttons
