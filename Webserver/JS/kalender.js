@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 let dinnerPopup = document.querySelector("#dinner-popup");
 let newDinnerBtns = document.querySelectorAll(".dinner-btn");
 let closeDinnerPopup = document.querySelector("#close-dinner-popup");
@@ -143,7 +144,7 @@ function setCalenderOnDate(day, dateData, div, j, k, groupID){
     if (recipe != null) {
         // Create a link
         let link = document.createElement("a");
-        link.setAttribute("class", "dinner-link")
+        link.setAttribute("class", "dinner-link");
 
         link.innerHTML = '<br>' + customDinner;
         let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
@@ -347,7 +348,7 @@ responsibleButtons.forEach(function (button) {
         let dropdown = document.getElementById("group-dropdown");
         if (dropdown.selectedIndex !== 0) {
             let selectedOption = dropdown.options[dropdown.selectedIndex];
-            let groupID = selectedOption.value
+            let groupID = selectedOption.value;
             let selectedGroup = groups.find(function (group) {
                 return group.documentID === groupID;
             });

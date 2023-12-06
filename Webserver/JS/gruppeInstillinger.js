@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
@@ -21,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const Administrators = [];
     const redirectURL = "../index.html";
 
-    onPageReload()
+    onPageReload();
 
     /**
      * Function that runs when the page is loaded. It retrieves the groupID from the URL parameter,
@@ -71,12 +72,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Delete the group when the deleteGroupButton is clicked
     deleteGroupButton.addEventListener("click", function(){
-        deleteGroup(groupID)
-    })
+        deleteGroup(groupID);
+    });
     
     // Leave the group when the leaveGroupButton is clicked
     leaveGroupButton.addEventListener("click", function(){
-        leaveGroup(groupID)
+        leaveGroup(groupID);
     });
 
     /**
@@ -283,7 +284,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch((error) => {
             console.error("Error:", error);
-            alert("Server error when trying to add the user to the group")
+            alert("Server error when trying to add the user to the group");
         });
     }
 
@@ -370,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 
                 // Function to update the role for the member
                 updateRoleForMember(username, selectedRole, initialValue);
-            })
+            });
             
             // Set the selected option based on the member's role
             select.value = member.roleName.toLowerCase(); 
@@ -484,7 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // URL for the backend endpoint
-        const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
+        const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`;
         // Send a PATCH request to the backend endpoint
         fetch(url, {
             method: 'PATCH',
@@ -499,14 +500,14 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((error) =>{
                 console.error("Error", error);
                 alert("Server error when trying to update the role");
-            })
+            });
     }
 
     /**
      * Hides the leave group button if the user is the owner of the group
      * @returns {void}
      */
-    function hideLeaveIfOwner() {;
+    function hideLeaveIfOwner() {
         if (LoggedInUsername === GroupOwner){
             leaveGroupButton.style.display = "none";
         }

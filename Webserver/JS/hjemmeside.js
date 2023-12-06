@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 //TODO: ADD SHOPPING LIST ID WHEN CREATING NEW GROUP AND POSTING A NEW EMPTY SHOPPING LIST
 //CALL ON START/RELOAD
 retrieveGroups();
@@ -122,7 +123,7 @@ form.addEventListener("submit", async function (event) {
         image: groupImage,
         "shopping-lists": [shoppingListID],
 };
-    console.log("Group: " + group)
+    console.log("Group: " + group);
     fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
         headers: {
@@ -153,7 +154,7 @@ form.addEventListener("submit", async function (event) {
                 console.log("I was null!");
                 groups = null;
             }
-            console.log("groups: " + groups)
+            console.log("groups: " + groups);
             if (groups === null){
                 console.log("I was null!");
                 groups = [];
@@ -182,7 +183,7 @@ form.addEventListener("submit", async function (event) {
             groupBlock.appendChild(groupIdParagraph);
             groupContainer.appendChild(groupBlock);
             display.appendChild(groupContainer);
-            console.log(memberList)
+            console.log(memberList);
             memberList.forEach((member) => {
                 console.log("member: " + member);
                 fetch(API_IP + `/user/groups?username=${member}`, {
@@ -203,8 +204,8 @@ form.addEventListener("submit", async function (event) {
                     })
                     .catch((error) => {
                         console.log("Error adding group to user: " + error);
-                    })
-            })  
+                    });
+            });  
         })
         .catch((error) => {
             console.log("Error creating group: " + error);
@@ -322,7 +323,7 @@ function removeMemberFromList(username){
     var memberListItem;
     const listItems = document.querySelectorAll("#member-list li");
     for (const listItem of listItems) {
-        console.log(listItem)
+        console.log(listItem);
         const span = listItem.querySelector("span");
         if (!span){console.log("span is null");}
         if (span.textContent === username) {
@@ -369,7 +370,7 @@ function retrieveGroups(){
         console.log("Error retrieving groups: " + error);
     });
 }
-;
+
 
 /**
     DISPLAY GROUPS

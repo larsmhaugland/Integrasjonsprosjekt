@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 document.addEventListener("DOMContentLoaded", function () {
 
     // DOM elements
@@ -75,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (sessionStorage.getItem("loggedIn") === "false"){
             alert("You need to be logged in to create a chat");
         } else  {
-            editChat = false,
+            editChat = false;
             createChatPopup.style.display = "block";
         }
     });
@@ -145,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Remove the member
                 usernamesToRemove.push(usernameLabel);
             }
-        })
+        });
         removeMembersFromChat(usernamesToRemove, false);
     });
 
@@ -292,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams) {
             groupIDSentAsParam = urlParams.get('groupID');
-            console.log("GroupID sent as para:" + groupIDSentAsParam)
+            console.log("GroupID sent as para:" + groupIDSentAsParam);
             if (groupIDSentAsParam !== null) {
                 try {
                     await getChatFromGroupAsync(groupIDSentAsParam);
@@ -500,7 +501,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Go through the list items and find the one with the matching username
         for (const listItem of listItems) {
-            console.log(listItem)
+            console.log(listItem);
             const span = listItem.querySelector("span");
             // If the username matches the username of the list item
             if (span.textContent === username) {
@@ -522,7 +523,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const chatList = document.querySelector("#list-of-chats");
         const chatItem = document.createElement("li");
         chatItem.classList.add("chat-item");
-        console.log("chat nam:" + chat.name)
+        console.log("chat nam:" + chat.name);
         chatItem.textContent = chat.name; // Display the chat name
         
         // Event Listener to display the clicked chat with its messages, and join the chat room
@@ -641,7 +642,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Create the timestamp span
         const timestampSpan = document.createElement("span");
         timestampSpan.classList.add("message-timestamp");
-        const formattedTimestamp = formatGoTimeStamp(message.timestamp)
+        const formattedTimestamp = formatGoTimeStamp(message.timestamp);
         timestampSpan.textContent = formattedTimestamp;
     
         // Create the message content
@@ -942,7 +943,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedMinutes = String(minutes).padStart(2, '0');
 
         return `${formattedHours}:${formattedMinutes}`;
-    }
+    };
 
     /**
      * Formats the timestamp into a string in the "MMM dd, yyyy" format.

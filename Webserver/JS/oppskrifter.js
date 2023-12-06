@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 //Global variables and constants:
 let MAXRESULTS = 12;
 let page = 0;
@@ -23,7 +24,7 @@ let instructionInputBtn = document.querySelector("#add-instruction-btn");
 let instructionInput = document.querySelector("#recipe-instructions");
 
 //Event listeners:
-newRecipeBtn.addEventListener("click", function (event){
+newRecipeBtn.addEventListener("click", function (){
     if(sessionStorage.getItem("loggedIn") !== "true"){
         alert("Du må logge inn for å legge til oppskrifter");
         return;
@@ -141,7 +142,7 @@ newRecipeBtn.addEventListener("click", function (event){
     newRecipePopup.style.display = "block";
 });
 
-closeRecipePopup.addEventListener("click", function (event){
+closeRecipePopup.addEventListener("click", function (){
     //Clear popup inputs
     let inputs = document.querySelectorAll("#new-recipe-popup input");
     for (let i = 0; i < inputs.length; i++){
@@ -151,12 +152,12 @@ closeRecipePopup.addEventListener("click", function (event){
 });
 
 //Update difficulty text when slider is moved
-recipeDifficulty.addEventListener("input", function (event){
+recipeDifficulty.addEventListener("input", function (){
     recipeDifficultyText.innerHTML = recipeDifficulty.value;
 });
 
 //Toggle between URL and manual recipe
-recipeType.addEventListener("input", function (event){
+recipeType.addEventListener("input", function (){
     if (recipeType.checked){
         document.querySelector("#url-recipe").style.display = "block";
         document.querySelector("#manual-recipe").style.display = "none";
@@ -173,7 +174,7 @@ submitRecipeBtn.addEventListener("click", function(event) {
 });
 
 //Search recipes
-searchField.addEventListener("input", function (event){
+searchField.addEventListener("input", function (){
     //Reset page
     page = 0;
     //Search recipes
@@ -186,7 +187,7 @@ searchField.addEventListener("input", function (event){
     displayPages();
 });
 
-imageInput.addEventListener("change", function (event){
+imageInput.addEventListener("change", function (){
     //Display preview image
     if(this.files.length === 1){
         let image = document.querySelector("#recipe-image-preview-img");
@@ -449,7 +450,7 @@ function addNewItemToList(list){
         li.setAttribute("data-qty", quantity);
         li.textContent = newItem;
         //create a checkbox for the list item
-        let removeItem = document.createElement("a")
+        let removeItem = document.createElement("a");
         let removeIcon = document.createElement("img");
         removeIcon.setAttribute("src", "../Images/trashcan.svg");
         removeIcon.setAttribute("alt", "Slett ingrediens");
@@ -768,7 +769,7 @@ async function displayResults(filteredList){
         //recipeBlock.classList.add("results");
         recipeA.classList.add("result");
         recipeA.setAttribute("href", "Oppskrift/index.html?id=" + recipe.documentID);
-        recipeA.setAttribute("id", recipe.documentID)
+        recipeA.setAttribute("id", recipe.documentID);
 
         let recipeBlock = document.createElement("div");
         recipeBlock.setAttribute("class", "result-text");
@@ -780,7 +781,7 @@ async function displayResults(filteredList){
         if (recipe.URL !== "" && recipe.URL !== null) {
             let recipeURL = document.createElement("a");
             recipeURL.setAttribute("href", recipe.URL);
-            recipeURL.setAttribute("target", "_blank")
+            recipeURL.setAttribute("target", "_blank");
             recipeURL.setAttribute("class", "result-url");
             recipeURL.textContent = recipe.URL;
             recipeBlock.appendChild(recipeURL);

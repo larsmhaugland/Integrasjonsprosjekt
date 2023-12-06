@@ -259,12 +259,12 @@ func ChatMembersDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		var request Firebase.RemoveMembersFromChat
 		err := DecodeJSONBody(w, r, &request)
 		if err != nil {
-			http.Error(w, "Error when decoding request POST: ", 401)
+			http.Error(w, "Error when decoding request POST: ", http.StatusBadRequest)
 			return
 		}
 
 		if request.ChatID == "" || len(request.Usernames) == 0 {
-			http.Error(w, "Invalid chatID or usernames", 402)
+			http.Error(w, "Invalid chatID or usernames", http.StatusBadRequest)
 			return
 		}
 
@@ -278,7 +278,7 @@ func ChatMembersDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		// No response body needed
 		w.WriteHeader(http.StatusNoContent)
 	} else {
-		http.Error(w, "Error; Method not supported", 403)
+		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
 	}
 }

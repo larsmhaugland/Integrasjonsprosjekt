@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 //CALL ON START/RELOAD
 retrieveGroups();
 retrieveShoppingList();
@@ -132,7 +133,7 @@ function retrieveShoppingList() {
             console.log(sessionStorage.getItem("shoppinglist"));
             displayShoppingList(data);
         }
-        )
+        );
     }
     else{
         //If option is a group, retrieve the shopping list from the group
@@ -281,7 +282,7 @@ function removeItemFromList(){
             });
             //Clone the item and change the id and checkbox id to match the finished list
             let newitem = item.cloneNode(true);
-            newitem.id = "finished-item"
+            newitem.id = "finished-item";
             let clonedCheckbox = newitem.querySelector("input[type='checkbox']");
             clonedCheckbox.id = "finished-checkbox";
             finishedList.appendChild(newitem);
@@ -305,7 +306,7 @@ function removeItemFromList(){
             });
             //Clone the item and change the id and checkbox id to match the shopping list
             let newitem = item.cloneNode(true);
-            newitem.id = "list-item"
+            newitem.id = "list-item";
             let clonedCheckbox = newitem.querySelector("input[type='checkbox']");
             clonedCheckbox.id = "checkbox";
             list.appendChild(newitem);
@@ -345,7 +346,7 @@ function retrieveGroups(){
                 console.log("Error retrieving groups: " + error);
             });
 
-};
+}
 
 /**
     PATCH SHOPPING LIST TO DATABASE
@@ -369,7 +370,7 @@ function patchShoppingList(){
            complete: item.list[itemName].complete,
            quantity: item.list[itemName].quantity,
            category: item.list[itemName].category
-           }
+           };
        }
     });
 
@@ -460,7 +461,7 @@ function retrieveDinnerList( option, user){
             inputCalendar = data;
             setCalendar(option);
         }
-        )
+        );
     }
 }
 
@@ -485,7 +486,7 @@ function setCalendar(groupID){
             let date = new Date(dateKey);
             let customDinner = dateData.customRecipe;
             let recipe = dateData.recipe;
-            console.log(recipe)
+            console.log(recipe);
             for (let k=0; k<dates.length; k++){
                 const currentDate = new Date(dates[k]);
                 currentDate.setHours(0, 0, 0, 0); // Set time to midnight

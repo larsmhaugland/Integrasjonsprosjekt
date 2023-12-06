@@ -231,7 +231,7 @@ func TestUserCredentialPostLoginHandlerWrongCredentials(t *testing.T) {
 
 	// Check the status code
 	if status := rr.Code; status != http.StatusBadRequest {
-		t.Errorf("Handler returned wrong status code: got %v, want %v", status, http.StatusOK)
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, http.StatusBadRequest)
 	}
 }
 

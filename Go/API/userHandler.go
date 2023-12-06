@@ -24,10 +24,10 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	case "credentials":
 		UserCredentialBaseHandler(w, r)
-		break
+
 	case "groups":
 		UserGroupBaseHandler(w, r)
-		break
+
 	case "search":
 		UserSearchHandler(w, r)
 	case "shopping":
@@ -48,13 +48,13 @@ func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
 		} else if r.URL.Path == "/user/credentials/register" {
 			UserCredentialPostHandler(w, r)
 		}
-		break
+
 	case http.MethodPatch:
 		UserCredentialPatchHandler(w, r)
-		break
+
 	case http.MethodDelete:
 		UserCredentialDeleteHandler(w, r)
-		break
+
 	case http.MethodOptions: // For CORS
 		return
 	default:
@@ -178,18 +178,18 @@ func UserCredentialPatchHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
+	
 	case http.MethodGet:
 		UserGroupGetHandler(w, r)
-		break
+	
 	case http.MethodPost:
 		UserGroupPostHandler(w, r)
-		break
-	case http.MethodOptions:
-		break // For CORS
+	
+	case http.MethodOptions: // For CORS
 
 	case http.MethodDelete:
 		UserGroupDeleteHandler(w, r)
-		break
+
 	case http.MethodPatch:
 		UserGroupPatchHandler(w, r)
 		return
@@ -299,11 +299,11 @@ func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case http.MethodOptions:
-		break // For CORS
+	case http.MethodOptions: // For CORS
+	
 	case http.MethodDelete:
 		UserShoppingDeleteHandler(w, r)
-		break
+
 	case http.MethodPatch:
 		UserShoppingPatchHandler(w, r)
 		return
@@ -320,6 +320,10 @@ func UserShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	user, err := Firebase.ReturnCacheUser(username)
+	if err != nil {
+		http.Error(w, "Error while getting user", http.StatusBadRequest)
+		return
+	}
 
 	listId := user.ShoppingLists[0]
 	log.Printf("List ID: %v\n", listId)

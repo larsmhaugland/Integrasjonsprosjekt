@@ -508,7 +508,7 @@ func TestGroupShoppingPatchHandler(t *testing.T) {
 		},
 	}
 
-	// Now you can encode this struct as JSON for the request body
+	// Encode this struct as JSON for the request body
 	body, err := json.Marshal(newShoppingList)
 	if err != nil {
 		t.Fatal(err)
@@ -557,7 +557,7 @@ func TestGroupShoppingPatchHandlerWrongGroup(t *testing.T) {
 		},
 	}
 
-	// Now you can encode this struct as JSON for the request body
+	// Encode this struct as JSON for the request body
 	body, err := json.Marshal(newShoppingList)
 	if err != nil {
 		t.Fatal(err)

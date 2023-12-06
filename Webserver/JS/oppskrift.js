@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 let recipeEdit = document.querySelector("#edit-recipe-btn");
 let editRecipePopup = document.querySelector("#edit-recipe-popup");
 let closeRecipePopup = document.querySelector("#close-recipe-popup");
@@ -51,7 +52,7 @@ recipeEdit.addEventListener("click", function () {
             label.innerHTML = displayedRecipe.instructions[i];
             instruction.appendChild(label);
             //create a checkbox for the list item
-            let removeItem = document.createElement("a")
+            let removeItem = document.createElement("a");
             let removeIcon = document.createElement("img");
             removeIcon.setAttribute("src", "../../Images/trashcan.svg");
             removeIcon.setAttribute("alt", "Slett ingrediens");
@@ -76,7 +77,7 @@ recipeEdit.addEventListener("click", function () {
             label.innerHTML = key + ": " + value;
             ingredient.appendChild(label);
             //create a remove icon for the list item
-            let removeItem = document.createElement("a")
+            let removeItem = document.createElement("a");
             let removeIcon = document.createElement("img");
             removeIcon.setAttribute("src", "../../Images/trashcan.svg");
             removeIcon.setAttribute("alt", "Slett ingrediens");
@@ -267,7 +268,7 @@ async function displayRecipe(Recipe) {
         let ingredients = document.createElement("div");
         ingredients.innerHTML = "Ingredienser: ";
         let ingredientList = document.createElement("ul");
-        ingredientList.setAttribute("id", "ingredientsList")
+        ingredientList.setAttribute("id", "ingredientsList");
         for (let [key, value] of Object.entries(Recipe.ingredients)) {
             let ingredient = document.createElement("li");
             ingredient.innerHTML = key + ": " + value;
@@ -297,18 +298,18 @@ async function displayRecipe(Recipe) {
     //Create description
     if (Recipe.description !== null && Recipe.description !== "") {
         let description = document.createElement("div");
-        description.setAttribute("id", "description")
+        description.setAttribute("id", "description");
         description.innerHTML = "Beskrivelse: " + Recipe.description;
         recipeContent.appendChild(description);
     }
     //Create time
     let time = document.createElement("div");
-    time.setAttribute("id", "time")
+    time.setAttribute("id", "time");
     time.innerHTML = "Tid: " + Recipe.time + " minutter";
     recipeContent.appendChild(time);
     //Create difficulty
     let difficulty = document.createElement("div");
-    difficulty.setAttribute("id", "difficulty")
+    difficulty.setAttribute("id", "difficulty");
     difficulty.innerHTML = "Vanskelighetsgrad: " + Recipe.difficulty;
     recipeContent.appendChild(difficulty);
 

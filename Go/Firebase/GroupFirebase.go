@@ -404,7 +404,7 @@ func AddUserToGroup(username string, groupID string) error {
 	// Add the new member to the map with the role member
 	groupData.Members[username] = "member"
 
-	// Update the firestore document with the new memebrs map
+	// Update the firestore document with the new memebers map
 	_, err = client.Collection("groups").Doc(groupID).Update(ctx, []firestore.Update{
 		{Path: "members", Value: groupData.Members},
 	})

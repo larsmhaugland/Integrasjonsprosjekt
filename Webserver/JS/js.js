@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 /*
     POP-UP WINDOW
     Log in
@@ -5,7 +6,7 @@
 //TEST
 let API_IP = "";
 let IMAGEDIR = "Images/";
-const API_LOCAL = "http://localhost:8080";
+export const API_LOCAL = "http://localhost:8080";
 const API_REMOTE = "https://10.212.174.249:8080"; //PEKER PÅ DEV SERVER
 
 if (window.location.hostname === "localhost"){
@@ -160,7 +161,7 @@ function updateLoginStatus(){
     } else {
         loginBtn.style.display = "block";
         logoutBtn.style.display = "none";
-        notLoggedInDisplay.style.display= "block"
+        notLoggedInDisplay.style.display= "block";
         notLoggedInDisplay.style.cssText = "display: flex !important";
         if(mainDisplay !== null) {
             mainDisplay.style.display = "none"
@@ -176,7 +177,7 @@ function registerUser(){
     let name = document.querySelector("#name-reg").value;
     let passwordMismatch = document.querySelector("#password-mismatch");
     if (username === "" || password === "" || passwordConf === "" || name === ""){
-        alert("Alle feltene må fylles ut")
+        alert("Alle feltene må fylles ut");
         return;
     }
     if (password !== passwordConf){

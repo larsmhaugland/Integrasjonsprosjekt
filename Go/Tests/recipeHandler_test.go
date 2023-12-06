@@ -35,7 +35,13 @@ func TestRecipeDeleteHandler(t *testing.T) {
 	ResetGroupData("testgroup", "testchat", "testuserrecipe", "testrecipe2", false)
 	ResetUserData("testuserrecipe", "testrecipe2")
 	user, err := Firebase.ReturnCacheUser("testuserrecipe")
+	if err != nil {
+		t.Fatalf("Error getting userdata for test: %v", err)
+	}
 	group, err := Firebase.ReturnCacheGroup("testgroup")
+	if err != nil {
+		t.Fatalf("Error setting up test: %v", err)
+	}
 
 	// Create a new recipe to delete
 	recipe := Firebase.Recipe{
@@ -96,6 +102,9 @@ func TestRecipeDeleteHandler(t *testing.T) {
 func TestRecipePatchHandler(t *testing.T) {
 	ResetRecipeData("testrecipe3")
 	recipe, err := Firebase.ReturnCacheRecipe("testrecipe3")
+	if err != nil {
+		t.Fatalf("Error getting recipe cache: %v", err)
+	}
 
 	// Create a request to patch the recipe
 	recipe.Name = "New Title"
@@ -307,10 +316,4 @@ func TestRecipePostHandler(t *testing.T) {
 	if _, ok := group.Recipes[bodyString]; !ok {
 		t.Errorf("Recipe was not added to group")
 	}
-}
-
-func toJSON(recipe Firebase.Recipe) string {
-	// implementation to convert Recipe to JSON
-	jsonBytes, _ := json.Marshal(recipe)
-	return string(jsonBytes)
 }

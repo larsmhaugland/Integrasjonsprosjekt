@@ -29,18 +29,20 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
 			RecipePostHandler(w, r)
+			
 		case http.MethodGet:
 			if parts[len(parts)-1] == "categories" {
 				RecipeCategoriesHandler(w, r)
 				break
 			}
 			RecipeGetHandler(w, r)
-			break
+
 		case http.MethodPatch:
 			RecipePatchHandler(w, r)
-			break
+
 		case http.MethodDelete:
 			RecipeDeleteHandler(w, r)
+
 		case http.MethodOptions: // For CORS
 			return
 		default:

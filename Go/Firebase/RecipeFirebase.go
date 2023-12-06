@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-// GetAllrecipes returns a slice with Recipe structs with all the recipes in the databse
+// GetAllRecipes returns a slice with Recipe structs with all the recipes in the database
 func GetAllRecipes() ([]Recipe, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -99,7 +99,7 @@ func GetRecipeData(recipeID string) (Recipe, error) {
 	return recipe, nil
 }
 
-// PatchRecipe updates the document in the firestore databse with the new data of the recipe
+// PatchRecipe updates the document in the firestore database with the new data of the recipe
 func PatchRecipe(recipe Recipe) error {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
