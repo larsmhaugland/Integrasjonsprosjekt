@@ -27,7 +27,65 @@ body{
     background: #DDDDDD;
     border: 3px solid #DDDDDD;
     border-radius: 10px;
+}
 
+.filter-wrapper h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.filter-wrapper input {
+    display: inline;
+    margin-right: 10px;
+    vertical-align: middle;
+    margin-bottom: 0;
+}
+
+.filter-wrapper label {
+    display: inline;
+    margin-right: 10px;
+    font-size: 15px;
+}
+
+.filter-wrapper li {
+    list-style-type: none;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #DDDDDD;
+    border: 3px solid #DDDDDD;
+    border-radius: 10px;
+}
+.category-name {
+    margin-right: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.category-name.active {
+    font-weight: bold;
+}
+
+.category-name:after {
+    content: "\002B"; /* Plus sign (+) by default */
+}
+
+.category-name.active:after {
+    content: "\2212"; /* Minus sign (-) when active */
+}
+
+
+.category-div {
+    max-height: 0px;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    margin-right: 10px;
+    font-size: 15px;
 }
 
 .recipe-header-container {

@@ -1,5 +1,5 @@
 //Global variables and constants:
-let MAXRESULTS = 6;
+let MAXRESULTS = 12;
 let page = 0;
 let Recipes = [];
 let Categories = [];
@@ -57,7 +57,6 @@ newRecipeBtn.addEventListener("click", function (event){
     //Clear categories
     let categoryDiv = document.querySelector("#category-checkboxes");
     categoryDiv.innerHTML = "";
-    console.log("Categories: ", Categories);
     //Add exclusive categories
     let exclusiveCategories = document.createElement("div");
     exclusiveCategories.setAttribute("class", "exclusive-categories");
@@ -248,6 +247,7 @@ instructionInputBtn.addEventListener("click", (event)=> {
 });
 
 window.onload = function () {
+    updateLoginStatus();
     retrieveGroups();
     loadRecipes();
     getCategories();
@@ -264,12 +264,162 @@ function getCategories() {
         if (response.ok) {
             response.json().then((data) => {
                 Categories = data;
+                displayCategoryFilters();
             });
         } else {
             console.log("Error getting categories");
         }
     });
 }
+
+function displayCategoryFilters() {
+    let filterDiv = document.querySelector("#filter-wrapper");
+    //Clear existing filters
+    filterDiv.innerHTML = "";
+    //Add header
+    let filterHeader = document.createElement("h2");
+    filterHeader.textContent = "Filter";
+    filterDiv.appendChild(filterHeader);
+    //Add clear filters button
+    let clearFilters = document.createElement("button");
+    clearFilters.setAttribute("class", "clear-filters");
+    clearFilters.textContent = "Tøm filter";
+    clearFilters.addEventListener("click", function (event) {
+        let checkboxes = document.querySelectorAll(".category-checkbox");
+        for (let i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = false;
+        }
+        submitFilter();
+    });
+    filterDiv.appendChild(clearFilters);
+
+    // Check if categories have been loaded
+    if(Categories === null) return;
+
+    // Add exclusive category filters
+    let e = document.createElement("div");
+    e.setAttribute("class", "exclusive-categories");
+
+    for (const ex in Categories.exclusive) {
+        // Add category name
+        let categoryName = document.createElement("h3");
+        categoryName.setAttribute("class", "category-name");
+        categoryName.appendChild(document.createTextNode(ex+" "));
+        categoryName.addEventListener("click", function() {
+            // Toggle the visibility of the associated checkboxes
+            let checkboxes = categoryName.nextElementSibling; // Assumes checkboxes are the next sibling
+            checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
+            categoryName.classList.toggle("active");
+        });
+        e.appendChild(categoryName);
+
+        // Add checkboxes container
+        let categoryCheckboxes = document.createElement("div");
+        categoryCheckboxes.setAttribute("class", "category-div");
+
+        // Replace the following loop with your existing code for radio buttons
+        for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
+            let category = exclusiveCategoriesKey;
+            let listItem = document.createElement("li");
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "radio");
+            checkbox.setAttribute("id", "category_" + category);
+            checkbox.setAttribute("name", "category_" + ex);
+            checkbox.setAttribute("value", category);
+            checkbox.setAttribute("class", "category-checkbox");
+            checkbox.addEventListener("input", function (event) {
+                submitFilter();
+            });
+            let label = document.createElement("label");
+            label.setAttribute("for", "category_" + category);
+            label.setAttribute("class", "category-label");
+            label.appendChild(document.createTextNode(category));
+            listItem.appendChild(checkbox);
+            listItem.appendChild(label);
+            categoryCheckboxes.appendChild(listItem);
+        }
+        e.appendChild(categoryCheckboxes);
+    }
+
+    // Add non-exclusive categories
+    let nExCategoriesWrapper = document.createElement("div");
+    nExCategoriesWrapper.setAttribute("class", "non-exclusive-categories");
+    let nExName = document.createElement("h3");
+    nExName.setAttribute("class", "category-name");
+    nExName.textContent = "Øvrige kategorier ";
+    nExName.addEventListener("click", function() {
+        // Toggle the visibility of the associated checkboxes
+    let checkboxes = nExName.nextElementSibling; // Assumes checkboxes are the next sibling
+        checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
+        nExName.classList.toggle("active");
+    });
+    nExCategoriesWrapper.appendChild(nExName);
+    let nExCategories = document.createElement("div");
+    nExCategories.setAttribute("class", "category-div");
+    for (let i = 0; i < Categories.categories.length; i++) {
+        let category = Categories.categories[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        checkbox.addEventListener("input", function (event) {
+            submitFilter();
+        });
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        nExCategories.appendChild(listItem);
+    }
+    nExCategoriesWrapper.appendChild(nExCategories);
+
+    // Add allergies
+    let allergyWrapper = document.createElement("div");
+    allergyWrapper.setAttribute("class", "allergy-categories");
+    let allergyCategoriesName = document.createElement("h3");
+    allergyCategoriesName.setAttribute("class", "category-name");
+    allergyCategoriesName.textContent = "Allergener ";
+    allergyCategoriesName.addEventListener("click", function() {
+        // Toggle the visibility of the associated checkboxes
+        let checkboxes = allergyCategoriesName.nextElementSibling; // Assumes checkboxes are the next sibling
+        checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
+        allergyCategoriesName.classList.toggle("active");
+    });
+    allergyWrapper.appendChild(allergyCategoriesName);
+    let allergyCategories = document.createElement("div");
+    allergyCategories.setAttribute("class", "category-div");
+    for (let i = 0; i < Categories.allergies.length; i++) {
+        let category = Categories.allergies[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        checkbox.addEventListener("input", function (event) {
+            submitFilter();
+        });
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        allergyCategories.appendChild(listItem);
+    }
+    allergyWrapper.appendChild(allergyCategories);
+
+    filterDiv.appendChild(e);
+    filterDiv.appendChild(nExCategoriesWrapper);
+    filterDiv.appendChild(allergyWrapper);
+}
+
 
 async function loadRecipes(){
     if (!await checkLoginStatus()) return;
@@ -357,11 +507,8 @@ async function newRecipe() {
         // Send the form data to the API
         try {
             filename = await uploadImage(imageInput.files[0], function (response) {
-                console.log("Kom meg hit jeg");
-                console.log(response);
                 filename = response.filename;
             });
-            console.log("Image uploaded");
         } catch (error) {
             console.log(error);
             alert("Det skjedde en feil med opplasting av bildet");
@@ -385,7 +532,6 @@ async function newRecipe() {
             categories.push(categoryCheckboxes[i].value);
         }
     }
-    console.log(categories);
     let recipe = {
         "name": name,
         "difficulty": parseInt(difficulty),
@@ -396,7 +542,6 @@ async function newRecipe() {
     };
 
     if (type.checked) {
-        console.log("URL recipe");
         recipe.URL = document.querySelector("#recipe-url").value;
     } else {
         let list = document.querySelectorAll("#recipe-ingredient-list li");
@@ -417,8 +562,6 @@ async function newRecipe() {
         "recipe": recipe,
         "groups": groups,
     };
-
-    console.log(data.recipe);
 
     try {
         const recipeResponse = await fetch(API_IP + "/recipe/", {
@@ -562,11 +705,37 @@ function searchRecipes(text) {
 
 function submitFilter() {
     page = 0;
+    displayResults(filterRecipes(searchRecipes(searchField.value)));
 }
 
 function filterRecipes(list) {
-    //TODO: Implement filter
-    return list;
+    let checkboxes = document.querySelectorAll(".category-checkbox");
+    let checked = [];
+    for (let i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            checked.push(checkboxes[i].value);
+        }
+    }
+    if (checked.length === 0) {
+        return list;
+    }
+    let filteredList = [];
+    for (let i = 0; i < list.length; i++) {
+        let recipe = list[i];
+        let categories = recipe.categories;
+        if(categories === null) continue;
+        let match = true;
+        for (let j = 0; j < checked.length; j++) {
+            if (!categories.includes(checked[j])) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            filteredList.push(recipe);
+        }
+    }
+    return filteredList;
 }
 
 function isDuplicate(list, item) {
