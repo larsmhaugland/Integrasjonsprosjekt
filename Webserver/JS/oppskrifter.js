@@ -2,6 +2,7 @@
 let MAXRESULTS = 6;
 let page = 0;
 let Recipes = [];
+let Categories = [];
 
 
 //DOM elements:
@@ -52,6 +53,89 @@ newRecipeBtn.addEventListener("click", function (event){
         listItem.appendChild(label);
         groupDiv.appendChild(listItem);
     }
+
+    //Clear categories
+    let categoryDiv = document.querySelector("#category-checkboxes");
+    categoryDiv.innerHTML = "";
+    console.log("Categories: ", Categories);
+    //Add exclusive categories
+    let exclusiveCategories = document.createElement("div");
+    exclusiveCategories.setAttribute("class", "exclusive-categories");
+    for(const ex in Categories.exclusive){
+        //Add category name
+        let categoryName = document.createElement("h3");
+        categoryName.setAttribute("class", "category-name");
+        categoryName.appendChild(document.createTextNode(ex));
+        exclusiveCategories.appendChild(categoryName);
+        //Add radio buttons
+        for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
+            let category = exclusiveCategoriesKey;
+            let listItem = document.createElement("li");
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "radio");
+            checkbox.setAttribute("id", "category_" + category);
+            checkbox.setAttribute("name", "category_" + ex);
+            checkbox.setAttribute("value", category);
+            checkbox.setAttribute("class", "category-checkbox");
+            let label = document.createElement("label");
+            label.setAttribute("for", "category_" + category);
+            label.setAttribute("class", "category-label");
+            label.appendChild(document.createTextNode(category));
+            listItem.appendChild(checkbox);
+            listItem.appendChild(label);
+            exclusiveCategories.appendChild(listItem);
+        }
+    }
+    //Add non-exclusive categories
+    let nonExclusiveCategories = document.createElement("div");
+    nonExclusiveCategories.setAttribute("class", "non-exclusive-categories");
+    let nonExclusiveCategoriesName = document.createElement("h3");
+    nonExclusiveCategoriesName.textContent = "Øvrige kategorier";
+    nonExclusiveCategories.appendChild(nonExclusiveCategoriesName);
+    for(let i = 0; i < Categories.categories.length; i++){
+        let category = Categories.categories[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        nonExclusiveCategories.appendChild(listItem);
+    }
+    //Add allergies
+    let allergyCategories = document.createElement("div");
+    allergyCategories.setAttribute("class", "allergy-categories");
+    let allergyCategoriesName = document.createElement("h3");
+    allergyCategoriesName.textContent = "Allergier";
+    allergyCategories.appendChild(allergyCategoriesName);
+    for(let i = 0; i < Categories.allergies.length; i++){
+        let category = Categories.allergies[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        allergyCategories.appendChild(listItem);
+    }
+    categoryDiv.appendChild(exclusiveCategories);
+    categoryDiv.appendChild(nonExclusiveCategories);
+    categoryDiv.appendChild(allergyCategories);
+
     //Clear preview image
     let recipeImage = document.querySelector("#recipe-image-preview-img");
     recipeImage.style.display = "none";
@@ -166,7 +250,25 @@ instructionInputBtn.addEventListener("click", (event)=> {
 window.onload = function () {
     retrieveGroups();
     loadRecipes();
+    getCategories();
+}
 
+function getCategories() {
+    // Get categories from API
+    fetch(API_IP + "/recipe/categories", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    }).then((response) => {
+        if (response.ok) {
+            response.json().then((data) => {
+                Categories = data;
+            });
+        } else {
+            console.log("Error getting categories");
+        }
+    });
 }
 
 async function loadRecipes(){
@@ -276,12 +378,21 @@ async function newRecipe() {
         }
     }
 
+    let categories = [];
+    let categoryCheckboxes = document.querySelectorAll("input.category-checkbox");
+    for (let i = 0; i < categoryCheckboxes.length; i++) {
+        if (categoryCheckboxes[i].checked) {
+            categories.push(categoryCheckboxes[i].value);
+        }
+    }
+    console.log(categories);
     let recipe = {
         "name": name,
         "difficulty": parseInt(difficulty),
         "time": parseInt(time),
         "image": filename,
         "description": description,
+        "categories": categories,
     };
 
     if (type.checked) {

@@ -30,6 +30,10 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPost:
 			RecipePostHandler(w, r)
 		case http.MethodGet:
+			if parts[len(parts)-1] == "categories" {
+				RecipeCategoriesHandler(w, r)
+				break
+			}
 			RecipeGetHandler(w, r)
 			break
 		case http.MethodPatch:
@@ -44,6 +48,39 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		http.Error(w, "Error; Invalid URL", http.StatusBadRequest)
+	}
+}
+
+func RecipeCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	type Output struct {
+		Exclusive map[string]map[string]string `json:"exclusive"`
+		Inclusive []string                     `json:"categories"`
+		Allergens []string                     `json:"allergies"`
+	}
+	var output Output
+	output.Exclusive = make(map[string]map[string]string)
+	//Add categories to response
+	output.Allergens = []string{"Gluten", "Laktose", "Nøtter", "Egg", "Fisk", "Skalldyr", "Soya", "Sennep", "Selleri", "Sesamfrø", "Sulfitt", "Bløtdyr", "Peanøtter"}
+	output.Inclusive = []string{"Glutenfri", "Laktosefri", "Halal", "Kosher", "Kylling", "Fisk", "Svin", "Storfekjøtt"}
+	output.Exclusive["Måltid"] = map[string]string{
+		"Frokost":   "Frokost",
+		"Lunsj":     "Lunsj",
+		"Middag":    "Middag",
+		"Kveldsmat": "Kveldsmat",
+	}
+	output.Exclusive["Type"] = map[string]string{
+		"Kjøtt":   "Kjøtt",
+		"Fisk":    "Fisk",
+		"Vegetar": "Vegetar",
+		"Vegan":   "Vegan",
+	}
+	//More categories could be added here
+
+	//Encode response
+	err := EncodeJSONBody(w, r, output)
+	if err != nil {
+		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
