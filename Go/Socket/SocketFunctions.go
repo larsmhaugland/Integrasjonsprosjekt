@@ -1,6 +1,7 @@
 package Socket
 
 import (
+	"container/heap"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -10,6 +11,40 @@ import (
 )
 
 var allowedIPAddress = "10.212.174.249:8080"
+
+// New type for managing chat rooms based on last message time
+type ChatRoomHeap []*ChatRoomInfo
+
+type ChatRoomInfo struct {
+	ActiveChatID    string
+	LastMessageTime time.Time
+}
+
+// Methods that has to be implemented for the heap interface
+func (h ChatRoomHeap) Len() int           { return len(h) }
+func (h ChatRoomHeap) Less(i, j int) bool { return h[i].LastMessageTime.Before(h[j].LastMessageTime) }
+func (h ChatRoomHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *ChatRoomHeap) Push(x interface{}) {
+	*h = append(*h, x.(*ChatRoomInfo)) // Push the new item to the heap (heap is a pointer)
+}
+
+func (h *ChatRoomHeap) Pop() interface{} {
+	old := *h // Get a copy of the heap
+	n := len(old)
+	item := old[n-1]  // Item to be popped from the heap
+	*h = old[0 : n-1] // Update heap with the abscence of the last item
+	return item       // return the popped item
+}
+
+// Track chat rooms using priority queue with heap interface
+var chatRoomHeap ChatRoomHeap
+
+// Init function to initialize the chat room heap. Called at package initialization
+func init() {
+	chatRoomHeap = make(ChatRoomHeap, 0)
+	heap.Init(&chatRoomHeap)
+}
 
 // ConnectionInfo stores the websocket connection and the last message time
 type ConnectionInfo struct {
@@ -144,11 +179,15 @@ func broadcastMessageToRoom(connInfo *ConnectionInfo, messageData map[string]int
 
 // Handle the joinChat event
 func joinChatRoom(connInfo *ConnectionInfo, activeChatID string) {
-	log.Println("activeChatid: ", activeChatID)
 	if activeChatID != "" {
 		// Create the chat room if it doesn't exist
 		if chatRooms[activeChatID] == nil {
 			chatRooms[activeChatID] = make(map[*ConnectionInfo]bool)
+			roomInfo := &ChatRoomInfo{
+				ActiveChatID:    activeChatID,
+				LastMessageTime: time.Now(),
+			}
+			heap.Push(&chatRoomHeap, roomInfo) // Push the new room to the heap
 		}
 		// Add the client to the chat room
 		chatRooms[activeChatID][connInfo] = true
@@ -162,38 +201,50 @@ func leaveChatRoom(connInfo *ConnectionInfo, activeChatID string) {
 		// Remove the client from the chat room
 		delete(chatRooms[activeChatID], connInfo)
 		log.Println("User left the chat room")
+
+		// Check if the chat room is empty, if yes, remove it from the heap
+		if len(chatRooms[activeChatID]) == 0 {
+			for i, roomInfo := range chatRoomHeap {
+				if roomInfo.ActiveChatID == activeChatID {
+					heap.Remove(&chatRoomHeap, i) // Remove the room from the heap
+					break
+				}
+			}
+			delete(chatRooms, activeChatID) // Delete the room from the map, as it is now empty
+		}
 	}
 }
 
 // chatRoomCleanup checks when the last message was received in each chat room
 // and closes the room if it is idle for too long
 func chatRoomCleanup() {
-	for activeChatID, room := range chatRooms {
+	idleThreshold := time.Duration(30) * time.Minute
 
-		// Set the time threshold for a room to be considered idle
-		idleThreshold := time.Duration(30) * time.Minute
-
-		// Calculate the last time a message was received in this room.
-		lastMessageTime := getLastMessageTime(room)
-
-		// Close the room if it is idle.
-		if time.Since(lastMessageTime) > idleThreshold {
-			closeChatRoom(activeChatID)
+	for chatRoomHeap.Len() > 0 {
+		roomInfo := heap.Pop(&chatRoomHeap).(*ChatRoomInfo)
+		if time.Since(roomInfo.LastMessageTime) > idleThreshold {
+			closeChatRoom(roomInfo.ActiveChatID)
+		} else {
+			// If the room is still active, re-insert it into the heap with updated time
+			heap.Push(&chatRoomHeap, roomInfo)
+			break // Break the loop since next rooms will also be active (the heap is sorted by message time)
 		}
 	}
 }
 
-// RunChatRoomCleanup periodiaqlly runs chat room cleanup in the background
-func RunChatRoomCleanup() {
-	// Unterminated loop that runs the cleanup function at regular intervals
-	for {
-		// Sleep for 5 minutes, so it runs with 5 minutes time intervals
-		time.Sleep(time.Duration(5) * time.Minute)
-		// Run the cleanup function
-		chatRoomCleanup()
-	}
+// RunChatRoomCleanup periodically runs chat room cleanup in the background
+func RunChatRoomCleanup(interval time.Duration) {
+    cleanupTimer := time.NewTimer(interval)	 // Timer that fires at the specified interval
+    defer cleanupTimer.Stop()
+
+    for {							 // Infinite loop
+        <-cleanupTimer.C			 // Blocked until the timer fires
+        chatRoomCleanup()
+        cleanupTimer.Reset(interval) // Reset the timer for the next interval
+    }
 }
 
+/*
 // getLastMessageTime returns the time of the last message received in the room
 func getLastMessageTime(room map[*ConnectionInfo]bool) time.Time {
 	var latestTime time.Time
@@ -204,7 +255,7 @@ func getLastMessageTime(room map[*ConnectionInfo]bool) time.Time {
 		}
 	}
 	return latestTime
-}
+}*/
 
 // closeChatRoom closes the specified chat room
 func closeChatRoom(activeChatID string) {

@@ -166,7 +166,7 @@ func UserCredentialPostHandlerTest(w http.ResponseWriter, r *http.Request) {
 	//Create a new cookie
 	authCookie := http.Cookie{
 		Name:     "AuthToken",                    // Cookie name
-		Value:    "test",                         // Set your authentication token
+		Value:    "test",                         // Set authentication token
 		Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
 		Path:     "/",                            // Cookie is valid for all paths
 		SameSite: http.SameSiteNoneMode,
@@ -240,7 +240,7 @@ func UserCredentialPostLoginHandlerTest(w http.ResponseWriter, r *http.Request) 
 		// Create a new cookie
 		authCookie := http.Cookie{
 			Name:     "AuthToken",                    // Cookie name
-			Value:    "test",                         // Set your authentication token
+			Value:    "test",                         // Set authentication code
 			Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
 			Path:     "/",                            // Cookie is valid for all paths
 			SameSite: http.SameSiteNoneMode,

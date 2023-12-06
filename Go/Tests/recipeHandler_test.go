@@ -310,7 +310,7 @@ func TestRecipePostHandler(t *testing.T) {
 }
 
 func toJSON(recipe Firebase.Recipe) string {
-	// Your implementation to convert Recipe to JSON
+	// implementation to convert Recipe to JSON
 	jsonBytes, _ := json.Marshal(recipe)
 	return string(jsonBytes)
 }

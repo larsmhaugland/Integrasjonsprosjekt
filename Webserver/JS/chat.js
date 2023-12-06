@@ -748,7 +748,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // URL for the backend API endpoint
         const url = `${API_IP}/chat/membersDelete`;
 
-        // Send a DELETE request to the backend API
+        // Send a POST request to the backend API
         fetch(url, {
             method: "POST",
             headers: {
@@ -814,7 +814,7 @@ document.addEventListener("DOMContentLoaded", function () {
      */
     function addUserToChat(username) {
         // URL for the backend API endpoint
-        const url = `${API_IP}/chat/members?chatID=${activeChatID}`; // Replace with your actual API URL
+        const url = `${API_IP}/chat/members?chatID=${activeChatID}`; 
         
         // Prepare the data to be sent to the API endpoint
         const data = {

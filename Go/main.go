@@ -87,8 +87,13 @@ func startHTTPSserver() {
 	http.HandleFunc("/clear/", clearCacheHandler)
 
 	// coroutine that runs the chat room cleanup function
+<<<<<<< HEAD
 	go Socket.RunChatRoomCleanup()
 	// Start HTTPS server
+=======
+	go Socket.RunChatRoomCleanup(10)
+	// Start HTTP server
+>>>>>>> 2df84f4 (Improved cleanup of chat rooms)
 	log.Println("Starting HTTPS server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))
 }
