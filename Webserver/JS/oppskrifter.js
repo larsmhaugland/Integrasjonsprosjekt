@@ -1,5 +1,5 @@
 //Global variables and constants:
-let MAXRESULTS = 1;
+let MAXRESULTS = 6;
 let page = 0;
 let Recipes = [];
 
@@ -15,6 +15,11 @@ let recipeType = document.querySelector("#recipe-type-url");
 let submitRecipeBtn = document.querySelector("#submit-new-recipe");
 let searchField = document.querySelector("#search-bar");
 let imageInput = document.querySelector("#recipe-image");
+let ingredientInputBtn = document.querySelector("#add-ingredient-btn");
+let ingredientInput = document.querySelector("#recipe-ingredient");
+let quantityInput = document.querySelector("#recipe-ingredient-qty");
+let instructionInputBtn = document.querySelector("#add-instruction-btn");
+let instructionInput = document.querySelector("#recipe-instructions");
 
 //Event listeners:
 newRecipeBtn.addEventListener("click", function (event){
@@ -100,6 +105,7 @@ searchField.addEventListener("input", function (event){
 });
 
 imageInput.addEventListener("change", function (event){
+    //Display preview image
     if(this.files.length === 1){
         let image = document.querySelector("#recipe-image-preview-img");
         image.setAttribute("src", URL.createObjectURL(this.files[0]));
@@ -110,10 +116,9 @@ imageInput.addEventListener("change", function (event){
         image.style.display = "none";
     }
 });
-let ingredientInputBtn = document.querySelector("#add-ingredient-btn");
-let ingredientInput = document.querySelector("#recipe-ingredient");
-let quantityInput = document.querySelector("#recipe-ingredient-qty");
+
 ingredientInput.addEventListener("keydown", (event)=> {
+    //Add ingredient on enter
     if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
         event.preventDefault();
         addNewItemToList("ingredients");
@@ -122,6 +127,7 @@ ingredientInput.addEventListener("keydown", (event)=> {
     }
 });
 quantityInput.addEventListener("keydown", (event)=> {
+    //Add ingredient on enter
     if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
         event.preventDefault();
         addNewItemToList("ingredients");
@@ -130,6 +136,7 @@ quantityInput.addEventListener("keydown", (event)=> {
     }
 });
 ingredientInputBtn.addEventListener("click", (event)=> {
+    //Add ingredient on button click
     if (ingredientInput.value !== "" && quantityInput.value !== "") {
         event.preventDefault();
         addNewItemToList("ingredients");
@@ -138,9 +145,9 @@ ingredientInputBtn.addEventListener("click", (event)=> {
     }
 });
 
-let instructionInputBtn = document.querySelector("#add-instruction-btn");
-let instructionInput = document.querySelector("#recipe-instructions");
+
 instructionInput.addEventListener("keydown", (event)=> {
+    //Add instruction on enter
     if (event.key === "Enter" && instructionInput.value !== "") {
         event.preventDefault();
         addNewItemToList("instructions");
@@ -148,6 +155,7 @@ instructionInput.addEventListener("keydown", (event)=> {
     }
 });
 instructionInputBtn.addEventListener("click", (event)=> {
+    //Add instruction on button click
     if (instructionInput.value !== "") {
         event.preventDefault();
         addNewItemToList("instructions");
@@ -155,9 +163,11 @@ instructionInputBtn.addEventListener("click", (event)=> {
     }
 });
 
-//Load recipes:
-retrieveGroups();
+window.onload = function () {
+    retrieveGroups();
+    loadRecipes();
 
+}
 
 async function loadRecipes(){
     if (!await checkLoginStatus()) return;
@@ -165,10 +175,6 @@ async function loadRecipes(){
     await displayResults(Recipes);
     displayPages();
 }
-
-loadRecipes();
-
-
 
 function addNewItemToList(list){
     let type = "";
@@ -181,8 +187,6 @@ function addNewItemToList(list){
         list = document.querySelector("#recipe-instructions-list");
     }
     else return;
-
-
 
     let li = document.createElement("li");
     if(type === "ingredient") {
@@ -246,7 +250,6 @@ async function newRecipe() {
         alert("Alle nødvendige felt må fylles ut");
         return;
     }
-
 
     if (imageInput.files.length === 1) {
         // Send the form data to the API
@@ -340,7 +343,7 @@ function displayPages() {
         pag = pagination(page, Math.ceil(Recipes.length / MAXRESULTS));
     } else {
         // Check if there is only one page or fewer for filtered recipes
-        if (Math.ceil(Recipes.length / MAXRESULTS) <= 1) {
+        if (Math.ceil(filterRecipes(searchRecipes(searchField.value)).length / MAXRESULTS) <= 1) {
             return; // No need to display pagination
         }
         // Calculate pagination for filtered recipes

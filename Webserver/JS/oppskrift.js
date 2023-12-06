@@ -152,6 +152,7 @@ deleteRecipeBtn.addEventListener("click", function (event) {
 });
 
 window.onload = function () {
+    console.log("hei");
     //Load recipe
     updateLoginStatus();
     getRecipe();
@@ -171,6 +172,7 @@ async function getRecipe() {
     //Display recipe
     displayedRecipe = data;
     displayRecipe(data);
+    console.log(data);
 }
 
 function editRecipe() {

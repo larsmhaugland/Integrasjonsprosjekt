@@ -83,11 +83,6 @@
                     <label for="recipe-difficulty"><br>Vanskelighetsgrad:<br></label>
                     <input type="range" min="1" max="5" id="recipe-difficulty" required>
                     <p id="difficulty-value-label" style="display: inline;">3</p>
-                    <label for="category-checkboxes"><br>Kategorier:<br></label>
-                    <div id="category-checkboxes">
-                        <p>Innmat kommer</p>
-                        <!-- Need to find out which categories we should have -->
-                    </div>
                     <label for="recipe-type-url"><br>Vil du legge til oppskrift med kun URL? </label>
                     <input type="checkbox" id="recipe-type-url">
                     <div id="manual-recipe">
@@ -97,9 +92,7 @@
                             <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
                             <button id="add-ingredient-btn">Legg til</button>
                             <ul id="recipe-ingredient-list">
-                                <!-- Ingredients get appended here
-                                TODO: ENDRE PÅ INGREDIENSER
-                                -->
+                                <!-- Ingredients get appended here -->
                             </ul>
                         </div>
                         <div id="new-recipe-instructions">
@@ -107,9 +100,7 @@
                             <input type="text" id="recipe-instructions" placeholder="Instruksjoner...">
                             <button id="add-instruction-btn">Legg til</button>
                             <ol id="recipe-instructions-list">
-                                <!-- Instructions get appended here
-                                TODO: ENDRE PÅ INSTRUKSJONER
-                                 -->
+                                <!-- Instructions get appended here -->
                             </ol>
                         </div>
                     </div>

@@ -153,14 +153,18 @@ function updateLoginStatus(){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
         notLoggedInDisplay.style.cssText = "display: none !important";
-       mainDisplay.style.display = "block";
+        if(mainDisplay !== null) {
+            mainDisplay.style.display = "block";
+        }
       body.style.backgroundColor = "white";
     } else {
         loginBtn.style.display = "block";
         logoutBtn.style.display = "none";
         notLoggedInDisplay.style.display= "block"
         notLoggedInDisplay.style.cssText = "display: flex !important";
-        mainDisplay.style.display = "none"
+        if(mainDisplay !== null) {
+            mainDisplay.style.display = "none"
+        }
         body.style.backgroundColor = "#80AB82";
     }
 }
