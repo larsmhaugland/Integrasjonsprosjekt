@@ -2,6 +2,7 @@
 
 let API_IP = "";
 let IMAGEDIR = "Images/";
+let ICONDIR = "Images/";
 const API_LOCAL = "http://localhost:8080";
 const API_REMOTE = "https://10.212.174.249:8080"; //PEKER PÅ DEV SERVER
 
