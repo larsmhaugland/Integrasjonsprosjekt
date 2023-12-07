@@ -6,6 +6,15 @@ let ICONDIR = "Images/";
 const API_LOCAL = "http://localhost:8080";
 const API_REMOTE = "https://10.212.174.249:8080"; //PEKER PÅ DEV SERVER
 
+
+const chatLinkButton = document.querySelector("#Chat-link");
+const kalenderLinkButton = document.querySelector("#Kalender-link");
+const oppskriftLinkButton = document.querySelector("#Oppskrift-link");
+const handlelisteLinkButton = document.querySelector("#Handleliste-link");
+const hjemmeside = !window.location.href.includes("Chat/index.html") && !window.location.href.includes("Kalender/index.html")
+    && !window.location.href.includes("Oppskrifter/index.html") && !window.location.href.includes("Handleliste/index.html");
+const oppskriftside = window.location.href.includes("Oppskrift/index.html");
+
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
 } else{
@@ -13,19 +22,15 @@ if (window.location.hostname === "localhost"){
     IMAGEDIR = "UsrImages/";
 }
 
-const chatLinkButton = document.querySelector("#Chat-link");
-const kalenderLinkButton = document.querySelector("#Kalender-link");
-const oppskriftLinkButton = document.querySelector("#Oppskrift-link");
-const handlelisteLinkButton = document.querySelector("#Handleliste-link");
-const hjemmeside = window.location.href.includes("Webserver/index.html");
-
 chatLinkButton.addEventListener("click", (event) => {
     const loginStatus = sessionStorage.getItem("loggedIn");
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Chat/index.html";
-        } else {
+        } else if(!oppskriftside){
             window.location.href = "../Chat/index.html";
+        } else{
+            window.location.href = "../../Chat/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -37,8 +42,10 @@ kalenderLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Kalender/index.html";
-        } else {
+        } else if(!oppskriftside){
             window.location.href = "../Kalender/index.html";
+        } else {
+            window.location.href = "../../Kalender/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -50,8 +57,10 @@ oppskriftLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Oppskrifter/index.html";
-        } else {
+        } else if(!oppskriftside){
             window.location.href = "../Oppskrifter/index.html";
+        } else {
+            window.location.href = "../../Oppskrifter/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -63,8 +72,10 @@ handlelisteLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Handleliste/index.html";
-        } else {
+        } else if(!oppskriftside){
             window.location.href = "../Handleliste/index.html";
+        } else {
+            window.location.href = "../../Handleliste/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -96,9 +107,7 @@ loginPassword.addEventListener("keyup", function(event) {
 });
 
 let registerUserBtn = document.querySelector("#register-user-submit");
-registerUserBtn.addEventListener("click", function(event){
-    event.preventDefault(); registerUser();
-});
+registerUserBtn.addEventListener("click", registerUser);
 let registerPassword = document.querySelector("#password-reg-conf");
 registerPassword.addEventListener("keyup", function(event) {
     if (event.keyCode === 13) { //Enter key
@@ -155,7 +164,14 @@ passwordConfirmInput.addEventListener("input", function () {
 });
 
 window.onload = function () {
-    checkLoginStatus();
+    if(!checkLoginStatus() && !window.location.hostname.includes("localhost")){
+        if(!oppskriftside && !hjemmeside) {
+            //redirect one level up
+            window.location.href = "../index.html";
+        } else if (oppskriftside){
+            window.location.href = "../../index.html";
+        }
+    }
     updateLoginStatus();
 };
 
@@ -227,7 +243,7 @@ function logout(){
     console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
     sessionStorage.removeItem("groups");
     updateLoginStatus();
-    location.reload();
+    location.replace("https://" + window.location.hostname + "/index.html");
 }
 
 function updateLoginStatus(){
@@ -237,7 +253,7 @@ function updateLoginStatus(){
     let notLoggedInDisplay = document.querySelector("#not-logged-in");
     let mainDisplay = document.querySelector("#main-display");
     let body = document.querySelector("body");
-    console.log("Log in Status.: " + loggedIn);
+
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
