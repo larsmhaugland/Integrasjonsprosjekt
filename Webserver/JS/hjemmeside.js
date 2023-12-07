@@ -204,7 +204,7 @@ function updateMemberSuggestions(results) {
     }
 
     // If there were no matching members dsiplay a message to the user
-    if (results.length === 0) {
+    if (results === null || results.length === 0) {
         const noResultsMessage = document.createElement("p");
         noResultsMessage.textContent = "No matching results found.";
         memberSuggestionsList.appendChild(noResultsMessage);

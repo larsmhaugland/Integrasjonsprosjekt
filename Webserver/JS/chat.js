@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle WebSocket message event
     socket.addEventListener("message", (event) => {
-        console.log("Message received from server: ", event.data);
         
         // Parse the message data to JSON and create variable 
         // with the fields needed for the addMessageWithDateToListfunction
@@ -274,7 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {
         
         // Make sure user is logged in before dsiplaiyng chats.
         if (sessionStorage.getItem("loggedIn") === "true"){
-            console.log("username: " + username);
             displayUserChats(username);
         } else {
             // Display a message to the user that they need to be logged in to view chats
@@ -294,7 +292,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams) {
             groupIDSentAsParam = urlParams.get('groupID');
-            console.log("GroupID sent as para:" + groupIDSentAsParam);
             if (groupIDSentAsParam !== null) {
                 try {
                     await getChatFromGroupAsync(groupIDSentAsParam);
@@ -303,7 +300,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     // If the connection failed, do not send the join message to the websocket
                     if (socket.readyState === WebSocket.OPEN) {
-                        console.log("Joining chat now");
                         const joinMessage = {
                             event: "joinChat",
                             activeChatID: activeChatID,
@@ -331,7 +327,6 @@ document.addEventListener("DOMContentLoaded", function () {
     
             const interval = setInterval(() => {
                 if (socket.readyState === WebSocket.OPEN) {
-                    console.log("WebSocket connection open");
                     clearInterval(interval);
                     resolve();
                 }
@@ -374,8 +369,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Not connected to WebSocket server");
                 window.alert("Not connected to WebSocket server, reload page to display the new message");
             }
-        } else {
-            console.log("Message is empty, was not sent");
         }
     }
     
@@ -502,7 +495,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Go through the list items and find the one with the matching username
         for (const listItem of listItems) {
-            console.log(listItem);
             const span = listItem.querySelector("span");
             // If the username matches the username of the list item
             if (span.textContent === username) {
@@ -524,7 +516,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const chatList = document.querySelector("#list-of-chats");
         const chatItem = document.createElement("li");
         chatItem.classList.add("chat-item");
-        console.log("chat nam:" + chat.name);
         chatItem.textContent = chat.name; // Display the chat name
         
         // Event Listener to display the clicked chat with its messages, and join the chat room
@@ -865,7 +856,6 @@ document.addEventListener("DOMContentLoaded", function () {
             checkbox.id = `${member}`;
             const label = document.createElement("label");
             label.htmlFor = `${member}`;
-            console.log("username: " + member);
             label.textContent = member;
             listItem.appendChild(checkbox);
             listItem.appendChild(label);
@@ -890,7 +880,6 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => {
                 if (response.status === 204) {
-                    console.log(`Chat ${activeChatID} deleted.`);
                     location.reload();
                 } else {
                     console.error("Error deleting chat:", response.status);

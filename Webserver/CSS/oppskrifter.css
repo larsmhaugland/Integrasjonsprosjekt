@@ -148,11 +148,13 @@ body{
     left: 50%;
     cursor: pointer;
     transform: translate(-50%, -50%);
+    filter: invert(35%) sepia(0%) saturate(18%) hue-rotate(177deg) brightness(89%) contrast(87%);
+    transition: 0.1s;
 }
 
 #new-recipe-btn img:hover {
-    filter: invert(24%) sepia(0%) saturate(93%) hue-rotate(265deg) brightness(98%) contrast(87%);
-    transition: 0.3s;
+    filter: invert(0%) sepia(24%) saturate(4310%) hue-rotate(229deg) brightness(99%) contrast(100%);
+    transition: 0.1s;
 }
 
 .results {
