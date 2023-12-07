@@ -10,31 +10,6 @@ let btn = document.querySelector("#new-group-btn");
 btn.addEventListener("click", (event)=> {event.preventDefault();
     document.querySelector("#new-group-popup").style.display = "block";});
 
-/*      UNCOMMENT HVIS IKKE FUNKER MED ALEKSANDER SITT
-//On submit create new group
-btn = document.querySelector("#submit-group-btn");
-btn.addEventListener("click", (event) => {
-    event.preventDefault();
-    KOMMENTER DENNE IF SETNINGEN
-    if (!checkAuthToken()) {
-        alert("Du er ikke innlogget!")
-        return;
-    }
-    const groupName = document.querySelector("#gruppenavn").value;
-    newGroup(groupName);
-
-});
-*/
-/*
-//On click, close pop-up window
-btn = document.querySelector("#close-group-popup");
-btn.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("new-group-popup").style.display = "none";});
-*/
-
-
-/********** ALEKSANDER FORSØK PÅ CREATE GROUP *******************/
-
 const form = document.querySelector(".create-group-form");
 const modal = document.querySelector("#search-member-modal");
 const memberSuggestionsList = modal.querySelector(".member-suggestions");
@@ -83,35 +58,6 @@ form.addEventListener("submit", async function (event) {
             alert("Det skjedde en feil med opplasting av bildet");
             return;
         }
-
-        /*
-        const file =  imgInput.files[0];
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-            const response = await fetch(API_IP + "/image/", {
-                method: "POST",
-                body: formData,
-            }).then((response) => {
-                console.log("Response:", response)
-                return response.json();
-            }).then((data) => {
-                console.log("Data:", data);
-                groupImage = data["filename"];
-            }).catch((error) => {
-                console.log(error);
-                alert("Det skjedde en feil med opplasting av bildet");
-            });
-            console.log("File: " + groupImage);
-        } catch (error) {
-            console.log(error);
-            alert("Det skjedde en feil med opplasting av bildet");
-            return;
-        }
-
-         */
-
     }
     // Prepare the data to be sent to the API endpoint
     const groupId = generateRandomId(20);

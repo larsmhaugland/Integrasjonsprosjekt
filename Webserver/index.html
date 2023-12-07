@@ -28,15 +28,15 @@
     <div id="not-logged-in">
         <img src="Images/logostor.png">
         <button class="log-btn" id="log-in-btn2">INNLOGGING</button>
-        <a>ELLER <a class="register-btn">REGISTRER DEG HER</a></a>
+        <a><h2>ELLER</h2> <a class="register-btn">REGISTRER DEG HER</a></a>
     </div>
 
     <!--Pop-up login-->
     <div id="log-in-popup" class="popup-wrapper">
         <form id="log-in-form" class="popup-content">
             <a id="close-login-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
-            <h3>Brukernavn</h3>
-            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+            <div class="username"><h3>Brukernavn</h3></div>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" class="username" required>
             <h3>Passord</h3>
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
             <br>
@@ -44,7 +44,9 @@
             <br>
             <button type="button" class="btn" id="log-in-submit">Logg inn</button>
             <br><br>
-            <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
+            <h3>har du ikke bruker?</h3>
+            <button type="button" class="btn" id="register-switch-btn">Registrer deg</button>
+
         </form>
     </div>
 
@@ -87,8 +89,8 @@
     <div id="register-popup" class="popup-wrapper">
         <form id="register-user-form" class="popup-content">
             <a id="close-register-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
-            <h3>Navn</h3>
-            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
+            <div class="name"><h3>Navn</h3></div>
+            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" class="name" required>
             <h3>Brukernavn</h3>
             <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
             <a id="username-taken" class="error">Brukernavnet er opptatt</a>
@@ -100,7 +102,9 @@
             <br><br>
             <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
             <br><br>
-            <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+            <h3>har du bruker allerede?</h3>
+            <button type="button" class="btn" id="login-switch-btn">Logg inn</button>
+
         </form>
     </div>
 
