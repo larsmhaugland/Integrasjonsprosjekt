@@ -140,6 +140,9 @@ nav{
     color: red;
     display: none;
 }
+#password-validation-message {
+    color: red;
+}
 
 /*Not logged in display*/
 #not-logged-in {
@@ -159,6 +162,9 @@ nav{
 }
 
 #password-validation-message{
+    color: red;
+}
+#password-match-message{
     color: red;
 }
 
@@ -199,9 +205,6 @@ nav{
 }
 
 #register-switch-btn:hover{
-    color: darkred;
-}
-#login-switch-btn:hover{
     color: darkred;
 }
 

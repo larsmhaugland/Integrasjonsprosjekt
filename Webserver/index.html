@@ -98,9 +98,11 @@
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
             <h3>Gjenta passord</h3>
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
-            <a id="password-mismatch" class="error">Passordene er ikke like</a>
             <br><br>
-            <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+            <span id="password-validation-message"></span> 
+            <span id="password-match-message"></span> 
+            <br><br>
+            <button type="submit" class="btn" id="register-user-submit">Registrer bruker</button>
             <br><br>
             <h3>har du bruker allerede?</h3>
             <button type="button" class="btn" id="login-switch-btn">Logg inn</button>

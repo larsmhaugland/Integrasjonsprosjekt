@@ -2,19 +2,8 @@
 
 let API_IP = "";
 let IMAGEDIR = "Images/";
-let ICONDIR = "Images/";
 const API_LOCAL = "http://localhost:8080";
 const API_REMOTE = "https://10.212.174.249:8080"; //PEKER PÅ DEV SERVER
-
-
-const chatLinkButton = document.querySelector("#Chat-link");
-const kalenderLinkButton = document.querySelector("#Kalender-link");
-const oppskriftLinkButton = document.querySelector("#Oppskrift-link");
-const handlelisteLinkButton = document.querySelector("#Handleliste-link");
-const hjemmeside = !window.location.href.includes("Chat/index.html") && !window.location.href.includes("Kalender/index.html")
-    && !window.location.href.includes("Oppskrifter/index.html") && !window.location.href.includes("Handleliste/index.html");
-const oppskriftside = window.location.href.includes("Oppskrift/index.html");
-
 
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
@@ -23,17 +12,19 @@ if (window.location.hostname === "localhost"){
     IMAGEDIR = "UsrImages/";
 }
 
-
+const chatLinkButton = document.querySelector("#Chat-link");
+const kalenderLinkButton = document.querySelector("#Kalender-link");
+const oppskriftLinkButton = document.querySelector("#Oppskrift-link");
+const handlelisteLinkButton = document.querySelector("#Handleliste-link");
+const hjemmeside = window.location.href.includes("Webserver/index.html");
 
 chatLinkButton.addEventListener("click", (event) => {
     const loginStatus = sessionStorage.getItem("loggedIn");
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Chat/index.html";
-        } else if(!oppskriftside){
+        } else {
             window.location.href = "../Chat/index.html";
-        } else{
-            window.location.href = "../../Chat/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -45,10 +36,8 @@ kalenderLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Kalender/index.html";
-        } else if(!oppskriftside){
-            window.location.href = "../Kalender/index.html";
         } else {
-            window.location.href = "../../Kalender/index.html";
+            window.location.href = "../Kalender/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -60,10 +49,8 @@ oppskriftLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Oppskrifter/index.html";
-        } else if(!oppskriftside){
-            window.location.href = "../Oppskrifter/index.html";
         } else {
-            window.location.href = "../../Oppskrifter/index.html";
+            window.location.href = "../Oppskrifter/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -75,10 +62,8 @@ handlelisteLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Handleliste/index.html";
-        } else if(!oppskriftside){
-            window.location.href = "../Handleliste/index.html";
         } else {
-            window.location.href = "../../Handleliste/index.html";
+            window.location.href = "../Handleliste/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -110,7 +95,9 @@ loginPassword.addEventListener("keyup", function(event) {
 });
 
 let registerUserBtn = document.querySelector("#register-user-submit");
-registerUserBtn.addEventListener("click", registerUser);
+registerUserBtn.addEventListener("click", function(event){
+    event.preventDefault(); registerUser();
+});
 let registerPassword = document.querySelector("#password-reg-conf");
 registerPassword.addEventListener("keyup", function(event) {
     if (event.keyCode === 13) { //Enter key
@@ -140,34 +127,34 @@ registerTextPoppup.addEventListener("click", (event)=> {event.preventDefault();
 const passwordInput = document.querySelector("#password-reg");
 const passwordConfirmInput = document.querySelector("#password-reg-conf");
 const passwordValidationMessage = document.querySelector("#password-validation-message");
-
-passwordInput.addEventListener("input", updatePasswordValidationMessages());
-
-// Function to update password validation messages
-function updatePasswordValidationMessages() {
+const passwordMatchMessage = document.querySelector("#password-match-message");
+console.log(passwordInput);
+passwordInput.addEventListener("input", function () {
     const password = passwordInput.value;
     const minLength = 8; // Minimum password length
-    console.log("I amchecking here");
     // Validate password length
-    const lengthMessage = password.length >= minLength ? "" : `Password should be at least ${minLength} characters long.`;
+    const lengthMessage = password.length >= minLength ? "" : `Passordet må være minst ${minLength} karakterer langt.`;
 
-    // Validate if the password contains a number
-    const hasNumber = /\d/.test(password);
-    const numberMessage = hasNumber ? "" : "Password should contain at least one number.";
+    // Validate if the password contains numbers, !, or ?
+    const hasValidCharacters = /[0-9!?.]/.test(password);
+    const characterMessage = hasValidCharacters ? "" : "Passordet må inneholde et nummer, ! eller ?";
 
     // Display validation messages
-    passwordValidationMessage.textContent = lengthMessage + "\n" + numberMessage;
-}
+    passwordValidationMessage.innerHTML = lengthMessage + '<br>' + characterMessage;
+});
+passwordConfirmInput.addEventListener("input", function () {
+    const password = passwordInput.value;
+    const passwordConfirm = passwordConfirmInput.value;
+
+    // Validate if the passwords match
+    const matchMessage = password === passwordConfirm ? "" : "Passordene er ikke like.";
+
+    // Display validation message
+    passwordMatchMessage.innerHTML = '<br>' + matchMessage;
+});
 
 window.onload = function () {
-    if(!checkLoginStatus() && !window.location.hostname.includes("localhost")){
-        if(!oppskriftside && !hjemmeside) {
-            //redirect one level up
-            window.location.href = "../index.html";
-        } else if (oppskriftside){
-            window.location.href = "../../index.html";
-        }
-    }
+    checkLoginStatus();
     updateLoginStatus();
 };
 
@@ -239,14 +226,7 @@ function logout(){
     console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
     sessionStorage.removeItem("groups");
     updateLoginStatus();
-    if(!window.location.hostname.includes("localhost")) {
-        if (!oppskriftside && !hjemmeside) {
-            //redirect one level up
-            window.location.href = "../index.html";
-        } else if (oppskriftside) {
-            window.location.href = "../../index.html";
-        }
-    }
+    location.reload();
 }
 
 function updateLoginStatus(){
@@ -256,7 +236,7 @@ function updateLoginStatus(){
     let notLoggedInDisplay = document.querySelector("#not-logged-in");
     let mainDisplay = document.querySelector("#main-display");
     let body = document.querySelector("body");
-
+    console.log("Log in Status.: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
@@ -282,11 +262,13 @@ function registerUser(){
     let password = document.querySelector("#password-reg").value;
     let passwordConf = document.querySelector("#password-reg-conf").value;
     let name = document.querySelector("#name-reg").value;
-    let passwordMismatch = document.querySelector("#password-mismatch");
-    
+    if (username === "" || password === "" || passwordConf === "" || name === ""){
+        return;
+    }
+
     if (password !== passwordConf){
-        passwordMismatch.style.display = "block";
         console.log("Passwords do not match");
+        alert("Passordene er ikke like")
         return;
     }
     let credentials = {"username": username, "password": password, "name": name};
