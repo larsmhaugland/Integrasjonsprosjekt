@@ -54,6 +54,7 @@
     margin: 0;
     padding: 10px;
     background: white; /* Background color for the paragraph */
+    color: black;
     position: absolute;
     bottom: 0; /* Position the paragraph at the bottom */
     width: 100%; /* Full width */

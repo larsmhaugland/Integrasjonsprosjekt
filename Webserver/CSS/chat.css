@@ -264,7 +264,7 @@
 .message-date {
     text-align: center;
     color: #888; 
-    padding: 1 vh; 
+    padding: 1vh;
     margin-top: 0.5vh; 
 }
 
@@ -497,15 +497,6 @@ button#remove-members-button:hover {
 
 
 /******************************** VARIOUS CSS STYLES *****************************************/
-
-/* Styling for the close button in the "Edit Chat" popup */
-.close-popup {
-    position: absolute;
-    top: 1vw;
-    right: 1vw;
-    font-size: 3vw;
-    cursor: pointer;
-}
 
 /* Styling for headings */
 h2 {

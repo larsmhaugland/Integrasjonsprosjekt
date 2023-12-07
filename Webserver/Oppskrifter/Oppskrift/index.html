@@ -11,126 +11,127 @@
     <title>Oppskrift</title>
 </head>
 <body>
-    <header class="main-nav">
-        <a href="../../index.html"><img id="logo-image" src="../../Images/logo.png" alt="PLÆN-logo"/></a>
-        <nav>
-            <a class= "nav" href="../../Handleliste/index.html">HANDLELISTE</a>
-            <a class= "nav" href="../../Chat/index.html">CHAT</a>
-            <a class= "nav" href="../../Kalender/index.html">KALENDER</a>
-            <a class= "nav" href="../index.html">OPPSKRIFTER</a>
-            <button class="log-btn" id="log-in-btn">INNLOGGING</button>
-            <button class="log-btn" id="log-out-btn">LOGG UT</button>
-        </nav>
-    </header>
+<header class="main-nav">
+    <a href="../../index.html"><img id="logo-image" src="../../Images/logo.png" alt="PLÆN-logo"/></a>
+    <nav>
+        <button class= "nav" id="Handleliste-link">HANDLELISTE</button>
+        <button class= "nav" id="Chat-link">CHAT</button>
+        <button class= "nav" id="Kalender-link">KALENDER</button>
+        <button class= "nav" id="Oppskrift-link">OPPSKRIFTER</button>
+        <button class="log-btn" id="log-in-btn">INNLOGGING</button>
+        <button class="log-btn" id="log-out-btn">LOGG UT</button>
 
-    <!--NOT LOGGED IN-STARTPAGE-->
-    <div id="not-logged-in">
-        <img src="../../Images/logostor.png">
-        <button class="log-btn" id="log-in-btn2">INNLOGGING</button>
-        <a>ELLER <a class="register-btn">REGISTRER DEG HER</a></a>
-    </div>
+    </nav>
+</header>
 
-    <!--Pop-up login-->
-    <div id="log-in-popup" class="popup-wrapper">
-        <form id="log-in-form" class="popup-content">
-            <a id="close-login-popup" class="close-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
-            <h3>Brukernavn</h3>
-            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
-            <h3>Passord</h3>
-            <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
-            <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
-            <button type="button" class="btn" id="log-in-submit">Logg inn</button>
-            <br><br>
-            <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
-        </form>
-    </div>
+<!--NOT LOGGED IN-STARTPAGE-->
+<div id="not-logged-in">
+    <img src="../../Images/logostor.png">
+    <button class="log-btn" id="log-in-btn2">INNLOGGING</button>
+    <a>ELLER <a class="register-btn">REGISTRER DEG HER</a></a>
+</div>
 
-    <!--Pop-up register-->
-    <div id="register-popup" class="popup-wrapper">
-        <form id="register-user-form" class="popup-content">
-            <a id="close-register-popup" class="close-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
-            <h3>Navn</h3>
-            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
-            <h3>Brukernavn</h3>
-            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
-            <a id="username-taken" class="error">Brukernavnet er opptatt</a>
-            <h3>Passord</h3>
-            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
-            <h3>Gjenta passord</h3>
-            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
-            <a id="password-mismatch" class="error">Passordene er ikke like</a>
-            <br><br>
-            <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
-            <br><br>
-            <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
-        </form>
-    </div>
+<!--Pop-up login-->
+<div id="log-in-popup" class="popup-wrapper">
+    <form id="log-in-form" class="popup-content">
+        <a id="close-login-popup" class="close-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
+        <h3>Brukernavn</h3>
+        <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+        <h3>Passord</h3>
+        <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
+        <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
+        <button type="button" class="btn" id="log-in-submit">Logg inn</button>
+        <br><br>
+        <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
+    </form>
+</div>
 
-    <main>
-        <div id="edit-recipe-popup" class="new-recipe-popup">
-            <div class="new-recipe-content">
+<!--Pop-up register-->
+<div id="register-popup" class="popup-wrapper">
+    <form id="register-user-form" class="popup-content">
+        <a id="close-register-popup" class="close-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
+        <h3>Navn</h3>
+        <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
+        <h3>Brukernavn</h3>
+        <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
+        <a id="username-taken" class="error">Brukernavnet er opptatt</a>
+        <h3>Passord</h3>
+        <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
+        <h3>Gjenta passord</h3>
+        <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
+        <a id="password-mismatch" class="error">Passordene er ikke like</a>
+        <br><br>
+        <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+        <br><br>
+        <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+    </form>
+</div>
 
-                <h1 style="display: inline;">
-                    Endre oppskrift
-                </h1>
-                <a id="close-recipe-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
-                <form id="new-recipe-form">
-                    <label for="edit-name">Navn på oppskrift<br></label>
-                    <input type="text" id="edit-name" placeholder="Skriv navn..." required>
-                    <label for="edit-description"><br>Beskrivelse<br></label>
-                    <input type="text" id="edit-description" placeholder="Skriv en kort beskrivelse..." required>
-                    <label for="edit-time"><br>Tid i minutter<br></label>
-                    <input type="number" id="edit-time" placeholder="Skriv tid..." required>
-                    <label for="edit-difficulty"><br>Vanskelighetsgrad:<br></label>
-                    <input type="range" min="1" max="5" id="edit-difficulty" required>
-                    <p id="difficulty-value-label" style="display: inline;">3</p>
-                    <label for="category-checkboxes"><br>Kategorier:<br></label>
-                    <div id="category-checkboxes">
-                        <!-- Category checkboxes get appended here -->
+<main>
+    <div id="edit-recipe-popup" class="new-recipe-popup">
+        <div class="new-recipe-content">
+
+            <h1 style="display: inline;">
+                Endre oppskrift
+            </h1>
+            <a id="close-recipe-popup"><img src="../../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <form id="new-recipe-form">
+                <label for="edit-name">Navn på oppskrift<br></label>
+                <input type="text" id="edit-name" placeholder="Skriv navn..." required>
+                <label for="edit-description"><br>Beskrivelse<br></label>
+                <input type="text" id="edit-description" placeholder="Skriv en kort beskrivelse..." required>
+                <label for="edit-time"><br>Tid i minutter<br></label>
+                <input type="number" id="edit-time" placeholder="Skriv tid..." required>
+                <label for="edit-difficulty"><br>Vanskelighetsgrad:<br></label>
+                <input type="range" min="1" max="5" id="edit-difficulty" required>
+                <p id="difficulty-value-label" style="display: inline;">3</p>
+                <label for="category-checkboxes"><br>Kategorier:<br></label>
+                <div id="category-checkboxes">
+                    <!-- Category checkboxes get appended here -->
+                </div>
+
+                <div id="manual-recipe">
+                    <div id="edit-recipe-ingredients">
+                        <label for="add-ingredient"><br>Ingredienser<br></label>
+                        <input type="text" id="add-ingredient" placeholder="Navn på ingrediens...">
+                        <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
+                        <button id="add-ingredient-btn">Legg til</button>
+                        <ul id="edit-ingredient-list">
+                            <!-- Ingredients get appended here -->
+                        </ul>
                     </div>
-
-                    <div id="manual-recipe">
-                        <div id="edit-recipe-ingredients">
-                            <label for="add-ingredient"><br>Ingredienser<br></label>
-                            <input type="text" id="add-ingredient" placeholder="Navn på ingrediens...">
-                            <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
-                            <button id="add-ingredient-btn">Legg til</button>
-                            <ul id="edit-ingredient-list">
-                                <!-- Ingredients get appended here -->
-                            </ul>
-                        </div>
-                        <div id="edit-recipe-instructions">
-                            <label for="recipe-instructions"><br>Instruksjoner<br></label>
-                            <input type="text" id="recipe-instructions" placeholder="Instruksjoner">
-                            <button id="add-instruction-btn">Legg til</button>
-                            <ol id="edit-instructions-list">
-                                <!-- Instructions get appended here -->
-                            </ol>
-                        </div>
+                    <div id="edit-recipe-instructions">
+                        <label for="recipe-instructions"><br>Instruksjoner<br></label>
+                        <input type="text" id="recipe-instructions" placeholder="Instruksjoner">
+                        <button id="add-instruction-btn">Legg til</button>
+                        <ol id="edit-instructions-list">
+                            <!-- Instructions get appended here -->
+                        </ol>
                     </div>
-                    <div id="url-recipe">
-                        <label for="edit-url"><br> Full URL til oppskrift<br></label>
-                        <input type="url" id="edit-url" placeholder="Eks: https://plaen.no">
-                    </div>
-                    <br>
-                    <button id="delete-recipe">Slett oppskrift</button>
-                    <button id="submit-edit-recipe">Lagre oppskrift</button>
-                </form>
+                </div>
+                <div id="url-recipe">
+                    <label for="edit-url"><br> Full URL til oppskrift<br></label>
+                    <input type="url" id="edit-url" placeholder="Eks: https://plaen.no">
+                </div>
+                <br>
+                <button id="delete-recipe">Slett oppskrift</button>
+                <button id="submit-edit-recipe">Lagre oppskrift</button>
+            </form>
 
-            </div>
         </div>
+    </div>
 
-        <div class="single-recipe-wrapper">
-            <div class="recipe-header">
-                <h1 id="recipe-name"></h1>
-                <a id="edit-recipe-btn"><img src="../../Images/edit-icon.png" alt="Edit recipe"></a>
-            </div>
-            <div class="single-recipe-content" id="recipe-content">
-            </div>
-            <div id="recipe-image">
-            </div>
+    <div class="single-recipe-wrapper">
+        <div class="recipe-header">
+            <h1 id="recipe-name"></h1>
+            <a id="edit-recipe-btn"><img src="../../Images/edit-icon.png" alt="Edit recipe"></a>
         </div>
-    </main>
+        <div class="single-recipe-content" id="recipe-content">
+        </div>
+        <div id="recipe-image">
+        </div>
+    </div>
+</main>
 
 
 </body>

@@ -24,8 +24,24 @@ main{
     grid-area: main;
 }
 
+a {
+    text-decoration: none;
+    color: black;
+}
+
 /*Header and navigation*/
 /*Navigation link styling*/
+button:not(.log-btn,.nav), input[type=file] {
+    box-sizing: border-box;
+    border: thin solid #80AB82;
+    border-radius: 10px;
+    padding: 5px 10px;
+    background-color: #80AB82;
+    transition: 0.3s;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+}
 
 button.nav {
     text-decoration: none;

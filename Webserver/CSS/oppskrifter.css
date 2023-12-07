@@ -1,4 +1,4 @@
-button:not(.log-btn), input[type=file] {
+button:not(.log-btn,.nav), input[type=file] {
     box-sizing: border-box;
     border: thin solid #80AB82;
     border-radius: 10px;

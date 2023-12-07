@@ -1,14 +1,11 @@
-
-/***        DOM ELEMENTS        ***/
 let recipeEdit = document.querySelector("#edit-recipe-btn");
 let editRecipePopup = document.querySelector("#edit-recipe-popup");
-let closeRecipePopup = document.querySelector("#close-recipe-popup");
-let recipeDifficulty = document.querySelector("#edit-difficulty");
+let closeEditRecipePopup = document.querySelector("#close-recipe-popup");
+let editRecipeDifficulty = document.querySelector("#edit-difficulty");
 let displayedRecipe = null;
 let deleteRecipeBtn = document.querySelector("#delete-recipe");
 let owner = null;
 
-/***        EVENT LISTENERS        ***/
 //If edit button is pressed
 recipeEdit.addEventListener("click", function () {
     //Check login status
@@ -24,8 +21,6 @@ recipeEdit.addEventListener("click", function () {
     //Get elements
     let recipeName = document.querySelector("#edit-name");
     let recipeURL = document.querySelector("#edit-url");
-    let instructions = document.querySelector("#edit-instructions-list").getElementsByTagName("li");
-    let ingredients = document.querySelector("#edit-ingredient-list").getElementsByTagName("li");
     let description = document.querySelector("#edit-description");
     let time = document.querySelector("#edit-time");
     let difficulty = document.querySelector("#edit-difficulty");
@@ -42,6 +37,95 @@ recipeEdit.addEventListener("click", function () {
     difficulty.value = displayedRecipe.difficulty;
     difficultyText.innerHTML = displayedRecipe.difficulty;
 
+    //Clear categories
+    let categoryDiv = document.querySelector("#category-checkboxes");
+    categoryDiv.innerHTML = "";
+    //Add exclusive categories
+    let exclusiveCategories = document.createElement("div");
+    exclusiveCategories.setAttribute("class", "exclusive-categories");
+    for(const ex in Categories.exclusive){
+        //Add category name
+        let categoryName = document.createElement("h3");
+        categoryName.appendChild(document.createTextNode(ex));
+        exclusiveCategories.appendChild(categoryName);
+        //Add radio buttons
+        for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
+            let category = exclusiveCategoriesKey;
+            let listItem = document.createElement("li");
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "radio");
+            checkbox.setAttribute("id", "category_" + category);
+            checkbox.setAttribute("name", "category_" + ex);
+            checkbox.setAttribute("value", category);
+            checkbox.setAttribute("class", "category-checkbox");
+            if(displayedRecipe.categories !== null) {
+                checkbox.checked = displayedRecipe.categories.includes(category);
+            }
+            let label = document.createElement("label");
+            label.setAttribute("for", "category_" + category);
+            label.setAttribute("class", "category-label");
+            label.appendChild(document.createTextNode(category));
+            listItem.appendChild(checkbox);
+            listItem.appendChild(label);
+            exclusiveCategories.appendChild(listItem);
+        }
+    }
+    //Add non-exclusive categories
+    let nonExclusiveCategories = document.createElement("div");
+    nonExclusiveCategories.setAttribute("class", "non-exclusive-categories");
+    let nonExclusiveCategoriesName = document.createElement("h3");
+    nonExclusiveCategoriesName.textContent = "Øvrige kategorier";
+    nonExclusiveCategories.appendChild(nonExclusiveCategoriesName);
+    for(let i = 0; i < Categories.categories.length; i++){
+        let category = Categories.categories[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        if(displayedRecipe.categories !== null) {
+            checkbox.checked = displayedRecipe.categories.includes(category);
+        }
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        nonExclusiveCategories.appendChild(listItem);
+    }
+    //Add allergies
+    let allergyCategories = document.createElement("div");
+    allergyCategories.setAttribute("class", "allergy-categories");
+    let allergyCategoriesName = document.createElement("h3");
+    allergyCategoriesName.textContent = "Allergier";
+    allergyCategories.appendChild(allergyCategoriesName);
+    for(let i = 0; i < Categories.allergies.length; i++){
+        let category = Categories.allergies[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        if(displayedRecipe.categories !== null) {
+            checkbox.checked = displayedRecipe.categories.includes(category);
+        }
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        allergyCategories.appendChild(listItem);
+    }
+    categoryDiv.appendChild(exclusiveCategories);
+    categoryDiv.appendChild(nonExclusiveCategories);
+    categoryDiv.appendChild(allergyCategories);
+
     //Prefill instructions
     if(displayedRecipe.URL === null || displayedRecipe.URL === "" && displayedRecipe.ingredients !== null  && displayedRecipe.instructions !== null) {
         let instructions = document.querySelector("#edit-instructions-list");
@@ -54,7 +138,7 @@ recipeEdit.addEventListener("click", function () {
             label.innerHTML = displayedRecipe.instructions[i];
             instruction.appendChild(label);
             //create a checkbox for the list item
-            let removeItem = document.createElement("a");
+            let removeItem = document.createElement("a")
             let removeIcon = document.createElement("img");
             removeIcon.setAttribute("src", "../../Images/trashcan.svg");
             removeIcon.setAttribute("alt", "Slett ingrediens");
@@ -79,7 +163,7 @@ recipeEdit.addEventListener("click", function () {
             label.innerHTML = key + ": " + value;
             ingredient.appendChild(label);
             //create a remove icon for the list item
-            let removeItem = document.createElement("a");
+            let removeItem = document.createElement("a")
             let removeIcon = document.createElement("img");
             removeIcon.setAttribute("src", "../../Images/trashcan.svg");
             removeIcon.setAttribute("alt", "Slett ingrediens");
@@ -103,18 +187,18 @@ recipeEdit.addEventListener("click", function () {
 
     editRecipePopup.style.display = "block";
 });
-
 //Update difficulty text when difficulty slider is moved
-recipeDifficulty.addEventListener("input", function (event){
+editRecipeDifficulty.addEventListener("input", function (event){
     let recipeDifficultyText = document.querySelector("#difficulty-value-label");
-    recipeDifficultyText.innerHTML = recipeDifficulty.value;
+    recipeDifficultyText.innerHTML = editRecipeDifficulty.value;
 });
 
 //Close edit recipe popup
-closeRecipePopup.addEventListener("click", function (event) {
+closeEditRecipePopup.addEventListener("click", function (event) {
     event.preventDefault();
     editRecipePopup.style.display = "none";
 });
+
 
 //Submit changes to recipe
 let submitEditRecipeBtn = document.querySelector("#submit-edit-recipe");
@@ -156,7 +240,6 @@ deleteRecipeBtn.addEventListener("click", function (event) {
 
 // Load recipe when page is loaded
 window.onload = function () {
-    console.log("hei");
     //Load recipe
     updateLoginStatus();
     getRecipe();
@@ -214,6 +297,13 @@ function editRecipe() {
         let ingredient = ingredientList[i].getElementsByTagName("label")[0].innerHTML.split(": ");
         ingredients[ingredient[0]] = ingredient[1];
     }
+    //Get categories
+    let categories = [];
+    for(let i = 0; i < categoriesDOM.length; i++){
+        if(categoriesDOM[i].checked){
+            categories.push(categoriesDOM[i].value);
+        }
+    }
     //Create recipe object
     let recipe = {
         "name": recipeName.value,
@@ -224,7 +314,8 @@ function editRecipe() {
         "time": parseInt(time.value),
         "difficulty": parseInt(difficulty.value),
         "documentID": displayedRecipe.documentID,
-        "image": displayedRecipe.image
+        "image": displayedRecipe.image,
+        "categories": categories,
     };
     //Send recipe to API
     fetch(API_IP + "/recipe/" + recipe.documentID, {
@@ -284,9 +375,12 @@ async function displayRecipe(Recipe) {
     if(Recipe.URL === null || Recipe.URL === "" && Recipe.ingredients !== null  && Recipe.instructions !== null) {
         //Create list of ingredients
         let ingredients = document.createElement("div");
-        ingredients.innerHTML = "Ingredienser: ";
+        let header = document.createElement("span");
+        header.setAttribute("class","sub-header");
+        header.innerHTML = "Ingredienser: ";
+        ingredients.appendChild(header);
         let ingredientList = document.createElement("ul");
-        ingredientList.setAttribute("id", "ingredientsList");
+        ingredientList.setAttribute("id", "ingredientsList")
         for (let [key, value] of Object.entries(Recipe.ingredients)) {
             let ingredient = document.createElement("li");
             ingredient.innerHTML = key + ": " + value;
@@ -295,7 +389,10 @@ async function displayRecipe(Recipe) {
         ingredients.appendChild(ingredientList);
         recipeContent.appendChild(ingredients);
         //Create list of instructions
-        recipeContent.appendChild(document.createTextNode("Instruksjoner: "));
+        header = document.createElement("span");
+        header.setAttribute("class","sub-header");
+        header.innerHTML = "Instruksjoner: ";
+        recipeContent.appendChild(header);
         let instructions = document.createElement("ol");
         instructions.setAttribute("id", "instructions");
         for (let i = 0; i < Recipe.instructions.length; i++) {
@@ -310,25 +407,38 @@ async function displayRecipe(Recipe) {
         link.href = Recipe.URL;
         link.setAttribute("target", "_blank");
         link.setAttribute("id", "recipe-link");
-        link.innerHTML = "Link til oppskrift";
+        link.innerHTML = "Lenke til oppskrift";
         recipeContent.appendChild(link);
     }
     //Create description
     if (Recipe.description !== null && Recipe.description !== "") {
         let description = document.createElement("div");
-        description.setAttribute("id", "description");
-        description.innerHTML = "Beskrivelse: " + Recipe.description;
+        description.setAttribute("id", "description")
+        let header = document.createElement("span");
+        header.setAttribute("class","sub-header");
+        header.innerHTML = "Beskrivelse: ";
+        description.appendChild(header)
+        description.appendChild(document.createTextNode(Recipe.description));
         recipeContent.appendChild(description);
     }
     //Create time
     let time = document.createElement("div");
     time.setAttribute("id", "time");
-    time.innerHTML = "Tid: " + Recipe.time + " minutter";
+    let header = document.createElement("span");
+    header.setAttribute("class","sub-header");
+    header.innerHTML = "Tid: ";
+    let timeText = document.createTextNode(Recipe.time + " minutter");
+    time.appendChild(header);
+    time.appendChild(timeText);
     recipeContent.appendChild(time);
     //Create difficulty
     let difficulty = document.createElement("div");
-    difficulty.setAttribute("id", "difficulty");
-    difficulty.innerHTML = "Vanskelighetsgrad: " + Recipe.difficulty;
+    difficulty.setAttribute("id", "difficulty")
+    header = document.createElement("span");
+    header.setAttribute("class","sub-header");
+    header.innerHTML = "Vanskelighetsgrad: ";
+    difficulty.appendChild(header);
+    difficulty.appendChild(document.createTextNode(Recipe.difficulty));
     recipeContent.appendChild(difficulty);
 
     //Create image
@@ -343,5 +453,23 @@ async function displayRecipe(Recipe) {
             image.src = "../../" + IMAGEDIR + Recipe.image+".jpeg";
             recipeImage.appendChild(image);
         });
+    }
+    if(Recipe.categories !== null) {
+        //Create category list
+        let categories = document.createElement("div");
+        categories.setAttribute("id", "categories");
+        let header = document.createElement("span");
+        header.setAttribute("class","sub-header");
+        header.innerHTML = "Kategorier: ";
+        categories.appendChild(header);
+        let categoryList = document.createElement("ul");
+        categoryList.setAttribute("id", "categoryList");
+        for (let i = 0; i < Recipe.categories.length; i++) {
+            let category = document.createElement("li");
+            category.appendChild(document.createTextNode(Recipe.categories[i]));
+            categoryList.appendChild(category);
+        }
+        categories.appendChild(categoryList);
+        recipeContent.appendChild(categories);
     }
 }
