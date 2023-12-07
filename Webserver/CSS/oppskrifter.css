@@ -9,9 +9,9 @@ body{
     grid-template-areas:
         "header header header header"
         "filter results results results"
-        "nav nav nav nav";
+        "filter nav nav nav";
     grid-template-columns: 1fr 3fr 3fr 3fr;
-    grid-template-rows: 60px 5fr 50px;
+    grid-template-rows: 60px 5fr 100px;
     gap: 2% 2%;
 }
 
@@ -194,7 +194,7 @@ body{
     gap: 10px;
     align-items: center;
     width: 100%;
-    height: 5%;
+    height: fit-content;
 }
 
 .pagination-button {

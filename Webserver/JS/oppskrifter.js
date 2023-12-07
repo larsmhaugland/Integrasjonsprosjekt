@@ -614,12 +614,16 @@ async function newRecipe() {
 function displayPages() {
     // Initialize pag variable
     let pag = [];
-    let nPages = 0;
+    let nPages;
+
+    // Get the pagination div element
+    let paginationDiv = document.querySelector("#recipe-nav");
+    paginationDiv.innerHTML = ""; // Clear existing pagination buttons
 
     // Check if the search field is empty
     if (searchField.value === "") {
         // Check if there is only one page or fewer
-        nPages = Math.ceil(Recipes.length / MAXRESULTS);
+        nPages = Math.ceil(filterRecipes(Recipes).length / MAXRESULTS);
         if (nPages <= 1) {
             return; // No need to display pagination
         }
@@ -634,10 +638,6 @@ function displayPages() {
         // Calculate pagination for filtered recipes
         pag = pagination(page, nPages);
     }
-
-    // Get the pagination div element
-    let paginationDiv = document.querySelector("#recipe-nav");
-    paginationDiv.innerHTML = ""; // Clear existing pagination buttons
 
     // Check if pagination buttons are more than 3 to decide whether to show previous and next buttons
     if (nPages > 3) {
@@ -673,7 +673,6 @@ function displayPages() {
         parent.appendChild(button);
     }
 }
-
 
 /**
  * Change page
@@ -752,6 +751,7 @@ function searchRecipes(text) {
  */
 function submitFilter() {
     page = 0;
+    displayPages();
     displayResults(filterRecipes(searchRecipes(searchField.value)));
 }
 
