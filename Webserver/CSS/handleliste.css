@@ -72,6 +72,7 @@ select{
     background-color: white;
     text-align: center;
     line-height: 1%;
+    color: black;
 }
 
 .middag::before {
@@ -85,7 +86,6 @@ select{
     left: 0;
     z-index: -1; /* Place it behind the paragraph */
 }
-
 
 h3, p {
     white-space: nowrap; /* Prevent text from wrapping */

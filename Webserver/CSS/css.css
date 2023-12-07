@@ -43,6 +43,12 @@ button:not(.log-btn,.nav), input[type=file] {
     color: white;
 }
 
+button:hover:not(.log-btn,.nav), input[type=file]:hover{
+    background-color: #04310d;
+    border-color: #04310d;
+    transition: 0.3s;
+}
+
 button.nav {
     text-decoration: none;
     color: black;

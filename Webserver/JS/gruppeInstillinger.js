@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
             usernameSpan.textContent = username;
 
             // Create the button for adding the member
-            const addButton = document.createElement("button");
+            const addButton = document.createElement("a");
             addButton.className = "add-member-btn2";
 
             const addImage = document.createElement("img");

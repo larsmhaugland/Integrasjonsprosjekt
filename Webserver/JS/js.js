@@ -16,15 +16,18 @@ const chatLinkButton = document.querySelector("#Chat-link");
 const kalenderLinkButton = document.querySelector("#Kalender-link");
 const oppskriftLinkButton = document.querySelector("#Oppskrift-link");
 const handlelisteLinkButton = document.querySelector("#Handleliste-link");
-const hjemmeside = window.location.href.includes("Webserver/index.html");
+const hjemmeside = window.location.href.includes(window.location.hostname +"/index.html");
+const oppskriftside = window.location.href.includes("Oppskrift/index.html");
 
 chatLinkButton.addEventListener("click", (event) => {
     const loginStatus = sessionStorage.getItem("loggedIn");
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Chat/index.html";
-        } else {
+        } else if(!oppskriftside){
             window.location.href = "../Chat/index.html";
+        } else{
+            window.location.href = "../../Chat/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -36,8 +39,10 @@ kalenderLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Kalender/index.html";
-        } else {
+        } else if(!oppskriftside){
             window.location.href = "../Kalender/index.html";
+        } else {
+            window.location.href = "../../Kalender/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -49,8 +54,10 @@ oppskriftLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Oppskrifter/index.html";
-        } else {
+        } else if(!oppskriftside){
             window.location.href = "../Oppskrifter/index.html";
+        } else {
+            window.location.href = "../../Oppskrifter/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -62,8 +69,10 @@ handlelisteLinkButton.addEventListener("click", (event) => {
     if (loginStatus === "true") {
         if (hjemmeside){
             window.location.href = "Handleliste/index.html";
-        } else {
+        } else if(!oppskriftside){
             window.location.href = "../Handleliste/index.html";
+        } else {
+            window.location.href = "../../Handleliste/index.html";
         }
     } else {
         alert("Du må logge inn for å få tilgang til denne siden");
@@ -122,7 +131,14 @@ registerTextPoppup.addEventListener("click", (event)=> {event.preventDefault();
 });
 
 window.onload = function () {
-    checkLoginStatus();
+    if(!checkLoginStatus() && !window.location.hostname.includes("localhost")){
+        if(!oppskriftside && !hjemmeside) {
+            //redirect one level up
+            window.location.href = "../index.html";
+        } else if (oppskriftside){
+            window.location.href = "../../index.html";
+        }
+    }
     updateLoginStatus();
 };
 
@@ -194,7 +210,7 @@ function logout(){
     console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
     sessionStorage.removeItem("groups");
     updateLoginStatus();
-    location.reload();
+    location.replace("https://" + window.location.hostname + "/index.html");
 }
 
 function updateLoginStatus(){
@@ -204,7 +220,7 @@ function updateLoginStatus(){
     let notLoggedInDisplay = document.querySelector("#not-logged-in");
     let mainDisplay = document.querySelector("#main-display");
     let body = document.querySelector("body");
-    console.log("Log in Status.: " + loggedIn);
+
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";

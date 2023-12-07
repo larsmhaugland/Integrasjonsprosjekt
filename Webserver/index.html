@@ -51,34 +51,33 @@
     <div id="new-group-popup" class="popup">
         <div class="popup-content">
             <a id="close-group-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
-            <h2>Create a New Chat</h2>
+            <h2>Lag ny gruppe</h2>
             <form class="create-group-form">
-                <label for="group-name">Group Name:</label>
-                <input type="text" id="group-name" name="group-name" required placeholder="Enter a name for the group">
+                <label for="group-name">Gruppenavn:</label>
+                <input type="text" id="group-name" name="group-name" required placeholder="Skriv inn navn på gruppen...">
             
-                <label for="member-input">Add Members:</label>
+                <label for="member-input">Legg til medlemmer:</label>
                 <div class="member-input" id="member-input">
-                    <button type="button" id="add-member-button">Add Member</button>
+                    <button type="button" id="add-member-button">Legg til medlem</button>
                 </div>
-                <span> <em>Click "Add Member" to include members in the chat.</em> </span>
+                <span> <em>Klikk på "Legg til medlem" for å legge inn gruppemedlemmer.</em> </span>
                 <ul id="member-list" class="member-list">
                 </ul>
-                <label for="group-img">Gruppens ikon (opt.)</label>
+                <label for="group-img">Gruppens ikon (frivillig)</label>
                 <input type="file" id="group-img" name="group-img" accept="image/*">
                 <div id="group-img-preview">
                     <img src="" alt="Bilde av oppskrift" style="display: none">
                 </div>
-                <button type="submit" class="create-button" >Create</button>
+                <button type="submit" class="create-button" >Opprett</button>
             </form>
         </div>
     </div>
 
     <div id="search-member-modal" class="modal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
+            <a id="close-modal" class="close-popup close-modal"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
             <h2>Legge til medlemmer</h2>
-            <input type="text" id="search-input" placeholder="Enter member name...">
-            
+            <input type="text" id="search-input" placeholder="Skriv inn medlemmets navn...">
             <ul class="member-suggestions"></ul>
         </div>
     </div>

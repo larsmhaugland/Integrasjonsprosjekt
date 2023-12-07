@@ -44,12 +44,14 @@ const openModalButton = document.querySelector("#add-member-button");
 const closeModalButton = modal.querySelector(".close-modal");
 const createGroupCloseButton = document.querySelector("#close-group-popup");
 const imageInput = document.querySelector("#group-img");
+
 // Close the modal when the close button is clicked
 closeModalButton.addEventListener("click", function () {
     modal.style.display = "none";
 });
 
 openModalButton.addEventListener("click", function () {
+
     modal.style.display = "block";
 });
 createGroupCloseButton.addEventListener("click", function () {
@@ -277,7 +279,7 @@ function updateMemberSuggestions(results) {
         usernameSpan.textContent = username;
 
         // Create the button for adding the member
-        const addButton = document.createElement("button");
+        const addButton = document.createElement("a");
         addButton.className = "add-member-btn2";
 
         const addImage = document.createElement("img");
@@ -323,7 +325,6 @@ function removeMemberFromList(username){
     var memberListItem;
     const listItems = document.querySelectorAll("#member-list li");
     for (const listItem of listItems) {
-        console.log(listItem);
         const span = listItem.querySelector("span");
         if (!span){console.log("span is null");}
         if (span.textContent === username) {

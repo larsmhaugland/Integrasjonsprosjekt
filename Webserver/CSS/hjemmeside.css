@@ -169,16 +169,22 @@
 .member-suggestions img {
     width: 1.5vw;
     height: auto;
-    background-color: #80AB82;
 }
 
 
 /* Styling for the "Add" button's icon within the member suggestions */
+.add-member-btn2 img:hover {
+    filter: invert(0%) sepia(24%) saturate(4310%) hue-rotate(229deg) brightness(99%) contrast(100%);
+    transition: 0.1s;
+}
+
+
 .add-member-btn2 img {
+    transition: 0.1s;
     width: 3vw;
     height: auto;
     cursor: pointer;
-    background-color: #80AB82;
+    filter: invert(35%) sepia(0%) saturate(18%) hue-rotate(177deg) brightness(89%) contrast(87%);
 }
 
 
@@ -253,8 +259,6 @@
 
 /* Button for adding members in the form */
 .member-input button {
-    background: #007bff;
-    color: #fff;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
