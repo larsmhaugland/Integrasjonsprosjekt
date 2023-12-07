@@ -117,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Event listener to open the modal when the openmodal button is pressed
     openModalButton.addEventListener("click", function () {
         modal.style.display = "block";
+        searchInput.value = "";
     });
 
     // Event listener to send the message when the send message button is clicked
