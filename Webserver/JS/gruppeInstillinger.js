@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
     closeModalButton.addEventListener("click", function () {
         modal.style.display = "none";
         popupContent.style.display = "none";
+        searchInput.value = "";
     });
 
     // Delete the group when the deleteGroupButton is clicked

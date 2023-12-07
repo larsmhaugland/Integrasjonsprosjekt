@@ -27,7 +27,7 @@ closeModalButton.addEventListener("click", function () {
 
 openModalButton.addEventListener("click", function () {
     modal.style.display = "block";
-    searchInput.textContent = "";
+    searchInput.value = "";
 });
 createGroupCloseButton.addEventListener("click", function () {
     document.querySelector("#new-group-popup").style.display = "none";
