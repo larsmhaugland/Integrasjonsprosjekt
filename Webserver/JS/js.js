@@ -2,15 +2,10 @@
 
 let API_IP = "";
 let IMAGEDIR = "Images/";
+let ICONDIR = "Images/";
 const API_LOCAL = "http://localhost:8080";
 const API_REMOTE = "https://10.212.174.249:8080"; //PEKER PÅ DEV SERVER
 
-if (window.location.hostname === "localhost"){
-     API_IP = "http://" + window.location.hostname + ":8080";
-} else{
-    API_IP = "https://" + window.location.hostname + ":8080";
-    IMAGEDIR = "UsrImages/";
-}
 
 const chatLinkButton = document.querySelector("#Chat-link");
 const kalenderLinkButton = document.querySelector("#Kalender-link");
@@ -19,6 +14,16 @@ const handlelisteLinkButton = document.querySelector("#Handleliste-link");
 const hjemmeside = !window.location.href.includes("Chat/index.html") && !window.location.href.includes("Kalender/index.html")
     && !window.location.href.includes("Oppskrifter/index.html") && !window.location.href.includes("Handleliste/index.html");
 const oppskriftside = window.location.href.includes("Oppskrift/index.html");
+
+
+if (window.location.hostname === "localhost"){
+     API_IP = "http://" + window.location.hostname + ":8080";
+} else{
+    API_IP = "https://" + window.location.hostname + ":8080";
+    IMAGEDIR = "UsrImages/";
+}
+
+
 
 chatLinkButton.addEventListener("click", (event) => {
     const loginStatus = sessionStorage.getItem("loggedIn");
@@ -211,7 +216,14 @@ function logout(){
     console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
     sessionStorage.removeItem("groups");
     updateLoginStatus();
-    location.replace("https://" + window.location.hostname + "/index.html");
+    if(!window.location.hostname.includes("localhost")) {
+        if (!oppskriftside && !hjemmeside) {
+            //redirect one level up
+            window.location.href = "../index.html";
+        } else if (oppskriftside) {
+            window.location.href = "../../index.html";
+        }
+    }
 }
 
 function updateLoginStatus(){

@@ -1,9 +1,10 @@
 /* jshint esversion: 8 */
 /***       GLOBAL VARIABLES       ***/
-let MAXRESULTS = 12;
+const MAXRESULTS = 12;
 let page = 0;
 let Recipes = [];
 let Categories = [];
+const MAXURLDISPLAYLENGTH = 25;
 
 
 /***      DOM ELEMENTS       ***/
@@ -839,7 +840,14 @@ async function displayResults(filteredList){
             recipeURL.setAttribute("href", recipe.URL);
             recipeURL.setAttribute("target", "_blank");
             recipeURL.setAttribute("class", "result-url");
-            recipeURL.textContent = recipe.URL;
+            //Display URL without protocol and www
+            let displayURL = recipe.URL.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "");
+            //Display only first 25 characters
+            if (displayURL.length > MAXURLDISPLAYLENGTH) {
+                recipeURL.textContent = displayURL.substring(0, 25) + "...";
+            } else {
+                recipeURL.textContent = displayURL;
+            }
             recipeBlock.appendChild(recipeURL);
         }
         let recipeDifficulty = document.createElement("p");

@@ -217,7 +217,7 @@ function updateMemberSuggestions(results) {
 
         // Create the image element
         const image = document.createElement("img");
-        image.src = IMAGEDIR + "person-icon-transparent.png";
+        image.src = ICONDIR + "person-icon-transparent.png";
         image.alt = username;
 
         // Create the span element for the username
@@ -229,7 +229,7 @@ function updateMemberSuggestions(results) {
         addButton.className = "add-member-btn2";
 
         const addImage = document.createElement("img");
-        addImage.src = IMAGEDIR + "add-icon.png";
+        addImage.src = ICONDIR + "add-icon.png";
         addImage.alt = "Add member";
 
         addButton.appendChild(addImage);
