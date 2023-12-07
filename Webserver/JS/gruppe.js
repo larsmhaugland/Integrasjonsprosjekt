@@ -4,9 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const groupMembersList = document.querySelector("#group-members-list");
     const editButton = document.querySelector("#edit-button");
     const groupNameElement = document.querySelector("#group-name");
-    const handlelisteLink = document.querySelector("#handleliste-link");
-    const kalenderLink = document.querySelector("#kalender-link");
-    const chatLink = document.querySelector("#chat-link");
+    const handlelisteLink = document.querySelector("#handleliste-href");
+    const kalenderLink = document.querySelector("#kalender-href");
+    const chatLink = document.querySelector("#chat-href");
     const LoggedInUsername = sessionStorage.getItem("username");
     let groupNamePass;
     let GroupOwner;

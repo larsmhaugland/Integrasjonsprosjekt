@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/css.css">
     <link rel="stylesheet" href="../CSS/grupper.css">
-    <title>Chat</title>
+    <title>Gruppeinstillinger</title>
 </head>
 <body>
     <header class="main-nav">
@@ -76,7 +79,7 @@
         <div class="popup">
             <div id="search-member-modal" class="modal">
                 <div class="modal-content">
-                    <span class="close-modal">&times;</span>
+                    <a id="close-chat-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg close-modal"></a>
                     <h2>Legge til medlemmer</h2>
                     <input type="text" id="search-input" placeholder="Enter member name...">
                     <ul class="member-suggestions"></ul>

@@ -229,16 +229,6 @@
     overflow-y: auto;
 }
 
-/* Styling for the close button within the modal */
-.close-modal {
-    position: absolute;
-    top: 0.2vw;
-    right: 1vw;
-    font-size: 3vw;
-    cursor: pointer;
-    color: #000000;
-}
-
 /* Styling for the search input within the modal */
 #search-input {
     width: 90%;
