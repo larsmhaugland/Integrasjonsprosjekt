@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 /***       GLOBAL VARIABLES       ***/
 let MAXRESULTS = 12;
 let page = 0;
@@ -250,7 +251,7 @@ window.onload = function () {
     retrieveGroups();
     loadRecipes();
     getCategories();
-}
+};
 
 
 /***        FUNCTIONS       ***/
