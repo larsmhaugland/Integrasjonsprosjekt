@@ -10,6 +10,7 @@ let newDinnerBtns = document.querySelectorAll(".dinner-btn"); // The buttons for
 let closeDinnerPopup = document.querySelector("#close-dinner-popup"); // The button for closing the dinner popup
 let dinnerForm = document.querySelector("#new-dinner-form"); // The form for adding a dinner
 let groupDropdown = document.querySelector("#group-dropdown"); // The dropdown for selecting a group
+let responsibleButtons = document.querySelectorAll('.btn.responsible'); // The buttons for selecting a responsible member
 let currentDay; // The day selected to add information to
 let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "sondag"]; // Array of all days
 let Recipes = []; // Array containing all recipes
@@ -361,14 +362,15 @@ groupDropdown.addEventListener("change", async function (event) {
  * @brief Event listeners for new dinner buttons.
  *
  * This block of code adds event listeners to each button in the 'newDinnerBtns' NodeList.
- * When a button is pressed, it checks the authentication token, displays an alert if not logged in,
+ * When a button is clicked, it checks the authentication token, displays an alert if not logged in,
  * and sets the current day for dinner addition to the clicked button's parent node's ID.
+ * It preloads the autocomplete with the first two recipes in the database if they exist.
  * Finally, it displays the 'dinnerPopup'.
  */
 newDinnerBtns.forEach(function (btn) {
     btn.addEventListener("click", function (event) {
         // Check authentication token before proceeding
-        if (!checkAuthToken()) {
+        if (!checkLoginStatus()) {
             alert("Du må logge inn for å legge til i kalenderen");
             return;
         }
@@ -380,28 +382,26 @@ newDinnerBtns.forEach(function (btn) {
         } else {
             console.error("Unable to get the parent node's ID");
         }
-
+        autocomplete(currentDay, "");
         // Display the dinnerPopup
         dinnerPopup.style.display = "block";
     });
 });
 
 
+
+
 /**
- * @brief Close all popups.
+ * @brief Create a popup with group members for a specific day.
  *
- * This block of code selects all elements with the class 'popup' using document.querySelectorAll.
- * For each popup element, it sets the display style to "none", effectively hiding the popups.
+ * This function generates a popup containing buttons for each member of a group.
+ * When a member button is clicked, it updates the selected member label in the day section.
+ * The selected member is then added to the responsibleCalendar array and sent to the server
+ * if a dinner is also present.
+ *
+ * @param {Object} groupData - The data of the group, including member information.
+ * @param {string} day - The identifier for the day section where the popup is created.
  */
-let allPopups = document.querySelectorAll('.popup');
-allPopups.forEach(function (popup) {
-    console.log("Closing popup");
-    popup.style.display = "none";
-});
-
-
-
-// Function to create a popup with group members
 function createMemberPopup(groupData, day) {
     const daySection = document.getElementById(day);
 
@@ -419,7 +419,7 @@ function createMemberPopup(groupData, day) {
         });
         popup.classList.add("popup");
 
-        // Iterate through members using for...in loop
+        // Iterate through members
         for (const memberKey in groupData.members) {
             if (groupData.members.hasOwnProperty(memberKey)) {
                 // Create a closure to capture the correct memberKey value
@@ -482,9 +482,16 @@ function createMemberPopup(groupData, day) {
         overlay.style.display = "block";
     }
 }
-// Add click event listeners to "Responsible" buttons
-let responsibleButtons = document.querySelectorAll('.btn.responsible');
 
+
+/**
+ * @brief Add click event listeners to "Responsible" buttons.
+ *
+ * This block of code adds click event listeners to each button in the 'responsibleButtons' NodeList.
+ * When a button is clicked, it checks the selected group from the dropdown and the day section associated with the button.
+ * If both the selected group and day section are valid, it invokes the 'createMemberPopup' function to display a popup
+ * with group members for the selected day.
+ */
 responsibleButtons.forEach(function (button) {
     button.addEventListener('click', function () {
         let dropdown = document.getElementById("group-dropdown");
@@ -497,32 +504,57 @@ responsibleButtons.forEach(function (button) {
             let daySection = button.closest('[id]');
             let id = null;
             if (daySection) {
-                id = daySection.id; // This will give you for example "tirsdag"
+                id = daySection.id; // This will give you, for example, "tirsdag"
             }
             if (selectedGroup && id) {
-                //openPopup();
+                // Open the member popup for the selected group and day
                 createMemberPopup(selectedGroup, id);
             }
         }
     });
 });
 
-
-
-closeDinnerPopup.addEventListener("click", function (event){
+/**
+ * @brief Add event listener for closing the dinner popup.
+ *
+ * This event listener is triggered when the close button in the dinner popup is clicked.
+ * It hides the dinner popup and clears the input field.
+ */
+closeDinnerPopup.addEventListener("click", function (event) {
+    // Hide the dinner popup when the close button is clicked
     dinnerPopup.style.display = "none";
+    const inputField = document.querySelector('#dinner-name');
+    if (inputField) {
+        inputField.value = ""; // This will empty the input field
+    }
 });
 
+
+/**
+ * @brief Add event listener to prevent form submission.
+ */
 dinnerForm.addEventListener("submit", function (event) {
+    // Prevent the default form submission behavior to handle form data asynchronously
     event.preventDefault();
 });
 
+
+/**
+ * @brief Handle user input for adding a dinner entry to the calendar.
+ *
+ * This function is invoked when the user presses a key in the 'dinner-name' input field.
+ * It retrieves the dinner name, selected group, and current day from the corresponding elements.
+ * The function updates the day's display with the dinner information, including the responsible member,
+ * when the "Enter" key is pressed. If a recipe is found for the dinner, it creates a link to the recipe page;
+ * otherwise, it creates a label. The function also updates the internal 'calendar' array and sends the updated
+ * data to the server.
+ */
 function addDinnerToCalendar() {
     let dinnerName = document.querySelector("#dinner-name").value;
     let options = document.querySelectorAll("#group-dropdown option");
     let selectedGroup;
     options.forEach(option => {
-        if (option.selected){
+        if (option.selected) {
             selectedGroup = option.textContent;
         }
     });
@@ -532,37 +564,39 @@ function addDinnerToCalendar() {
         let element = textDiv.querySelector("#" + currentDay + "-dinner");
         let responsibleLabel = dayDiv.querySelector(".selectedMemberLabel");
         responsibleLabel.textContent = "Ansvarlig: ";
+
         console.log("element: " + element);
         let recipe = findRecipesInCalendar(dinnerName);
+
         if (!element) {
-            if(recipe){
+            if (recipe) {
                 // Create a link
                 element = document.createElement("a");
-
-            }else {
+            } else {
                 // Create a label
                 element = document.createElement("label");
             }
             element.id = currentDay + "-dinner";
             console.log("elementID: " + element.id);
         }
-        if(recipe){
+
+        if (recipe) {
             console.log("found recipe");
 
-            if(element instanceof HTMLLabelElement) { // Check if it's a label
+            if (element instanceof HTMLLabelElement) { // Check if it's a label
                 element.parentNode.removeChild(element); // Remove the label
+
                 // Create a link
                 element = document.createElement("a");
                 element.id = currentDay + "-dinner";
                 textDiv.appendChild(element);
             }
 
-
             element.setAttribute("class", "dinner-link");
             element.innerHTML = dinnerName;
-            let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
+            let href = "../Oppskrifter/Oppskrift/index.html?id=" + recipe.documentID; // Set the link's href
             element.setAttribute("href", href);
-        }else{
+        } else {
             console.log("could not find recipe");
             element.innerHTML = '<br>' + dinnerName;
         }
@@ -573,6 +607,7 @@ function addDinnerToCalendar() {
         event.preventDefault();
         dinnerPopup.style.display = "none";
         document.querySelector("#dinner-name").value = "";
+
         for (let i = 0; i < groups.length; i++) {
             if (groups[i].name === selectedGroup) {
                 for (let j = 0; j < allDays.length; j++) {
@@ -587,57 +622,71 @@ function addDinnerToCalendar() {
             }
         }
         sendCalendarToServer();
-    }
-    else{
+    } else {
         autocomplete(currentDay, dinnerName);
     }
 }
 
-function autocomplete(day, text){
+
+/**
+ * @brief Provide autocompletion suggestions for the dinner input field.
+ *
+ * This function is called to dynamically generate and display autocompletion suggestions
+ * based on the user's input in the 'dinner-name' input field. It filters the available recipes
+ * to match the search substring and displays the suggestions in a dropdown list.
+ *
+ * @param {string} day - The identifier for the day section where the autocompletion is triggered.
+ * @param {string} text - The user's input in the 'dinner-name' input field.
+ */
+function autocomplete(day, text) {
     const recipeInput = document.querySelector("#dinner-name");
     const recipeList = document.querySelector("#search-results");
     let suggestions = [];
+
     if (text.length > 0) {
-        //TODO: Legg til forslag øverst i listen (2 forslag)
-        //suggestions = GETFORSLAG()
-        /*
-        if(Recipes.length > 1){
-            suggestions = suggestions.concat(Recipes[0], Recipes[1]);
-        }else if (Recipes.length > 0){
-            suggestions = suggestions.concat(Recipes[0]);
-        }
-        */
-        //Finner oppskrifter som matcher søket substring
+        // Find recipes that match the search substring
         const filteredRecipes = Recipes.filter((data) => {
             return data.name.toLowerCase().includes(text.toLowerCase());
         });
         suggestions = suggestions.concat(filteredRecipes);
-        //Lager listeelementer av forslagene
-        suggestions = suggestions.map((data) => {
-            return data = '<li>' + data.name + '</li>';
-        });
-        //Highlight box med funky farge ellernosånt
-        recipeInput.classList.add("active");
-        //Viser forslagene
-        showSuggestions(suggestions, day);
-
-        //Legger til eventlistener på alle forslagene
-        let allList = recipeList.querySelectorAll("li");
-        for (let i = 0; i < allList.length; i++) {
-            allList[i].addEventListener("click", () => {
-                //Legger til valgt oppskrift i inputfeltet
-                const selectedRecipe = allList[i].textContent;
-                recipeInput.value = selectedRecipe;
-                recipeInput.classList.remove("active");
-                autocomplete(day, selectedRecipe);
-            });
-        }
     } else {
-        recipeInput.classList.remove("active");
-        recipeList.innerHTML = "";
+        // If nothing is typed, show the first two recipes as default suggestions (also works if there are 1 or 0 recipes)
+        suggestions = Recipes.slice(0, 2);
+    }
+
+    // Create list items for the suggestions
+    suggestions = suggestions.map((data) => {
+        return '<li>' + data.name + '</li>';
+    });
+
+    // Highlight the input box
+    recipeInput.classList.add("active");
+
+    // Display the suggestions
+    showSuggestions(suggestions, day);
+
+    // Add event listener to all suggestions
+    let allList = recipeList.querySelectorAll("li");
+    for (let i = 0; i < allList.length; i++) {
+        allList[i].addEventListener("click", () => {
+            // Add the selected recipe to the input field
+            const selectedRecipe = allList[i].textContent;
+            recipeInput.value = selectedRecipe;
+            recipeInput.classList.remove("active");
+            autocomplete(day, selectedRecipe);
+        });
     }
 }
 
+
+/**
+ * @brief Display autocompletion suggestions in a dropdown list.
+ *
+ * This function is called to update and display the autocompletion suggestions in a dropdown list.
+ * It takes a list of suggestions, including the user's input, and inserts them into the 'search-results' element.
+ *
+ * @param {Array<string>} list - The list of autocompletion suggestions to display.
+ */
 function showSuggestions(list) {
     const recipeInput = document.getElementById("dinner-name");
     const resultsList = document.getElementById("search-results");
@@ -653,17 +702,26 @@ function showSuggestions(list) {
 }
 
 
-function displayGroups(groups){
+/**
+ * @brief Populate the group dropdown with the provided group data.
+ *
+ * This function is called to dynamically populate the group dropdown menu with the given list of groups.
+ * It creates and appends option elements for each group, setting their values and text content accordingly.
+ * If a specific group ID is provided as a parameter, it selects the corresponding option in the dropdown.
+ *
+ * @param {Array<Object>} groups - The array of group objects to be displayed in the dropdown.
+ */
+function displayGroups(groups) {
     let dropdown = document.querySelector("#group-dropdown");
-    let option = document.createElement("option");
-    option.textContent = "Velg gruppe";
+    let defaultOption = document.createElement("option");
+    defaultOption.textContent = "Velg gruppe";
 
     groups.forEach(group => {
         let option = document.createElement("option");
         option.value = group.documentID;
         option.textContent = group.name;
 
-        if (groupIDSentAsParam){
+        if (groupIDSentAsParam) {
             if (group.documentID === groupIDSentAsParam) {
                 option.selected = true; // Set the option as selected
             }
@@ -673,6 +731,18 @@ function displayGroups(groups){
     });
 }
 
+
+/**
+ * @brief Find recipes in the global 'Recipes' array based on the given dinner name.
+ *
+ * This function is called to search for recipes in the global 'Recipes' array that match the provided dinner name.
+ * It iterates through the 'Recipes' array and returns the first matching recipe. If no matches are found,
+ * it logs a message to the console and returns null.
+ *
+ * @param {string} dinner - The name of the dinner to search for in the 'Recipes' array.
+ *
+ * @returns {Object|null} - The matching recipe object if found; otherwise, null.
+ */
 function findRecipesInCalendar(dinner) {
     const matchingRecipes = [];
 
@@ -689,4 +759,5 @@ function findRecipesInCalendar(dinner) {
     console.log("No matches found");
     return null;
 }
+
 

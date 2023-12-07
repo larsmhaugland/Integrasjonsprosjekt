@@ -130,6 +130,11 @@ h1{
     right: 1%;
     top: 5vh;
     position: absolute;
+    margin-top: -2vh;
+}
+
+.btn:hover{
+    background-color: #04310d;
 }
 
 .dinner-link{
@@ -137,7 +142,7 @@ h1{
     font-size: 25px;
 }
 .dinner-link:hover{
-    color: #064412;
+    color: #80AB82;
 }
 
 .popup {
@@ -187,4 +192,8 @@ select{
 }
 #group-dropdown{
    margin-bottom: 10px;
+}
+
+.day {
+    background: #ffffff;
 }
