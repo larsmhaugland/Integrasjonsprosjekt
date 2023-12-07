@@ -107,7 +107,10 @@ loginPassword.addEventListener("keyup", function(event) {
 });
 
 let registerUserBtn = document.querySelector("#register-user-submit");
-registerUserBtn.addEventListener("click", registerUser);
+registerUserBtn.addEventListener("click", function(event) {
+    event.preventDefault(); 
+    registerUser();
+});
 let registerPassword = document.querySelector("#password-reg-conf");
 registerPassword.addEventListener("keyup", function(event) {
     if (event.keyCode === 13) { //Enter key
