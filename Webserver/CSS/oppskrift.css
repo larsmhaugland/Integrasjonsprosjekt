@@ -63,6 +63,10 @@ body{
     width: 1fr;
 }
 
+#recipe-image img {
+    width: 100%;
+}
+
 .single-recipe-content {
     grid-area: recipe-content;
     margin-top: 5px;
