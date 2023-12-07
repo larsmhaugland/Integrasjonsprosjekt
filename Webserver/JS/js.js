@@ -11,7 +11,7 @@ const chatLinkButton = document.querySelector("#Chat-link");
 const kalenderLinkButton = document.querySelector("#Kalender-link");
 const oppskriftLinkButton = document.querySelector("#Oppskrift-link");
 const handlelisteLinkButton = document.querySelector("#Handleliste-link");
-const hjemmeside = !window.location.href.includes("Chat") && !window.location.href.includes("Kalender")
+const hjemmeside = !window.location.href.includes("Chat") && !window.location.href.includes("Kalender") && !window.location.href.includes("Grupper")
     && !window.location.href.includes("Oppskrifter") && !window.location.href.includes("Handleliste") && !window.location.href.includes("Oppskrift");
 const oppskriftside = window.location.href.includes("Oppskrift/index.html");
 
