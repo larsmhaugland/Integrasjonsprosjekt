@@ -131,6 +131,50 @@ recipeEdit.addEventListener("click", function () {
     //Prefill instructions
     if(displayedRecipe.URL === null || displayedRecipe.URL === "" && displayedRecipe.ingredients !== null  && displayedRecipe.instructions !== null) {
         let instructions = document.querySelector("#edit-instructions-list");
+        let addInstructionBtn = document.querySelector("#add-instruction-btn");
+        let instruction = document.querySelector("#recipe-instructions");
+
+        addInstructionBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            //Check if instruction is filled
+            if (instruction.value === "") {
+                alert("Fyll ut instruksjon");
+                return;
+            }
+            addInstruction();
+        });
+
+        instruction.addEventListener("keyup", function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                addInstructionBtn.click();
+            }
+        });
+
+
+        function addInstruction(){
+            //Create list item
+            let instructionLi = document.createElement("li");
+            let label = document.createElement("label");
+            label.innerHTML = instruction.value;
+            instructionLi.appendChild(label);
+            //create a remove icon for the list item
+            let removeItem = document.createElement("a");
+            let removeIcon = document.createElement("img");
+            removeIcon.setAttribute("src", "../../Images/trashcan.svg");
+            removeIcon.setAttribute("alt", "Slett ingrediens");
+            removeIcon.setAttribute("class", "close-svg");
+            removeIcon.classList.add("remove-item");
+            removeItem.appendChild(removeIcon);
+            //Add event listener to remove the list item when the icon is clicked
+            removeItem.addEventListener("click", function (event) {
+                instructions.removeChild(instructionLi);
+            });
+            instructionLi.appendChild(removeItem);
+            instructions.appendChild(instructionLi);
+            //Reset input field
+            instruction.value = "";
+        }
         //Reset instructions
         instructions.innerHTML = "";
         //For each instruction in the displayed recipe, create a list item
@@ -156,6 +200,60 @@ recipeEdit.addEventListener("click", function () {
         }
 
         let ingredients = document.querySelector("#edit-ingredient-list");
+        let addIngredientBtn = document.querySelector("#add-ingredient-btn");
+        let ingredientName = document.querySelector("#add-ingredient");
+        let ingredientAmount = document.querySelector("#recipe-ingredient-qty");
+        //Add event listener to add ingredient button
+        addIngredientBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            //Check if ingredient name and amount are filled
+            if (ingredientName.value === "" || ingredientAmount.value === "") {
+                alert("Fyll ut ingrediensnavn og mengde");
+                return;
+            }
+            addIngredient();
+        });
+
+        //Add event listener to ingredient name input field
+        ingredientName.addEventListener("keyup", function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                addIngredientBtn.click();
+            }
+        });
+
+        //Add event listener to ingredient amount input field
+        ingredientAmount.addEventListener("keyup", function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                addIngredientBtn.click();
+            }
+        });
+
+        function addIngredient(){
+            //Create list item
+            let ingredient = document.createElement("li");
+            let label = document.createElement("label");
+            label.innerHTML = ingredientName.value + ": " + ingredientAmount.value;
+            ingredient.appendChild(label);
+            //create a remove icon for the list item
+            let removeItem = document.createElement("a");
+            let removeIcon = document.createElement("img");
+            removeIcon.setAttribute("src", "../../Images/trashcan.svg");
+            removeIcon.setAttribute("alt", "Slett ingrediens");
+            removeIcon.setAttribute("class", "close-svg");
+            removeIcon.classList.add("remove-item");
+            removeItem.appendChild(removeIcon);
+            //Add event listener to remove the list item when the icon is clicked
+            removeItem.addEventListener("click", function (event) {
+                ingredients.removeChild(ingredient);
+            });
+            ingredient.appendChild(removeItem);
+            ingredients.appendChild(ingredient);
+            //Reset input fields
+            ingredientName.value = "";
+            ingredientAmount.value = "";
+        }
         //Reset ingredients
         ingredients.innerHTML = "";
         //For each ingredient in the displayed recipe, create a list item
