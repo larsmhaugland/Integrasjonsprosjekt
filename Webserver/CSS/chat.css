@@ -225,29 +225,28 @@
     flex-direction: column;
 }
 
-/* Styling for individual chat messages from other users */
-.message-received{
-    margin: 0.50vh;
+/* Styling for chat messages from other users */
+.message-sent {
+    float: right; /* Align messages received from others to the left */
+    background: #80AB82;
     border-radius: 1.00vh;
     padding: 1.00vh;
+    margin: 0.50vh;
     min-width: 20%; 
-    max-width: 55%; 
-    width: fit-content;  
+    max-width: 45%; 
     word-wrap: break-word;
-    align-self: flex-start;
-    background: #80AB82; 
 }
 
-/* Styling for individual chat messages from sender */
-.message-sent {
-    margin: 0.50vh;
+/* Styling for chat messages from the sender */
+.message-received {
+    float: left;
+    background: rgb(192, 190, 190);
     border-radius: 1.00vh;
     padding: 1.00vh;
-    width: fit-content;  
+    margin: 0.50vh;
     min-width: 20%; 
-    max-width: 55%; 
+    max-width: 45%; 
     word-wrap: break-word;
-    background: #80AB82; 
 }
 
 /* Styling for the message header within chat messages */
