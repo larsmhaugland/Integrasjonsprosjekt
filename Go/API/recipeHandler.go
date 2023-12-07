@@ -29,14 +29,20 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
 			RecipePostHandler(w, r)
+			
 		case http.MethodGet:
+			if parts[len(parts)-1] == "categories" {
+				RecipeCategoriesHandler(w, r)
+				break
+			}
 			RecipeGetHandler(w, r)
-			break
+
 		case http.MethodPatch:
 			RecipePatchHandler(w, r)
-			break
+
 		case http.MethodDelete:
 			RecipeDeleteHandler(w, r)
+
 		case http.MethodOptions: // For CORS
 			return
 		default:
@@ -44,6 +50,39 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		http.Error(w, "Error; Invalid URL", http.StatusBadRequest)
+	}
+}
+
+func RecipeCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	type Output struct {
+		Exclusive map[string]map[string]string `json:"exclusive"`
+		Inclusive []string                     `json:"categories"`
+		Allergens []string                     `json:"allergies"`
+	}
+	var output Output
+	output.Exclusive = make(map[string]map[string]string)
+	//Add categories to response
+	output.Allergens = []string{"Gluten", "Laktose", "Nøtter", "Egg", "Fisk", "Skalldyr", "Soya", "Sennep", "Selleri", "Sesamfrø", "Sulfitt", "Bløtdyr", "Peanøtter"}
+	output.Inclusive = []string{"Glutenfri", "Laktosefri", "Halal", "Kosher", "Kylling", "Fisk", "Svin", "Storfekjøtt"}
+	output.Exclusive["Måltid"] = map[string]string{
+		"Frokost":   "Frokost",
+		"Lunsj":     "Lunsj",
+		"Middag":    "Middag",
+		"Kveldsmat": "Kveldsmat",
+	}
+	output.Exclusive["Type"] = map[string]string{
+		"Kjøtt":   "Kjøtt",
+		"Fisk":    "Fisk",
+		"Vegetar": "Vegetar",
+		"Vegan":   "Vegan",
+	}
+	//More categories could be added here
+
+	//Encode response
+	err := EncodeJSONBody(w, r, output)
+	if err != nil {
+		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -121,7 +160,7 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	//Remove recipe from firebase
-	err = Firebase.DeleteRecipe(recipeID)
+	err = Firebase.DeleteCacheRecipe(recipeID)
 	if err != nil {
 		http.Error(w, "Error when deleting recipe: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -196,11 +235,13 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//If a groups recipes are requested, get them from cache
 	if groupQ == "true" {
+		//Get group from cache
 		g, err := Firebase.ReturnCacheGroup(storedIn)
 		if err != nil {
 			http.Error(w, "Error when fetching group: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
+		//Get recipes from cache
 		for recipeID := range g.Recipes {
 			recipe, err := Firebase.ReturnCacheRecipe(recipeID)
 			if err != nil {
@@ -292,6 +333,7 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ExampleRecipes is a list of recipes that are used as examples in the app
 var ExampleRecipes = []Firebase.Recipe{
 	{
 		Name:        "Pasta",
@@ -315,4 +357,3 @@ var ExampleRecipes = []Firebase.Recipe{
 		Difficulty:  2,
 	},
 }
-

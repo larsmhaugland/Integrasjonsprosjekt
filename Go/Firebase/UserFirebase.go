@@ -351,7 +351,7 @@ func AddChatToUser(username string, chatID string) error {
 	return nil
 }
 
-// AddChatTogroup creates the group chat for the newly created group.
+// AddChatToGroup  creates the group chat for the newly created group.
 func AddChatToGroup(groupID string, chatID string) error {
 
 	ctx := context.Background()

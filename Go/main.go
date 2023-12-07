@@ -26,8 +26,8 @@ func main() {
 	} else {
 		startHTTPserver()
 	}
-	//startHTTPserver()
-
+	game_version :=3
+    fmt.Printf("Super Mario %s\n",game_version)
 }
 
 func startHTTPserver() {
@@ -87,7 +87,9 @@ func startHTTPSserver() {
 	http.HandleFunc("/clear/", clearCacheHandler)
 
 	// coroutine that runs the chat room cleanup function
-	go Socket.RunChatRoomCleanup()
+
+	go Socket.RunChatRoomCleanup(10)
+
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))

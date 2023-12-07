@@ -1,9 +1,10 @@
+
 /**
  * @file kalender.js
  * @brief This file contains the calendar functions for the application.
  */
 
-
+/* jshint esversion: 8 */
 let dinnerPopup = document.querySelector("#dinner-popup"); // The popup for adding a dinner
 let newDinnerBtns = document.querySelectorAll(".dinner-btn"); // The buttons for adding a dinner
 let closeDinnerPopup = document.querySelector("#close-dinner-popup"); // The button for closing the dinner popup
@@ -19,7 +20,6 @@ let groups = []; // Array containing all groups
 let groupIDSentAsParam = ""; // The group ID sent as a parameter in the URL
 
 beginning();
-
 
 /**
  * @brief Entry point for the application.
@@ -357,7 +357,6 @@ groupDropdown.addEventListener("change", async function (event) {
     await getCalenderData();
 });
 
-
 /**
  * @brief Event listeners for new dinner buttons.
  *
@@ -491,7 +490,7 @@ responsibleButtons.forEach(function (button) {
         let dropdown = document.getElementById("group-dropdown");
         if (dropdown.selectedIndex !== 0) {
             let selectedOption = dropdown.options[dropdown.selectedIndex];
-            let groupID = selectedOption.value
+            let groupID = selectedOption.value;
             let selectedGroup = groups.find(function (group) {
                 return group.documentID === groupID;
             });
@@ -560,12 +559,12 @@ function addDinnerToCalendar() {
 
 
             element.setAttribute("class", "dinner-link");
-            element.innerHTML = "Middag: " + dinnerName;
+            element.innerHTML = dinnerName;
             let href = "../Oppskrifter/Oppskrift/index.html?id="+recipe.documentID; // Set the link's href
             element.setAttribute("href", href);
         }else{
             console.log("could not find recipe");
-            element.innerHTML = '<br>' + "Middag: " + dinnerName;
+            element.innerHTML = '<br>' + dinnerName;
         }
 
         // Append the created element to the 'div'

@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
@@ -20,8 +21,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let groupName;
     const Administrators = [];
     const redirectURL = "../index.html";
+    const initialDropdownValues = {};
 
-    onPageReload()
+    onPageReload();
 
     /**
      * Function that runs when the page is loaded. It retrieves the groupID from the URL parameter,
@@ -71,12 +73,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Delete the group when the deleteGroupButton is clicked
     deleteGroupButton.addEventListener("click", function(){
-        deleteGroup(groupID)
-    })
+        deleteGroup(groupID);
+    });
     
     // Leave the group when the leaveGroupButton is clicked
     leaveGroupButton.addEventListener("click", function(){
-        leaveGroup(groupID)
+        leaveGroup(groupID);
     });
 
     /**
@@ -283,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch((error) => {
             console.error("Error:", error);
-            alert("Server error when trying to add the user to the group")
+            alert("Server error when trying to add the user to the group");
         });
     }
 
@@ -353,27 +355,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 option.textContent = role;
                 select.appendChild(option);
             });
+
+            // Set the selected option based on the member's role
+            select.value = member.roleName.toLowerCase(); 
+            initialDropdownValues[member.username] = select.value;
             
-            // To store the value before it is changed in case member trying to update is not Owner
-            select.addEventListener('focus', () => {
-                initialValue = select.value;
-            });
+            console.log(initialDropdownValues);
 
             // Add an event listener to handle role updates
-            select.addEventListener('change', (event) => {
+            select.addEventListener('change', async (event) => {
                 // Get the selected role from the dropdown menu
                 const selectedRole = event.target.value;
-
                 // Get the username for the member
                 const parentElement = select.parentElement;
                 const username = parentElement.querySelector("span").textContent;
-                
+                const initialValue = initialDropdownValues[username];
                 // Function to update the role for the member
-                updateRoleForMember(username, selectedRole, initialValue);
-            })
-            
-            // Set the selected option based on the member's role
-            select.value = member.roleName.toLowerCase(); 
+                const [validRole, groupOwnerChanged] = await updateRoleForMember(username, selectedRole, initialValue);
+                // Update the initial value for the dropdown
+                if (validRole){
+                    initialDropdownValues[username] = selectedRole;
+                    if (groupOwnerChanged) {
+                        location.reload();
+                    }
+                }
+                
+            });
             
             // Store the owner and administrator usernames
             if (member.roleName.toLowerCase() === "owner"){
@@ -425,7 +432,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function deleteMember(username) {
         // Only owner and administrators can delete members from the group
         if (LoggedInUsername !== GroupOwner && !Administrators.includes(LoggedInUsername)){
-            alert("Only an owner or administrator can add a member to the group");
+            alert("Only an owner or administrator can remove a member from the group");
             return;
         }
 
@@ -458,55 +465,89 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {string} newRole      - new role for the username
      * @param {string} initialValue - the initial role for the username
      */
-    function updateRoleForMember(username, newRole, initialValue){
+    async function updateRoleForMember(username, newRole, initialValue){
         
-        // Make sure an administrator or owner is trying to update the role
-        if (LoggedInUsername !== GroupOwner || newRole === "owner" || initialValue === "owner"){
-            
-            // Get the list items inside the ul element
-            const listItems = groupMembersListSettings.querySelectorAll("li");
-            listItems.forEach((listItem) => {
-                // Find the Span and Select elements inside the list item
-                const usernameSpan = listItem.querySelector("span");
-                const roleSelect = listItem.querySelector(".role-dropdown");
-
-                // Get the username from the Span element
-                const nameForElement = usernameSpan.textContent;
-
-                // Check if the username matches the target username
-                if (nameForElement === username) {
-                    // Set the Select element value to the initial value
-                    roleSelect.value = initialValue;
+        let newOwner = false;
+        let previousOwner = GroupOwner;
+        try {
+            if (LoggedInUsername !== GroupOwner || initialValue === "owner") {
+                resetDropdownValues(username, newRole, initialValue);
+                alert("Only the owner can update a role. If you want to make another person owner, change their value to owner");
+                return [false, false];
+            }
+    
+            if (newRole === "owner") {
+                if (!window.confirm("Are you sure you want to make this person the owner?")) {
+                    resetDropdownValues(username, newRole, initialValue);
+                    return [false, false];
                 }
+                newOwner = true;
+            }
+    
+            if (newOwner) {
+                const newRoleForOwner = "administrator"; // Assuming the new role for the owner is "administrator"
+                const ownerUrl = `${API_IP}/group/members?username=${encodeURIComponent(GroupOwner)}&newRole=${encodeURIComponent(newRoleForOwner)}&groupID=${encodeURIComponent(groupID)}`;
+                GroupOwner = username;
+    
+                const ownerResponse = await fetch(ownerUrl, {
+                    method: 'PATCH',
+                });
+    
+                if (!ownerResponse.status === 200) {
+                    alert("Server error when trying to update the role for the previous owner");
+                    return [false, false];
+                }
+            }
+    
+            const memberUrl = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`;
+    
+            const memberResponse = await fetch(memberUrl, {
+                method: 'PATCH',
             });
-            alert("Only the owner can update a role, new role can not be owner, and owner can not get a new role");
-            return;
-        }
-
-        // URL for the backend endpoint
-        const url = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`
-        // Send a PATCH request to the backend endpoint
-        fetch(url, {
-            method: 'PATCH',
-        })
-            .then((response) => {
-                if (response.status === 200) {
-                    console.log("Role of group member updated");
-                } else {
-                    alert("Server error when trying to update the role");
-                }
-            })
-            .catch((error) =>{
-                console.error("Error", error);
+    
+            if (memberResponse.status === 200) {
+                console.log("Role of group member updated");
+                if (newOwner) return [true, true];
+                else return [true, false];
+            } else {
                 alert("Server error when trying to update the role");
-            })
+                return [false, false];
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Server error when trying to update the role");
+            return false;
+        }
+    }
+
+    /**
+     * Resets the dropdown values to the initial values
+     * @returns {void}
+     */
+    function resetDropdownValues(username, newRole, initialValue){
+         // Get the list items inside the ul element
+         const listItems = groupMembersListSettings.querySelectorAll("li");
+         listItems.forEach((listItem) => {
+             // Find the Span and Select elements inside the list item
+             const usernameSpan = listItem.querySelector("span");
+             const roleSelect = listItem.querySelector(".role-dropdown");
+
+             // Get the username from the Span element
+             const nameForElement = usernameSpan.textContent;
+
+             // Check if the username matches the target username
+             if (nameForElement === username) {
+                 // Set the Select element value to the initial value
+                 roleSelect.value = initialValue;
+             }
+         });
     }
 
     /**
      * Hides the leave group button if the user is the owner of the group
      * @returns {void}
      */
-    function hideLeaveIfOwner() {;
+    function hideLeaveIfOwner() {
         if (LoggedInUsername === GroupOwner){
             leaveGroupButton.style.display = "none";
         }

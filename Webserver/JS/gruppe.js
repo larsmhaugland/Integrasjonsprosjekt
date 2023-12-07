@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 document.addEventListener("DOMContentLoaded", function () {
     // DOM elements
     const groupMembersList = document.querySelector("#group-members-list");
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var groupID;
 
     
-    onPageReloadGroup()
+    onPageReloadGroup();
 
     // Add a click event listener to the button
     editButton.addEventListener("click", function () {
@@ -54,12 +55,12 @@ document.addEventListener("DOMContentLoaded", function () {
             groupNamePass = groupName;
             groupNameElement.textContent = "Instillinger for: " + groupName;
             await fetchGroupMembers(groupID);
-            displayEditIfOwnerOrAdmin()
+            displayEditIfOwnerOrAdmin();
         } else {
             alert("No groupID was passed to the groupSettings.html page");
             window.location.href = redirectURL;
         }
-    };
+    }
 
    /**
     * Function to get the group name from the database by making the API call. 

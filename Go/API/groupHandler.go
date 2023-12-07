@@ -38,22 +38,22 @@ func GroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch parts[2] {
 	case "members":
 		GroupMemberBaseHandler(w, r)
-		break
+
 	case "schedule":
 		GroupScheduleBaseHandler(w, r)
-		break
+
 	case "shopping":
 		GroupShoppingBaseHandler(w, r)
-		break
+
 	case "new":
 		GroupNewHandler(w, r)
-		break
+
 	case "deleteGroup":
 		DeleteGroup(w, r)
-		break
+
 	case "groupName":
 		GetGroupName(w, r)
-		break
+
 	case "leaveGroup":
 		LeaveGroup(w, r)
 
@@ -81,7 +81,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, "Could not get the group", http.StatusInternalServerError)
 		}
-		
+
 		//Remove image from server
 		ImagePath := "/UsrImages/"
 		if r.Host == "localhost:8080" {
@@ -120,7 +120,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		//Delete the chat and group from Firebase
+		// Delete the chat and group from Firebase
 		err = Firebase.DeleteCacheChat(group.Chat)
 		if err != nil {
 			http.Error(w, "Could not delete the group chat from cache", http.StatusInternalServerError)
@@ -156,6 +156,9 @@ func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 
 		if len(group.Members) == 0 {
 			err = Firebase.DeleteCacheChat(group.Chat)
+			if err != nil {
+				http.Error(w, "Could not delete the group chat", http.StatusInternalServerError)
+			}
 			err = Firebase.DeleteCacheGroup(groupID)
 			if err != nil {
 				http.Error(w, "Could not delete the group", http.StatusInternalServerError)
@@ -233,16 +236,15 @@ func GroupMemberBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		GroupMemberGetHandler(w, r)
-		break
+
 	case http.MethodPost:
 		GroupMemberPostHandler(w, r)
-		break
+
 	case http.MethodDelete:
 		GroupMemberDeleteHandler(w, r)
-		break
+
 	case http.MethodPatch:
 		GroupMemberPatchHandler(w, r)
-		break
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -254,6 +256,9 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	newRole := r.URL.Query().Get("newRole")
 	groupID := r.URL.Query().Get("groupID")
+	log.Println("Username: ", username)
+	log.Println("New role: ", newRole)
+	log.Println("GroupID: ", groupID)
 	if username == "" || newRole == "" || groupID == "" {
 		http.Error(w, "Error; Could not parse query parameters", http.StatusBadRequest)
 		return
@@ -329,16 +334,15 @@ func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		GroupScheduleGetHandler(w, r)
-		break
+
 	case http.MethodPost:
 		GroupSchedulePostHandler(w, r)
-		break
+
 	case http.MethodDelete:
 		GroupScheduleDeleteHandler(w, r)
-		break
+
 	case http.MethodPatch:
 		GroupSchedulePatchHandler(w, r)
-		break
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
@@ -402,7 +406,6 @@ func GroupSchedulePostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-
 func GroupScheduleDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
@@ -415,16 +418,15 @@ func GroupShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		GroupShoppingGetHandler(w, r)
-		break
+
 	case http.MethodPost:
 		GroupShoppingPostHandler(w, r)
-		break
+
 	case http.MethodDelete:
 		GroupShoppingDeleteHandler(w, r)
-		break
+
 	case http.MethodPatch:
 		GroupShoppingPatchHandler(w, r)
-		break
 	default:
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return

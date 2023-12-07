@@ -1,7 +1,9 @@
+/* jshint esversion: 8 */
 //Global variables and constants:
 let MAXRESULTS = 12;
 let page = 0;
 let Recipes = [];
+let Categories = [];
 
 
 //DOM elements:
@@ -15,9 +17,14 @@ let recipeType = document.querySelector("#recipe-type-url");
 let submitRecipeBtn = document.querySelector("#submit-new-recipe");
 let searchField = document.querySelector("#search-bar");
 let imageInput = document.querySelector("#recipe-image");
+let ingredientInputBtn = document.querySelector("#add-ingredient-btn");
+let ingredientInput = document.querySelector("#recipe-ingredient");
+let quantityInput = document.querySelector("#recipe-ingredient-qty");
+let instructionInputBtn = document.querySelector("#add-instruction-btn");
+let instructionInput = document.querySelector("#recipe-instructions");
 
 //Event listeners:
-newRecipeBtn.addEventListener("click", function (event){
+newRecipeBtn.addEventListener("click", function (){
     if(sessionStorage.getItem("loggedIn") !== "true"){
         alert("Du må logge inn for å legge til oppskrifter");
         return;
@@ -29,6 +36,7 @@ newRecipeBtn.addEventListener("click", function (event){
     if (Groups === null){
         Groups = [];
     }
+    //Add groups to popup
     for(let i = 0; i < Groups.length; i++){
         let group = Groups[i];
         let listItem = document.createElement("li");
@@ -46,21 +54,110 @@ newRecipeBtn.addEventListener("click", function (event){
         listItem.appendChild(label);
         groupDiv.appendChild(listItem);
     }
+
+    //Clear categories
+    let categoryDiv = document.querySelector("#category-checkboxes");
+    categoryDiv.innerHTML = "";
+    //Add exclusive categories
+    let exclusiveCategories = document.createElement("div");
+    exclusiveCategories.setAttribute("class", "exclusive-categories");
+    for(const ex in Categories.exclusive){
+        //Add category name
+        let categoryName = document.createElement("h3");
+        categoryName.appendChild(document.createTextNode(ex));
+        exclusiveCategories.appendChild(categoryName);
+        //Add radio buttons
+        for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
+            let category = exclusiveCategoriesKey;
+            let listItem = document.createElement("li");
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "radio");
+            checkbox.setAttribute("id", "category_" + category);
+            checkbox.setAttribute("name", "category_" + ex);
+            checkbox.setAttribute("value", category);
+            checkbox.setAttribute("class", "category-checkbox");
+            let label = document.createElement("label");
+            label.setAttribute("for", "category_" + category);
+            label.setAttribute("class", "category-label");
+            label.appendChild(document.createTextNode(category));
+            listItem.appendChild(checkbox);
+            listItem.appendChild(label);
+            exclusiveCategories.appendChild(listItem);
+        }
+    }
+    //Add non-exclusive categories
+    let nonExclusiveCategories = document.createElement("div");
+    nonExclusiveCategories.setAttribute("class", "non-exclusive-categories");
+    let nonExclusiveCategoriesName = document.createElement("h3");
+    nonExclusiveCategoriesName.textContent = "Øvrige kategorier";
+    nonExclusiveCategories.appendChild(nonExclusiveCategoriesName);
+    for(let i = 0; i < Categories.categories.length; i++){
+        let category = Categories.categories[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        nonExclusiveCategories.appendChild(listItem);
+    }
+    //Add allergies
+    let allergyCategories = document.createElement("div");
+    allergyCategories.setAttribute("class", "allergy-categories");
+    let allergyCategoriesName = document.createElement("h3");
+    allergyCategoriesName.textContent = "Allergier";
+    allergyCategories.appendChild(allergyCategoriesName);
+    for(let i = 0; i < Categories.allergies.length; i++){
+        let category = Categories.allergies[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        allergyCategories.appendChild(listItem);
+    }
+    categoryDiv.appendChild(exclusiveCategories);
+    categoryDiv.appendChild(nonExclusiveCategories);
+    categoryDiv.appendChild(allergyCategories);
+
+    //Clear preview image
     let recipeImage = document.querySelector("#recipe-image-preview-img");
     recipeImage.style.display = "none";
+    //Display popup
     newRecipePopup.style.display = "block";
 });
-closeRecipePopup.addEventListener("click", function (event){
+
+closeRecipePopup.addEventListener("click", function (){
+    //Clear popup inputs
     let inputs = document.querySelectorAll("#new-recipe-popup input");
     for (let i = 0; i < inputs.length; i++){
         inputs[i].value = "";
     }
     newRecipePopup.style.display = "none";
 });
-recipeDifficulty.addEventListener("input", function (event){
+
+//Update difficulty text when slider is moved
+recipeDifficulty.addEventListener("input", function (){
     recipeDifficultyText.innerHTML = recipeDifficulty.value;
 });
-recipeType.addEventListener("input", function (event){
+
+//Toggle between URL and manual recipe
+recipeType.addEventListener("input", function (){
     if (recipeType.checked){
         document.querySelector("#url-recipe").style.display = "block";
         document.querySelector("#manual-recipe").style.display = "none";
@@ -69,19 +166,29 @@ recipeType.addEventListener("input", function (event){
         document.querySelector("#manual-recipe").style.display = "block";
     }
 });
+
+//Submit new recipe
 submitRecipeBtn.addEventListener("click", function(event) {
     event.preventDefault();
     newRecipe();
 });
-searchField.addEventListener("input", function (event){
+
+//Search recipes
+searchField.addEventListener("input", function (){
+    //Reset page
     page = 0;
+    //Search recipes
     let searchlist = searchRecipes(this.value);
+    //Filter recipes
     let filteredList = filterRecipes(searchlist);
+    //Display results
     displayResults(filteredList);
+    //Display pagination
     displayPages();
 });
 
-imageInput.addEventListener("change", function (event){
+imageInput.addEventListener("change", function (){
+    //Display preview image
     if(this.files.length === 1){
         let image = document.querySelector("#recipe-image-preview-img");
         image.setAttribute("src", URL.createObjectURL(this.files[0]));
@@ -92,10 +199,9 @@ imageInput.addEventListener("change", function (event){
         image.style.display = "none";
     }
 });
-let ingredientInputBtn = document.querySelector("#add-ingredient-btn");
-let ingredientInput = document.querySelector("#recipe-ingredient");
-let quantityInput = document.querySelector("#recipe-ingredient-qty");
+
 ingredientInput.addEventListener("keydown", (event)=> {
+    //Add ingredient on enter
     if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
         event.preventDefault();
         addNewItemToList("ingredients");
@@ -104,6 +210,7 @@ ingredientInput.addEventListener("keydown", (event)=> {
     }
 });
 quantityInput.addEventListener("keydown", (event)=> {
+    //Add ingredient on enter
     if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
         event.preventDefault();
         addNewItemToList("ingredients");
@@ -112,6 +219,7 @@ quantityInput.addEventListener("keydown", (event)=> {
     }
 });
 ingredientInputBtn.addEventListener("click", (event)=> {
+    //Add ingredient on button click
     if (ingredientInput.value !== "" && quantityInput.value !== "") {
         event.preventDefault();
         addNewItemToList("ingredients");
@@ -120,9 +228,9 @@ ingredientInputBtn.addEventListener("click", (event)=> {
     }
 });
 
-let instructionInputBtn = document.querySelector("#add-instruction-btn");
-let instructionInput = document.querySelector("#recipe-instructions");
+
 instructionInput.addEventListener("keydown", (event)=> {
+    //Add instruction on enter
     if (event.key === "Enter" && instructionInput.value !== "") {
         event.preventDefault();
         addNewItemToList("instructions");
@@ -130,6 +238,7 @@ instructionInput.addEventListener("keydown", (event)=> {
     }
 });
 instructionInputBtn.addEventListener("click", (event)=> {
+    //Add instruction on button click
     if (instructionInput.value !== "") {
         event.preventDefault();
         addNewItemToList("instructions");
@@ -137,20 +246,187 @@ instructionInputBtn.addEventListener("click", (event)=> {
     }
 });
 
-//Load recipes:
-retrieveGroups();
+window.onload = function () {
+    updateLoginStatus();
+    retrieveGroups();
+    loadRecipes();
+    getCategories();
+}
+
+function getCategories() {
+    // Get categories from API
+    fetch(API_IP + "/recipe/categories", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    }).then((response) => {
+        if (response.ok) {
+            response.json().then((data) => {
+                Categories = data;
+                displayCategoryFilters();
+            });
+        } else {
+            console.log("Error getting categories");
+        }
+    });
+}
+
+function displayCategoryFilters() {
+    let filterDiv = document.querySelector("#filter-wrapper");
+    //Clear existing filters
+    filterDiv.innerHTML = "";
+    //Add header
+    let filterHeader = document.createElement("h2");
+    filterHeader.textContent = "Filter";
+    filterDiv.appendChild(filterHeader);
+    //Add clear filters button
+    let clearFilters = document.createElement("button");
+    clearFilters.setAttribute("class", "clear-filters");
+    clearFilters.textContent = "Tøm filter";
+    clearFilters.addEventListener("click", function (event) {
+        let checkboxes = document.querySelectorAll(".category-checkbox");
+        for (let i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = false;
+        }
+        submitFilter();
+    });
+    filterDiv.appendChild(clearFilters);
+
+    // Check if categories have been loaded
+    if(Categories === null) return;
+
+    // Add exclusive category filters
+    let e = document.createElement("div");
+    e.setAttribute("class", "exclusive-categories");
+
+    for (const ex in Categories.exclusive) {
+        // Add category name
+        let categoryName = document.createElement("h3");
+        categoryName.setAttribute("class", "category-name");
+        categoryName.appendChild(document.createTextNode(ex+" "));
+        categoryName.addEventListener("click", function() {
+            // Toggle the visibility of the associated checkboxes
+            let checkboxes = categoryName.nextElementSibling; // Assumes checkboxes are the next sibling
+            checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
+            categoryName.classList.toggle("active");
+        });
+        e.appendChild(categoryName);
+
+        // Add checkboxes container
+        let categoryCheckboxes = document.createElement("div");
+        categoryCheckboxes.setAttribute("class", "category-div");
+
+        // Replace the following loop with your existing code for radio buttons
+        for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
+            let category = exclusiveCategoriesKey;
+            let listItem = document.createElement("li");
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "radio");
+            checkbox.setAttribute("id", "category_" + category);
+            checkbox.setAttribute("name", "category_" + ex);
+            checkbox.setAttribute("value", category);
+            checkbox.setAttribute("class", "category-checkbox");
+            checkbox.addEventListener("input", function (event) {
+                submitFilter();
+            });
+            let label = document.createElement("label");
+            label.setAttribute("for", "category_" + category);
+            label.setAttribute("class", "category-label");
+            label.appendChild(document.createTextNode(category));
+            listItem.appendChild(checkbox);
+            listItem.appendChild(label);
+            categoryCheckboxes.appendChild(listItem);
+        }
+        e.appendChild(categoryCheckboxes);
+    }
+
+    // Add non-exclusive categories
+    let nExCategoriesWrapper = document.createElement("div");
+    nExCategoriesWrapper.setAttribute("class", "non-exclusive-categories");
+    let nExName = document.createElement("h3");
+    nExName.setAttribute("class", "category-name");
+    nExName.textContent = "Øvrige kategorier ";
+    nExName.addEventListener("click", function() {
+        // Toggle the visibility of the associated checkboxes
+    let checkboxes = nExName.nextElementSibling; // Assumes checkboxes are the next sibling
+        checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
+        nExName.classList.toggle("active");
+    });
+    nExCategoriesWrapper.appendChild(nExName);
+    let nExCategories = document.createElement("div");
+    nExCategories.setAttribute("class", "category-div");
+    for (let i = 0; i < Categories.categories.length; i++) {
+        let category = Categories.categories[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        checkbox.addEventListener("input", function (event) {
+            submitFilter();
+        });
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        nExCategories.appendChild(listItem);
+    }
+    nExCategoriesWrapper.appendChild(nExCategories);
+
+    // Add allergies
+    let allergyWrapper = document.createElement("div");
+    allergyWrapper.setAttribute("class", "allergy-categories");
+    let allergyCategoriesName = document.createElement("h3");
+    allergyCategoriesName.setAttribute("class", "category-name");
+    allergyCategoriesName.textContent = "Allergener ";
+    allergyCategoriesName.addEventListener("click", function() {
+        // Toggle the visibility of the associated checkboxes
+        let checkboxes = allergyCategoriesName.nextElementSibling; // Assumes checkboxes are the next sibling
+        checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
+        allergyCategoriesName.classList.toggle("active");
+    });
+    allergyWrapper.appendChild(allergyCategoriesName);
+    let allergyCategories = document.createElement("div");
+    allergyCategories.setAttribute("class", "category-div");
+    for (let i = 0; i < Categories.allergies.length; i++) {
+        let category = Categories.allergies[i];
+        let listItem = document.createElement("li");
+        let checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", "category_" + category);
+        checkbox.setAttribute("name", "category_" + category);
+        checkbox.setAttribute("value", category);
+        checkbox.setAttribute("class", "category-checkbox");
+        checkbox.addEventListener("input", function (event) {
+            submitFilter();
+        });
+        let label = document.createElement("label");
+        label.setAttribute("for", "category_" + category);
+        label.setAttribute("class", "category-label");
+        label.appendChild(document.createTextNode(category));
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        allergyCategories.appendChild(listItem);
+    }
+    allergyWrapper.appendChild(allergyCategories);
+
+    filterDiv.appendChild(e);
+    filterDiv.appendChild(nExCategoriesWrapper);
+    filterDiv.appendChild(allergyWrapper);
+}
 
 
 async function loadRecipes(){
-    if (!await checkAuthToken()) return;
+    if (!await checkLoginStatus()) return;
     await getRecipes(Recipes);
     await displayResults(Recipes);
     displayPages();
 }
-
-loadRecipes();
-
-
 
 function addNewItemToList(list){
     let type = "";
@@ -164,8 +440,6 @@ function addNewItemToList(list){
     }
     else return;
 
-
-
     let li = document.createElement("li");
     if(type === "ingredient") {
         let newItem = document.querySelector("#recipe-ingredient").value;
@@ -176,7 +450,7 @@ function addNewItemToList(list){
         li.setAttribute("data-qty", quantity);
         li.textContent = newItem;
         //create a checkbox for the list item
-        let removeItem = document.createElement("a")
+        let removeItem = document.createElement("a");
         let removeIcon = document.createElement("img");
         removeIcon.setAttribute("src", "../Images/trashcan.svg");
         removeIcon.setAttribute("alt", "Slett ingrediens");
@@ -229,16 +503,12 @@ async function newRecipe() {
         return;
     }
 
-
     if (imageInput.files.length === 1) {
         // Send the form data to the API
         try {
             filename = await uploadImage(imageInput.files[0], function (response) {
-                console.log("Kom meg hit jeg");
-                console.log(response);
                 filename = response.filename;
             });
-            console.log("Image uploaded");
         } catch (error) {
             console.log(error);
             alert("Det skjedde en feil med opplasting av bildet");
@@ -255,16 +525,23 @@ async function newRecipe() {
         }
     }
 
+    let categories = [];
+    let categoryCheckboxes = document.querySelectorAll("input.category-checkbox");
+    for (let i = 0; i < categoryCheckboxes.length; i++) {
+        if (categoryCheckboxes[i].checked) {
+            categories.push(categoryCheckboxes[i].value);
+        }
+    }
     let recipe = {
         "name": name,
         "difficulty": parseInt(difficulty),
         "time": parseInt(time),
         "image": filename,
         "description": description,
+        "categories": categories,
     };
 
     if (type.checked) {
-        console.log("URL recipe");
         recipe.URL = document.querySelector("#recipe-url").value;
     } else {
         let list = document.querySelectorAll("#recipe-ingredient-list li");
@@ -286,8 +563,6 @@ async function newRecipe() {
         "groups": groups,
     };
 
-    console.log(data.recipe);
-
     try {
         const recipeResponse = await fetch(API_IP + "/recipe/", {
             method: "POST",
@@ -307,32 +582,67 @@ async function newRecipe() {
     location.reload();
 }
 
-//Display the pages
+// Display the pages
 function displayPages() {
+    // Initialize pag variable
     let pag = [];
+
+    // Check if the search field is empty
     if (searchField.value === "") {
+        // Check if there is only one page or fewer
         if (Math.ceil(Recipes.length / MAXRESULTS) <= 1) {
-            return
+            return; // No need to display pagination
         }
+        // Calculate pagination for all recipes
         pag = pagination(page, Math.ceil(Recipes.length / MAXRESULTS));
-    }
-    else {
-        if (Math.ceil(Recipes.length / MAXRESULTS) <= 1) {
-            return
+    } else {
+        // Check if there is only one page or fewer for filtered recipes
+        if (Math.ceil(filterRecipes(searchRecipes(searchField.value)).length / MAXRESULTS) <= 1) {
+            return; // No need to display pagination
         }
-        pag = pagination(page, Math.ceil(filterRecipes(searchRecipes(searchField.value)) / MAXRESULTS));
+        // Calculate pagination for filtered recipes
+        pag = pagination(page, Math.ceil(filterRecipes(searchRecipes(searchField.value)).length / MAXRESULTS));
     }
 
+    // Get the pagination div element
     let paginationDiv = document.querySelector("#recipe-nav");
-    paginationDiv.innerHTML = "";
-    for (let i = 0; i < pag.length; i++) {
+    paginationDiv.innerHTML = ""; // Clear existing pagination buttons
+
+    // Check if pagination buttons are more than 3 to decide whether to show previous and next buttons
+    if (pag.length > 3) {
+        // Display previous button if not on the first page
+        if (page > 0) {
+            addButton(paginationDiv, "<", "changePage(" + (page - 1) + ")");
+        }
+
+        // Display pagination buttons
+        for (let i = 0; i < pag.length; i++) {
+            addButton(paginationDiv, pag[i], "changePage(" + (pag[i] - 1) + ")", i === page, pag[i] === "...");
+        }
+
+        // Display next button if not on the last page
+        if (page < pag.length - 1) {
+            addButton(paginationDiv, ">", "changePage(" + (page + 1) + ")");
+        }
+    } else {
+        // Display pagination buttons without previous and next buttons
+        for (let i = 0; i < pag.length; i++) {
+            addButton(paginationDiv, pag[i], "changePage(" + (pag[i] - 1) + ")", i === page, pag[i] === "...");
+        }
+    }
+
+    // Helper function to create and append a button to the pagination div
+    function addButton(parent, text, onclick, isActive = false, isDisabled = false) {
         let button = document.createElement("button");
         button.setAttribute("class", "pagination-button");
-        button.setAttribute("onclick", "changePage(" + i + ")");
-        button.textContent = pag[i];
-        paginationDiv.appendChild(button);
+        button.setAttribute("onclick", onclick);
+        button.textContent = text;
+        if (isActive) button.classList.add("active");
+        if (isDisabled) button.classList.add("disabled");
+        parent.appendChild(button);
     }
 }
+
 
 //Change page
 function changePage(p) {
@@ -340,9 +650,9 @@ function changePage(p) {
     for (let i = 0; i < pages.length; i++) {
         pages[i].classList.remove("active");
     }
-    pages[p].classList.add("active");
     page = p;
     displayResults(filterRecipes(searchRecipes(searchField.value)));
+    displayPages();
 }
 
 //Get which pages that should be displayed
@@ -395,11 +705,37 @@ function searchRecipes(text) {
 
 function submitFilter() {
     page = 0;
+    displayResults(filterRecipes(searchRecipes(searchField.value)));
 }
 
 function filterRecipes(list) {
-    //TODO: Implement filter
-    return list;
+    let checkboxes = document.querySelectorAll(".category-checkbox");
+    let checked = [];
+    for (let i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            checked.push(checkboxes[i].value);
+        }
+    }
+    if (checked.length === 0) {
+        return list;
+    }
+    let filteredList = [];
+    for (let i = 0; i < list.length; i++) {
+        let recipe = list[i];
+        let categories = recipe.categories;
+        if(categories === null) continue;
+        let match = true;
+        for (let j = 0; j < checked.length; j++) {
+            if (!categories.includes(checked[j])) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            filteredList.push(recipe);
+        }
+    }
+    return filteredList;
 }
 
 function isDuplicate(list, item) {
@@ -433,7 +769,7 @@ async function displayResults(filteredList){
         //recipeBlock.classList.add("results");
         recipeA.classList.add("result");
         recipeA.setAttribute("href", "Oppskrift/index.html?id=" + recipe.documentID);
-        recipeA.setAttribute("id", recipe.documentID)
+        recipeA.setAttribute("id", recipe.documentID);
 
         let recipeBlock = document.createElement("div");
         recipeBlock.setAttribute("class", "result-text");
@@ -445,7 +781,7 @@ async function displayResults(filteredList){
         if (recipe.URL !== "" && recipe.URL !== null) {
             let recipeURL = document.createElement("a");
             recipeURL.setAttribute("href", recipe.URL);
-            recipeURL.setAttribute("target", "_blank")
+            recipeURL.setAttribute("target", "_blank");
             recipeURL.setAttribute("class", "result-url");
             recipeURL.textContent = recipe.URL;
             recipeBlock.appendChild(recipeURL);
@@ -470,7 +806,6 @@ async function displayResults(filteredList){
                 recipeImage.setAttribute("class", "result-image");
                 recipeA.appendChild(recipeImage);
             });
-
         }
         recipeA.appendChild(recipeBlock);
         resultDiv.appendChild(recipeA);

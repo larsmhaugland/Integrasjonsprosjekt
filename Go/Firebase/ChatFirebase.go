@@ -175,7 +175,7 @@ func AddNewChat(chat Chat) error {
 	return nil
 }
 
-// RemoveMemberFromChat removes the member with the specified username from the chat with the specified chatID
+// RemoveMemberFromChat removes the member with the specified usernames from the chat with the specified chatID
 func RemoveMemberFromChat(chatID string, usernames []string) error {
 
 	ctx := context.Background()
@@ -207,7 +207,11 @@ func RemoveMemberFromChat(chatID string, usernames []string) error {
 			currentMembers = append(currentMembers, member)
 		} else {
 			// Remove the chat from the members document
-			RemoveChatFromMember(member, chatID)
+			err := RemoveChatFromMember(member, chatID)
+			if err != nil {
+				log.Println("Error deleting member from chat", err)
+				return err
+			}
 		}
 	}
 
@@ -263,7 +267,11 @@ func AddMemberToChat(chatID string, username string) ([]string, error) {
 	}
 
 	// Add the chat to the members document
-	AddChatToUser(username, chatID)
+	err = AddChatToUser(username, chatID)
+	if err != nil {
+		log.Println("Error adding chat to user", err)
+		return nil, err
+	}
 
 	// Update the cache with the new data
 	ChatCache[chatData.DocumentID] = CacheData{chatData, time.Now()}
@@ -298,7 +306,7 @@ func DeleteChat(chatID string) error {
 		return err
 	}
 
-	// Reference to the specififed chat document
+	// Reference to the specified chat document
 	chatRef := client.Collection("chat").Doc(chatID)
 
 	// Delete the document

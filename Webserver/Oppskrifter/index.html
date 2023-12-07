@@ -37,7 +37,6 @@
             <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
             <h3>Passord</h3>
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
-            <h3>Husk meg <input type="checkbox" name="remember" id="remember"></h3>
             <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
             <button type="button" class="btn" id="log-in-submit">Logg inn</button>
             <br><br>
@@ -86,8 +85,7 @@
                     <p id="difficulty-value-label" style="display: inline;">3</p>
                     <label for="category-checkboxes"><br>Kategorier:<br></label>
                     <div id="category-checkboxes">
-                        <p>Innmat kommer</p>
-                        <!-- Need to find out which categories we should have -->
+                        <!-- Category checkboxes get appended here -->
                     </div>
                     <label for="recipe-type-url"><br>Vil du legge til oppskrift med kun URL? </label>
                     <input type="checkbox" id="recipe-type-url">
@@ -98,9 +96,7 @@
                             <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
                             <button id="add-ingredient-btn">Legg til</button>
                             <ul id="recipe-ingredient-list">
-                                <!-- Ingredients get appended here
-                                TODO: ENDRE PÅ INGREDIENSER
-                                -->
+                                <!-- Ingredients get appended here -->
                             </ul>
                         </div>
                         <div id="new-recipe-instructions">
@@ -108,9 +104,7 @@
                             <input type="text" id="recipe-instructions" placeholder="Instruksjoner...">
                             <button id="add-instruction-btn">Legg til</button>
                             <ol id="recipe-instructions-list">
-                                <!-- Instructions get appended here
-                                TODO: ENDRE PÅ INSTRUKSJONER
-                                 -->
+                                <!-- Instructions get appended here -->
                             </ol>
                         </div>
                     </div>
@@ -138,9 +132,8 @@
 
         <div class="recipe-wrapper">
 
-            <div class="filter-wrapper">
-                <h2>Filter</h2>
-                <p>W.I.P.</p>
+            <div class="filter-wrapper" id="filter-wrapper">
+                <!--- Filter gets appended here -->
             </div>
 
             <div class="recipe-header-container">

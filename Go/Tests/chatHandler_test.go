@@ -240,10 +240,27 @@ func TestChatMessagesGetHandler(t *testing.T) {
 func TestChatMembersDeleteHandler(t *testing.T) {
 	// Assume the chatID and username for testing
 	chatID := "testchat"
-	username := "testuser"
+	usernames := []string{"testuser"}
+
+	// Struct to represent the body structure
+	type RemoveMembersRequestBody struct {
+		ChatID    string   `json:"chatID"`
+		Usernames []string `json:"usernames"`
+	}
+
+	requestBody := RemoveMembersRequestBody{
+		ChatID:    chatID,
+		Usernames: usernames,
+	}
+
+	// Encode the test message as JSON
+	jsonData, err := json.Marshal(requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Create a request with the chatID and username parameters
-	req, err := http.NewRequest("DELETE", "/chat/members?chatID="+chatID+"&username="+username, nil)
+	req, err := http.NewRequest("POST", "/chat/membersDelete", bytes.NewBuffer(jsonData))
 	if err != nil {
 		t.Fatal(err)
 	}

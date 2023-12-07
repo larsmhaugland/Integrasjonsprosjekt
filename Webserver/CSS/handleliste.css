@@ -19,7 +19,6 @@ main{
 input{
     padding-top: 1%;
     font-size: 20px;
-    padding-left: 1%;
 }
 
 select{
@@ -101,7 +100,7 @@ li{
 }
 
 #newqttxt{
-    width: 40px;
+    width: 60px;
 }
 
 #finished-list{
