@@ -116,8 +116,12 @@ nav{
 .log-btn:hover::before{
    opacity: 1;
 }
-#log-out-btn{
-    display:none
+#log-out-btn {
+    display:block;
+}
+
+#log-in-btn {
+    display: none;
 }
 /*TODO: FIX SO THAT YOU DON'T SEE "INNLOGGING" FLICKER EVERYTIME YOU REFRESH THE PAGE*/
 
