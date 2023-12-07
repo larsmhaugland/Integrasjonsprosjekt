@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const kalenderLink = document.querySelector("#kalender-href");
     const chatLink = document.querySelector("#chat-href");
     const LoggedInUsername = sessionStorage.getItem("username");
+    const leaveGroupButton = document.querySelector("#leave-group");
+
     let groupNamePass;
     let GroupOwner;
     const Administrators = [];
@@ -39,6 +41,11 @@ document.addEventListener("DOMContentLoaded", function () {
     chatLink.addEventListener("click", function () {
         const url = `../Chat/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
+    });
+
+    // Leave the group when the leaveGroupButton is clicked
+    leaveGroupButton.addEventListener("click", function(){
+        leaveGroup(groupID);
     });
 
     /**
@@ -156,6 +163,10 @@ document.addEventListener("DOMContentLoaded", function () {
     function displayEditIfOwnerOrAdmin(){
         if (LoggedInUsername === GroupOwner || Administrators.includes(LoggedInUsername)){
             editButton.style.display = "block";
+            leaveGroupButton.style.display = "none";
+        } else {
+            leaveGroupButton.style.display = "block";
+            editButton.style.display = "none";
         }
     }
     
