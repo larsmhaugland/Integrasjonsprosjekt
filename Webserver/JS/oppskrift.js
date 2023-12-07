@@ -300,6 +300,7 @@ function editRecipe() {
     }
     //Get categories
     let categories = [];
+    let categoriesDOM = document.querySelectorAll(".category-checkbox");
     for(let i = 0; i < categoriesDOM.length; i++){
         if(categoriesDOM[i].checked){
             categories.push(categoriesDOM[i].value);
