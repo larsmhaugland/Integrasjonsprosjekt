@@ -157,6 +157,11 @@ nav{
     z-index: 2;
     position:fixed;
 }
+
+#password-validation-message{
+    color: red;
+}
+
 .register-btn{
     font-size: 2em;
     color:white;

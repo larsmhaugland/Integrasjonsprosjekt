@@ -136,6 +136,29 @@ registerTextPoppup.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("register-popup").style.display = "block";
 });
 
+// Get password inputs
+const passwordInput = document.querySelector("#password-reg");
+const passwordConfirmInput = document.querySelector("#password-reg-conf");
+const passwordValidationMessage = document.querySelector("#password-validation-message");
+
+passwordInput.addEventListener("input", updatePasswordValidationMessages());
+
+// Function to update password validation messages
+function updatePasswordValidationMessages() {
+    const password = passwordInput.value;
+    const minLength = 8; // Minimum password length
+    console.log("I amchecking here");
+    // Validate password length
+    const lengthMessage = password.length >= minLength ? "" : `Password should be at least ${minLength} characters long.`;
+
+    // Validate if the password contains a number
+    const hasNumber = /\d/.test(password);
+    const numberMessage = hasNumber ? "" : "Password should contain at least one number.";
+
+    // Display validation messages
+    passwordValidationMessage.textContent = lengthMessage + "\n" + numberMessage;
+}
+
 window.onload = function () {
     if(!checkLoginStatus() && !window.location.hostname.includes("localhost")){
         if(!oppskriftside && !hjemmeside) {
@@ -260,10 +283,7 @@ function registerUser(){
     let passwordConf = document.querySelector("#password-reg-conf").value;
     let name = document.querySelector("#name-reg").value;
     let passwordMismatch = document.querySelector("#password-mismatch");
-    if (username === "" || password === "" || passwordConf === "" || name === ""){
-        alert("Alle feltene må fylles ut");
-        return;
-    }
+    
     if (password !== passwordConf){
         passwordMismatch.style.display = "block";
         console.log("Passwords do not match");

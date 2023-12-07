@@ -88,23 +88,24 @@
     <!--Pop-up register-->
     <div id="register-popup" class="popup-wrapper">
         <form id="register-user-form" class="popup-content">
-            <a id="close-register-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
-            <div class="name"><h3>Navn</h3></div>
-            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" class="name" required>
-            <h3>Brukernavn</h3>
-            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
-            <a id="username-taken" class="error">Brukernavnet er opptatt</a>
-            <h3>Passord</h3>
-            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
-            <h3>Gjenta passord</h3>
-            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
-            <a id="password-mismatch" class="error">Passordene er ikke like</a>
-            <br><br>
-            <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
-            <br><br>
-            <h3>har du bruker allerede?</h3>
-            <button type="button" class="btn" id="login-switch-btn">Logg inn</button>
-
+            <div class="form-content">
+                <a id="close-register-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
+                <label for="name-reg">Navn</label>
+                <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
+                <label for="username-reg">Brukernavn</label>
+                <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
+                <a id="username-taken" class="error">Brukernavnet er opptatt</a>
+                <label for="password-reg">Passord</label>
+                <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
+                <span id="password-validation-message" class="error"></span>
+                <label for="password-reg-conf">Gjenta Passord</label>
+                <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
+                <a id="password-mismatch" class="error">Passordene er ikke like</a>
+                <br><br>
+                <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+                <br><br>
+                <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+            </div>
         </form>
     </div>
 
