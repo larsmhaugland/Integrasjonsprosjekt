@@ -245,9 +245,7 @@ instructionInput.addEventListener("keydown", (event)=> {
     }
 });
 instructionInputBtn.addEventListener("click", (event)=> {
-    if(event.key === "Enter"){
-        event.preventDefault();
-    }
+    event.preventDefault();
     //Add instruction on button click
     if (instructionInput.value !== "") {
         addNewItemToList("instructions");

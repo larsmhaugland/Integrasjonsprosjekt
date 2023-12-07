@@ -287,14 +287,14 @@ body{
 }
 
 #category-checkboxes :not(h3) {
-    font-weight: normal;
     display: inline;
+    font-weight: normal;
     margin-right: 10px;
+    margin-top: 10px;
     font-size: 15px;
 }
 
 #category-checkboxes input {
-    display: inline;
     width: 3%;
     margin-right: 10px;
     vertical-align: middle;
