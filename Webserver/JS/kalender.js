@@ -11,6 +11,7 @@ let closeDinnerPopup = document.querySelector("#close-dinner-popup"); // The but
 let dinnerForm = document.querySelector("#new-dinner-form"); // The form for adding a dinner
 let groupDropdown = document.querySelector("#group-dropdown"); // The dropdown for selecting a group
 let responsibleButtons = document.querySelectorAll('.btn.responsible'); // The buttons for selecting a responsible member
+let daySections = document.querySelectorAll(".day"); // The day sections in the calendar
 let currentDay; // The day selected to add information to
 let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "sondag"]; // Array of all days
 let Recipes = []; // Array containing all recipes
@@ -106,7 +107,7 @@ function resetCalendarAndSetAllDays(groupID) {
     let labels = document.querySelectorAll("label");
     let links = document.querySelectorAll("a");
     let options = document.querySelectorAll("#group-dropdown option");
-
+    let ans = document.querySelectorAll(".selectedMemberLabel");
     // Clear existing labels and links
     if (labels.length > 0) {
         labels.forEach(function (label) {
@@ -165,7 +166,6 @@ function resetCalendarAndSetAllDays(groupID) {
                         date.setHours(0, 0, 0, 0);
 
                         let div = document.getElementById(allDays[k]);
-
                         // Check if the current date matches the date in the calendar data
                         if (currentDate.getTime() === date.getTime()) {
                             setCalenderOnDate(dateData, div, j, k, groupID);
@@ -206,9 +206,8 @@ function setCalenderOnDate(dateData, div, j, k, groupID) {
 
     // Select the label element in the day's div
     let label = div.querySelector('.selectedMemberLabel');
-
     // Add a label for "responsible" to the day's div
-    label.innerHTML = "Ansvarlig: " + responsible;
+    label.textContent = "Ansvarlig: " + responsible;
     if (responsible !== "") {
         responsibleCalendar[j][k + 1] = responsible[0];
     }
@@ -353,9 +352,13 @@ function sendCalendarToServer() {
  */
 groupDropdown.addEventListener("change", async function (event) {
     console.log("Dropdown changed");
-
-    // Asynchronously fetch calendar data when the dropdown changes
-    await getCalenderData();
+    if (groupDropdown.selectedIndex === 0) {
+        location.reload();
+    }else{
+        // Asynchronously fetch calendar data when the dropdown changes
+        await getCalenderData();
+    }
+    //await getCalenderData();
 });
 
 /**
@@ -759,5 +762,4 @@ function findRecipesInCalendar(dinner) {
     console.log("No matches found");
     return null;
 }
-
 
