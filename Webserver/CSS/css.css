@@ -26,30 +26,33 @@ main{
 
 /*Header and navigation*/
 /*Navigation link styling*/
-a:link{
+
+button.nav {
     text-decoration: none;
     color: black;
     position: relative;
+    overflow: hidden; 
+    cursor: pointer;
+    background-color: #80AB82;
+    font-size: 2vw;
+    font-weight:bold;
 }
-a.nav:link::after {
+
+button.nav::before {
     content: '';
-    display: block;
-    width: 100%;
-    height: 2px;
-    background-color: black;
     position: absolute;
     bottom: 0;
-    left: 0;
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform 0.3s;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: black;
+    transition: width 0.3s ease-out, left 0.3s ease-out;
+    transform: translateX(-50%);
+    transform-origin: 50% 50%; 
 }
-a.nav:link:hover::after,
-a.nav#current-page::after{
-    transform: scaleX(1); /* When hovering, expand the line to 100% width */
-}
-a:visited{
-    color:black;
+
+button.nav:hover::before {
+    width: 100%;
 }
 
 /*Flex display of navigation*/

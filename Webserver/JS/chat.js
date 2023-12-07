@@ -1,7 +1,7 @@
 /* jshint esversion: 8 */
 document.addEventListener("DOMContentLoaded", function () {
 
-    // DOM elements
+    /****************** DOM ELEMENTS ******************/
     const createChatCloseButton = document.querySelector("#close-chat-popup");
     const createChatOpenButton = document.querySelector("#create-chat-button");
     const createChatPopup = document.querySelector("#chat-popup");
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
 
 
-    // variables
+    /****************** Variables ******************/
     var username;
     let activeChatID = "";
     let chatOwner;
@@ -46,8 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function is called when the page is reloaded
     onPageRelod();
     
+
     /***************** Websocket event listeners ******************/
-    
+
     // Handle WebSocket error event
     socket.addEventListener("error", (error) => {
         console.error("WebSocket connection error:", error);
@@ -69,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addMessageWithDateToList(formattedMessage);
     });
 
-    /***************  Event listeners ******************/
+    /****************************  Event listeners ************************************/
 
     // Event listener to open the create chat popup when the create chat button is clicked
     createChatOpenButton.addEventListener("click", function () {
@@ -256,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    /***************  Functions ******************/
+    /****************************  Functions ********************************/
 
     /**
      * Function that runs whenever the page is loaded/reloaded. Displays the user chats if the user is logged in.

@@ -1,9 +1,5 @@
 /* jshint esversion: 8 */
-/*
-    POP-UP WINDOW
-    Log in
-*/
-//TEST
+
 let API_IP = "";
 let IMAGEDIR = "Images/";
 const API_LOCAL = "http://localhost:8080";
@@ -15,6 +11,65 @@ if (window.location.hostname === "localhost"){
     API_IP = "https://" + window.location.hostname + ":8080";
     IMAGEDIR = "UsrImages/";
 }
+
+const chatLinkButton = document.querySelector("#Chat-link");
+const kalenderLinkButton = document.querySelector("#Kalender-link");
+const oppskriftLinkButton = document.querySelector("#Oppskrift-link");
+const handlelisteLinkButton = document.querySelector("#Handleliste-link");
+const hjemmeside = window.location.href.includes("Webserver/index.html");
+
+chatLinkButton.addEventListener("click", (event) => {
+    const loginStatus = sessionStorage.getItem("loggedIn");
+    if (loginStatus === "true") {
+        if (hjemmeside){
+            window.location.href = "Chat/index.html";
+        } else {
+            window.location.href = "../Chat/index.html";
+        }
+    } else {
+        alert("Du må logge inn for å få tilgang til denne siden");
+    }
+});
+
+kalenderLinkButton.addEventListener("click", (event) => {
+    const loginStatus = sessionStorage.getItem("loggedIn");
+    if (loginStatus === "true") {
+        if (hjemmeside){
+            window.location.href = "Kalender/index.html";
+        } else {
+            window.location.href = "../Kalender/index.html";
+        }
+    } else {
+        alert("Du må logge inn for å få tilgang til denne siden");
+    }
+});
+
+oppskriftLinkButton.addEventListener("click", (event) => {
+    const loginStatus = sessionStorage.getItem("loggedIn");
+    if (loginStatus === "true") {
+        if (hjemmeside){
+            window.location.href = "Oppskrifter/index.html";
+        } else {
+            window.location.href = "../Oppskrifter/index.html";
+        }
+    } else {
+        alert("Du må logge inn for å få tilgang til denne siden");
+    }
+});
+
+handlelisteLinkButton.addEventListener("click", (event) => {
+    const loginStatus = sessionStorage.getItem("loggedIn");
+    if (loginStatus === "true") {
+        if (hjemmeside){
+            window.location.href = "Handleliste/index.html";
+        } else {
+            window.location.href = "../Handleliste/index.html";
+        }
+    } else {
+        alert("Du må logge inn for å få tilgang til denne siden");
+    }
+});
+
 
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
