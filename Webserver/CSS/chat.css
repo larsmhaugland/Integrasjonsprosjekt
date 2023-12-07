@@ -126,20 +126,24 @@
 .remove-member-button {
     padding: 0.5vh 1vh;
     margin-left: 2vw;
-    background-color: #d40e00;
-    color: rgb(0, 0, 0);
+    font-weight: bold;
+    font-size: 2.3vh;
+    background-color: #064412;
+    color: white;
     border-radius: 1vh;
     cursor: pointer;
+    height: 2vw;
+    width: 5vw;
     transition: background-color 0.3s ease;
 }
 
 .remove-member-button:hover {
-    background-color: #d32f2f;
+    background-color: #04310d;
 }
 
 /* Styling for the "Leave Chat" button */
 #leave-chat-button {
-    background: #0B5D1E;
+    background: #064412;
     color: #fff;
     font-weight: bold;
     border: none;
@@ -147,6 +151,9 @@
     border-radius: 1.00vh;
     cursor: pointer;
     margin-left: 15.00vw;
+}
+#leave-chat-button:hover { 
+    background-color: #04310d;
 }
 
 /* Styling for the "Edit Chat" button (with an icon) */
@@ -167,18 +174,22 @@
 
 /* Styling for the "opprett chat" knappen i opprett ny chat poppup */
 .create-button {
-    background: #0B5D1E;
+    background: #064412;
     color: #fff;
     font-weight: bold;
     border: none;
+    width: 12vw;
     padding: 1.00vh 2.00vw;
     border-radius: 1.00vh;
     cursor: pointer;
 }
+.create-button:hover { 
+    background-color: #04310d;
+}
 
 /* Styling for the "Legg til medlelem" button in create new chat poppup */
 #add-member-button {
-    background: #0B5D1E;
+    background: #064412;
     color: #fff;
     font-weight: bold;
     border: none;
@@ -186,6 +197,11 @@
     border-radius: 1vh;
     cursor: pointer;
     margin-bottom: 2vh;
+    margin-right: 1.2vw;
+    width: 12vw;
+}
+#add-member-button:hover { 
+    background-color: #04310d;
 }
 
 /* Input field for typing in the new chats name */
@@ -271,7 +287,7 @@
 
 /* Styling for the "Send" button within the chat input */
 .chat-input button {
-    background: #0B5D1E;
+    background: #064412;
     color: #fff;
     font-weight: bold;
     border: none;
@@ -279,6 +295,9 @@
     border-radius: 1.00vh;
     cursor: pointer;
     margin-left: 1.00vw;
+}
+.chat-input button:hover { 
+    background-color: #04310d;
 }
 
 /* Styling for the "Edit Chat" popup */
@@ -327,44 +346,65 @@
 
 /* Styling for the "Add Member" button */
 .member-input button {
-    background: #0B5D1E;
+    background: #064412;
     color: #fff;
+    font-weight: bold;
     border: none;
     padding: 1.5vw 3vw;
     border-radius: 1.5vw;
     cursor: pointer;
     margin-left: 1vw;
 }
+.member-input button:hover { 
+    background-color: #04310d;
+}
 
 /* Styling for the "legg til medlemmer" button in the edit chat poppup */
 #add-members-button {
-    background: #31680d;
+    background: #064412;
+    font-weight: bold;
     color: #fff;
     padding: 1.5vw 3vw;
     border-radius: 1.5vw;
     cursor: pointer;
     margin-left: 2vw;
+    font-size: 1.9vh;
+    width:  17vw;
+}
+#add-members-button:hover {
+    background-color: #04310d;
 }
 
 /* Styling for the "Slett chat" button in the edit chat poppup */
 #delete-chat-button{
-    background: #ff0000;
+    background: #064412;
     color: #fff;
+    font-weight: bold;
     padding: 1.5vw 3vw;
     border-radius: 1.5vw;
     cursor: pointer;
     margin-left: 2vw;
     margin-top: 1vh;
+    font-size: 1.9vh;
+}
+#delete-chat-button:hover {
+    background-color: #04310d;
 }
 
 /* Styling for the "Remove Selected Members" button in edit chat poppup*/
 button#remove-members-button {
-    background-color: #ff0000;
+    background-color: #064412;
+    font-weight: bold;
     color: white;
     padding: 1.5vw 3vw;
     border-radius: 1.5vw;
     cursor: pointer;
     margin-left: 1vw;
+    font-size: 1.9vh;
+    width: 17vw;
+}
+button#remove-members-button:hover {
+    background-color: #04310d;
 }
 
 /* Additional styles for the close button in the "Edit Chat" popup */
@@ -373,7 +413,6 @@ button#remove-members-button {
     right: 1vw;
     top: 1vw;
     font-size: 3vw;
-    size: 5vw;
     cursor: pointer;
 }
 
@@ -393,7 +432,7 @@ button#remove-members-button {
 
 /* Styling for the modal content */
 .modal-content {
-    background-color: grey;
+    background-color: white;
     display: flex;
     flex-direction: column;
     border-radius: 1.5vw;
@@ -439,7 +478,7 @@ button#remove-members-button {
     height: 2vh;
     margin-bottom: 0.75vw;
     padding: 2.5vw;
-    background-color: white;
+    background-color: #80AB82;
     border-radius: 1.5vw;
     box-shadow: 0 1.5vw 3.75vw rgba(0, 0, 0, 0.1);
 }
@@ -448,20 +487,16 @@ button#remove-members-button {
 .member-suggestions img {
     width: 1.5vw;
     height: auto;
+    background-color: #80AB82;
 }
 
-/* Styling for the "Add" button within the member suggestions */
-#add-member-btn2 {
-    padding: 0;
-    border: none;
-    cursor: pointer;
-    background: none;
-}
 
 /* Styling for the "Add" button's icon within the member suggestions */
 .add-member-btn2 img {
     width: 3vw;
     height: auto;
+    cursor: pointer;
+    background-color: #80AB82;
 }
 
 
@@ -473,6 +508,7 @@ button#remove-members-button {
     position: absolute;
     top: 1vw;
     right: 1vw;
+    font-size: 3vw;
     cursor: pointer;
 }
 
@@ -512,11 +548,15 @@ label {
 
 /* Styling for the "Remove Members" button within the "Edit Chat" popup */
 button#remove-members-button {
-    background-color: #ff0000;
+    background-color: #064412;
     color: white;
+    font-weight: bold;
     padding: 1.5vw 3vw;
     border: none;
     border-radius: 1.5vw;
     cursor: pointer;
+}
+button#remove-members-button:hover {
+    background-color: #04310d;
 }
 

@@ -139,7 +139,7 @@
 #search-input {
     width: 90%;
     padding: 1.5vw;
-    border: 0.5vh solid #000000;
+    border: 1px solid #000000;
     border-radius: 1.5vw;
     margin-bottom: 2vw;
 }
@@ -159,7 +159,7 @@
     height: 2vh;
     margin-bottom: 0.75vw;
     padding: 2.5vw;
-    background-color: white;
+    background-color: #80AB82;
     border-radius: 1.5vw;
     box-shadow: 0 1.5vw 3.75vw rgba(0, 0, 0, 0.1);
 }
@@ -168,24 +168,20 @@
 .member-suggestions img {
     width: 1.5vw;
     height: auto;
+    background-color: #80AB82;
 }
 
-/* Styling for the "Add" button within the member suggestions */
-#add-member-btn2 {
-    padding: 0;
-    border: none;
-    cursor: pointer;
-    background: none;
-}
 
 /* Styling for the "Add" button's icon within the member suggestions */
 .add-member-btn2 img {
     width: 3vw;
     height: auto;
+    cursor: pointer;
+    background-color: #80AB82;
 }
 
 
-/**************** CREATE CHAT POPUP *******************/
+/**************** CREATE GROUP POPUP *******************/
 
 /* Style for the entire popup*/
 .popup {

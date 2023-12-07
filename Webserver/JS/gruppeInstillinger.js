@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // DOM elements
     const modal = document.querySelector("#search-member-modal");
-    const closeModalButton = modal.querySelector(".close");
+    const popupContent = document.querySelector(".popup");
+    const closeModalButton = modal.querySelector(".close-modal");
     const searchInput = modal.querySelector("#search-input");
     const memberSuggestionsList = modal.querySelector(".member-suggestions");
     const groupMembersListSettings = document.querySelector("#group-members-list-settings");
@@ -69,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Close the modal when the close button is clicked
     closeModalButton.addEventListener("click", function () {
         modal.style.display = "none";
+        popupContent.style.display = "none";
     });
 
     // Delete the group when the deleteGroupButton is clicked
@@ -392,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
              // Create the delete button
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Fjern medlem';
+            deleteButton.textContent = 'FJERN';
             deleteButton.className = 'delete-member-button';
 
             // Add an event listener to handle member deletion
@@ -420,6 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addMemberButton.id = 'add-member-btn';
         addMemberButton.addEventListener('click', function () {
             modal.style.display = "block";
+            popupContent.style.display = "block";
         });
         groupMembersListSettings.appendChild(addMemberButton);
     }
