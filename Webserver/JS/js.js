@@ -6,7 +6,7 @@
 //TEST
 let API_IP = "";
 let IMAGEDIR = "Images/";
-export const API_LOCAL = "http://localhost:8080";
+const API_LOCAL = "http://localhost:8080";
 const API_REMOTE = "https://10.212.174.249:8080"; //PEKER PÅ DEV SERVER
 
 if (window.location.hostname === "localhost"){
