@@ -198,8 +198,10 @@ body{
     display: flex;
     float: right;
     right: 0;
-    width: 40%;
+    width: auto;
+    max-width: 40%;
     height: auto;
+    max-height: 80%;
 }
 
 .recipe-nav {
