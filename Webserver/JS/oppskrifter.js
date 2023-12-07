@@ -202,27 +202,27 @@ imageInput.addEventListener("change", function (){
 });
 
 ingredientInput.addEventListener("keydown", (event)=> {
+    event.preventDefault();
     //Add ingredient on enter
     if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
-        event.preventDefault();
         addNewItemToList("ingredients");
         ingredientInput.value = "";
         quantityInput.value = "";
     }
 });
 quantityInput.addEventListener("keydown", (event)=> {
+    event.preventDefault();
     //Add ingredient on enter
     if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
-        event.preventDefault();
         addNewItemToList("ingredients");
         ingredientInput.value = "";
         quantityInput.value = "";
     }
 });
 ingredientInputBtn.addEventListener("click", (event)=> {
+    event.preventDefault();
     //Add ingredient on button click
     if (ingredientInput.value !== "" && quantityInput.value !== "") {
-        event.preventDefault();
         addNewItemToList("ingredients");
         ingredientInput.value = "";
         quantityInput.value = "";
@@ -231,17 +231,17 @@ ingredientInputBtn.addEventListener("click", (event)=> {
 
 
 instructionInput.addEventListener("keydown", (event)=> {
+    event.preventDefault();
     //Add instruction on enter
     if (event.key === "Enter" && instructionInput.value !== "") {
-        event.preventDefault();
         addNewItemToList("instructions");
         instructionInput.value = "";
     }
 });
 instructionInputBtn.addEventListener("click", (event)=> {
+    event.preventDefault();
     //Add instruction on button click
     if (instructionInput.value !== "") {
-        event.preventDefault();
         addNewItemToList("instructions");
         instructionInput.value = "";
     }
