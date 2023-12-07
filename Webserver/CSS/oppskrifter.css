@@ -188,15 +188,16 @@ body{
 }
 
 .result-text {
-    margin-right: 10px;
+    margin: 10px;
+    width: 50%;
 }
 
 .result-image{
-    display: inline;
+    display: flex;
     float: right;
     right: 0;
     width: 40%;
-    height: 90%;
+    height: auto;
 }
 
 .recipe-nav {
