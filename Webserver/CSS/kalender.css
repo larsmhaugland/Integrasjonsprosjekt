@@ -8,41 +8,58 @@
     "torsdag fredag lordag"
     ". sondag .";
 }
-
+h1{
+    font-weight: bolder;
+    font-size: 35px;
+}
 #mandag{
+    position: relative;
     grid-area: mandag;
     height:10em;
     border: 2px solid black;
+    padding: 10px;
 }
 #tirsdag{
+    position: relative;
     grid-area: tirsdag;
     height:10em;
     border: 2px solid black;
+    padding: 10px;
 }
 #onsdag{
+    position: relative;
     grid-area: onsdag;
     height:10em;
     border: 2px solid black;
+    padding: 10px;
 }
 #torsdag{
+    position: relative;
     grid-area: torsdag;
     height:10em;
     border: 2px solid black;
+    padding: 10px;
 }
 #fredag{
+    position: relative;
     grid-area: fredag;
     height:10em;
     border: 2px solid black;
+    padding: 10px;
 }
 #lordag{
+    position: relative;
     grid-area: lordag;
     height:10em;
     border: 2px solid black;
+    padding: 10px;
 }
 #sondag{
+    position: relative;
     grid-area: sondag;
     height:10em;
     border: 2px solid black;
+    padding: 10px;
 }
 
 .dinner-popup {
@@ -83,4 +100,100 @@
 
 .close-svg:hover {
     filter: invert(12%) sepia(75%) saturate(5744%) hue-rotate(358deg) brightness(88%) contrast(116%);
+}
+
+.btn{
+    background-color: #064412;
+    color: white;
+    border-radius: 30px;
+}
+
+.btn.responsible {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    width: 150px;
+}
+
+.btn.dinner-btn{
+    padding: 10px;
+    width: 150px;
+    cursor: pointer;
+    font-size: 24px;
+}
+.button-div{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    right: 1%;
+    top: 5vh;
+    position: absolute;
+    margin-top: -2vh;
+}
+
+.btn:hover{
+    background-color: #04310d;
+}
+
+.dinner-link{
+    font-weight: bold;
+    font-size: 25px;
+}
+.dinner-link:hover{
+    color: #80AB82;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 10px;
+    z-index: 3;
+    width: 500px;
+    font-size: 42px;
+    border: 1vh solid #064412;
+    border-radius: 30px;
+}
+.popup button {
+    display: block;
+    background-color: white;
+    margin-bottom: 10px; /* Adjust the margin as needed */
+    font-size: 38px;
+    align-self: stretch;
+    font-weight: bold;
+}
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust the opacity as needed */
+    z-index: 2;
+    display: none;
+}
+
+
+input{
+    padding-top: 1%;
+    font-size: 20px;
+    padding-left: 1%;
+}
+
+select{
+    font-size: 20px;
+    border: 2px solid black;
+    border-radius: 25px;
+    padding-left: 1%;
+}
+#group-dropdown{
+   margin-bottom: 10px;
+}
+
+.day {
+    background: #ffffff;
 }

@@ -1,255 +1,319 @@
 .main h1 {
-    font-size: 36px;
+    font-size: 2.25vw;
 }
 
 .group-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin-top: 1.25vh;
+    margin-bottom: 2.5vh;
+}
+
+.btn-heading{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 1vh;
 }
 
 #edit-button {
+    display: none;
     padding: 0;
     border: none;
     cursor: pointer;
-    background: none; 
+    background: none;
 }
 
 #edit-button img {
-    width: 50px; 
-    height: auto; 
+    width: 2.6vw;
+    height: auto;
 }
 
 .group-members {
-    background-color: #f0f0f0;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 2.5vh;
+    border: 2px solid black;
+    border-radius: 1.5vw;
+    margin-bottom: 2.5vh;
 }
- 
+
 .group-members h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
+    font-size: 1.8vw;
+    margin-bottom: 1vh;
 }
- 
+
 .group-members-list {
     list-style-type: none;
     padding: 0;
+    flex: 1;
 }
- 
+
 .group-members-list li {
     font-size: 2.5vh;
     margin-bottom: 1vh;
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
 }
 
 .group-members-list img {
-    margin-right: 1vh; 
+    margin-right: 1vh;
     width: 2vw;
     height: auto;
     background: none;
 }
 
 .group-members-list span {
-    flex: 1; 
+    flex: 1;
 }
- 
+
 #add-member-btn:hover {
-    background-color: #0056b3;
+    background-color: #04310d;
 }
- 
+
 .square {
-    background-color: #007bff;
-    padding: 20px;
-    border-radius: 15px; 
-    width: 150px;
-    height: 120px;
-    margin: 30px;
-    display: inline-block;
+    background-color: #064412;
+    padding: 2.5vh;
+    border-radius: 4vh;
+    width: 35vh;
+    height: 10vh;
+    margin: 4.5vh;
+    display: flex;
     grid-area: main;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    transition: background-color 0.3s;
 }
- 
+
 .square:hover {
-    background-color: #196cc5;
+    background-color: #04310d;
+    cursor: pointer;
 }
- 
+
+.square:active{
+    transform: scale(0.95);
+}
+
+
 .square-content {
-    color:white;
-    font-size: 20px;
+    color: white;
+    font-size: 1.8vw;
     font-weight: bold;
 }
 
+.group-functionalities {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-top: 1.25vh;
+    margin-bottom: 2.5vh;
+}
 
 /* Elements specific to groupSettings.html */
- 
- /* Style for the member list container */
+
+/* Style for the member list container */
 .member-list {
     display: flex;
     flex-direction: column;
-    align-items: left;
-    border: 2px solid grey;
-    border-radius: 5px;
+    align-items: start;
 }
 
 /* Style for individual members in the list */
 .member-list li {
     display: flex;
     align-items: center;
-    height: 60px;
+    height: 9vh;
     width: 50vw;
-    margin: 10px 10px 10px 10px;
-    border: 2px solid rgb(199, 191, 191);
-    background: linear-gradient(45deg, #ff6b6b, #ffc06b);
+    margin: 2.5vh 2.5vh 2.5vh 2.5vh;
+    background: #80AB82;
+    border-radius: 30px;
 }
 
 /* Style for the name of the member*/
 .member-list span {
-    margin-left: 10px;
-    font-size: 24px;
+    margin-left: 2.5vh;
+    font-size: 2.25vw;
     font-weight: bold;
     flex: 1;
 }
 
 /* Style for member images */
 .member-list img {
-    margin-left: 0.5vh;
+    margin-left: 1vw;
     width: 2vw;
     height: auto;
-    background:none;
+    background: none;
 }
-
+/* Style for the delete member button for each list entry */
 .delete-member-button {
-    background-color: red;
-    color: black;
+    background-color: #064412;
+    color: white;
+    font-weight: bold;
     border: none;
-    width: 7vw;
-    height: 4vh;
-    padding: 5px 10px; 
-    margin-left: 1vw; 
-    margin-right: 0.5vw;
+    border-radius: 3vh;
+    width: 8vw;
+    height: 5vh;
+    padding: 1.25vh 2.5vh;
+    font-size: 2vh;
+    margin-left: 1vw;
+    margin-right: 1vw;
     cursor: pointer;
     float: right;
+}
+.delete-member-button:hover{
+    background-color: #04310d;
 }
 
 /* Style for the dropdown menu */
 .role-dropdown {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 1.25vh;
+    font-size: 0.9vw;
+    border-radius: 1.5vw;
     background-color: #fff;
-    width: 10vw;
+    width: 15vw;
+    height: 5vh;
 }
 
 /* Style for add member button */
 #add-member-btn {
-    background-color: #007bff;
+    background-color: #064412;
     color: #fff;
     border: none;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 1.25vh 2.5vh;
+    font-size: 1.3vw;
     cursor: pointer;
-    border-radius: 5px;
-    margin: 10px;
+    font-weight: bold;
+    border-radius: 1.5vw;
+    margin: 1.25vh;
 }
 
-/* Style for the modal container */
-.modal {
-    display: none; /* FOr some reason it is dislpayed at the initial load of the page no idea why*/
+/******************************** MODAL STYLE ADDING MEMBERS *****************************************/
+
+.popup {
+    display: none;
     position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
+/* Styling for the search for members to add modal */
+.modal {
+    position: fixed;
+    display:none;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 999;
 }
 
-/* Style for the modal content */
+/* Styling for the modal content */
 .modal-content {
-    background-color: grey;
-    border-radius: 10px;
-    padding: 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1.5vw;
+    padding: 3vw;
     width: 40vw;
     height: 50vh;
     text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 1.5vw rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
 }
 
-/* Style for the close button */
-.close {
+/* Styling for the close button within the modal */
+.close-modal {
     position: absolute;
-    top: 0.5vh;
-    right: 0.5vh;
+    top: 0.2vw;
+    right: 1vw;
     font-size: 3vw;
     cursor: pointer;
     color: #000000;
 }
 
-/* Style for the search input */
+/* Styling for the search input within the modal */
 #search-input {
     width: 90%;
-    padding: 1vh;
+    padding: 1.5vw;
     border: 1px solid #000000;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    border-radius: 1.5vw;
+    margin-bottom: 2vw;
 }
 
-/* Style for the member suggestions list */
+/* Styling for the member suggestions list within the modal */
 .member-suggestions {
     list-style-type: none;
     padding: 0;
-    margin-bottom: 1.5vh;
+    margin-bottom: 0.75vw;
 }
 
-/* Style for individual member suggestion entries */
+/* Styling for individual member suggestion entries within the list */
 .member-suggestions li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 5vh;
-    margin-bottom: 1.5vh;
-    padding: 10px;
-    background-color: white;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    height: 2vh;
+    margin-bottom: 0.75vw;
+    padding: 2.5vw;
+    background-color: #80AB82;
+    border-radius: 1.5vw;
+    box-shadow: 0 1.5vw 3.75vw rgba(0, 0, 0, 0.1);
 }
 
-/* Style for member images */
+/* Styling for member images within the member suggestions */
 .member-suggestions img {
-    width: 2vw;
+    width: 1.5vw;
     height: auto;
+    background-color: #80AB82;
 }
 
-#add-member-btn2 {
-    padding: 0;
-    border: none;
-    cursor: pointer;
-    background: none; 
-}
 
-/* Style for the "Add" button */
+/* Styling for the "Add" button's icon within the member suggestions */
 .add-member-btn2 img {
     width: 3vw;
     height: auto;
+    cursor: pointer;
+    background-color: #80AB82;
 }
+
 /* Style for the "Slett gruppe" button */
 #delete-group {
-    background-color: red;
+    display: none;
+    background-color: #064412;
     color: white;
     border: none;
-    height: 7vh;
-    width: 10vw;
-    border-radius: 5px;
+    height: 7.5vh;
+    width: 10.4vw;
+    border-radius: 1.5vw;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: bolder;
 }
 
 #delete-group:hover {
-    background-color: darkred;
+    background-color: #04310d;
+}
+
+/* Style for the "Forlat gruppe" button */
+#leave-group{
+    display: block;
+    background-color: #064412;
+    color: white;
+    border: none;
+    border-radius: 1.5vw;
+    cursor: pointer;
+    font-size: 1.3vw;
+    font-weight: bold;
+    padding: 1.25vh 2.5vh;
+}
+
+#leave-group:hover {
+    background-color: #04310d;
 }
