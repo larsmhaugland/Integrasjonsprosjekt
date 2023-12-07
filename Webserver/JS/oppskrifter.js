@@ -1,4 +1,5 @@
 /* jshint esversion: 8 */
+/* jshint loopfunc: true */
 /***       GLOBAL VARIABLES       ***/
 const MAXRESULTS = 12;
 let page = 0;

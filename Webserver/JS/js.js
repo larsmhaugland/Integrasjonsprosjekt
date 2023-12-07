@@ -1,5 +1,5 @@
 /* jshint esversion: 8 */
-
+/* jshint loopfunc: true */
 let API_IP = "";
 let IMAGEDIR = "Images/";
 let ICONDIR = "Images/";
@@ -273,7 +273,7 @@ function updateLoginStatus(){
         notLoggedInDisplay.style.display= "block";
         notLoggedInDisplay.style.cssText = "display: flex !important";
         if(mainDisplay !== null) {
-            mainDisplay.style.display = "none"
+            mainDisplay.style.display = "none";
         }
         body.style.backgroundColor = "#80AB82";
     }
@@ -290,7 +290,7 @@ function registerUser(){
 
     if (password !== passwordConf){
         console.log("Passwords do not match");
-        alert("Passordene er ikke like")
+        alert("Passordene er ikke like");
         return;
     }
     let credentials = {"username": username, "password": password, "name": name};

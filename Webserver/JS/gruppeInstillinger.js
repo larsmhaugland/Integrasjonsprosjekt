@@ -497,7 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     method: 'PATCH',
                 });
     
-                if (!ownerResponse.status === 200) {
+                if (ownerResponse.status !== 200) {
                     alert("Server error when trying to update the role for the previous owner");
                     return [false, false];
                 }

@@ -1,4 +1,5 @@
 /* jshint esversion: 8 */
+/* jshint loopfunc: true */
 //CALL ON START/RELOAD
 retrieveGroups();
 retrieveShoppingList();
@@ -507,7 +508,7 @@ function setCalendar(groupID){
                     paragraph.appendChild(button);
                     div.appendChild(paragraph);
                     //Add an event listener to each button which sends the correct recipeID to the function
-                    button.addEventListener("click", () => addDinnerToList(recipe));
+                    button.addEventListener("click", () => addDinnerToList(recipe));// jshint ignore:line
                 }
             }
         }
