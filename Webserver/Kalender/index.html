@@ -2,22 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/css.css">
     <link rel="stylesheet" href="../CSS/kalender.css">
     <title>Kalender</title>
 </head>
 <body>
+    <div class="overlay"></div>
     <header class="main-nav">
-        <a href="../index.html" id="logo">PLÆN</a>
+        <a href="../index.html"><img id="logo-image" src="../Images/logo.png" alt="PLÆN-logo"/></a>
         <nav>
-                <a href="../Handleliste/index.html">Handleliste</a>
-                <a href="">Chat</a>
-                <a href="index.html" class="current-page">Kalender</a>
-                <a href="../Oppskrifter/index.html">Oppskrifter</a>
-                <button id="log-in-btn">Innlogging</button>
-                <button id="log-out-btn">Logg ut</button>
+                <a class= "nav" href="../Handleliste/index.html">HANDLELISTE</a>
+                <a class= "nav" href="../Chat/index.html">CHAT</a>
+                <a class= "nav" href="index.html" id="current-page">KALENDER</a>
+                <a class= "nav" href="../Oppskrifter/index.html">OPPSKRIFTER</a>
+                <button class="log-btn" id="log-in-btn">INNLOGGING</button>
+                <button class="log-btn" id="log-out-btn">LOGG UT</button>
         </nav>
     </header>
+
+    <!--NOT LOGGED IN-STARTPAGE-->
+    <div id="not-logged-in">
+        <img src="../Images/logostor.png">
+        <button class="log-btn" id="log-in-btn2">INNLOGGING</button>
+        <a>ELLER <a class="register-btn">REGISTRER DEG HER</a></a>
+    </div>
+
     <!--Pop-up login-->
     <div id="log-in-popup" class="popup-wrapper">
         <form id="log-in-form" class="popup-content">
@@ -26,7 +38,6 @@
             <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
             <h3>Passord</h3>
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
-            <h3>Husk meg <input type="checkbox" name="remember" id="remember"></h3>
             <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
             <button type="button" class="btn" id="log-in-submit">Logg inn</button>
             <br><br>
@@ -73,29 +84,72 @@
         </div>
     <h1>Kalender</h1>
     <select name="group" id="group-dropdown">
+        <option>Velg gruppe...</option>
         <!-- Fylles automatisk-->
     </select>
     <div class="container">
-    <div id="mandag">Mandag
-        <button class="btn dinner-btn">Velg middag</button>
+    <div id="mandag" class="day"><h1>MANDAG</h1>
+        <div id="mandag-textbox">
+            <label class="selectedMemberLabel"> </label>
+        </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
+        </div>
     </div>
-    <div id="tirsdag" >Tirsdag
-        <button class="btn dinner-btn">Velg middag</button>
+    <div id="tirsdag" class="day"><h1>TIRSDAG</h1>
+        <div id="tirsdag-textbox">
+            <label class="selectedMemberLabel"> </label>
+        </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
+        </div>
     </div>
-    <div id="onsdag">Onsdag
-        <button class="btn dinner-btn">Velg middag</button>
+        <div id="onsdag" class="day"><h1>ONSDAG</h1>
+        <div id="onsdag-textbox">
+            <label class="selectedMemberLabel"> </label>
+        </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
+        </div>
     </div>
-    <div id="torsdag">Torsdag
-        <button class="btn dinner-btn">Velg middag</button>
+    <div id="torsdag" class="day"><h1>TORSDAG</h1>
+        <div id="torsdag-textbox">
+            <label class="selectedMemberLabel"> </label>
+        </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
+        </div>
     </div>
-    <div id="fredag">Fredag
-        <button class="btn dinner-btn">Velg middag</button>
+    <div id="fredag" class="day"><h1>FREDAG</h1>
+        <div id="fredag-textbox">
+            <label class="selectedMemberLabel"> </label>
+        </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
+        </div>
     </div>
-    <div id="lordag">Lørdag
-        <button class="btn dinner-btn">Velg middag</button>
+    <div id="lordag" class="day"><h1>LØRDAG</h1>
+        <div id="lordag-textbox">
+            <label class="selectedMemberLabel"></label>
+        </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
+        </div>
     </div>
-    <div id="sondag">Søndag
-        <button class="btn dinner-btn">Velg middag</button>
+    <div id="sondag" class="day"><h1>SØNDAG</h1>
+        <div id="sondag-textbox">
+            <label class="selectedMemberLabel"> </label>
+        </div>
+        <div class="button-div">
+            <button class="btn dinner-btn">MIDDAG</button>
+            <button class="btn responsible">ANSVARLIG</button>
+        </div>
     </div>
     </div>
     </main>

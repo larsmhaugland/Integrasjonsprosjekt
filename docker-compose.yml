@@ -8,7 +8,7 @@ services:
     volumes:
       - type: bind
         source: /web_images
-        target: /usr/local/apache2/images
+        target: /usr/local/apache2/htdocs/UsrImages
     deploy:
       replicas: 2
       restart_policy:
@@ -24,9 +24,9 @@ services:
     volumes:
       - type: bind
         source: /web_images
-        target: /Images
+        target: /UsrImages
     deploy:
-      replicas: 1
+      replicas: 2
       restart_policy:
         condition: on-failure
         delay: 5s

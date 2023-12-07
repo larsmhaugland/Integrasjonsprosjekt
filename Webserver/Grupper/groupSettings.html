@@ -4,20 +4,27 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../CSS/css.css">
     <link rel="stylesheet" href="../CSS/grupper.css">
-    <title>Grupper</title>
+    <title>Chat</title>
 </head>
 <body>
     <header class="main-nav">
-        <a href="../index.html" id="logo">PLÆN</a>
+        <a href="../index.html"><img id="logo-image" src="../Images/logo.png" alt="PLÆN-logo"/></a>
         <nav>
-                <a href="../Handleliste/index.html">Handleliste</a>
-                <a href="">Chat</a>
-                <a href="../Kalender/index.html">Kalender</a>
-                <a href="../Oppskrifter/index.html">Oppskrifter</a>
-                <button id="log-in-btn">Innlogging</button>
-                <button id="log-out-btn">Logg ut</button>
+            <a href="../Handleliste/index.html">HANDLELISTE</a>
+            <a href="../Chat/index.html">CHAT</a>
+            <a href="../Kalender/index.html">KALENDER</a>
+            <a href="../Oppskrifter/index.html">OPPSKRIFTER</a>
+            <button class="log-btn" id="log-in-btn">INNLOGGING</button>
+            <button class="log-btn" id="log-out-btn">LOGG UT</button>
         </nav>
     </header>
+
+    <!--NOT LOGGED IN-STARTPAGE-->
+    <div id="not-logged-in">
+        <img src="../Images/logostor.png">
+        <button class="log-btn" id="log-in-btn2">INNLOGGING</button>
+        <a>ELLER <a class="register-btn">REGISTRER DEG HER</a></a>
+    </div>
 
     <!--Pop-up login-->
     <div id="log-in-popup" class="popup-wrapper">
@@ -27,7 +34,6 @@
             <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
             <h3>Passord</h3>
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
-            <h3>Husk meg <input type="checkbox" name="remember" id="remember"></h3>
             <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
             <button type="button" class="btn" id="log-in-submit">Logg inn</button>
             <br><br>
@@ -57,21 +63,24 @@
     </div>
     <main>
         <div class = "group-heading">
-            <h1 id="group-name"></h1> 
-            <button id="leave-group"> Forlat gruppe</button>
-            <button id="delete-group"> Slett gruppe </button>
+            <h1 id="group-name"></h1>
+            <div class="btn-heading">
+            <button id="leave-group"> FORLAT GRUPPE</button>
+            <button id="delete-group"> SLETT GRUPPE </button>
+            </div>
         </div>
 
         <ul class="member-list" id="group-members-list-settings"></ul>
 
         <!-- Search Member Modal -->
-        <div id="search-member-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Legge til meldemmer</h2>
-                <input type="text" id="search-input" placeholder="Enter member name...">
-                
-                <ul class="member-suggestions"></ul>
+        <div class="popup">
+            <div id="search-member-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Legge til medlemmer</h2>
+                    <input type="text" id="search-input" placeholder="Enter member name...">
+                    <ul class="member-suggestions"></ul>
+                </div>
             </div>
         </div>
     </main>
@@ -79,41 +88,3 @@
 <script src="../JS/gruppeInstillinger.js"></script>
 <script src="../JS/js.js"></script>'
 </html>
-
-<!--<li>
-    <img src="../Images/person-icon-transparent.png" alt="Member 1">
-    <span>Aleksander Solhaug</span>
-    <select class="role-dropdown">
-        <option value="owner">Owner</option>
-        <option value="administrator">Administrator</option>
-        <option value="member">Member</option>
-    </select>
-    <button class="delete-member-button">Fjern meldem</button>
-</li>
-<li>
-    <img src="../Images/person-icon-transparent.png" alt="Member 1">
-    <span>Lars Martin Haugland</span>
-    <select class="role-dropdown">
-        <option value="owner">Owner</option>
-        <option value="administrator">Administrator</option>
-        <option value="member">Member</option>
-    </select>
-    <button class="delete-member-button">Fjern meldem</button>
-</li>
-
-<li>
-    <img src="../Images/person-icon-transparent.png" alt="Member 1">
-    <span>Member 1</span>
-    <button class="add-member-btn2">
-        <img src="../Images/add-icon.png" alt="Add member">
-    </button>
-</li>
-<li>
-    <img src="../Images/person-icon-transparent.png" alt="Member 2">
-    <span>Member 2</span>
-    <button class="add-member-btn2">
-        <img src="../images/add-icon.png" alt="Add member">
-    </button>
-</li>
-
--->
