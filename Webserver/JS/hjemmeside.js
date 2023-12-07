@@ -191,6 +191,8 @@ searchInput.addEventListener("input", function () {
         });
 });
 
+/***        FUNCTIONS      ***/
+
 /**
  * Updates the suggestions for members to add after the user have entered in partial or full
  * username of the person they wish to add to their group
@@ -250,6 +252,10 @@ function updateMemberSuggestions(results) {
     });
 }
 
+/**
+ * Adds a member to the list of members to add
+ * @param username - The username of the member to add
+ */
 function addMemberToAddList(username) {
     // Get the list of members
     const memberListItem = document.createElement("li");
@@ -268,6 +274,10 @@ function addMemberToAddList(username) {
     memberList.appendChild(memberListItem);
 }
 
+/**
+ * Removes a member from the list of members to add
+ * @param username - The username of the member to remove
+ */
 function removeMemberFromList(username){
     var memberListItem;
     const listItems = document.querySelectorAll("#member-list li");
@@ -282,9 +292,6 @@ function removeMemberFromList(username){
     memberList.removeChild(memberListItem);
 }
 
-
-
-//FUNCTIONS:
 /**
     RETRIEVE GROUPS
  */
@@ -313,12 +320,12 @@ function retrieveGroups(){
         }
     }).then(data=>{
         sessionStorage.setItem("groups", JSON.stringify(data));
+        console.log("Groups retrieved: " + data);
         displayGroups(data);})
     .catch(error => {
         console.log("Error retrieving groups: " + error);
     });
 }
-
 
 /**
     DISPLAY GROUPS
@@ -326,35 +333,35 @@ function retrieveGroups(){
 */
 function displayGroups(groups){
     let display = document.querySelector(".groups-container");
-       for(let i = 0; i < groups.length; i++){
-           let groupContainer = document.createElement("a");
-           const url = `./Grupper/index.html?groupID=${encodeURIComponent(groups[i].documentID)}`;
-           groupContainer.setAttribute("href", url);
-           let groupBlock = document.createElement("div");
-           groupBlock.setAttribute("id","group-block");
+    if(groups === null) {
+        return;
+    }
+   for(let i = 0; i < groups.length; i++){
+       let groupContainer = document.createElement("a");
+       const url = `./Grupper/index.html?groupID=${encodeURIComponent(groups[i].documentID)}`;
+       groupContainer.setAttribute("href", url);
+       let groupBlock = document.createElement("div");
+       groupBlock.setAttribute("id","group-block");
 
-           if (groups[i].image !== "") {
-               checkImageExists(IMAGEDIR + groups[i].image + ".jpeg", function (exists) {
-                   if (exists) {
-                       groupBlock.classList.add("has-img");
-                       groupBlock.style.background = "none";
-                       groupBlock.style.backgroundColor = "#FFFFFF";
-                       groupBlock.style.backgroundImage = `url(${IMAGEDIR}${groups[i].image}.jpeg)`;
-                       groupBlock.style.backgroundSize = "70% 70%";
-                       groupBlock.style.backgroundPosition = "center top";
-                       groupBlock.style.backgroundRepeat = "no-repeat";
-                   }
-               });
-           }
-           let groupNameParagraph = document.createElement("p");
-           groupNameParagraph.textContent = groups[i].name;
+       if (groups[i].image !== "") {
+           checkImageExists(IMAGEDIR + groups[i].image + ".jpeg", function (exists) {
+               if (exists) {
+                   groupBlock.classList.add("has-img");
+                   groupBlock.style.background = "none";
+                   groupBlock.style.backgroundColor = "#FFFFFF";
+                   groupBlock.style.backgroundImage = `url(${IMAGEDIR}${groups[i].image}.jpeg)`;
+                   groupBlock.style.backgroundSize = "70% 70%";
+                   groupBlock.style.backgroundPosition = "center top";
+                   groupBlock.style.backgroundRepeat = "no-repeat";
+               }
+           });
+       }
+       let groupNameParagraph = document.createElement("p");
+       groupNameParagraph.textContent = groups[i].name;
 
-
-
-
-           groupBlock.appendChild(groupNameParagraph);
-           groupContainer.appendChild(groupBlock);
-           display.appendChild(groupContainer);
+       groupBlock.appendChild(groupNameParagraph);
+       groupContainer.appendChild(groupBlock);
+       display.appendChild(groupContainer);
     }
 }
 

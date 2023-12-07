@@ -1,21 +1,3 @@
-button:not(.log-btn,.nav), input[type=file] {
-    box-sizing: border-box;
-    border: thin solid #80AB82;
-    border-radius: 10px;
-    padding: 5px 10px;
-    background-color: #80AB82;
-    transition: 0.3s;
-    cursor: pointer;
-    font-weight: bold;
-    color: white;
-}
-
-button:hover :not(.log-btn){
-    background-color: #04310d;
-    border-color: #04310d;
-    transition: 0.3s;
-}
-
 body{
     grid-template-columns: 1% auto auto auto 5%;
 }
@@ -209,34 +191,43 @@ body{
     grid-area: nav;
     flex-direction: row;
     justify-content: center;
+    gap: 10px;
     align-items: center;
     width: 100%;
     height: 5%;
 }
 
 .pagination-button {
-    border: 1px solid #EEEEEE;
-    border-radius: 5px;
+    box-sizing: border-box;
+    border-radius: 10px;
     padding: 5px 10px;
-    margin: 0 5px;
+    transition: 0.3s;
     cursor: pointer;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+    margin-right: 10px;
     text-align: center;
     text-decoration: none;
-    color: black;
-    background-color: #EEEEEE;
-    transition: ease-in 0.2s;
+    background-color: #CCCCCC;
+    border-color: #CCCCCC;
 }
 
-.pagination-button.active {
-    transition: ease-in 0.2s;
+.pagination-button:hover {
     background-color: #AAAAAA;
     border-color: #AAAAAA;
 }
 
-.pagination-button:hover:not(.active) {
+.pagination-button.active {
     transition: ease-in 0.2s;
-    background-color: #80AB82;;
-    border-color: #80AB82;;
+    background-color: #80AB82;
+    border-color: #80AB82;
+}
+
+.pagination-button.active:hover {
+    transition: ease-in 0.2s;
+    background-color: #80AB82;
+    border-color: #80AB82;
 }
 
 .new-recipe-popup {

@@ -31,7 +31,7 @@ a {
 
 /*Header and navigation*/
 /*Navigation link styling*/
-button:not(.log-btn,.nav), input[type=file] {
+button:not(.log-btn,.nav,.pagination-button), input[type=file] {
     box-sizing: border-box;
     border: thin solid #80AB82;
     border-radius: 10px;
@@ -43,7 +43,7 @@ button:not(.log-btn,.nav), input[type=file] {
     color: white;
 }
 
-button:hover:not(.log-btn,.nav), input[type=file]:hover{
+button:hover:not(.log-btn,.nav,.pagination-button), input[type=file]:hover{
     background-color: #04310d;
     border-color: #04310d;
     transition: 0.3s;
