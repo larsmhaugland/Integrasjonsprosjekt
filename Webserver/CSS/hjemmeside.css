@@ -113,7 +113,7 @@
 
 /* Styling for the modal content */
 .modal-content {
-    background-color: #75f57c;
+    background-color: white;
     display: flex;
     flex-direction: column;
     border-radius: 1.5vw;
