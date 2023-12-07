@@ -102,7 +102,7 @@ nav{
      height: 65px;
      border: 0px;
      border-radius: 30px;
-    background-color: #FFFFFF;
+     background-color: #FFFFFF;
      font-weight: bold;
      font-size: 24px;
      align-self: center;
@@ -122,6 +122,10 @@ nav{
 
 #log-in-btn {
     display: none;
+}
+
+#log-in-btn2 {
+    margin-right: 0px;
 }
 /*TODO: FIX SO THAT YOU DON'T SEE "INNLOGGING" FLICKER EVERYTIME YOU REFRESH THE PAGE*/
 
@@ -148,6 +152,7 @@ nav{
     position:fixed;
 }
 .register-btn{
+    font-size: 2em;
     color:white;
     cursor: pointer;
     transition: text-decoration 0.3s, font-weight 0.3s;
@@ -182,7 +187,7 @@ nav{
     font-weight: bolder;
 }
 
-.register-switch-btn:hover{
+#register-switch-btn:hover{
     color: darkred;
 }
 #login-switch-btn:hover{
@@ -208,6 +213,25 @@ nav{
     filter: invert(12%) sepia(75%) saturate(5744%) hue-rotate(358deg) brightness(88%) contrast(116%);
 }
 
+#log-in-form input{
+    border : 3px solid #777777;
+    border-radius: 10px;
+    padding: 0.05em 0.5em;
+}
+
+#register-user-form input{
+    border : 3px solid #777777;
+    border-radius: 10px;
+    padding: 0.05em 0.5em;
+}
+
+.username{
+    margin-left: 2em;
+}
+
+.name{
+    margin-left: 2em;
+}
 /*TODO:
     - button layout for .btn
 
