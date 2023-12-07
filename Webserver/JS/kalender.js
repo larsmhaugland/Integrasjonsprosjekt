@@ -222,7 +222,7 @@ function resetCalendarAndSetAllDays(groupID) {
                 label.textContent = "";
             } else if (label.textContent.includes("Middag: ")) {
                 label.parentNode.removeChild(label);
-            } else if (label.textContent.includes("Ingen middag valgt. ")) {
+            } else if (label.textContent.includes("Ingen middag valgt. ") && inputCalendar !== null) {
                 label.parentNode.removeChild(label);
             }
         });
@@ -240,6 +240,16 @@ function resetCalendarAndSetAllDays(groupID) {
     // Check if inputCalendar is null
     if (inputCalendar == null) {
         console.log("inputCalendar is null");
+        allDays.forEach(function (day) {
+            if(document.querySelector("#" + day + "-dinner")){
+                document.querySelector("#" + day + "-dinner").textContent = "Ingen middag valgt. ";
+            }else {
+                let label = document.createElement("label");
+                label.textContent = "Ingen middag valgt. ";
+                label.id = day + "-dinner";
+                document.querySelector("#" + day + "-textbox").appendChild(label);
+            }
+        });
         return;
     }
 
