@@ -64,14 +64,6 @@ func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 func CheckUserCookie(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	/*
-		authCookie, err := r.Cookie("AuthToken")
-		if err != nil || authCookie == nil || authCookie.Value != "test" {
-			// Authentication failed, redirect to login page or return an error
-			http.Error(w, "Cookie not valid", http.StatusUnauthorized)
-			return
-		}
-	*/
 }
 
 func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -100,16 +92,8 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Check if the credentials match
 	if user.Username == credentials.Username && user.Password == credentials.Password {
-		// Create a new cookie
-		authCookie := http.Cookie{
-			Name:     "AuthToken",                    // Cookie name
-			Value:    "test",                         // Set authentication token
-			Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
-			Path:     "/",                            // Cookie is valid for all paths
-			SameSite: http.SameSiteNoneMode,
-		}
-		// Add the cookie to the response
-		http.SetCookie(w, &authCookie)
+		w.WriteHeader(http.StatusOK)
+		return
 	} else {
 		http.Error(w, "Wrong username or password", http.StatusBadRequest)
 		return
@@ -178,13 +162,13 @@ func UserCredentialPatchHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	
+
 	case http.MethodGet:
 		UserGroupGetHandler(w, r)
-	
+
 	case http.MethodPost:
 		UserGroupPostHandler(w, r)
-	
+
 	case http.MethodOptions: // For CORS
 
 	case http.MethodDelete:
@@ -300,7 +284,7 @@ func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodOptions: // For CORS
-	
+
 	case http.MethodDelete:
 		UserShoppingDeleteHandler(w, r)
 

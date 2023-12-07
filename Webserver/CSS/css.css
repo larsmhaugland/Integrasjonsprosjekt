@@ -179,7 +179,7 @@ nav{
 }
 
 .close-svg {
-    width: 100%;
+    width: 40px;
     cursor: pointer;
     filter: invert(78%) sepia(10%) saturate(22%) hue-rotate(14deg) brightness(88%) contrast(86%);
 }

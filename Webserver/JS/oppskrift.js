@@ -1,4 +1,5 @@
-/* jshint esversion: 8 */
+
+/***        DOM ELEMENTS        ***/
 let recipeEdit = document.querySelector("#edit-recipe-btn");
 let editRecipePopup = document.querySelector("#edit-recipe-popup");
 let closeRecipePopup = document.querySelector("#close-recipe-popup");
@@ -7,6 +8,7 @@ let displayedRecipe = null;
 let deleteRecipeBtn = document.querySelector("#delete-recipe");
 let owner = null;
 
+/***        EVENT LISTENERS        ***/
 //If edit button is pressed
 recipeEdit.addEventListener("click", function () {
     //Check login status
@@ -101,6 +103,7 @@ recipeEdit.addEventListener("click", function () {
 
     editRecipePopup.style.display = "block";
 });
+
 //Update difficulty text when difficulty slider is moved
 recipeDifficulty.addEventListener("input", function (event){
     let recipeDifficultyText = document.querySelector("#difficulty-value-label");
@@ -113,7 +116,6 @@ closeRecipePopup.addEventListener("click", function (event) {
     editRecipePopup.style.display = "none";
 });
 
-
 //Submit changes to recipe
 let submitEditRecipeBtn = document.querySelector("#submit-edit-recipe");
 submitEditRecipeBtn.addEventListener("click", function(event ) {
@@ -121,13 +123,13 @@ submitEditRecipeBtn.addEventListener("click", function(event ) {
     editRecipe();
 });
 
-
+//Delete recipe
 deleteRecipeBtn.addEventListener("click", function (event) {
     event.preventDefault();
     let url = window.location.search;
     //User needs to confirm that they want to delete the recipe
-    let confim = window.confirm("Er du sikker på at du vil slette oppskriften?");
-    if(!confim){
+    let confirm = window.confirm("Er du sikker på at du vil slette oppskriften?");
+    if(!confirm){
         alert("Oppskrift ble IKKE slettet");
         return;
     }
@@ -152,13 +154,21 @@ deleteRecipeBtn.addEventListener("click", function (event) {
     });
 });
 
+// Load recipe when page is loaded
 window.onload = function () {
     console.log("hei");
     //Load recipe
     updateLoginStatus();
     getRecipe();
+    getCategories();
 };
 
+/***        FUNCTIONS        ***/
+
+/**
+ * Gets recipe from API
+ * @returns {Promise<void>}
+ */
 async function getRecipe() {
     let url = window.location.search;
     //Get recipe ID from URL
@@ -176,6 +186,9 @@ async function getRecipe() {
     console.log(data);
 }
 
+/**
+ * Checks updated recipe and sends it to the API
+ */
 function editRecipe() {
     //Get elements
     let recipeName = document.querySelector("#edit-name");
@@ -236,6 +249,11 @@ function editRecipe() {
     });
 }
 
+/**
+ * Displays a single recipe
+ * @param Recipe - Recipe object to be displayed
+ * @returns {Promise<void>}
+ */
 async function displayRecipe(Recipe) {
     //Check if user is logged in
     if (sessionStorage.getItem("username") != null && sessionStorage.getItem("loggedIn") === "true") {

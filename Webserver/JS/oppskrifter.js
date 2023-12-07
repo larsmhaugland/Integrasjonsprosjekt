@@ -1,12 +1,11 @@
-/* jshint esversion: 8 */
-//Global variables and constants:
+/***       GLOBAL VARIABLES       ***/
 let MAXRESULTS = 12;
 let page = 0;
 let Recipes = [];
 let Categories = [];
 
 
-//DOM elements:
+/***      DOM ELEMENTS       ***/
 let resultDiv = document.querySelector("#results");
 let newRecipeBtn = document.querySelector("#new-recipe-btn");
 let newRecipePopup = document.querySelector("#new-recipe-popup");
@@ -23,7 +22,7 @@ let quantityInput = document.querySelector("#recipe-ingredient-qty");
 let instructionInputBtn = document.querySelector("#add-instruction-btn");
 let instructionInput = document.querySelector("#recipe-instructions");
 
-//Event listeners:
+/***       EVENT LISTENERS       ***/
 newRecipeBtn.addEventListener("click", function (){
     if(sessionStorage.getItem("loggedIn") !== "true"){
         alert("Du må logge inn for å legge til oppskrifter");
@@ -253,6 +252,12 @@ window.onload = function () {
     getCategories();
 }
 
+
+/***        FUNCTIONS       ***/
+
+/**
+ * Get categories from API
+ */
 function getCategories() {
     // Get categories from API
     fetch(API_IP + "/recipe/categories", {
@@ -272,6 +277,9 @@ function getCategories() {
     });
 }
 
+/**
+ * Display filters for categories
+ */
 function displayCategoryFilters() {
     let filterDiv = document.querySelector("#filter-wrapper");
     //Clear existing filters
@@ -420,7 +428,10 @@ function displayCategoryFilters() {
     filterDiv.appendChild(allergyWrapper);
 }
 
-
+/**
+ * Load recipes from API
+ * @returns {Promise<void>}
+ */
 async function loadRecipes(){
     if (!await checkLoginStatus()) return;
     await getRecipes(Recipes);
@@ -428,6 +439,10 @@ async function loadRecipes(){
     displayPages();
 }
 
+/**
+ * Get recipes from API
+ * @param list - List to add recipes to
+ */
 function addNewItemToList(list){
     let type = "";
     if (list === "ingredients") {
@@ -482,7 +497,10 @@ function addNewItemToList(list){
     list.appendChild(li);
 }
 
-
+/**
+ * Create new recipe and send to API
+ * @returns {Promise<void>}
+ */
 async function newRecipe() {
     let name = document.querySelector("#recipe-name").value;
     let type = document.querySelector("#recipe-type-url");
@@ -582,7 +600,9 @@ async function newRecipe() {
     location.reload();
 }
 
-// Display the pages
+/**
+ * Display pagination
+ */
 function displayPages() {
     // Initialize pag variable
     let pag = [];
@@ -647,7 +667,10 @@ function displayPages() {
 }
 
 
-//Change page
+/**
+ * Change page
+ * @param p - Page number
+ */
 function changePage(p) {
     let pages = document.querySelectorAll(".pagination-button");
     for (let i = 0; i < pages.length; i++) {
@@ -658,7 +681,12 @@ function changePage(p) {
     displayPages();
 }
 
-//Get which pages that should be displayed
+/**
+ * Calculate pagination
+ * @param c - Current page
+ * @param m - Max pages
+ * @returns {*[]} - List of pages to display
+ */
 function pagination(c, m) {
     let current = c,
         last = m,
@@ -690,27 +718,40 @@ function pagination(c, m) {
     return rangeWithDots;
 }
 
+/**
+ * Searches for recipes that match the search term
+ * @param text - Search term
+ * @returns {*|*[]|*[]} - List of recipes that match the search term
+ */
 function searchRecipes(text) {
     let primaryMatches = [];
     let secondaryMatches = [];
     if(text === "") return filterRecipes(Recipes);
 
-    //Starts with searchterm
+    //Starts with search term
     primaryMatches = Recipes.filter((data) => {
         return data.name.toLowerCase().startsWith(text.toLowerCase());
     });
-    //Contains searchterm
+    //Contains search term
     secondaryMatches = Recipes.filter((data) => {
         return data.name.toLowerCase().includes(text.toLowerCase()) && !data.name.toLowerCase().startsWith(text.toLowerCase());
     });
     return primaryMatches.concat(secondaryMatches);
 }
 
+/**
+ * Submit filter and display results
+ */
 function submitFilter() {
     page = 0;
     displayResults(filterRecipes(searchRecipes(searchField.value)));
 }
 
+/**
+ * Filter recipes by categories
+ * @param list - List of recipes to filter
+ * @returns {*|*[]} - Filtered list of recipes
+ */
 function filterRecipes(list) {
     let checkboxes = document.querySelectorAll(".category-checkbox");
     let checked = [];
@@ -741,6 +782,12 @@ function filterRecipes(list) {
     return filteredList;
 }
 
+/**
+ * Check if image exists
+ * @param list - List of recipes to filter
+ * @param item - Item to check for duplicates
+ * @returns {boolean} - True if item is duplicate
+ */
 function isDuplicate(list, item) {
     for (let i = 0; i < list.length; i++){
         if (list[i].documentID === item.documentID) return true;
@@ -748,6 +795,11 @@ function isDuplicate(list, item) {
     return false;
 }
 
+/**
+ * Display results
+ * @param filteredList - List of recipes to display
+ * @returns {Promise<void>} - Promise
+ */
 async function displayResults(filteredList){
     //Clear results
     resultDiv.innerHTML = "";
