@@ -243,7 +243,12 @@ function logout(){
     console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
     sessionStorage.removeItem("groups");
     updateLoginStatus();
-    location.replace("https://" + window.location.hostname + "/index.html");
+    if(!oppskriftside && !hjemmeside) {
+        //redirect one level up
+        window.location.href = "../index.html";
+    } else if (oppskriftside){
+        window.location.href = "../../index.html";
+    }
 }
 
 function updateLoginStatus(){
