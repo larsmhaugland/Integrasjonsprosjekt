@@ -1,5 +1,5 @@
 /* jshint esversion: 8 */
-
+/* jshint loopfunc: true */
 let API_IP = "";
 let IMAGEDIR = "Images/";
 let ICONDIR = "Images/";
@@ -107,7 +107,10 @@ loginPassword.addEventListener("keyup", function(event) {
 });
 
 let registerUserBtn = document.querySelector("#register-user-submit");
-registerUserBtn.addEventListener("click", registerUser);
+registerUserBtn.addEventListener("click", function(event) {
+    event.preventDefault(); 
+    registerUser();
+});
 let registerPassword = document.querySelector("#password-reg-conf");
 registerPassword.addEventListener("keyup", function(event) {
     if (event.keyCode === 13) { //Enter key
@@ -258,7 +261,7 @@ function updateLoginStatus(){
     let notLoggedInDisplay = document.querySelector("#not-logged-in");
     let mainDisplay = document.querySelector("#main-display");
     let body = document.querySelector("body");
-
+    console.log("Logged in: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
@@ -273,7 +276,7 @@ function updateLoginStatus(){
         notLoggedInDisplay.style.display= "block";
         notLoggedInDisplay.style.cssText = "display: flex !important";
         if(mainDisplay !== null) {
-            mainDisplay.style.display = "none"
+            mainDisplay.style.display = "none";
         }
         body.style.backgroundColor = "#80AB82";
     }
@@ -290,7 +293,7 @@ function registerUser(){
 
     if (password !== passwordConf){
         console.log("Passwords do not match");
-        alert("Passordene er ikke like")
+        alert("Passordene er ikke like");
         return;
     }
     let credentials = {"username": username, "password": password, "name": name};
@@ -303,7 +306,6 @@ function registerUser(){
         body: JSON.stringify(credentials)
     }).then(response => {
         let usernameTaken = document.querySelector("#username-taken");
-        passwordMismatch.style.display = "none";
         if (response.status === 201){
             let registerForm = document.querySelector("#register-popup");
             registerForm.style.display = "none";
@@ -311,6 +313,7 @@ function registerUser(){
             console.log("Registered user: " + username);
             sessionStorage.setItem("username", username);
             sessionStorage.setItem("loggedIn", "true");
+            console.log("Updating login status");
             updateLoginStatus();
         } else {
             usernameTaken.style.display = "block";

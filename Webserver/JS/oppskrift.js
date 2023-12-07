@@ -1,4 +1,5 @@
 /* jshint esversion: 8 */
+/* jshint loopfunc: true */
 let recipeEdit = document.querySelector("#edit-recipe-btn");
 let editRecipePopup = document.querySelector("#edit-recipe-popup");
 let closeEditRecipePopup = document.querySelector("#close-recipe-popup");

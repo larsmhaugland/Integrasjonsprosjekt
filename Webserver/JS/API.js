@@ -1,5 +1,5 @@
 /* jshint esversion: 8 */
-
+/* jshint loopfunc: true */
 async function getRecipes(Recipes) {
     let username = sessionStorage.getItem("username");
     //if(!checkAuthToken()) return;

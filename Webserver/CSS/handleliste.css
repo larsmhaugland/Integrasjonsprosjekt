@@ -4,7 +4,7 @@ main{
     grid-template-areas:
     "padding padding"
     "handleliste middag-uke";
-    align-items: self-start;
+    align-items: flex-start;
 }
 
 #handleliste{
@@ -105,7 +105,7 @@ li{
 
 #finished-list{
     text-decoration: line-through;
-    block: display;
+    display: block;
 }
 
 #complete-header{
@@ -117,7 +117,7 @@ li{
 
 .hide-complete{
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
     margin-right: 10%;
 }

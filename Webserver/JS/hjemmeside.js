@@ -1,4 +1,5 @@
 /* jshint esversion: 8 */
+/* jshint loopfunc: true */
 //TODO: ADD SHOPPING LIST ID WHEN CREATING NEW GROUP AND POSTING A NEW EMPTY SHOPPING LIST
 //CALL ON START/RELOAD
 retrieveGroups();
@@ -41,7 +42,7 @@ form.addEventListener("submit", async function (event) {
     // Get the form elements by their IDs
     const groupName = document.getElementById("group-name").value;
     // Create an array of member names from the list 
-    const memberList = Array.from(document.querySelectorAll(".member-list li")).map(li => li.textContent);
+    const memberList = Array.from(document.querySelectorAll(".member-list li span")).map(span => span.textContent);
     memberList.push(sessionStorage.getItem("username"));
 
     // Turn the list of members into a map where the username is the key and the value is 'member'
@@ -70,8 +71,9 @@ form.addEventListener("submit", async function (event) {
         members: memberMap,
         image: groupImage,
         "shopping-lists": [shoppingListID],
-};
+    };
     console.log("Group: " + group);
+
     fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
         headers: {

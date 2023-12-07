@@ -4,7 +4,7 @@
  */
 
 /* jshint esversion: 8 */
-
+/* jshint loopfunc: true */
 /****************************** DOM Elements ************************************/
 let dinnerPopup = document.querySelector("#dinner-popup"); // The popup for adding a dinner
 let newDinnerBtns = document.querySelectorAll(".dinner-btn"); // The buttons for adding a dinner
@@ -247,7 +247,7 @@ function resetCalendarAndSetAllDays(groupID) {
     const dateKeys = Object.keys(inputCalendar);
     for (let j = 0; j < options.length - 1; j++) {
         if (groupID === options[j + 1].value) {
-            dateKeys.forEach(dateKey => {
+            dateKeys.forEach(dateKey => {// jshint ignore:line
                 // Check if the dateKey exists in inputCalendar
                 if (dateKey in inputCalendar) {
                     let dateData = inputCalendar[dateKey];
