@@ -258,6 +258,7 @@ function addMemberToAddList(username) {
     
     const removeButton = document.createElement("button");
     removeButton.className = "remove-member-button";
+    removeButton.textContent = "Fjern";
     removeButton.addEventListener("click", function () {
         removeMemberFromList(username);
     });
