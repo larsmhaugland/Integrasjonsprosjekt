@@ -1,0 +1,561 @@
+/* Styling for the main chat application container */
+.chat-app {
+    display: flex;
+    height: 87.00vh;
+}
+
+/* Styling for the chat list on the left-hand side */
+.chat-list {
+    width: min-content;
+    max-width: 30.00vw;
+    background-color: #bcffbf;
+    margin-top: 1.00vh;
+    padding: 1.00vh;
+    border-radius: 1.00vh;
+    overflow-y: auto;
+    border: 2px solid black;
+}
+
+/* Styling for the chat list header */
+.chat-list-header {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Styling for the chat list search field */
+#filter-chats-list{
+    border: 2px solid black;
+}
+
+/* Styling for the "Create Chat" button/image */
+#create-chat-button {
+    padding: 0;
+    margin-left: 10px;
+    border: none;
+    cursor: pointer;
+    background: none;
+}
+
+#create-chat-button img {
+    width: 2vw;
+    height: auto;
+}
+
+/* Styling for the chat list input */
+.chat-list input {
+    width: 120.00%;
+    padding: 1.00vh;
+    max-width: 90.00%;
+    border: 1px solid #ccc;
+    border-radius: 1.00vh;
+}
+
+/* Styling for the message when there are no chats to display */
+.no-chats-to-display {
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Styling for the chat list unordered list */
+.chat-list ul {
+    list-style: none;
+    padding: 0;
+    width: 41.70vw; 
+    max-width: 100%;
+}
+
+/* Styling for individual chat items */
+.chat-item {
+    background: #80AB82;
+    margin-top: 2.00vh;
+    padding: 5.00vh;
+    border-radius: 1.00vh; 
+    cursor: pointer;
+}
+
+/* Styling for the chat room on the right-hand side */
+.chat-room {
+    flex: 1;
+    margin-top: 1.00vh;
+    margin-left: 1.00vw;
+    padding: 1.00vh;
+    background-color: #bcffbf;
+    border-radius: 1.00vh;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+}
+
+/* Styling for the chat room header */
+.chat-room-header {
+    margin-top: 0.50vh; 
+    height: 3.00vh;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+/* Styling for the chat room name */
+#chat-room-name {
+    font-size: 1.50em;
+    font-weight: bold;
+}
+
+/* Styling for the list of current members within the "Edit Chat" popup */
+.member-list {
+    padding: 0;
+    margin-top: 1vh;
+    overflow-y: auto;
+}
+
+/* Styling for individual member entries within the list above */
+.member-list li {
+    background: #a2a3a3;
+    margin: 1vw 0;
+    padding: 1vw;
+    border-radius: 1vw;
+    display: flex;
+    width: 20vw;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Style for the "remove" button for the add list in new chat poppup */
+.remove-member-button {
+    padding: 0.5vh 1vh;
+    margin-left: 2vw;
+    font-weight: bold;
+    font-size: 2.3vh;
+    background-color: #064412;
+    color: white;
+    border-radius: 1vh;
+    cursor: pointer;
+    height: 2vw;
+    width: 5vw;
+    transition: background-color 0.3s ease;
+}
+
+.remove-member-button:hover {
+    background-color: #04310d;
+}
+
+/* Styling for the "Leave Chat" button */
+#leave-chat-button {
+    background: #064412;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 1.00vh 2.00vw;
+    border-radius: 1.00vh;
+    cursor: pointer;
+    margin-left: 15.00vw;
+}
+#leave-chat-button:hover { 
+    background-color: #04310d;
+}
+
+/* Styling for the "Edit Chat" button (with an icon) */
+#edit-chat-button {
+    margin-left: 4.00vw;
+    width: 1vw;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    background: none;
+}
+
+/* Styling for the "Edit Chat" button's icon */
+#edit-chat-button img {
+    width: 2.0vw;
+    height: auto;
+}
+
+/* Styling for the "opprett chat" knappen i opprett ny chat poppup */
+.create-button {
+    background: #064412;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    width: 12vw;
+    padding: 1.00vh 2.00vw;
+    border-radius: 1.00vh;
+    cursor: pointer;
+}
+.create-button:hover { 
+    background-color: #04310d;
+}
+
+/* Styling for the "Legg til medlelem" button in create new chat poppup */
+#add-member-button {
+    background: #064412;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 1vh 2vw;
+    border-radius: 1vh;
+    cursor: pointer;
+    margin-bottom: 2vh;
+    margin-right: 1.2vw;
+    width: 12vw;
+}
+#add-member-button:hover { 
+    background-color: #04310d;
+}
+
+/* Input field for typing in the new chats name */
+#chat-name{
+    padding: 8px; 
+    border: 0.1vh solid #272727; 
+    color: #333; 
+    border-radius: 1vh;
+    background-color: #D3D3D3;
+    font-size: 1.8vh; 
+}
+
+/* Styling for the chat messages container */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 2.00vh;
+    padding: 1.00vh;
+    border-radius: 1.0vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styling for chat messages from other users */
+.message-sent {
+    float: right; /* Align messages received from others to the left */
+    background: #80AB82;
+    border-radius: 1.00vh;
+    padding: 1.00vh;
+    margin: 0.50vh;
+    min-width: 20%; 
+    max-width: 45%; 
+    word-wrap: break-word;
+}
+
+/* Styling for chat messages from the sender */
+.message-received {
+    float: left;
+    background: rgb(192, 190, 190);
+    border-radius: 1.00vh;
+    padding: 1.00vh;
+    margin: 0.50vh;
+    min-width: 20%; 
+    max-width: 45%; 
+    word-wrap: break-word;
+}
+
+/* Styling for the message header within chat messages */
+.message-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Styling for the sender's name in a message */
+.message-sender {
+    font-weight: bold;
+}
+
+/* Styling for the date dsipalyed between messages on new days */
+.message-date {
+    text-align: center;
+    color: #888; 
+    padding: 1 vh; 
+    margin-top: 0.5vh; 
+}
+
+/* Styling for the chat input container */
+.chat-input {
+    display: flex;
+    margin-top: 1.00vh;
+    align-items: flex-end;
+    padding: 1.00vh;
+}
+
+/* Styling for the input field within the chat input */
+.chat-input input {
+    flex: 1;
+    padding: 1.00vh;
+    border: 1px solid #ccc;
+    border-radius: 1.00vh;
+}
+
+/* Styling for the "Send" button within the chat input */
+.chat-input button {
+    background: #064412;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 1.00vh 2.00vw;
+    border-radius: 1.00vh;
+    cursor: pointer;
+    margin-left: 1.00vw;
+}
+.chat-input button:hover { 
+    background-color: #04310d;
+}
+
+/* Styling for the "Edit Chat" popup */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
+/* Styling for the content within the "Edit Chat" popup */
+.popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 2.5vw;
+    border-radius: 1.5vw;
+    text-align: center;
+}
+
+/* Styling for the chat form within the "Edit Chat" popup */
+.chat-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Styling for labels within the chat form */
+.chat-form label {
+    font-weight: bold;
+    margin-top: 1.5vw;
+}
+
+/* Styling for the "Add Member" button and its container */
+.member-input {
+    display: flex;
+    align-items: center;
+    margin-top: 0.75vw;
+}
+
+/* Styling for the "Add Member" button */
+.member-input button {
+    background: #064412;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 1.5vw 3vw;
+    border-radius: 1.5vw;
+    cursor: pointer;
+    margin-left: 1vw;
+}
+.member-input button:hover { 
+    background-color: #04310d;
+}
+
+/* Styling for the "legg til medlemmer" button in the edit chat poppup */
+#add-members-button {
+    background: #064412;
+    font-weight: bold;
+    color: #fff;
+    padding: 1.5vw 3vw;
+    border-radius: 1.5vw;
+    cursor: pointer;
+    margin-left: 2vw;
+    font-size: 1.9vh;
+    width:  17vw;
+}
+#add-members-button:hover {
+    background-color: #04310d;
+}
+
+/* Styling for the "Slett chat" button in the edit chat poppup */
+#delete-chat-button{
+    background: #064412;
+    color: #fff;
+    font-weight: bold;
+    padding: 1.5vw 3vw;
+    border-radius: 1.5vw;
+    cursor: pointer;
+    margin-left: 2vw;
+    margin-top: 1vh;
+    font-size: 1.9vh;
+}
+#delete-chat-button:hover {
+    background-color: #04310d;
+}
+
+/* Styling for the "Remove Selected Members" button in edit chat poppup*/
+button#remove-members-button {
+    background-color: #064412;
+    font-weight: bold;
+    color: white;
+    padding: 1.5vw 3vw;
+    border-radius: 1.5vw;
+    cursor: pointer;
+    margin-left: 1vw;
+    font-size: 1.9vh;
+    width: 17vw;
+}
+button#remove-members-button:hover {
+    background-color: #04310d;
+}
+
+/* Additional styles for the close button in the "Edit Chat" popup */
+.popup-content .close {
+    position: absolute;
+    right: 1vw;
+    top: 1vw;
+    font-size: 3vw;
+    cursor: pointer;
+}
+
+/******************************** MODAL STYLE ADDING MEMBERS *****************************************/
+
+/* Styling for the search for members to add modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Styling for the modal content */
+.modal-content {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1.5vw;
+    padding: 3vw;
+    width: 40vw;
+    height: 50vh;
+    text-align: center;
+    box-shadow: 0 2px 1.5vw rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+/* Styling for the close button within the modal */
+.close-modal {
+    position: absolute;
+    top: 0.2vw;
+    right: 1vw;
+    font-size: 3vw;
+    cursor: pointer;
+    color: #000000;
+}
+
+/* Styling for the search input within the modal */
+#search-input {
+    width: 90%;
+    padding: 1.5vw;
+    border: 1px solid #000000;
+    border-radius: 1.5vw;
+    margin-bottom: 2vw;
+}
+
+/* Styling for the member suggestions list within the modal */
+.member-suggestions {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 0.75vw;
+}
+
+/* Styling for individual member suggestion entries within the list */
+.member-suggestions li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2vh;
+    margin-bottom: 0.75vw;
+    padding: 2.5vw;
+    background-color: #80AB82;
+    border-radius: 1.5vw;
+    box-shadow: 0 1.5vw 3.75vw rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for member images within the member suggestions */
+.member-suggestions img {
+    width: 1.5vw;
+    height: auto;
+    background-color: #80AB82;
+}
+
+
+/* Styling for the "Add" button's icon within the member suggestions */
+.add-member-btn2 img {
+    width: 3vw;
+    height: auto;
+    cursor: pointer;
+    background-color: #80AB82;
+}
+
+
+
+/******************************** VARIOUS CSS STYLES *****************************************/
+
+/* Styling for the close button in the "Edit Chat" popup */
+.close-popup {
+    position: absolute;
+    top: 1vw;
+    right: 1vw;
+    font-size: 3vw;
+    cursor: pointer;
+}
+
+/* Styling for headings */
+h2 {
+    font-size: 1.5vw;
+    margin: 0 0 2vw;
+}
+
+/* Styling for the current members list */
+#current-members-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Styling for individual member entries in the current members list */
+#current-members-list li {
+    margin-bottom: 1vw;
+    padding: 1vh; 
+    overflow: hidden;
+    background-color: #D3D3D3;
+}
+
+/* Styling for checkboxes and their labels */
+input[type="checkbox"] {
+    margin-right: 2vw; 
+    transform: scale(1.5); 
+    float: left;
+    margin-top: 1vh;
+}
+
+label {
+    float: left;
+    font-size: 3vh; 
+    color: #333; 
+}
+
+/* Styling for the "Remove Members" button within the "Edit Chat" popup */
+button#remove-members-button {
+    background-color: #064412;
+    color: white;
+    font-weight: bold;
+    padding: 1.5vw 3vw;
+    border: none;
+    border-radius: 1.5vw;
+    cursor: pointer;
+}
+button#remove-members-button:hover {
+    background-color: #04310d;
+}
+

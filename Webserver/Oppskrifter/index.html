@@ -2,22 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/css.css">
-    <link rel="stylesheet" href="../CSS/oppskrift.css">
+    <link rel="stylesheet" href="../CSS/oppskrifter.css">
     <title>Oppskrift</title>
 </head>
 <body id="body-wrapper">
     <header class="main-nav">
-        <a href="../index.html" id="logo">PLÆN</a>
+        <a href="../index.html"><img id="logo-image" src="../Images/logo.png" alt="PLÆN-logo"/></a>
         <nav>
-                <a href="../Handleliste/index.html">Handleliste</a>
-                <a href="">Chat</a>
-                <a href="../Kalender/index.html">Kalender</a>
-                <a href="index.html" class="current-page">Oppskrifter</a>
-                <button id="log-in-btn">Innlogging</button>
-                <button id="log-out-btn">Logg ut</button>
+            <a class= "nav" href="../Handleliste/index.html">HANDLELISTE</a>
+            <a class= "nav" href="../Chat/index.html">CHAT</a>
+            <a class= "nav" href="../Kalender/index.html">KALENDER</a>
+            <a class= "nav" id="current-page" href="">OPPSKRIFTER</a>
+            <button class="log-btn" id="log-in-btn">INNLOGGING</button>
+            <button class="log-btn" id="log-out-btn">LOGG UT</button>
         </nav>
     </header>
+
+    <!--NOT LOGGED IN-STARTPAGE-->
+    <div id="not-logged-in">
+        <img src="../Images/logostor.png">
+        <button class="log-btn" id="log-in-btn2">INNLOGGING</button>
+        <a>ELLER <a class="register-btn">REGISTRER DEG HER</a></a>
+    </div>
+
     <!--Pop-up login-->
     <div id="log-in-popup" class="popup-wrapper">
         <form id="log-in-form" class="popup-content">
@@ -26,7 +37,6 @@
             <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
             <h3>Passord</h3>
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
-            <h3>Husk meg <input type="checkbox" name="remember" id="remember"></h3>
             <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
             <button type="button" class="btn" id="log-in-submit">Logg inn</button>
             <br><br>
@@ -75,8 +85,7 @@
                     <p id="difficulty-value-label" style="display: inline;">3</p>
                     <label for="category-checkboxes"><br>Kategorier:<br></label>
                     <div id="category-checkboxes">
-                        <p>Innmat kommer</p>
-                        <!-- Need to find out which categories we should have -->
+                        <!-- Category checkboxes get appended here -->
                     </div>
                     <label for="recipe-type-url"><br>Vil du legge til oppskrift med kun URL? </label>
                     <input type="checkbox" id="recipe-type-url">
@@ -87,21 +96,15 @@
                             <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
                             <button id="add-ingredient-btn">Legg til</button>
                             <ul id="recipe-ingredient-list">
-                                <!-- Ingredients get appended here
-                                TODO:
-                                ENDRE PÅ INGREDIENSER
-                                -->
+                                <!-- Ingredients get appended here -->
                             </ul>
                         </div>
                         <div id="new-recipe-instructions">
                             <label for="recipe-instructions"><br>Instruksjoner<br></label>
-                            <input type="text" id="recipe-instructions" placeholder="Instruksjoner">
+                            <input type="text" id="recipe-instructions" placeholder="Instruksjoner...">
                             <button id="add-instruction-btn">Legg til</button>
                             <ol id="recipe-instructions-list">
-                                <!-- Instructions get appended here
-                                TODO:
-                                ENDRE PÅ INSTRUKSJONER
-                                 -->
+                                <!-- Instructions get appended here -->
                             </ol>
                         </div>
                     </div>
@@ -118,39 +121,31 @@
                     <br>
                     <label for="share-with-groups">Hvilke grupper vil lagre oppskriften i?</label>
                     <ul id="share-with-groups">
-
-                        <!-- Need to find out which groups the user is in -->
+                        <!-- Group checkboxes get appended here -->
                     </ul>
                     <button id="submit-new-recipe">Legg til oppskrift</button>
                 </form>
-
             </div>
         </div>
 
 
 
         <div class="recipe-wrapper">
-
-            <div class="filter-wrapper">
-                <h2>Filter</h2>
-                <p>W.I.P.</p>
+            <div class="filter-wrapper" id="filter-wrapper">
+                <!--- Filter gets appended here -->
             </div>
-
             <div class="recipe-header-container">
                 <div class="recipe-header">
                     <input type="text" id="search-bar" placeholder="Søk etter oppskrift">
-                    <button id="new-recipe-btn"><img id="btn-image" src="../Images/add-square.svg" alt="Add new recipe"/></button>
+                    <a id="new-recipe-btn"><img id="btn-image" src="../Images/add-square.svg" alt="Add new recipe"/></a>
                 </div>
             </div>
-            <div id="results" class="results-wrapper">
+            <div id="results" class="results">
                 <!-- Results get appended here -->
             </div>
-
             <div class="recipe-nav" id="recipe-nav"></div>
         </div>
-        
     </main>
-
 
 </body>
 <script src="../JS/js.js"></script>

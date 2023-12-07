@@ -1,21 +1,32 @@
+/* jshint esversion: 8 */
 /*
     POP-UP WINDOW
     Log in
 */
 //TEST
 let API_IP = "";
+let IMAGEDIR = "Images/";
+const API_LOCAL = "http://localhost:8080";
+const API_REMOTE = "https://10.212.174.249:8080"; //PEKER PÅ DEV SERVER
+
 if (window.location.hostname === "localhost"){
      API_IP = "http://" + window.location.hostname + ":8080";
 } else{
     API_IP = "https://" + window.location.hostname + ":8080";
+    IMAGEDIR = "UsrImages/";
 }
 
 let b = document.querySelector("#log-in-btn");
 b.addEventListener("click", (event)=> {event.preventDefault();
     document.getElementById("log-in-popup").style.display = "block";});
+b = document.querySelector("#log-in-btn2");
+b.addEventListener("click", (event)=> {event.preventDefault();
+    document.getElementById("log-in-popup").style.display = "block";});
 
 b = document.querySelector("#close-login-popup");
 b.addEventListener("click", (event)=> {event.preventDefault();
+    let inputs = document.querySelectorAll("#log-in-popup input");
+    inputs.forEach(input => input.value = "");
     document.getElementById("log-in-popup").style.display = "none";});
 
 let loginBtn = document.querySelector("#log-in-submit");
@@ -42,14 +53,21 @@ let registerSwitchBtn = document.querySelector("#register-switch-btn");
 registerSwitchBtn.addEventListener("click", loginRegisterToggle);
 let closeRegisterBtn = document.querySelector("#close-register-popup");
 closeRegisterBtn.addEventListener("click", (event)=> {event.preventDefault();
+    let inputs = document.querySelectorAll("#register-popup input");
+    inputs.forEach(input => input.value = "");
     document.getElementById("register-popup").style.display = "none";});
 let loginSwitchBtn = document.querySelector("#login-switch-btn");
 loginSwitchBtn.addEventListener("click", loginRegisterToggle);
 let logoutBtn = document.querySelector("#log-out-btn");
 logoutBtn.addEventListener("click", logout);
 
+const registerTextPoppup = document.querySelector(".register-btn");
+registerTextPoppup.addEventListener("click", (event)=> {event.preventDefault();
+    document.getElementById("register-popup").style.display = "block";
+});
+
 window.onload = function () {
-    checkAuthToken();
+    checkLoginStatus();
     updateLoginStatus();
 };
 
@@ -66,33 +84,16 @@ function loginRegisterToggle(){
     }
 }
 //Check login cookie
-async function checkAuthToken(){
+async function checkLoginStatus(){
     let username = sessionStorage.getItem("username");
     let loggedIn = sessionStorage.getItem("loggedIn");
 
-    if(loggedIn){
+    //Check if logged in
+    if(username && loggedIn === "true"){
         return true;
     }
-    if (username === null){
-        return false;
-    }
-
-    const response = await fetch (API_IP + "/user/credentials/checkCookie", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    if (response.status === 200){
-        sessionStorage.setItem("loggedIn", "true");
-        sessionStorage.setItem("username", username);
-        console.log("Logged in using authtoken as: " + username);
-        updateLoginStatus();
-        return true;
-    } else {
-        console.log("Invalid Auth token");
-        return false;
-    }
+    //Not logged in
+    return false;
 }
 
 //Check login credentials
@@ -101,7 +102,6 @@ function login(){
     let password = document.querySelector("#password").value;
 
     let credentials = {"username": username, "password": password};
-    console.log(credentials);
     navigator.cookieEnabled = true;
     fetch(API_IP + "/user/credentials/login", {
         method: "POST",
@@ -114,6 +114,8 @@ function login(){
 
         if (response.status === 200){
             sessionStorage.setItem("loggedIn", "true");
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("username", username);
             sessionStorage.setItem("username", username);
             console.log("Logged in as: " + username);
             let loginForm = document.querySelector("#log-in-popup");
@@ -125,6 +127,7 @@ function login(){
         }
     })
     .catch(error => {
+        alert("Det skjedde en feil ved innlogging");
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
@@ -133,6 +136,9 @@ function login(){
 function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
+    console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
+    sessionStorage.removeItem("groups");
+    updateLoginStatus();
     location.reload();
 }
 
@@ -140,13 +146,27 @@ function updateLoginStatus(){
     let loggedIn = sessionStorage.getItem("loggedIn");
     let loginBtn = document.querySelector("#log-in-btn");
     let logoutBtn = document.querySelector("#log-out-btn");
+    let notLoggedInDisplay = document.querySelector("#not-logged-in");
+    let mainDisplay = document.querySelector("#main-display");
+    let body = document.querySelector("body");
     console.log("Log in Status.: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
+        notLoggedInDisplay.style.cssText = "display: none !important";
+        if(mainDisplay !== null) {
+            mainDisplay.style.display = "block";
+        }
+      body.style.backgroundColor = "white";
     } else {
         loginBtn.style.display = "block";
         logoutBtn.style.display = "none";
+        notLoggedInDisplay.style.display= "block";
+        notLoggedInDisplay.style.cssText = "display: flex !important";
+        if(mainDisplay !== null) {
+            mainDisplay.style.display = "none"
+        }
+        body.style.backgroundColor = "#80AB82";
     }
 }
 
@@ -156,6 +176,10 @@ function registerUser(){
     let passwordConf = document.querySelector("#password-reg-conf").value;
     let name = document.querySelector("#name-reg").value;
     let passwordMismatch = document.querySelector("#password-mismatch");
+    if (username === "" || password === "" || passwordConf === "" || name === ""){
+        alert("Alle feltene må fylles ut");
+        return;
+    }
     if (password !== passwordConf){
         passwordMismatch.style.display = "block";
         console.log("Passwords do not match");
@@ -172,11 +196,13 @@ function registerUser(){
     }).then(response => {
         let usernameTaken = document.querySelector("#username-taken");
         passwordMismatch.style.display = "none";
-        if (response.status === 200){
+        if (response.status === 201){
             let registerForm = document.querySelector("#register-popup");
             registerForm.style.display = "none";
             usernameTaken.style.display = "none";
             console.log("Registered user: " + username);
+            sessionStorage.setItem("username", username);
+            sessionStorage.setItem("loggedIn", "true");
             updateLoginStatus();
         } else {
             usernameTaken.style.display = "block";
@@ -185,15 +211,11 @@ function registerUser(){
         }
     })
     .catch(error => {
-        alertDBconnectionRefused()
+        alert("Det skjedde en feil ved opprettelse av brukeren");
         console.log("Error when sending HTTPS request");
         console.log(error);
     });
 
-}
-
-function alertDBconnectionRefused(){
-    alert("Could not connect to database");
 }
 
 function generateRandomId(length) {
@@ -206,11 +228,36 @@ function generateRandomId(length) {
     return result;
 }
 
+function checkImageExists(url, callback) {
+    fetch(url, { method: 'HEAD' })
+        .then(response => {
+            if (response.ok) {
+                callback(true); // image exists
+            } else {
+                callback(false); // image does not exist
+            }
+        })
+        .catch(() => {
+            callback(false); // request failed, assume image does not exist
+        });
+}
+
 /*
-    PASS GROUP NAME FROM GROUP PAGE TO SHOPPING LIST PAGE
+    GET DATES FOR CURRENT WEEK
  */
-function sendDropdownValue(groupName){
-    const dropdown = document.querySelector("#dropdown");
-    dropdown.value = groupName;
-    retrieveShoppingList();
+function getDatesForCurrentWeek() {
+    const today = new Date();
+    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
+
+    const startDate = new Date(today); // Clone the current date
+    startDate.setDate(today.getDate() - currentDayOfWeek + 1); // Start of the week (Sunday as the last day)
+
+    const datesForWeek = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        datesForWeek.push(date);
+    }
+
+    return datesForWeek;
 }

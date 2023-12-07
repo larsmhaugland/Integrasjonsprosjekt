@@ -1,7 +1,10 @@
 package API
 
 import (
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"golang.org/x/crypto/sha3"
 	"log"
 	"net/http"
 	"prog-2052/Firebase"
@@ -21,10 +24,10 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	case "credentials":
 		UserCredentialBaseHandler(w, r)
-		break
+
 	case "groups":
 		UserGroupBaseHandler(w, r)
-		break
+
 	case "search":
 		UserSearchHandler(w, r)
 	case "shopping":
@@ -45,13 +48,13 @@ func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
 		} else if r.URL.Path == "/user/credentials/register" {
 			UserCredentialPostHandler(w, r)
 		}
-		break
+
 	case http.MethodPatch:
 		UserCredentialPatchHandler(w, r)
-		break
+
 	case http.MethodDelete:
 		UserCredentialDeleteHandler(w, r)
-		break
+
 	case http.MethodOptions: // For CORS
 		return
 	default:
@@ -86,12 +89,21 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Hash the password
+	user.Password, err = HashPassword(user.Password)
+
+	if err != nil {
+		log.Println("Error while hashing password")
+		http.Error(w, "Error while hashing password", http.StatusBadRequest)
+		return
+	}
+
 	//Check if the credentials match
 	if user.Username == credentials.Username && user.Password == credentials.Password {
 		// Create a new cookie
 		authCookie := http.Cookie{
 			Name:     "AuthToken",                    // Cookie name
-			Value:    "test",                         // Set your authentication token
+			Value:    "test",                         // Set authentication token
 			Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
 			Path:     "/",                            // Cookie is valid for all paths
 			SameSite: http.SameSiteNoneMode,
@@ -109,8 +121,17 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	//Decode the JSON body
 	var user Firebase.User
 	err := DecodeJSONBody(w, r, &user)
+	fmt.Println(user)
 	if err != nil {
 		http.Error(w, "Error while decoding JSON body", http.StatusBadRequest)
+		return
+	}
+	//Hash password
+	user.Password, err = HashPassword(user.Password)
+
+	if err != nil {
+		fmt.Println("Error while hashing password")
+		http.Error(w, "Error while hashing password", http.StatusBadRequest)
 		return
 	}
 	//Add the user to the database
@@ -126,7 +147,7 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	//Create a new cookie
 	authCookie := http.Cookie{
 		Name:     "AuthToken",                    // Cookie name
-		Value:    "test",                         // Set your authentication token
+		Value:    "test",                         // Set authentication token
 		Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
 		Path:     "/",                            // Cookie is valid for all paths
 		SameSite: http.SameSiteNoneMode,
@@ -134,6 +155,17 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	//Add the cookie to the response
 	http.SetCookie(w, &authCookie)
 	w.WriteHeader(http.StatusCreated)
+}
+
+func HashPassword(password string) (string, error) {
+	hash := sha3.New384()
+	_, err := hash.Write([]byte(password))
+	if err != nil {
+		return "", err
+	}
+	hashInBytes := hash.Sum(nil)
+	hashString := hex.EncodeToString(hashInBytes)
+	return hashString, nil
 }
 
 func UserCredentialDeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -146,18 +178,18 @@ func UserCredentialPatchHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
+	
 	case http.MethodGet:
 		UserGroupGetHandler(w, r)
-		break
+	
 	case http.MethodPost:
 		UserGroupPostHandler(w, r)
-		break
-	case http.MethodOptions:
-		break // For CORS
+	
+	case http.MethodOptions: // For CORS
 
 	case http.MethodDelete:
 		UserGroupDeleteHandler(w, r)
-		break
+
 	case http.MethodPatch:
 		UserGroupPatchHandler(w, r)
 		return
@@ -229,6 +261,7 @@ func UserGroupDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
+	log.Print("Username: " + username)
 	user, err := Firebase.ReturnCacheUser(username)
 	if err != nil {
 		http.Error(w, "Error while getting user", http.StatusBadRequest)
@@ -266,11 +299,11 @@ func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case http.MethodOptions:
-		break // For CORS
+	case http.MethodOptions: // For CORS
+	
 	case http.MethodDelete:
 		UserShoppingDeleteHandler(w, r)
-		break
+
 	case http.MethodPatch:
 		UserShoppingPatchHandler(w, r)
 		return
@@ -287,6 +320,10 @@ func UserShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	user, err := Firebase.ReturnCacheUser(username)
+	if err != nil {
+		http.Error(w, "Error while getting user", http.StatusBadRequest)
+		return
+	}
 
 	listId := user.ShoppingLists[0]
 	log.Printf("List ID: %v\n", listId)

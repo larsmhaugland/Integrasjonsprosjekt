@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../CSS/css.css">
+    <link rel="stylesheet" href="../CSS/chat.css">
+    <title>Chat</title>
+</head>
+<body>
+    <header class="main-nav">
+        <a href="../index.html"><img id="logo-image" src="../Images/logo.png" alt="PLÆN-logo"/></a>
+        <nav>
+                <a class="nav" href="../Handleliste/index.html">HANDLELISTE</a>
+                <a class="nav" id="current-page" href="index.html">CHAT</a>
+                <a class="nav" href="../Kalender/index.html">KALENDER</a>
+                <a class="nav" href="../Oppskrifter/index.html">OPPSKRIFTER</a>
+                <button class="log-btn" id="log-in-btn">INNLOGGING</button>
+                <button class="log-btn" id="log-out-btn">LOGG UT</button>
+        </nav>
+    </header>
+
+    <!--NOT LOGGED IN-STARTPAGE-->
+    <div id="not-logged-in">
+        <img src="../Images/logostor.png">
+        <button class="log-btn" id="log-in-btn2">INNLOGGING</button>
+        <a>ELLER <a class="register-btn">REGISTRER DEG HER</a></a>
+    </div>
+
+    <!--Pop-up login-->
+    <div id="log-in-popup" class="popup-wrapper">
+        <form id="log-in-form" class="popup-content">
+            <a id="close-login-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <h3>Brukernavn</h3>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+            <h3>Passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
+            <h3>Husk meg <input type="checkbox" name="remember" id="remember"></h3>
+            <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
+            <button type="button" class="btn" id="log-in-submit">Logg inn</button>
+            <br><br>
+            <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
+        </form>
+    </div>
+
+    <!--Pop-up register-->
+    <div id="register-popup" class="popup-wrapper">
+        <form id="register-user-form" class="popup-content">
+            <a id="close-register-popup" class="close-popup"><img src="../Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <h3>Navn</h3>
+            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
+            <h3>Brukernavn</h3>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
+            <a id="username-taken" class="error">Brukernavnet er opptatt</a>
+            <h3>Passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
+            <h3>Gjenta passord</h3>
+            <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
+            <a id="password-mismatch" class="error">Passordene er ikke like</a>
+            <br><br>
+            <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+            <br><br>
+            <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+        </form>
+    </div>
+
+    <main>
+        <div class="chat-app">
+            <div class="chat-list">
+                <div class="chat-list-header">
+                    <h1>CHATTER</h1>
+                    <button id="create-chat-button">
+                        <img src="../Images/add-icon.png" alt="Create new chat">
+                    </button>
+                </div>
+                <input type="text" id="filter-chats-list" placeholder="Søk...">
+                <ul id="list-of-chats">
+                </ul>
+            </div>
+            <div class="chat-room">
+                <div class="chat-room-header">
+                    <h4 id="chat-room-name">Du har ikke valgt en chat.</h4>
+                    <button id="leave-chat-button">
+                        Forlat chat
+                    </button>
+                    <button id="edit-chat-button">
+                        <img src="../Images/edit-icon.png" alt="Edit chat">
+                    </button>
+                </div>
+
+                <ul class="chat-messages">
+                    
+                </ul>
+                
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Skriv her...">
+                    <button id="send-message-button">Send</button>
+                </div>
+            </div>
+        </div>
+        <div id="chat-popup" class="popup">
+            <div class="popup-content">
+                <span class="close" id="close-chat-popup" >&times;</span>
+                <h2>Opprett en ny chat</h2>
+                <form class="chat-form">
+                    <label for="chat-name">Navn:</label>
+                    <input type="text" id="chat-name" name="chat-name" required placeholder="Gi chatten et navn">
+                
+                    <label for="member-input">Legg til medlem:</label>
+                    <div class="member-input" id="member-input">
+                        <button type="button" id="add-member-button">Legg til</button>
+                    </div>
+                    <span> <em>Trykk "Legg til" for å legge til medlemmer i chatten.</em> </span>
+                    <ul id="member-list" class="member-list">
+                    </ul>
+                    
+                    <button type="submit" class="create-button" >Opprett chat</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="edit-chat-popup" class="popup">
+            <div class="popup-content">
+                <span class="close-popup" id="close-edit-chat-popup">&times;</span>
+                <h2>Rediger Chat</h2>
+                <ul id="current-members-list">
+                </ul>
+                <button id="add-members-button">Legg til medlemmer</button>
+                <button id="remove-members-button">Fjern valgte medlemmer</button>
+                <button id="delete-chat-button">Slett chat</button>
+            </div>
+        </div>
+        
+        <div id="search-member-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Legge til medlemmer</h2>
+                <input type="text" id="search-input" placeholder="Enter member name...">
+                
+                <ul class="member-suggestions"></ul>
+            </div>
+        </div>
+    </main>
+    <script src="../JS/chat.js"></script>
+    <script src="../JS/js.js"></script>
+</body>
+</html>

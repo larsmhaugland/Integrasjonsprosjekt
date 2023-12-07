@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 document.addEventListener("DOMContentLoaded", function () {
     // DOM elements
     const groupMembersList = document.querySelector("#group-members-list");
@@ -5,28 +6,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const groupNameElement = document.querySelector("#group-name");
     const handlelisteLink = document.querySelector("#handleliste-link");
     const kalenderLink = document.querySelector("#kalender-link");
+    const chatLink = document.querySelector("#chat-link");
+    const LoggedInUsername = sessionStorage.getItem("username");
     let groupNamePass;
+    let GroupOwner;
+    const Administrators = [];
     const redirectURL = "../index.html";
     // Global variables and constants
     var groupID;
 
-    // Needed to make it async because getGroupName is async and the fetch in it would not finish before 
-    // the group name was set in the html so it became undefined.
-    // TODO: Fix this to use window.onload without crashing with the window.onload in JS.js
-    onPageReloadGroup()
-    async function onPageReloadGroup() {
-        const urlParams = new URLSearchParams(window.location.search);
-        groupID = urlParams.get('groupID');
-        if (groupID){
-            const groupName = await getGroupName(groupID);
-            groupNamePass = groupName;
-            groupNameElement.textContent = "Settings for: " + groupName;
-            fetchGroupMembers(groupID);
-        } else {
-            alert("No groupID was passed to the groupSettings.html page");
-            window.location.href = redirectURL;
-        }
-    };
+    
+    onPageReloadGroup();
 
     // Add a click event listener to the button
     editButton.addEventListener("click", function () {
@@ -46,10 +36,45 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = url;
     });
 
-    // Needs to be async because it uses await to wait for the response from the server before returning the data.
+    chatLink.addEventListener("click", function () {
+        const url = `../Chat/index.html?groupID=${encodeURIComponent(groupID)}`;
+        window.location.href = url;
+    });
+
+    /**
+     * Function to run when the page is loaded or reloaded. Gets the gropupID from the URL,
+     *  and fetches the group name and members. Displays the edit chat button if the logged in user is 
+     * the owner or an administrator.
+     * @returns {void}
+     */
+    async function onPageReloadGroup() {
+        const urlParams = new URLSearchParams(window.location.search);
+        groupID = urlParams.get('groupID');
+        if (groupID){
+            const groupName = await getGroupName(groupID);
+            groupNamePass = groupName;
+            groupNameElement.textContent = "Instillinger for: " + groupName;
+            await fetchGroupMembers(groupID);
+            displayEditIfOwnerOrAdmin();
+        } else {
+            alert("No groupID was passed to the groupSettings.html page");
+            window.location.href = redirectURL;
+        }
+    }
+
+   /**
+    * Function to get the group name from the database by making the API call. 
+    * @async - To make sure the function waits for the fetch operation to complete,
+    *           so group name is returned before it is supposed to be displayed.
+    * @param {string} groupID - unique ID for the group
+    * @returns 
+    */
     async function getGroupName(groupID){
+        // URL for the API endpoint
         const url = `${API_IP}/group/groupName?groupID=${groupID}`;
+        
         try {
+            // Send GET request to the api endpoint
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -62,21 +87,36 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Function to fetch group members data
-    function fetchGroupMembers(groupID) {
+    /**
+     * Function to fetch the group members from the database by making the API call.
+     * @async - To make sure the function waits for the fetch operation to complete,
+     *          so the group members are displayed after they are retrieved.
+     * @param {string} groupID - unique ID for the group
+     * @returns {void}
+     */
+    async function fetchGroupMembers(groupID) {
+        // URL for the API endpoint
         const url = `${API_IP}/group/members?groupID=${encodeURIComponent(groupID)}`;
-        fetch(url) 
-            .then((response) => response.json())
-            .then((data) => {
-                renderGroupMembers(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching group members:', error);
-                alert("Server error when trying to get group members");
-            });
+        try {
+            // Send GET request to the api endpoint
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Error with request to endpoint. Status: ${response.status}`);
+            }
+            const data = await response.json();
+            // Call the function to render the group members after the response from the API is received
+            renderGroupMembers(data); 
+        } catch (error) {
+            console.error('Error fetching group members:', error);
+            alert("Server error when trying to get group members");
+        }
     } 
 
-    // Function to render the group members based on the retrieved data
+    /**
+    * Renders the group members on the page by creating the corresponding list items.
+    * @param {string} groupMembers - array of group members
+    * @returns {void}
+    */
     function renderGroupMembers(groupMembers) {
         // Clear existing members (if any)
         groupMembersList.innerHTML = '';
@@ -100,6 +140,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Append the list item to the group members list
             groupMembersList.appendChild(listItem);
+
+            if (member.roleName.toLowerCase() === "owner"){
+                GroupOwner = member.username;
+            }
+            if (member.roleName.toLowerCase() === "administrator"){
+                Administrators.push(member.username);
+            }
         });
     }
+
+    /**
+     * Function to display the edit button if the logged in user is the owner or an administrator.
+     */
+    function displayEditIfOwnerOrAdmin(){
+        if (LoggedInUsername === GroupOwner || Administrators.includes(LoggedInUsername)){
+            editButton.style.display = "block";
+        }
+    }
+    
 });

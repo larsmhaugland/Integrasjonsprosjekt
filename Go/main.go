@@ -3,15 +3,18 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
+
 	"flag"
 	"fmt"
-	"github.com/google/uuid"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"prog-2052/API"
 	"prog-2052/Firebase"
+	"prog-2052/Socket"
+
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -23,7 +26,8 @@ func main() {
 	} else {
 		startHTTPserver()
 	}
-
+	game_version :=3
+    fmt.Printf("Super Mario %s\n",game_version)
 }
 
 func startHTTPserver() {
@@ -39,6 +43,13 @@ func startHTTPserver() {
 	http.HandleFunc("/user/", API.UserBaseHandler)
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
+	http.HandleFunc("/chat/", API.ChatBaseHandler)
+	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	log.Println("Websocket endpoint set up")
+	http.HandleFunc("/clear/", clearCacheHandler)
+
+	// coroutine that runs the chat room cleanup function
+	// Socket.RunChatRoomCleanup()
 
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
@@ -70,10 +81,25 @@ func startHTTPSserver() {
 	http.HandleFunc("/user/", API.UserBaseHandler)
 	http.HandleFunc("/recipe/", API.RecipeBaseHandler)
 	http.HandleFunc("/shopping/", API.ShoppingBaseHandler)
+	http.HandleFunc("/chat/", API.ChatBaseHandler)
+	http.HandleFunc("/ws", Socket.WebSocketHandler)
+	log.Println("Websocket endpoint set up")
+	http.HandleFunc("/clear/", clearCacheHandler)
+
+	// coroutine that runs the chat room cleanup function
+
+	go Socket.RunChatRoomCleanup(10)
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))
+}
+
+func clearCacheHandler(w http.ResponseWriter, r *http.Request) {
+	API.SetCORSHeaders(w)
+	Firebase.InitCache()
+	w.WriteHeader(http.StatusOK)
+	log.Println("Cache cleared")
 }
 
 // Tenker det hadde vært gøy å ha statistikk over hvor mye de forskjellige endpointsene blir brukt og antall cache hits/misses ellerno
@@ -102,12 +128,20 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
+	//If filename is specified, it is at the end of the path
+	filename := r.URL.Path[len("/image/"):]
 
+	//Set path based on if request coming from localhost or not
+	origin := r.Host
+	ImagePath := "/UsrImages/"
+	if origin == "localhost:8080" {
+		ImagePath = "../Webserver/Images/"
+	}
 	// Check if the request is a POST request
-	if r.Method != http.MethodPost && r.Method != http.MethodOptions {
+	if r.Method != http.MethodPost && r.Method != http.MethodOptions && r.Method != http.MethodGet {
 		http.Error(w, "Error; Method not supported", http.StatusBadRequest)
 		return
-	} else if r.Method == http.MethodOptions {
+	} else if r.Method == http.MethodOptions || r.Method == http.MethodGet {
 		return
 	}
 
@@ -119,15 +153,17 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-	id, err := generateUniqueID()
-	if err != nil {
-		log.Println("Error generating unique DocumentID: ", err)
-		http.Error(w, "Error generating unique DocumentID", http.StatusInternalServerError)
-		return
+	// Generate a unique DocumentID for the uploaded file if name is not specified
+	if filename == "" {
+		filename, err = generateUniqueID()
+		if err != nil {
+			log.Println("Error generating unique DocumentID: ", err)
+			http.Error(w, "Error generating unique DocumentID", http.StatusInternalServerError)
+			return
+		}
 	}
-
 	// Create a new file on the server to save the uploaded file
-	uploadedFile, err := os.Create("/Images/" + id + ".jpeg") // Specify the desired file name
+	uploadedFile, err := os.Create(ImagePath + filename + ".jpeg") // Specify the desired file name
 	if err != nil {
 		log.Println("Error creating file: ", err)
 		http.Error(w, "Unable to create the file for writing", http.StatusInternalServerError)
@@ -142,13 +178,18 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to copy file", http.StatusInternalServerError)
 		return
 	}
-
-	err = API.EncodeJSONBody(w, r, id)
+	//Construct response
+	response := map[string]interface{}{
+		"filename": filename,
+	}
+	w.WriteHeader(http.StatusOK)
+	err = API.EncodeJSONBody(w, r, response)
 	if err != nil {
 		log.Println("Error encoding response: ", err)
 		http.Error(w, "Error while encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 }
 
 func generateUniqueID() (string, error) {
