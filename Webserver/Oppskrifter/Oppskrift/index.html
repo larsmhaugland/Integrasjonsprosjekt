@@ -84,10 +84,9 @@
                     <label for="edit-difficulty"><br>Vanskelighetsgrad:<br></label>
                     <input type="range" min="1" max="5" id="edit-difficulty" required>
                     <p id="difficulty-value-label" style="display: inline;">3</p>
-                    <p for="category-checkboxes"><br>Kategorier:<br></p>
+                    <label for="category-checkboxes"><br>Kategorier:<br></label>
                     <div id="category-checkboxes">
-                        <p>Innmat kommer</p>
-                        <!-- Need to find out which categories we should have -->
+                        <!-- Category checkboxes get appended here -->
                     </div>
 
                     <div id="manual-recipe">
@@ -97,9 +96,7 @@
                             <input type="text" id="recipe-ingredient-qty" placeholder="Mengde...">
                             <button id="add-ingredient-btn">Legg til</button>
                             <ul id="edit-ingredient-list">
-                                <!-- Ingredients get appended here
-                                TODO: ENDRE PÅ INGREDIENSER
-                                -->
+                                <!-- Ingredients get appended here -->
                             </ul>
                         </div>
                         <div id="edit-recipe-instructions">
@@ -107,9 +104,7 @@
                             <input type="text" id="recipe-instructions" placeholder="Instruksjoner">
                             <button id="add-instruction-btn">Legg til</button>
                             <ol id="edit-instructions-list">
-                                <!-- Instructions get appended here
-                                TODO: ENDRE PÅ INSTRUKSJONER
-                                 -->
+                                <!-- Instructions get appended here -->
                             </ol>
                         </div>
                     </div>
@@ -117,14 +112,6 @@
                         <label for="edit-url"><br> Full URL til oppskrift<br></label>
                         <input type="url" id="edit-url" placeholder="Eks: https://plaen.no">
                     </div>
-                    <!---
-                    <label for="edit-image"><br>Bilde<br></label>
-                    <input type="file" id="edit-image" accept="image/*">
-                    <br>
-                    <div id="recipe-image-preview">
-                        <img id="recipe-image-preview-img" src="" alt="Bilde av oppskrift">
-                    </div>
-                    -->
                     <br>
                     <button id="delete-recipe">Slett oppskrift</button>
                     <button id="submit-edit-recipe">Lagre oppskrift</button>
@@ -149,5 +136,6 @@
 </body>
 <script src="../../JS/js.js"></script>
 <script src="../../JS/API.js"></script>
+<script defer src="../../JS/oppskrifter.js"></script>
 <script src="../../JS/oppskrift.js"></script>
 </html>

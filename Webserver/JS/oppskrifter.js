@@ -586,22 +586,25 @@ async function newRecipe() {
 function displayPages() {
     // Initialize pag variable
     let pag = [];
+    let nPages = 0;
 
     // Check if the search field is empty
     if (searchField.value === "") {
         // Check if there is only one page or fewer
-        if (Math.ceil(Recipes.length / MAXRESULTS) <= 1) {
+        nPages = Math.ceil(Recipes.length / MAXRESULTS);
+        if (nPages <= 1) {
             return; // No need to display pagination
         }
         // Calculate pagination for all recipes
-        pag = pagination(page, Math.ceil(Recipes.length / MAXRESULTS));
+        pag = pagination(page, nPages);
     } else {
         // Check if there is only one page or fewer for filtered recipes
-        if (Math.ceil(filterRecipes(searchRecipes(searchField.value)).length / MAXRESULTS) <= 1) {
+        nPages = Math.ceil(filterRecipes(searchRecipes(searchField.value)).length / MAXRESULTS);
+        if (nPages <= 1) {
             return; // No need to display pagination
         }
         // Calculate pagination for filtered recipes
-        pag = pagination(page, Math.ceil(filterRecipes(searchRecipes(searchField.value)).length / MAXRESULTS));
+        pag = pagination(page, nPages);
     }
 
     // Get the pagination div element
@@ -609,7 +612,7 @@ function displayPages() {
     paginationDiv.innerHTML = ""; // Clear existing pagination buttons
 
     // Check if pagination buttons are more than 3 to decide whether to show previous and next buttons
-    if (pag.length > 3) {
+    if (nPages > 3) {
         // Display previous button if not on the first page
         if (page > 0) {
             addButton(paginationDiv, "<", "changePage(" + (page - 1) + ")");
@@ -617,11 +620,11 @@ function displayPages() {
 
         // Display pagination buttons
         for (let i = 0; i < pag.length; i++) {
-            addButton(paginationDiv, pag[i], "changePage(" + (pag[i] - 1) + ")", i === page, pag[i] === "...");
+            addButton(paginationDiv, pag[i], "changePage(" + (pag[i] - 1) + ")", pag[i] !== "..." && pag[i] - 1 === page, pag[i] === "...");
         }
 
         // Display next button if not on the last page
-        if (page < pag.length - 1) {
+        if (page < nPages - 1) {
             addButton(paginationDiv, ">", "changePage(" + (page + 1) + ")");
         }
     } else {
@@ -659,9 +662,9 @@ function changePage(p) {
 function pagination(c, m) {
     let current = c,
         last = m,
-        delta = 2,
+        delta = 10,
         left = current - delta,
-        right = current + delta + 1,
+        right = current + delta,
         range = [],
         rangeWithDots = [],
         l;

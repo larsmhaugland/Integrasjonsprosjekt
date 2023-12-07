@@ -1,32 +1,46 @@
-* {
+button:not(.log-btn), input[type=file] {
     box-sizing: border-box;
+    border: thin solid #80AB82;
+    border-radius: 10px;
+    padding: 5px 10px;
+    background-color: #80AB82;
+    transition: 0.3s;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
 }
+
+button:hover :not(.log-btn){
+    background-color: #04310d;
+    border-color: #04310d;
+    transition: 0.3s;
+}
+
 body{
     grid-template-columns: 1% auto auto auto 5%;
 }
+
+/*Main body layout*/
 .recipe-wrapper {
     display: grid;
     grid-area: main;
     grid-template-areas:
         "header header header header"
         "filter results results results"
-        "filter results results results"
-        "filter results results results"
         "nav nav nav nav";
     grid-template-columns: 1fr 3fr 3fr 3fr;
-    grid-template-rows: 10% 1fr 1fr 1fr 5%;
+    grid-template-rows: 60px 5fr 50px;
     gap: 2% 2%;
 }
 
 .filter-wrapper {
-    margin-top: 40px;
     display: grid;
     grid-area: filter;
-    height: 100%;
     width: 100%;
     background: #DDDDDD;
     border: 3px solid #DDDDDD;
     border-radius: 10px;
+    height: fit-content;
 }
 
 .filter-wrapper h3 {
@@ -35,13 +49,13 @@ body{
     font-size: 20px;
     text-align: center;
     width: 100%;
+    white-space: nowrap;
 }
 
 .filter-wrapper input {
     display: inline;
-    margin-right: 10px;
+    margin: 10px;
     vertical-align: middle;
-    margin-bottom: 0;
 }
 
 .filter-wrapper label {
@@ -60,6 +74,7 @@ body{
     border: 3px solid #DDDDDD;
     border-radius: 10px;
 }
+
 .category-name {
     margin-right: 10px;
     font-size: 15px;
@@ -79,9 +94,8 @@ body{
     content: "\2212"; /* Minus sign (-) when active */
 }
 
-
 .category-div {
-    max-height: 0px;
+    max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
     margin-right: 10px;
@@ -89,14 +103,11 @@ body{
 }
 
 .recipe-header-container {
-    display: grid;
+    padding: 10px;
     grid-area: header;
-    align-items: center;
-    column-gap: 10px;
 }
 
 .recipe-header {
-    margin-top: 5px;
     display: flex;
     flex-direction: row;
     font-weight: lighter;
@@ -104,10 +115,28 @@ body{
     height: 40px;
 }
 
+#search-bar {
+    background: #DDDDDD;
+    border: 3px solid #DDDDDD;
+    border-radius: 10px;
+    padding: 1px 1px;
+    cursor: pointer;
+    width: 60%;
+    font-size: 25px;
+    font-weight: lighter;
+    height: fit-content;
+    transition: 0.3s;
+}
+
+#search-bar:hover {
+    background: #CCCCCC;
+    border-color: #CCCCCC;
+    transition: 0.3s
+}
+
 #new-recipe-btn {
     border: none;
     padding: 1px 1px;
-
     width: 5%;
 }
 
@@ -126,35 +155,14 @@ body{
     transition: 0.3s;
 }
 
-#search-bar {
-    background: #DDDDDD;
-    border: 3px solid #DDDDDD;
-    border-radius: 10px;
-    padding: 1px 1px;
-    cursor: pointer;
-    width: 60%;
-    font-size: 25px;
-    font-weight: lighter;
-    height: 100%;
-    transition: 0.3s;
-}
-
-#search-bar:hover {
-    background: #CCCCCC;
-    border-color: #CCCCCC;
-    transition: 0.3s
-}
-
 .results {
-    margin-top: 40px;
     display: flex;
     grid-area: results;
     flex-direction: row;
     flex-wrap: wrap;
-    flex-grow: 1;
+    height: fit-content;
     justify-content: flex-start;
     gap: 20px 20px;
-
 }
 
 .result {
@@ -165,7 +173,7 @@ body{
     transition: 0.3s;
     background: #EEEEEE;
     flex-basis: 32%;
-    max-height: 200px;
+    height: 200px;
 }
 
 .result:hover {
@@ -194,7 +202,6 @@ body{
 .recipe-nav {
     display: flex;
     grid-area: nav;
-    margin-top: 100px   ;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -223,8 +230,8 @@ body{
 
 .pagination-button:hover:not(.active) {
     transition: ease-in 0.2s;
-    background-color: paleturquoise;
-    border-color: paleturquoise;
+    background-color: #80AB82;;
+    border-color: #80AB82;;
 }
 
 .new-recipe-popup {
@@ -241,7 +248,7 @@ body{
 
 .new-recipe-content {
     background-color: white;
-    margin: 10% auto;
+    margin: 7% auto;
     padding: 20px;
     border: 3px solid #777777;
     width: 60%;
@@ -328,10 +335,11 @@ body{
     font-size: 20px;
 }
 
-#recipe-image-preview-img {
+#recipe-image-preview img{
     max-width: 40%;
     max-height: 40%;
     object-fit: cover;
+    alignment: center;
 }
 
 #share-with-groups {

@@ -1,6 +1,14 @@
+.sub-header {
+    margin-top: 15px;
+    font-weight: bolder;
+    width: fit-content;
+    font-size: 35px;
+}
+
 body{
     background-color: #80AB82;
 }
+
 .single-recipe-wrapper {
     margin-top: 10px;
     width: 80%;
@@ -13,6 +21,7 @@ body{
     grid-template-areas:
         "recipe-header recipe-header"
         "recipe-content recipe-image";
+    grid-template-columns: 1fr 1fr;
 }
 
 .recipe-header{
@@ -22,7 +31,7 @@ body{
 #recipe-name{
     font-size: 40px;
     font-weight: bold;
-    margin: 3px;
+    margin: 1px;
     padding: 0;
     display: inline;
     width: 20%;
@@ -46,21 +55,17 @@ body{
     filter: invert(47%) sepia(71%) saturate(12%) hue-rotate(320deg) brightness(86%) contrast(87%);
 }
 
+
 #recipe-image {
     grid-area: recipe-image;
-}
-
-#recipe-image img {
-    float: right;
-    margin: 10px;
-    width: 50%;
-    height: auto;
+    width: 1fr;
 }
 
 .single-recipe-content {
     grid-area: recipe-content;
     margin-top: 5px;
     background: white;
+    font-weight: lighter;
     font-size: 30px;
     width: fit-content;
 }
