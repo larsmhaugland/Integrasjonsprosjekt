@@ -258,7 +258,7 @@ function updateLoginStatus(){
     let notLoggedInDisplay = document.querySelector("#not-logged-in");
     let mainDisplay = document.querySelector("#main-display");
     let body = document.querySelector("body");
-
+    console.log("Logged in: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
@@ -303,7 +303,6 @@ function registerUser(){
         body: JSON.stringify(credentials)
     }).then(response => {
         let usernameTaken = document.querySelector("#username-taken");
-        passwordMismatch.style.display = "none";
         if (response.status === 201){
             let registerForm = document.querySelector("#register-popup");
             registerForm.style.display = "none";
