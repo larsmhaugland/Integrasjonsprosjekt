@@ -611,7 +611,7 @@ function addDinnerToCalendar() {
             element.setAttribute("href", href);
         } else {
             console.log("could not find recipe");
-            element.innerHTML = '<br>' + dinnerName;
+            element.innerHTML = '<br>' +"Middag: " + dinnerName;
         }
 
         // Append the created element to the 'div'
