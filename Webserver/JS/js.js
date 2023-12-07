@@ -16,7 +16,8 @@ const chatLinkButton = document.querySelector("#Chat-link");
 const kalenderLinkButton = document.querySelector("#Kalender-link");
 const oppskriftLinkButton = document.querySelector("#Oppskrift-link");
 const handlelisteLinkButton = document.querySelector("#Handleliste-link");
-const hjemmeside = window.location.href.includes(window.location.hostname + "/index.html") || window.location.href.includes(window.location.hostname + "/")
+const hjemmeside = !window.location.href.includes("Chat/index.html") && !window.location.href.includes("Kalender/index.html")
+    && !window.location.href.includes("Oppskrifter/index.html") && !window.location.href.includes("Handleliste/index.html");
 const oppskriftside = window.location.href.includes("Oppskrift/index.html");
 
 chatLinkButton.addEventListener("click", (event) => {
