@@ -310,6 +310,7 @@ function registerUser(){
             console.log("Registered user: " + username);
             sessionStorage.setItem("username", username);
             sessionStorage.setItem("loggedIn", "true");
+            console.log("Updating login status");
             updateLoginStatus();
         } else {
             usernameTaken.style.display = "block";
