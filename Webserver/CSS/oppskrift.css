@@ -60,11 +60,10 @@ body{
 
 #recipe-image {
     grid-area: recipe-image;
-    width: 1fr;
 }
 
 #recipe-image img {
-    max-width: 1fr;
+    max-width: 100%;
 }
 
 .single-recipe-content {
