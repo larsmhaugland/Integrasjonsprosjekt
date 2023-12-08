@@ -9,7 +9,7 @@ let page = 0;                       //Current page
 let Recipes = [];                   //List of recipes
 let Categories = [];                //List of categories
 const MAXURLDISPLAYLENGTH = 25;     //Max number of characters to display for URL
-const isOppskrifter = window.location.href.includes("Oppskrifter/index.html");
+const isOppskrifter = window.location.href.includes("Oppskrifter/index.html"); //Check if on oppskrifter page
 
 
 /***      DOM ELEMENTS       ***/
@@ -30,6 +30,7 @@ let instructionInputBtn = document.querySelector("#add-instruction-btn");
 let instructionInput = document.querySelector("#recipe-instructions");
 
 /***       EVENT LISTENERS       ***/
+//Only run on oppskrifter page
 if(isOppskrifter) {
 // Event listener for the "New Recipe" button click
     newRecipeBtn.addEventListener("click", function () {
@@ -247,20 +248,21 @@ if(isOppskrifter) {
         displayPages();
     });
 
-
+//Update preview image when image input is changed
     imageInput.addEventListener("change", function () {
-        //Display preview image
         if (this.files.length === 1) {
+            //Display preview image
             let image = document.querySelector("#recipe-image-preview-img");
             image.setAttribute("src", URL.createObjectURL(this.files[0]));
             image.style.display = "block";
         } else {
+            //Hide preview image
             let image = document.querySelector("#recipe-image-preview-img");
             image.setAttribute("src", "");
             image.style.display = "none";
         }
     });
-
+    //Add ingredient on enter when ingredient name is selected
     ingredientInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -272,7 +274,7 @@ if(isOppskrifter) {
             quantityInput.value = "";
         }
     });
-
+    //Add ingredient on enter when quantity is selected
     quantityInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -284,6 +286,7 @@ if(isOppskrifter) {
             quantityInput.value = "";
         }
     });
+    //Add ingredient on button click
     ingredientInputBtn.addEventListener("click", (event) => {
         event.preventDefault();
         //Add ingredient on button click
@@ -293,8 +296,7 @@ if(isOppskrifter) {
             quantityInput.value = "";
         }
     });
-
-
+    //Add instruction on enter
     instructionInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -305,6 +307,7 @@ if(isOppskrifter) {
             instructionInput.value = "";
         }
     });
+    //Add instruction on button click
     instructionInputBtn.addEventListener("click", (event) => {
         event.preventDefault();
         //Add instruction on button click
@@ -313,7 +316,7 @@ if(isOppskrifter) {
             instructionInput.value = "";
         }
     });
-
+    //Add ingredient on enter when ingredient name is selected
     window.onload = function () {
         //Check if logged in
         updateLoginStatus();

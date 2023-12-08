@@ -1,6 +1,6 @@
 /**
  * @file oppskrift.js
- * @brief oppskrift.js contains the functions that are used on each recipe.
+ * @brief oppskrift.js contains the functions that are used when viewing a single recipe.
  */
 /***    DOM ELEMENTS AND GLOBALS   ***/
 let recipeEdit = document.querySelector("#edit-recipe-btn");

@@ -3,11 +3,9 @@
  * @brief API.js contains some of the functions that communicate with the backend.
  */
 
-/* jshint esversion: 8 */
-/* jshint loopfunc: true */
 async function getRecipes(Recipes) {
     let username = sessionStorage.getItem("username");
-    //if(!checkAuthToken()) return;
+
     try {
         const response = await fetch(API_IP + "/recipe/" + username + "?groups=true", {
             method: "GET",
@@ -20,13 +18,11 @@ async function getRecipes(Recipes) {
             const data = await response.json();
             if (data.userRecipes  !== null) {
                 for (let i = 0; i < data.userRecipes.length; i++) {
-                    //Recipes.push(data["userRecipes"][i]);
                     Recipes.push(data.userRecipes[i]);
                 }
             }
             if (data.groupRecipes !== null) {
                 for (let i = 0; i < data.groupRecipes.length; i++) {
-                    //Recipes.push(data["groupRecipes"][i]);
                     Recipes.push(data.groupRecipes[i]);
                 }
             }
@@ -98,7 +94,5 @@ async function uploadImage(file) {
             console.log(error);
         });
     }
-
-
     return response_remote.filename;
 }
