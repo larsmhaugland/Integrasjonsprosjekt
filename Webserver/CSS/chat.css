@@ -376,7 +376,7 @@
 }
 
 /* Styling for the "legg til medlemmer" button in the edit chat poppup */
-#add-members-button {
+button#add-members-button {
     background: #064412;
     font-weight: bold;
     color: #fff;
@@ -387,7 +387,7 @@
     font-size: 1.9vh;
     width:  17vw;
 }
-#add-members-button:hover {
+button#add-members-button:hover {
     background-color: #04310d;
 }
 
