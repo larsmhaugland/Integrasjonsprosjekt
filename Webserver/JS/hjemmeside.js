@@ -4,16 +4,10 @@
  */
 /* jshint esversion: 8 */
 /* jshint loopfunc: true */
-//TODO: ADD SHOPPING LIST ID WHEN CREATING NEW GROUP AND POSTING A NEW EMPTY SHOPPING LIST
-//CALL ON START/RELOAD
+
 retrieveGroups();
 
-//EVENT LISTENERS:
-
-//On click, display pop-up window
-let btn = document.querySelector("#new-group-btn");
-btn.addEventListener("click", (event)=> {event.preventDefault();
-    document.querySelector("#new-group-popup").style.display = "block";});
+/***************************   DOM ELEMENTS  ***************************/
 
 const form = document.querySelector(".create-group-form");
 const modal = document.querySelector("#search-member-modal");
@@ -25,21 +19,31 @@ const closeModalButton = modal.querySelector(".close-modal");
 const createGroupCloseButton = document.querySelector("#close-group-popup");
 const imageInput = document.querySelector("#group-img");
 
+
+/***************************   EVENT LISTENERS  ***************************/
+
 // Close the modal when the close button is clicked
 closeModalButton.addEventListener("click", function () {
     modal.style.display = "none";
 });
 
+//On click, display pop-up window
+let btn = document.querySelector("#new-group-btn");
+btn.addEventListener("click", (event)=> {event.preventDefault();
+    document.querySelector("#new-group-popup").style.display = "block";});
+
+// Event listener to open the modal when the button is clicked
 openModalButton.addEventListener("click", function () {
     modal.style.display = "block";
     searchInput.value = "";
 });
+
+// Event listener to close the create group popup when the close button is clicked
 createGroupCloseButton.addEventListener("click", function () {
     document.querySelector("#new-group-popup").style.display = "none";
 });
 
-
-
+// Event listener to add the form data to the database when the form is submitted
 form.addEventListener("submit", async function (event) {
     event.preventDefault(); // Prevent the default form submission behavior
 
@@ -77,6 +81,7 @@ form.addEventListener("submit", async function (event) {
         "shopping-lists": [shoppingListID],
     };
 
+    // API call with POST request to create a new group in the database
     fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
         headers: {
@@ -105,11 +110,12 @@ form.addEventListener("submit", async function (event) {
             if (groups === null){
                 groups = [];
             }
-            //const groups = JSON.parse(sessionStorage.getItem("groups") || stringify([]));
+
             groups.push(groupNew);
             let username = sessionStorage.getItem("username");
             sessionStorage.setItem("groups", JSON.stringify(groups));
 
+            // Set elements for displaying the groups
             let display = document.querySelector(".groups-container");
             let groupContainer = document.createElement("a");
             groupContainer.setAttribute("href", "#");
@@ -122,11 +128,15 @@ form.addEventListener("submit", async function (event) {
             let groupIdParagraph = document.createElement("p");
             groupIdParagraph.textContent = "Gruppe-ID: " + data.documentID;
 
+            // Add the elements  for the group to the groupContainer
             groupBlock.appendChild(groupNameParagraph);
             groupBlock.appendChild(groupIdParagraph);
             groupContainer.appendChild(groupBlock);
             display.appendChild(groupContainer);
+            
+            // Go through the list of members and add the group to their list of groups
             memberList.forEach((member) => {
+                // API call with PATCH request to add the group to the user
                 fetch(API_IP + `/user/groups?username=${member}`, {
                     method: "PATCH",
                     headers: {
@@ -152,6 +162,7 @@ form.addEventListener("submit", async function (event) {
         });
 });
 
+// Event listener to handle when the user selects an image to upload
 imageInput.addEventListener("change", function (event){
     if(this.files.length === 1){
         let image = document.querySelector("#group-img-preview img");
@@ -164,7 +175,7 @@ imageInput.addEventListener("change", function (event){
     }
 });
 
-// Handle search input changes
+// Handle search input changes for seraching on members to add to the group
 searchInput.addEventListener("input", function () {
     const query = searchInput.value.trim();
     if (query.length === 0) {
@@ -183,12 +194,13 @@ searchInput.addEventListener("input", function () {
         });
 });
 
-/***        FUNCTIONS      ***/
+/***************************   FUNCTIONS ***************************/
 
 /**
  * Updates the suggestions for members to add after the user have entered in partial or full
  * username of the person they wish to add to their group
  * @param {*} results - The usernames of the users that corresponded to the search
+ * @returns {void}
  */
 function updateMemberSuggestions(results) {
 
@@ -247,6 +259,7 @@ function updateMemberSuggestions(results) {
 /**
  * Adds a member to the list of members to add
  * @param username - The username of the member to add
+ * @returns {void}
  */
 function addMemberToAddList(username) {
     // Get the list of members
@@ -269,10 +282,13 @@ function addMemberToAddList(username) {
 /**
  * Removes a member from the list of members to add
  * @param username - The username of the member to remove
+ * @returns {void}
  */
 function removeMemberFromList(username){
     var memberListItem;
+    // Get all the list items in the member list
     const listItems = document.querySelectorAll("#member-list li");
+    // Iterate through the list items and find the one with the matching username
     for (const listItem of listItems) {
         const span = listItem.querySelector("span");
         if (!span){console.log("span is null");}
@@ -285,17 +301,22 @@ function removeMemberFromList(username){
 }
 
 /**
-    RETRIEVE GROUPS
+ * retrieveGroups - Fetches all the groups that the user is a member of.
+ * @returns {void}
  */
 function retrieveGroups(){
 
     if (!checkLoginStatus()) return;
+
+    // Get the username and groups the user is a part of from the sessionStorage
     let userName = sessionStorage.getItem("username");
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
     if(userName === null){
         return;
     }
+
+    // API call with GET request to get all the groups that the user is a member of
     fetch(API_IP + `/user/groups?username=${userName}`, {
         method: "GET",
         headers: {
@@ -309,6 +330,7 @@ function retrieveGroups(){
             throw new Error("Failed to retrieve groups");
         }
     }).then(data=>{
+        // Add the groups to the sessionStorage
         sessionStorage.setItem("groups", JSON.stringify(data));
         displayGroups(data);})
     .catch(error => {
@@ -317,14 +339,17 @@ function retrieveGroups(){
 }
 
 /**
-    DISPLAY GROUPS
-    @param groups - Array of groups
-*/
+ * displayGroups - Displays the groups on the homepage
+ * @param {*} groups - The groups to display
+ * @returns {void}
+ */
 function displayGroups(groups){
     let display = document.querySelector(".groups-container");
     if(groups === null) {
         return;
     }
+
+   // Iterate through the groups and create the corresponding elements to display them
    for(let i = 0; i < groups.length; i++){
        let groupContainer = document.createElement("a");
        const url = `./Grupper/index.html?groupID=${encodeURIComponent(groups[i].documentID)}`;
@@ -332,6 +357,7 @@ function displayGroups(groups){
        let groupBlock = document.createElement("div");
        groupBlock.setAttribute("id","group-block");
 
+       // Group image was not uploaded from user, set it to defualt image 
        if (groups[i].image !== "") {
            checkImageExists(IMAGEDIR + groups[i].image + ".jpeg", function (exists) {
                if (exists) {
@@ -348,6 +374,7 @@ function displayGroups(groups){
        let groupNameParagraph = document.createElement("p");
        groupNameParagraph.textContent = groups[i].name;
 
+       // Append the elements for the group to the groupContainer and then the display
        groupBlock.appendChild(groupNameParagraph);
        groupContainer.appendChild(groupBlock);
        display.appendChild(groupContainer);
