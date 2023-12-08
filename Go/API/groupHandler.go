@@ -170,6 +170,7 @@ func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error: Method not supported", http.StatusBadRequest)
 	}
 }
+
 func GetGroupName(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
