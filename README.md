@@ -12,8 +12,11 @@ Her vil du se en overikt over gruppemedlemmene. Hvis du er en administrator elle
 ## GruppeInstillinger
 Her kan eieren og administratoren redigere på gruppa. Eieren kan slette gruppa, legge til medlemmer, fjerne medlemmer, gi fra seg eierskap over gruppa og redigere rollene til andre gruppemedlemmer. Administratorer kan bare fjerne medlemmer med rollen "medlem", den kan legge til nye medlemmer og får muligheten til å forlate gruppa.
 
-## Chat
-Du kan navigere til chat siden enten med å bruke navigasjonsmenyen øverst, eller å gå via en gruppe i hovedsiden for den gruppen. Dersom du går via en gruppe vil gruppechatten automatisk vises i displayet på høyre side. Denne gruppechatten blir automatisk opprettet når man lager en gruppe. På venstre siden er det en liste med alle chattene du er medlem av og du kan filtrere denne listen for å enkelt gå inn på chatten du ønsker. Eieren for chatten kan redigere chatten, hjvor det er mulighet for å fjerne og legge til medlemmer.
+## Chat 
+Du kan navigere til chat siden enten med å bruke navigasjonsmenyen øverst, eller å gå via en gruppe i hovedsiden for den gruppen. Dersom du går via en gruppe vil gruppechatten automatisk vises i displayet på høyre side. Denne gruppechatten blir automatisk opprettet når man lager en gruppe. På venstre siden er det en liste med alle chattene du er medlem av og du kan filtrere denne listen for å enkelt gå inn på chatten du ønsker. Eieren for chatten kan redigere chatten, hvor det er mulighet for å fjerne og legge til medlemmer, samt slette gruppen. De andre chatmedlemmene kan forlate chatten. Alle brukere kan opprette egne chatter med de personene de ønsker. 
+
+## Kalender
+Du kan navigere til kalender siden med å bruke navigasjonsmenyen øverst, eller å gå via en gruppe i hovedsiden for dne gruppen. Hvis du går via gruppe siden vil kalenderen for den gruppen automatisk vises, ellers må du velge kalender for gruppe selv fra dropdown menyen. Oversikten viser alle de sju dagene i uken hvor du kan legge til en middag for hver av disse dagene. Du kan også velge hvem som skal være ansvarlig for de spesifikke middagene. 
 
 ## Handleliste
 Fra handleliste siden kan du legge til og fjerne ting fra handlelisten til de ulike gruppene du er med på.
