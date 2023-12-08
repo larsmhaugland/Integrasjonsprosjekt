@@ -1,6 +1,8 @@
-/* jshint esversion: 8 */
+/**
+ * Listens for the DOMContentLoaded event. When the event is fired, the function is run.
+ * */
 document.addEventListener("DOMContentLoaded", function () {
-    // DOM elements
+    /***        DOM ELEMENTS       ***/
     const groupMembersList = document.querySelector("#group-members-list");
     const editButton = document.querySelector("#edit-button");
     const groupNameElement = document.querySelector("#group-name");
@@ -10,17 +12,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const LoggedInUsername = sessionStorage.getItem("username");
     const leaveGroupButton = document.querySelector("#leave-group");
 
+    /***        VARIABLES       ***/
     let groupNamePass;
     let GroupOwner;
     const Administrators = [];
     const redirectURL = "../index.html";
     // Global variables and constants
-    var groupID;
+    let groupID;
 
-    
     onPageReloadGroup();
 
-    // Add a click event listener to the button
+
+    /***       EVENT LISTENERS       ***/
+
+    /**
+     * Event listener for the edit button. When the button is clicked, the function is run.
+     */
     editButton.addEventListener("click", function () {
         // Construct the URL with the groupID parameter
         const url = `groupSettings.html?groupID=${encodeURIComponent(groupID)}`;
@@ -28,25 +35,37 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = url;
     });
 
+    /**
+     * Event listener for the handleliste link. When the link is clicked, the function is run.
+     */
     handlelisteLink.addEventListener("click", function () {
         const url = `../Handleliste/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
     });
 
+    /**
+     * Event listener for the kalender link. When the link is clicked, the function is run.
+     */
     kalenderLink.addEventListener("click", function () {
         const url = `../Kalender/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
     });
-
+    /**
+     * Event listener for the chat link. When the link is clicked, the function is run.
+     */
     chatLink.addEventListener("click", function () {
         const url = `../Chat/index.html?groupID=${encodeURIComponent(groupID)}`;
         window.location.href = url;
     });
 
-    // Leave the group when the leaveGroupButton is clicked
+    /**
+     * Event listener for the leave group button. When the button is clicked, the function is run.
+     */
     leaveGroupButton.addEventListener("click", function(){
         leaveGroup(groupID);
     });
+
+    /***       FUNCTIONS       ***/
 
     /**
      * Function to run when the page is loaded or reloaded. Gets the gropupID from the URL,
@@ -204,5 +223,4 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Server error occured, could not leave the group.");
         });
     }
-    
 });
