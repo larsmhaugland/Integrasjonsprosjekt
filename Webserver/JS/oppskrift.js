@@ -366,7 +366,6 @@ async function getRecipe() {
     //Display recipe
     displayedRecipe = data;
     displayRecipe(data);
-    console.log(data);
 }
 
 /**
@@ -426,7 +425,6 @@ function editRecipe() {
         },
         body: JSON.stringify(recipe)
     }).then(response => {
-        console.log(response.status);
         if (response.status === 200) {
             alert("Oppskriften ble endret");
             //Reload page

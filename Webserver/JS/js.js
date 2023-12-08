@@ -82,90 +82,100 @@ handlelisteLinkButton.addEventListener("click", (event) => {
     }
 });
 
-
-let b = document.querySelector("#log-in-btn");
-b.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("log-in-popup").style.display = "block";});
-b = document.querySelector("#log-in-btn2");
-b.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("log-in-popup").style.display = "block";});
-
-b = document.querySelector("#close-login-popup");
-b.addEventListener("click", (event)=> {event.preventDefault();
-    let inputs = document.querySelectorAll("#log-in-popup input");
-    inputs.forEach(input => input.value = "");
-    document.getElementById("log-in-popup").style.display = "none";});
-
-let loginBtn = document.querySelector("#log-in-submit");
-loginBtn.addEventListener("click", login);
-let loginPassword = document.querySelector("#password");
-loginPassword.addEventListener("keyup", function(event) {
-    if (event.keyCode === 13) { //Enter key
+if(hjemmeside) {
+    let b = document.querySelector("#log-in-btn");
+    b.addEventListener("click", (event) => {
         event.preventDefault();
-        loginBtn.click();
-    }
-});
+        document.getElementById("log-in-popup").style.display = "block";
+    });
 
-let registerUserBtn = document.querySelector("#register-user-submit");
-registerUserBtn.addEventListener("click", function(event) {
-    event.preventDefault(); 
-    registerUser();
-});
-let registerPassword = document.querySelector("#password-reg-conf");
-registerPassword.addEventListener("keyup", function(event) {
-    if (event.keyCode === 13) { //Enter key
+    b = document.querySelector("#log-in-btn2");
+    b.addEventListener("click", (event) => {
         event.preventDefault();
-        registerUserBtn.click();
-    }
-});
+        document.getElementById("log-in-popup").style.display = "block";
+    });
 
-let registerSwitchBtn = document.querySelector("#register-switch-btn");
-registerSwitchBtn.addEventListener("click", loginRegisterToggle);
-let closeRegisterBtn = document.querySelector("#close-register-popup");
-closeRegisterBtn.addEventListener("click", (event)=> {event.preventDefault();
-    let inputs = document.querySelectorAll("#register-popup input");
-    inputs.forEach(input => input.value = "");
-    document.getElementById("register-popup").style.display = "none";});
-let loginSwitchBtn = document.querySelector("#login-switch-btn");
-loginSwitchBtn.addEventListener("click", loginRegisterToggle);
-let logoutBtn = document.querySelector("#log-out-btn");
-logoutBtn.addEventListener("click", logout);
+    b = document.querySelector("#close-login-popup");
+    b.addEventListener("click", (event) => {
+        event.preventDefault();
+        let inputs = document.querySelectorAll("#log-in-popup input");
+        inputs.forEach(input => input.value = "");
+        document.getElementById("log-in-popup").style.display = "none";
+    });
 
-const registerTextPoppup = document.querySelector(".register-btn");
-registerTextPoppup.addEventListener("click", (event)=> {event.preventDefault();
-    document.getElementById("register-popup").style.display = "block";
-});
+
+    let loginBtn = document.querySelector("#log-in-submit");
+    loginBtn.addEventListener("click", login);
+    let loginPassword = document.querySelector("#password");
+    loginPassword.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) { //Enter key
+            event.preventDefault();
+            loginBtn.click();
+        }
+    });
+
+    let registerUserBtn = document.querySelector("#register-user-submit");
+    registerUserBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        registerUser();
+    });
+    let registerPassword = document.querySelector("#password-reg-conf");
+    registerPassword.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) { //Enter key
+            event.preventDefault();
+            registerUserBtn.click();
+        }
+    });
+
+    let registerSwitchBtn = document.querySelector("#register-switch-btn");
+    registerSwitchBtn.addEventListener("click", loginRegisterToggle);
+    let closeRegisterBtn = document.querySelector("#close-register-popup");
+    closeRegisterBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        let inputs = document.querySelectorAll("#register-popup input");
+        inputs.forEach(input => input.value = "");
+        document.getElementById("register-popup").style.display = "none";
+    });
+    let loginSwitchBtn = document.querySelector("#login-switch-btn");
+    loginSwitchBtn.addEventListener("click", loginRegisterToggle);
+    let logoutBtn = document.querySelector("#log-out-btn");
+    logoutBtn.addEventListener("click", logout);
+
+    const registerTextPoppup = document.querySelector(".register-btn");
+    registerTextPoppup.addEventListener("click", (event) => {
+        event.preventDefault();
+        document.getElementById("register-popup").style.display = "block";
+    });
 
 // Get password inputs
-const passwordInput = document.querySelector("#password-reg");
-const passwordConfirmInput = document.querySelector("#password-reg-conf");
-const passwordValidationMessage = document.querySelector("#password-validation-message");
-const passwordMatchMessage = document.querySelector("#password-match-message");
-console.log(passwordInput);
-passwordInput.addEventListener("input", function () {
-    const password = passwordInput.value;
-    const minLength = 8; // Minimum password length
-    // Validate password length
-    const lengthMessage = password.length >= minLength ? "" : `Passordet må være minst ${minLength} karakterer langt.`;
+    const passwordInput = document.querySelector("#password-reg");
+    const passwordConfirmInput = document.querySelector("#password-reg-conf");
+    const passwordValidationMessage = document.querySelector("#password-validation-message");
+    const passwordMatchMessage = document.querySelector("#password-match-message");
+    passwordInput.addEventListener("input", function () {
+        const password = passwordInput.value;
+        const minLength = 8; // Minimum password length
+        // Validate password length
+        const lengthMessage = password.length >= minLength ? "" : `Passordet må være minst ${minLength} karakterer langt.`;
 
-    // Validate if the password contains numbers, !, or ?
-    const hasValidCharacters = /[0-9!?.]/.test(password);
-    const characterMessage = hasValidCharacters ? "" : "Passordet må inneholde et nummer, ! eller ?";
+        // Validate if the password contains numbers, !, or ?
+        const hasValidCharacters = /[0-9!?.]/.test(password);
+        const characterMessage = hasValidCharacters ? "" : "Passordet må inneholde et nummer, ! eller ?";
 
-    // Display validation messages
-    passwordValidationMessage.innerHTML = lengthMessage + '<br>' + characterMessage;
-});
-passwordConfirmInput.addEventListener("input", function () {
-    const password = passwordInput.value;
-    const passwordConfirm = passwordConfirmInput.value;
+        // Display validation messages
+        passwordValidationMessage.innerHTML = lengthMessage + '<br>' + characterMessage;
+    });
+    passwordConfirmInput.addEventListener("input", function () {
+        const password = passwordInput.value;
+        const passwordConfirm = passwordConfirmInput.value;
 
-    // Validate if the passwords match
-    const matchMessage = password === passwordConfirm ? "" : "Passordene er ikke like.";
+        // Validate if the passwords match
+        const matchMessage = password === passwordConfirm ? "" : "Passordene er ikke like.";
 
-    // Display validation message
-    passwordMatchMessage.innerHTML = '<br>' + matchMessage;
-});
-
+        // Display validation message
+        passwordMatchMessage.innerHTML = '<br>' + matchMessage;
+    });
+}
 window.onload = function () {
     if(!checkLoginStatus() && !window.location.hostname.includes("localhost")){
         if(!oppskriftside && !hjemmeside) {
@@ -224,7 +234,6 @@ function login(){
             localStorage.setItem("loggedIn", "true");
             localStorage.setItem("username", username);
             sessionStorage.setItem("username", username);
-            console.log("Logged in as: " + username);
             let loginForm = document.querySelector("#log-in-popup");
             loginForm.style.display = "none";
             wrongpassword.style.display = "none";
@@ -243,7 +252,6 @@ function login(){
 function logout(){
     sessionStorage.removeItem("username");
     sessionStorage.setItem("loggedIn", "false");
-    console.log("Logged out: " + sessionStorage.getItem("loggedIn"));
     sessionStorage.removeItem("groups");
     updateLoginStatus();
     if(!oppskriftside && !hjemmeside) {
@@ -261,11 +269,12 @@ function updateLoginStatus(){
     let notLoggedInDisplay = document.querySelector("#not-logged-in");
     let mainDisplay = document.querySelector("#main-display");
     let body = document.querySelector("body");
-    console.log("Logged in: " + loggedIn);
     if (loggedIn === "true"){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "block";
-        notLoggedInDisplay.style.cssText = "display: none !important";
+        if(notLoggedInDisplay !== null) {
+            notLoggedInDisplay.style.cssText = "display: none !important";
+        }
         if(mainDisplay !== null) {
             mainDisplay.style.display = "block";
         }
@@ -310,10 +319,8 @@ function registerUser(){
             let registerForm = document.querySelector("#register-popup");
             registerForm.style.display = "none";
             usernameTaken.style.display = "none";
-            console.log("Registered user: " + username);
             sessionStorage.setItem("username", username);
             sessionStorage.setItem("loggedIn", "true");
-            console.log("Updating login status");
             updateLoginStatus();
         } else {
             usernameTaken.style.display = "block";

@@ -435,7 +435,6 @@ function sendCalendarToServer() {
                     } else {
                         responsible = responsibleCalendar[gIndex][dIndex + 1];
                     }
-                    console.log(responsible);
                     // Construct the data payload for the POST request
                     const data = {
                         "date": dateString,
@@ -453,9 +452,7 @@ function sendCalendarToServer() {
                         body: JSON.stringify(data)
                     }).then(response => {
                         // Check the response status and log the result
-                        if (response.status === 200) {
-                            console.log("Successfully added dinner to calendar");
-                        } else {
+                        if (response.status !== 200) {
                             console.log("Error when adding dinner to calendar");
                         }
                     });
@@ -540,7 +537,6 @@ function createMemberPopup(groupData, day) {
                             }
 
                         }
-                        console.log(responsibleCalendar);
                         // Add the memberKey to the group array in the second dimension
                         responsibleCalendar[groupIndex][allDays.indexOf(day) + 1] = key;
                         sendCalendarToServer();

@@ -4,6 +4,7 @@ let page = 0;                       //Current page
 let Recipes = [];                   //List of recipes
 let Categories = [];                //List of categories
 const MAXURLDISPLAYLENGTH = 25;     //Max number of characters to display for URL
+const isOppskrifter = window.location.href.includes("Oppskrifter/index.html");
 
 
 /***      DOM ELEMENTS       ***/
@@ -24,298 +25,301 @@ let instructionInputBtn = document.querySelector("#add-instruction-btn");
 let instructionInput = document.querySelector("#recipe-instructions");
 
 /***       EVENT LISTENERS       ***/
+if(isOppskrifter) {
 // Event listener for the "New Recipe" button click
-newRecipeBtn.addEventListener("click", function () {
-    // Check if the user is logged in
-    if (sessionStorage.getItem("loggedIn") !== "true") {
-        // Display an alert and exit the function if not logged in
-        alert("You must log in to add recipes");
-        return;
-    }
+    newRecipeBtn.addEventListener("click", function () {
+        // Check if the user is logged in
+        if (sessionStorage.getItem("loggedIn") !== "true") {
+            // Display an alert and exit the function if not logged in
+            alert("You must log in to add recipes");
+            return;
+        }
 
-    // Clear the groups in the popup
-    let groupDiv = document.querySelector("#share-with-groups");
-    groupDiv.innerHTML = "";
+        // Clear the groups in the popup
+        let groupDiv = document.querySelector("#share-with-groups");
+        groupDiv.innerHTML = "";
 
-    // Retrieve and parse user groups from session storage
-    let Groups = JSON.parse(sessionStorage.getItem("groups"));
+        // Retrieve and parse user groups from session storage
+        let Groups = JSON.parse(sessionStorage.getItem("groups"));
 
-    // Initialize an empty array if groups are not present
-    if (Groups === null) {
-        Groups = [];
-    }
+        // Initialize an empty array if groups are not present
+        if (Groups === null) {
+            Groups = [];
+        }
 
-    // Add user groups to the popup
-    for (let i = 0; i < Groups.length; i++) {
-        let group = Groups[i];
-        let listItem = document.createElement("li");
-        let checkbox = document.createElement("input");
-
-        // Set attributes for the group checkbox
-        checkbox.setAttribute("type", "checkbox");
-        checkbox.setAttribute("id", "group_" + group.documentID);
-        checkbox.setAttribute("name", "group_" + group.documentID);
-        checkbox.setAttribute("value", group.documentID);
-        checkbox.setAttribute("class", "group-checkbox");
-
-        // Create a label for the group checkbox
-        let label = document.createElement("label");
-        label.setAttribute("for", "group_" + group.documentID);
-        label.setAttribute("class", "group-label");
-        label.appendChild(document.createTextNode(group.name));
-
-        // Append checkbox and label to the list item
-        listItem.appendChild(checkbox);
-        listItem.appendChild(label);
-
-        // Append the list item to the groupDiv
-        groupDiv.appendChild(listItem);
-    }
-
-    // Clear the categories in the popup
-    let categoryDiv = document.querySelector("#category-checkboxes");
-    categoryDiv.innerHTML = "";
-
-    // Add exclusive categories to the popup
-    let exclusiveCategories = document.createElement("div");
-    exclusiveCategories.setAttribute("class", "exclusive-categories");
-
-    for (const ex in Categories.exclusive) {
-        // Add category name as a header
-        let categoryName = document.createElement("h3");
-        categoryName.appendChild(document.createTextNode(ex));
-        exclusiveCategories.appendChild(categoryName);
-
-        // Add radio buttons for exclusive categories
-        for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
-            let category = exclusiveCategoriesKey;
+        // Add user groups to the popup
+        for (let i = 0; i < Groups.length; i++) {
+            let group = Groups[i];
             let listItem = document.createElement("li");
             let checkbox = document.createElement("input");
 
-            // Set attributes for the category radio button
-            checkbox.setAttribute("type", "radio");
+            // Set attributes for the group checkbox
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("id", "group_" + group.documentID);
+            checkbox.setAttribute("name", "group_" + group.documentID);
+            checkbox.setAttribute("value", group.documentID);
+            checkbox.setAttribute("class", "group-checkbox");
+
+            // Create a label for the group checkbox
+            let label = document.createElement("label");
+            label.setAttribute("for", "group_" + group.documentID);
+            label.setAttribute("class", "group-label");
+            label.appendChild(document.createTextNode(group.name));
+
+            // Append checkbox and label to the list item
+            listItem.appendChild(checkbox);
+            listItem.appendChild(label);
+
+            // Append the list item to the groupDiv
+            groupDiv.appendChild(listItem);
+        }
+
+        // Clear the categories in the popup
+        let categoryDiv = document.querySelector("#category-checkboxes");
+        categoryDiv.innerHTML = "";
+
+        // Add exclusive categories to the popup
+        let exclusiveCategories = document.createElement("div");
+        exclusiveCategories.setAttribute("class", "exclusive-categories");
+
+        for (const ex in Categories.exclusive) {
+            // Add category name as a header
+            let categoryName = document.createElement("h3");
+            categoryName.appendChild(document.createTextNode(ex));
+            exclusiveCategories.appendChild(categoryName);
+
+            // Add radio buttons for exclusive categories
+            for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
+                let category = exclusiveCategoriesKey;
+                let listItem = document.createElement("li");
+                let checkbox = document.createElement("input");
+
+                // Set attributes for the category radio button
+                checkbox.setAttribute("type", "radio");
+                checkbox.setAttribute("id", "category_" + category);
+                checkbox.setAttribute("name", "category_" + ex);
+                checkbox.setAttribute("value", category);
+                checkbox.setAttribute("class", "category-checkbox");
+
+                // Create a label for the category radio button
+                let label = document.createElement("label");
+                label.setAttribute("for", "category_" + category);
+                label.setAttribute("class", "category-label");
+                label.appendChild(document.createTextNode(category));
+
+                // Append radio button and label to the list item
+                listItem.appendChild(checkbox);
+                listItem.appendChild(label);
+
+                // Append the list item to the exclusiveCategories container
+                exclusiveCategories.appendChild(listItem);
+            }
+        }
+
+        // Add non-exclusive categories to the popup
+        let nonExclusiveCategories = document.createElement("div");
+        nonExclusiveCategories.setAttribute("class", "non-exclusive-categories");
+        let nonExclusiveCategoriesName = document.createElement("h3");
+        nonExclusiveCategoriesName.textContent = "Other Categories";
+        nonExclusiveCategories.appendChild(nonExclusiveCategoriesName);
+
+        for (let i = 0; i < Categories.categories.length; i++) {
+            let category = Categories.categories[i];
+            let listItem = document.createElement("li");
+            let checkbox = document.createElement("input");
+
+            // Set attributes for the category checkbox
+            checkbox.setAttribute("type", "checkbox");
             checkbox.setAttribute("id", "category_" + category);
-            checkbox.setAttribute("name", "category_" + ex);
+            checkbox.setAttribute("name", "category_" + category);
             checkbox.setAttribute("value", category);
             checkbox.setAttribute("class", "category-checkbox");
 
-            // Create a label for the category radio button
+            // Create a label for the category checkbox
             let label = document.createElement("label");
             label.setAttribute("for", "category_" + category);
             label.setAttribute("class", "category-label");
             label.appendChild(document.createTextNode(category));
 
-            // Append radio button and label to the list item
+            // Append checkbox and label to the list item
             listItem.appendChild(checkbox);
             listItem.appendChild(label);
 
-            // Append the list item to the exclusiveCategories container
-            exclusiveCategories.appendChild(listItem);
+            // Append the list item to the nonExclusiveCategories container
+            nonExclusiveCategories.appendChild(listItem);
         }
-    }
 
-    // Add non-exclusive categories to the popup
-    let nonExclusiveCategories = document.createElement("div");
-    nonExclusiveCategories.setAttribute("class", "non-exclusive-categories");
-    let nonExclusiveCategoriesName = document.createElement("h3");
-    nonExclusiveCategoriesName.textContent = "Other Categories";
-    nonExclusiveCategories.appendChild(nonExclusiveCategoriesName);
+        // Add allergy categories to the popup
+        let allergyCategories = document.createElement("div");
+        allergyCategories.setAttribute("class", "allergy-categories");
+        let allergyCategoriesName = document.createElement("h3");
+        allergyCategoriesName.textContent = "Allergies";
+        allergyCategories.appendChild(allergyCategoriesName);
 
-    for (let i = 0; i < Categories.categories.length; i++) {
-        let category = Categories.categories[i];
-        let listItem = document.createElement("li");
-        let checkbox = document.createElement("input");
+        for (let i = 0; i < Categories.allergies.length; i++) {
+            let category = Categories.allergies[i];
+            let listItem = document.createElement("li");
+            let checkbox = document.createElement("input");
 
-        // Set attributes for the category checkbox
-        checkbox.setAttribute("type", "checkbox");
-        checkbox.setAttribute("id", "category_" + category);
-        checkbox.setAttribute("name", "category_" + category);
-        checkbox.setAttribute("value", category);
-        checkbox.setAttribute("class", "category-checkbox");
+            // Set attributes for the allergy checkbox
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("id", "category_" + category);
+            checkbox.setAttribute("name", "category_" + category);
+            checkbox.setAttribute("value", category);
+            checkbox.setAttribute("class", "category-checkbox");
 
-        // Create a label for the category checkbox
-        let label = document.createElement("label");
-        label.setAttribute("for", "category_" + category);
-        label.setAttribute("class", "category-label");
-        label.appendChild(document.createTextNode(category));
+            // Create a label for the allergy checkbox
+            let label = document.createElement("label");
+            label.setAttribute("for", "category_" + category);
+            label.setAttribute("class", "category-label");
+            label.appendChild(document.createTextNode(category));
 
-        // Append checkbox and label to the list item
-        listItem.appendChild(checkbox);
-        listItem.appendChild(label);
+            // Append checkbox and label to the list item
+            listItem.appendChild(checkbox);
+            listItem.appendChild(label);
 
-        // Append the list item to the nonExclusiveCategories container
-        nonExclusiveCategories.appendChild(listItem);
-    }
+            // Append the list item to the allergyCategories container
+            allergyCategories.appendChild(listItem);
+        }
 
-    // Add allergy categories to the popup
-    let allergyCategories = document.createElement("div");
-    allergyCategories.setAttribute("class", "allergy-categories");
-    let allergyCategoriesName = document.createElement("h3");
-    allergyCategoriesName.textContent = "Allergies";
-    allergyCategories.appendChild(allergyCategoriesName);
+        // Append category containers to the categoryDiv
+        categoryDiv.appendChild(exclusiveCategories);
+        categoryDiv.appendChild(nonExclusiveCategories);
+        categoryDiv.appendChild(allergyCategories);
 
-    for (let i = 0; i < Categories.allergies.length; i++) {
-        let category = Categories.allergies[i];
-        let listItem = document.createElement("li");
-        let checkbox = document.createElement("input");
+        // Clear the preview image
+        let recipeImage = document.querySelector("#recipe-image-preview-img");
+        recipeImage.style.display = "none";
 
-        // Set attributes for the allergy checkbox
-        checkbox.setAttribute("type", "checkbox");
-        checkbox.setAttribute("id", "category_" + category);
-        checkbox.setAttribute("name", "category_" + category);
-        checkbox.setAttribute("value", category);
-        checkbox.setAttribute("class", "category-checkbox");
-
-        // Create a label for the allergy checkbox
-        let label = document.createElement("label");
-        label.setAttribute("for", "category_" + category);
-        label.setAttribute("class", "category-label");
-        label.appendChild(document.createTextNode(category));
-
-        // Append checkbox and label to the list item
-        listItem.appendChild(checkbox);
-        listItem.appendChild(label);
-
-        // Append the list item to the allergyCategories container
-        allergyCategories.appendChild(listItem);
-    }
-
-    // Append category containers to the categoryDiv
-    categoryDiv.appendChild(exclusiveCategories);
-    categoryDiv.appendChild(nonExclusiveCategories);
-    categoryDiv.appendChild(allergyCategories);
-
-    // Clear the preview image
-    let recipeImage = document.querySelector("#recipe-image-preview-img");
-    recipeImage.style.display = "none";
-
-    // Display the new recipe popup
-    newRecipePopup.style.display = "block";
-});
+        // Display the new recipe popup
+        newRecipePopup.style.display = "block";
+    });
 
 
-closeRecipePopup.addEventListener("click", function (){
-    //Clear popup inputs
-    let inputs = document.querySelectorAll("#new-recipe-popup input");
-    for (let i = 0; i < inputs.length; i++){
-        inputs[i].value = "";
-    }
-    newRecipePopup.style.display = "none";
-});
+    closeRecipePopup.addEventListener("click", function () {
+        //Clear popup inputs
+        let inputs = document.querySelectorAll("#new-recipe-popup input");
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].value = "";
+        }
+        newRecipePopup.style.display = "none";
+    });
 
 //Update difficulty text when slider is moved
-recipeDifficulty.addEventListener("input", function (){
-    recipeDifficultyText.innerHTML = recipeDifficulty.value;
-});
+    recipeDifficulty.addEventListener("input", function () {
+        recipeDifficultyText.innerHTML = recipeDifficulty.value;
+    });
 
 //Toggle between URL and manual recipe
-recipeType.addEventListener("input", function (){
-    if (recipeType.checked){
-        document.querySelector("#url-recipe").style.display = "block";
-        document.querySelector("#manual-recipe").style.display = "none";
-    } else {
-        document.querySelector("#url-recipe").style.display = "none";
-        document.querySelector("#manual-recipe").style.display = "block";
-    }
-});
+    recipeType.addEventListener("input", function () {
+        if (recipeType.checked) {
+            document.querySelector("#url-recipe").style.display = "block";
+            document.querySelector("#manual-recipe").style.display = "none";
+        } else {
+            document.querySelector("#url-recipe").style.display = "none";
+            document.querySelector("#manual-recipe").style.display = "block";
+        }
+    });
+
 
 //Submit new recipe
-submitRecipeBtn.addEventListener("click", function(event) {
-    event.preventDefault();
-    newRecipe();
-});
+    submitRecipeBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        newRecipe();
+    });
 
 //Search recipes
-searchField.addEventListener("input", function (){
-    //Reset page
-    page = 0;
-    //Search recipes
-    let searchlist = searchRecipes(this.value);
-    //Filter recipes
-    let filteredList = filterRecipes(searchlist);
-    //Display results
-    displayResults(filteredList);
-    //Display pagination
-    displayPages();
-});
+    searchField.addEventListener("input", function () {
+        //Reset page
+        page = 0;
+        //Search recipes
+        let searchlist = searchRecipes(this.value);
+        //Filter recipes
+        let filteredList = filterRecipes(searchlist);
+        //Display results
+        displayResults(filteredList);
+        //Display pagination
+        displayPages();
+    });
 
-imageInput.addEventListener("change", function (){
-    //Display preview image
-    if(this.files.length === 1){
-        let image = document.querySelector("#recipe-image-preview-img");
-        image.setAttribute("src", URL.createObjectURL(this.files[0]));
-        image.style.display = "block";
-    } else {
-        let image = document.querySelector("#recipe-image-preview-img");
-        image.setAttribute("src", "");
-        image.style.display = "none";
-    }
-});
 
-ingredientInput.addEventListener("keydown", (event)=> {
-    if(event.key === "Enter"){
+    imageInput.addEventListener("change", function () {
+        //Display preview image
+        if (this.files.length === 1) {
+            let image = document.querySelector("#recipe-image-preview-img");
+            image.setAttribute("src", URL.createObjectURL(this.files[0]));
+            image.style.display = "block";
+        } else {
+            let image = document.querySelector("#recipe-image-preview-img");
+            image.setAttribute("src", "");
+            image.style.display = "none";
+        }
+    });
+
+    ingredientInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+        }
+        //Add ingredient on enter
+        if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
+            addNewItemToList("ingredients");
+            ingredientInput.value = "";
+            quantityInput.value = "";
+        }
+    });
+
+    quantityInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+        }
+        //Add ingredient on enter
+        if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
+            addNewItemToList("ingredients");
+            ingredientInput.value = "";
+            quantityInput.value = "";
+        }
+    });
+    ingredientInputBtn.addEventListener("click", (event) => {
         event.preventDefault();
-    }
-    //Add ingredient on enter
-    if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
-        addNewItemToList("ingredients");
-        ingredientInput.value = "";
-        quantityInput.value = "";
-    }
-});
-quantityInput.addEventListener("keydown", (event)=> {
-    if(event.key === "Enter"){
+        //Add ingredient on button click
+        if (ingredientInput.value !== "" && quantityInput.value !== "") {
+            addNewItemToList("ingredients");
+            ingredientInput.value = "";
+            quantityInput.value = "";
+        }
+    });
+
+
+    instructionInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+        }
+        //Add instruction on enter
+        if (event.key === "Enter" && instructionInput.value !== "") {
+            addNewItemToList("instructions");
+            instructionInput.value = "";
+        }
+    });
+    instructionInputBtn.addEventListener("click", (event) => {
         event.preventDefault();
-    }
-    //Add ingredient on enter
-    if (event.key === "Enter" && ingredientInput.value !== "" && quantityInput.value !== "") {
-        addNewItemToList("ingredients");
-        ingredientInput.value = "";
-        quantityInput.value = "";
-    }
-});
-ingredientInputBtn.addEventListener("click", (event)=> {
-    event.preventDefault();
-    //Add ingredient on button click
-    if (ingredientInput.value !== "" && quantityInput.value !== "") {
-        addNewItemToList("ingredients");
-        ingredientInput.value = "";
-        quantityInput.value = "";
-    }
-});
+        //Add instruction on button click
+        if (instructionInput.value !== "") {
+            addNewItemToList("instructions");
+            instructionInput.value = "";
+        }
+    });
 
-
-instructionInput.addEventListener("keydown", (event)=> {
-    if(event.key === "Enter"){
-        event.preventDefault();
-    }
-    //Add instruction on enter
-    if (event.key === "Enter" && instructionInput.value !== "") {
-        addNewItemToList("instructions");
-        instructionInput.value = "";
-    }
-});
-instructionInputBtn.addEventListener("click", (event)=> {
-    event.preventDefault();
-    //Add instruction on button click
-    if (instructionInput.value !== "") {
-        addNewItemToList("instructions");
-        instructionInput.value = "";
-    }
-});
-
-window.onload = function () {
-    //Check if logged in
-    updateLoginStatus();
-    //Get groups from API
-    retrieveGroups();
-    //Get recipes from API
-    loadRecipes();
-    //Get categories from API
-    getCategories();
-};
-
-
+    window.onload = function () {
+        //Check if logged in
+        updateLoginStatus();
+        //Get groups from API
+        retrieveGroups();
+        //Get recipes from API
+        loadRecipes();
+        //Get categories from API
+        getCategories();
+    };
+}
 /***        FUNCTIONS       ***/
 
 /**
@@ -333,8 +337,10 @@ function getCategories() {
             response.json().then((data) => {
                 // Store the categories in the global variable 'Categories'.
                 Categories = data;
-                // Display the category filters.
-                displayCategoryFilters();
+                if(isOppskrifter) {
+                    // Display the category filters.
+                    displayCategoryFilters();
+                }
             });
         } else {
             console.log("Error getting categories");
@@ -705,9 +711,7 @@ async function newRecipe() {
         });
 
         // Log the response from the API.
-        if (recipeResponse.ok) {
-            console.log("Recipe added with id:", await recipeResponse.json());
-        } else {
+        if (!recipeResponse.ok) {
             console.log("Error adding recipe", await recipeResponse.json());
         }
     } catch (error) {

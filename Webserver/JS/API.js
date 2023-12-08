@@ -50,7 +50,6 @@ async function retrieveGroups(){
     if (response.status === 200){
         const data = await response.json();
         sessionStorage.setItem("groups", JSON.stringify(data));
-        console.log("Groups retrieved");
     } else {
         console.log("Error retrieving groups");
         throw new Error("Failed to retrieve groups");
@@ -68,11 +67,9 @@ async function uploadImage(file) {
         body: formData
     }).then(response => {
         if (response.status === 200) {
-            console.log("Image uploaded");
         } else {
             console.log("Error uploading image");
         }
-        console.log(response);
         return response.json();
     }).catch(error => {
         console.log(error);
@@ -88,11 +85,9 @@ async function uploadImage(file) {
             body: formData
         }).then(response => {
             if (response.status === 200) {
-                console.log("Image uploaded");
             } else {
                 console.log("Error uploading image");
             }
-            console.log(response);
             return response.json();
         }).catch(error => {
             console.log(error);

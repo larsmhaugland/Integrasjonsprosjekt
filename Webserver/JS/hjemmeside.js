@@ -72,7 +72,6 @@ form.addEventListener("submit", async function (event) {
         image: groupImage,
         "shopping-lists": [shoppingListID],
     };
-    console.log("Group: " + group);
 
     fetch(API_IP + `/group/new?chatID=${chatID}`, {
         method: "POST",
@@ -83,7 +82,6 @@ form.addEventListener("submit", async function (event) {
     })
         .then((response) => {
             if (response.status === 201) {
-                console.log("Group created");
                 // Decode group id from response body
                 return response.json(); // Return the JSON parsing Promise
             } else {
@@ -92,30 +90,21 @@ form.addEventListener("submit", async function (event) {
             }
         })
         .then((data) => {
-            console.log("I got here YAY");
             // Now, data contains the parsed JSON
-            console.log("Data returned from creating group: " + data);
             const groupNew = data;
-            console.log("GroupNew: " + groupNew);
             let groups;
             try {
                 groups = JSON.parse(sessionStorage.getItem('groups'));
             } catch (e) {
-                console.log("I was null!");
                 groups = null;
             }
-            console.log("groups: " + groups);
             if (groups === null){
-                console.log("I was null!");
                 groups = [];
             }
-            console.log("Groups: " + groups);
             //const groups = JSON.parse(sessionStorage.getItem("groups") || stringify([]));
             groups.push(groupNew);
-            console.log("I got past push!");
             let username = sessionStorage.getItem("username");
             sessionStorage.setItem("groups", JSON.stringify(groups));
-            console.log("Group added to session storage:", groups);
 
             let display = document.querySelector(".groups-container");
             let groupContainer = document.createElement("a");
@@ -133,9 +122,7 @@ form.addEventListener("submit", async function (event) {
             groupBlock.appendChild(groupIdParagraph);
             groupContainer.appendChild(groupBlock);
             display.appendChild(groupContainer);
-            console.log(memberList);
             memberList.forEach((member) => {
-                console.log("member: " + member);
                 fetch(API_IP + `/user/groups?username=${member}`, {
                     method: "PATCH",
                     headers: {
@@ -145,7 +132,6 @@ form.addEventListener("submit", async function (event) {
                 })
                     .then((response) => {
                         if (response.status === 200) {
-                            console.log("Group added to user");
                             window.location.reload();
                         } else {
                             console.log("Error adding group to user");
@@ -304,7 +290,6 @@ function retrieveGroups(){
     let groups = JSON.parse(sessionStorage.getItem("groups"));
 
     if(userName === null){
-        console.log("User not logged in");
         return;
     }
     fetch(API_IP + `/user/groups?username=${userName}`, {
@@ -314,7 +299,6 @@ function retrieveGroups(){
         }
     }).then(response => {
         if (response.status === 200){
-            console.log("Groups retrieved");
             return response.json();
         } else {
             console.log("Error retrieving groups");
@@ -322,7 +306,6 @@ function retrieveGroups(){
         }
     }).then(data=>{
         sessionStorage.setItem("groups", JSON.stringify(data));
-        console.log("Groups retrieved: " + data);
         displayGroups(data);})
     .catch(error => {
         console.log("Error retrieving groups: " + error);

@@ -123,7 +123,6 @@ function retrieveShoppingList() {
             }
         }).then(response => {
             if (response.status === 200){
-                console.log("Shopping list retrieved");
                 return response.json();
             } else {
                 console.log("Error retrieving shopping list");
@@ -131,7 +130,6 @@ function retrieveShoppingList() {
             }
         }).then(data=>{
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
-            console.log(sessionStorage.getItem("shoppinglist"));
             displayShoppingList(data);
         }
         );
@@ -150,7 +148,6 @@ function retrieveShoppingList() {
             }
         }).then(response => {
             if (response.status === 200){
-                console.log("Shopping list retrieved");
                 return response.json();
             } else {
                 console.log("Error retrieving shopping list");
@@ -296,10 +293,8 @@ function removeItemFromList(){
         if(!item.querySelector("#finished-checkbox").checked){
             sessionList.forEach(sessionItem => {
                 let name = item.textContent;
-                console.log(name);
                 for (let itemName in sessionItem.list) {
                     let itemInfo = sessionItem.list[itemName].quantity + " " + itemName;
-                    console.log(itemInfo);
                     if (itemInfo === name) {
                         sessionItem.list[itemName].complete = false;
                     }
@@ -334,7 +329,6 @@ function retrieveGroups(){
             }
         }).then(response => {
             if (response.status === 200){
-                console.log("Groups retrieved");
                 return response.json();
             } else {
                 console.log("Error retrieving groups");
@@ -385,9 +379,7 @@ function patchShoppingList(){
             },
             body: JSON.stringify(shoppingListObject)
         }).then(response => {
-            if (response.status === 200){
-                console.log("Shopping list updated");
-            } else {
+            if (response.status !== 200){
                 console.log("Error updating shopping list");
                 throw new Error("Failed to update shopping list");
             }
@@ -408,9 +400,7 @@ function patchShoppingList(){
             },
             body: JSON.stringify(shoppingListObject)
         }).then(response => {
-            if (response.status === 200) {
-                console.log("Shopping list updated");
-            } else {
+            if (response.status !== 200) {
                 console.log("Error updating shopping list");
                 throw new Error("Failed to update shopping list");
             }
@@ -452,7 +442,6 @@ function retrieveDinnerList( option, user){
             }
         }).then(response => {
             if (response.status === 200){
-                console.log("Dinner list retrieved");
                 return response.json();
             } else {
                 console.log("Error retrieving dinner list");
@@ -487,13 +476,11 @@ function setCalendar(groupID){
             let date = new Date(dateKey);
             let customDinner = dateData.customRecipe;
             let recipe = dateData.recipe;
-            console.log(recipe);
             for (let k=0; k<dates.length; k++){
                 const currentDate = new Date(dates[k]);
                 currentDate.setHours(0, 0, 0, 0); // Set time to midnight
                 date.setHours(0, 0, 0, 0); // Set time to midnight for the date
                 if (currentDate.getTime() === date.getTime() && recipe){
-                    console.log("date found");
                     let div = document.getElementById("middag-uke");
                     let paragraph = document.createElement("div");
                     paragraph.setAttribute("class", "middag");
@@ -537,15 +524,12 @@ function addDinnerToList(recipeID) {
         }
     }).then(response => {
         if (response.status === 200) {
-            console.log("Recipe retrieved");
             return response.json();
         } else {
             console.log("Error retrieving recipe");
             throw new Error("Failed to retrieve recipe");
         }
     }).then(data => {
-        console.log(JSON.stringify(data));
-
         // Add ingredients to shopping list
         let ingredients = data.ingredients;
         let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];

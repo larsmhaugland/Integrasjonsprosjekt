@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle search input changes
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.trim();
-        console.log("Query is: " + query);
         if (query.length === 0) {
             return;
         }
@@ -362,8 +361,6 @@ document.addEventListener("DOMContentLoaded", function () {
             // Set the selected option based on the member's role
             select.value = member.roleName.toLowerCase(); 
             initialDropdownValues[member.username] = select.value;
-            
-            console.log(initialDropdownValues);
 
             // Add an event listener to handle role updates
             select.addEventListener('change', async (event) => {
@@ -510,7 +507,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     
             if (memberResponse.status === 200) {
-                console.log("Role of group member updated");
                 if (newOwner) return [true, true];
                 else return [true, false];
             } else {
