@@ -1,11 +1,9 @@
-/* jshint esversion: 8 */
-/* jshint loopfunc: true */
 /***       GLOBAL VARIABLES       ***/
-const MAXRESULTS = 12;
-let page = 0;
-let Recipes = [];
-let Categories = [];
-const MAXURLDISPLAYLENGTH = 25;
+const MAXRESULTS = 12;              //Max number of results per page
+let page = 0;                       //Current page
+let Recipes = [];                   //List of recipes
+let Categories = [];                //List of categories
+const MAXURLDISPLAYLENGTH = 25;     //Max number of characters to display for URL
 
 
 /***      DOM ELEMENTS       ***/
@@ -26,123 +24,175 @@ let instructionInputBtn = document.querySelector("#add-instruction-btn");
 let instructionInput = document.querySelector("#recipe-instructions");
 
 /***       EVENT LISTENERS       ***/
-newRecipeBtn.addEventListener("click", function (){
-    if(sessionStorage.getItem("loggedIn") !== "true"){
-        alert("Du må logge inn for å legge til oppskrifter");
+// Event listener for the "New Recipe" button click
+newRecipeBtn.addEventListener("click", function () {
+    // Check if the user is logged in
+    if (sessionStorage.getItem("loggedIn") !== "true") {
+        // Display an alert and exit the function if not logged in
+        alert("You must log in to add recipes");
         return;
     }
-    //Clear groups
+
+    // Clear the groups in the popup
     let groupDiv = document.querySelector("#share-with-groups");
     groupDiv.innerHTML = "";
+
+    // Retrieve and parse user groups from session storage
     let Groups = JSON.parse(sessionStorage.getItem("groups"));
-    if (Groups === null){
+
+    // Initialize an empty array if groups are not present
+    if (Groups === null) {
         Groups = [];
     }
-    //Add groups to popup
-    for(let i = 0; i < Groups.length; i++){
+
+    // Add user groups to the popup
+    for (let i = 0; i < Groups.length; i++) {
         let group = Groups[i];
         let listItem = document.createElement("li");
         let checkbox = document.createElement("input");
+
+        // Set attributes for the group checkbox
         checkbox.setAttribute("type", "checkbox");
         checkbox.setAttribute("id", "group_" + group.documentID);
         checkbox.setAttribute("name", "group_" + group.documentID);
         checkbox.setAttribute("value", group.documentID);
         checkbox.setAttribute("class", "group-checkbox");
+
+        // Create a label for the group checkbox
         let label = document.createElement("label");
         label.setAttribute("for", "group_" + group.documentID);
         label.setAttribute("class", "group-label");
         label.appendChild(document.createTextNode(group.name));
+
+        // Append checkbox and label to the list item
         listItem.appendChild(checkbox);
         listItem.appendChild(label);
+
+        // Append the list item to the groupDiv
         groupDiv.appendChild(listItem);
     }
 
-    //Clear categories
+    // Clear the categories in the popup
     let categoryDiv = document.querySelector("#category-checkboxes");
     categoryDiv.innerHTML = "";
-    //Add exclusive categories
+
+    // Add exclusive categories to the popup
     let exclusiveCategories = document.createElement("div");
     exclusiveCategories.setAttribute("class", "exclusive-categories");
-    for(const ex in Categories.exclusive){
-        //Add category name
+
+    for (const ex in Categories.exclusive) {
+        // Add category name as a header
         let categoryName = document.createElement("h3");
         categoryName.appendChild(document.createTextNode(ex));
         exclusiveCategories.appendChild(categoryName);
-        //Add radio buttons
+
+        // Add radio buttons for exclusive categories
         for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
             let category = exclusiveCategoriesKey;
             let listItem = document.createElement("li");
             let checkbox = document.createElement("input");
+
+            // Set attributes for the category radio button
             checkbox.setAttribute("type", "radio");
             checkbox.setAttribute("id", "category_" + category);
             checkbox.setAttribute("name", "category_" + ex);
             checkbox.setAttribute("value", category);
             checkbox.setAttribute("class", "category-checkbox");
+
+            // Create a label for the category radio button
             let label = document.createElement("label");
             label.setAttribute("for", "category_" + category);
             label.setAttribute("class", "category-label");
             label.appendChild(document.createTextNode(category));
+
+            // Append radio button and label to the list item
             listItem.appendChild(checkbox);
             listItem.appendChild(label);
+
+            // Append the list item to the exclusiveCategories container
             exclusiveCategories.appendChild(listItem);
         }
     }
-    //Add non-exclusive categories
+
+    // Add non-exclusive categories to the popup
     let nonExclusiveCategories = document.createElement("div");
     nonExclusiveCategories.setAttribute("class", "non-exclusive-categories");
     let nonExclusiveCategoriesName = document.createElement("h3");
-    nonExclusiveCategoriesName.textContent = "Øvrige kategorier";
+    nonExclusiveCategoriesName.textContent = "Other Categories";
     nonExclusiveCategories.appendChild(nonExclusiveCategoriesName);
-    for(let i = 0; i < Categories.categories.length; i++){
+
+    for (let i = 0; i < Categories.categories.length; i++) {
         let category = Categories.categories[i];
         let listItem = document.createElement("li");
         let checkbox = document.createElement("input");
+
+        // Set attributes for the category checkbox
         checkbox.setAttribute("type", "checkbox");
         checkbox.setAttribute("id", "category_" + category);
         checkbox.setAttribute("name", "category_" + category);
         checkbox.setAttribute("value", category);
         checkbox.setAttribute("class", "category-checkbox");
+
+        // Create a label for the category checkbox
         let label = document.createElement("label");
         label.setAttribute("for", "category_" + category);
         label.setAttribute("class", "category-label");
         label.appendChild(document.createTextNode(category));
+
+        // Append checkbox and label to the list item
         listItem.appendChild(checkbox);
         listItem.appendChild(label);
+
+        // Append the list item to the nonExclusiveCategories container
         nonExclusiveCategories.appendChild(listItem);
     }
-    //Add allergies
+
+    // Add allergy categories to the popup
     let allergyCategories = document.createElement("div");
     allergyCategories.setAttribute("class", "allergy-categories");
     let allergyCategoriesName = document.createElement("h3");
-    allergyCategoriesName.textContent = "Allergier";
+    allergyCategoriesName.textContent = "Allergies";
     allergyCategories.appendChild(allergyCategoriesName);
-    for(let i = 0; i < Categories.allergies.length; i++){
+
+    for (let i = 0; i < Categories.allergies.length; i++) {
         let category = Categories.allergies[i];
         let listItem = document.createElement("li");
         let checkbox = document.createElement("input");
+
+        // Set attributes for the allergy checkbox
         checkbox.setAttribute("type", "checkbox");
         checkbox.setAttribute("id", "category_" + category);
         checkbox.setAttribute("name", "category_" + category);
         checkbox.setAttribute("value", category);
         checkbox.setAttribute("class", "category-checkbox");
+
+        // Create a label for the allergy checkbox
         let label = document.createElement("label");
         label.setAttribute("for", "category_" + category);
         label.setAttribute("class", "category-label");
         label.appendChild(document.createTextNode(category));
+
+        // Append checkbox and label to the list item
         listItem.appendChild(checkbox);
         listItem.appendChild(label);
+
+        // Append the list item to the allergyCategories container
         allergyCategories.appendChild(listItem);
     }
+
+    // Append category containers to the categoryDiv
     categoryDiv.appendChild(exclusiveCategories);
     categoryDiv.appendChild(nonExclusiveCategories);
     categoryDiv.appendChild(allergyCategories);
 
-    //Clear preview image
+    // Clear the preview image
     let recipeImage = document.querySelector("#recipe-image-preview-img");
     recipeImage.style.display = "none";
-    //Display popup
+
+    // Display the new recipe popup
     newRecipePopup.style.display = "block";
 });
+
 
 closeRecipePopup.addEventListener("click", function (){
     //Clear popup inputs
@@ -255,9 +305,13 @@ instructionInputBtn.addEventListener("click", (event)=> {
 });
 
 window.onload = function () {
+    //Check if logged in
     updateLoginStatus();
+    //Get groups from API
     retrieveGroups();
+    //Get recipes from API
     loadRecipes();
+    //Get categories from API
     getCategories();
 };
 
@@ -277,7 +331,9 @@ function getCategories() {
     }).then((response) => {
         if (response.ok) {
             response.json().then((data) => {
+                // Store the categories in the global variable 'Categories'.
                 Categories = data;
+                // Display the category filters.
                 displayCategoryFilters();
             });
         } else {
@@ -290,18 +346,23 @@ function getCategories() {
  * Display filters for categories
  */
 function displayCategoryFilters() {
+    // Get the filter wrapper element from the DOM.
     let filterDiv = document.querySelector("#filter-wrapper");
-    //Clear existing filters
+
+    // Clear existing filters.
     filterDiv.innerHTML = "";
-    //Add header
+
+    // Add a header to the filter section.
     let filterHeader = document.createElement("h2");
     filterHeader.textContent = "Filter";
     filterDiv.appendChild(filterHeader);
-    //Add clear filters button
+
+    // Add a button to clear all filters.
     let clearFilters = document.createElement("button");
     clearFilters.setAttribute("class", "clear-filters");
-    clearFilters.textContent = "Tøm filter";
+    clearFilters.textContent = "Clear Filters";
     clearFilters.addEventListener("click", function (event) {
+        // Clear all category checkboxes and submit the filter.
         let checkboxes = document.querySelectorAll(".category-checkbox");
         for (let i = 0; i < checkboxes.length; i++) {
             checkboxes[i].checked = false;
@@ -310,31 +371,31 @@ function displayCategoryFilters() {
     });
     filterDiv.appendChild(clearFilters);
 
-    // Check if categories have been loaded
-    if(Categories === null) return;
+    // Check if categories have been loaded.
+    if (Categories === null) return;
 
-    // Add exclusive category filters
-    let e = document.createElement("div");
-    e.setAttribute("class", "exclusive-categories");
+    // Add exclusive category filters.
+    let exclusiveCategoriesWrapper = document.createElement("div");
+    exclusiveCategoriesWrapper.setAttribute("class", "exclusive-categories");
 
     for (const ex in Categories.exclusive) {
-        // Add category name
+        // Add category name as a header.
         let categoryName = document.createElement("h3");
         categoryName.setAttribute("class", "category-name");
-        categoryName.appendChild(document.createTextNode(ex+" "));
-        categoryName.addEventListener("click", function() {
-            // Toggle the visibility of the associated checkboxes
+        categoryName.appendChild(document.createTextNode(ex + " "));
+        categoryName.addEventListener("click", function () {
+            // Toggle the visibility of the associated checkboxes.
             let checkboxes = categoryName.nextElementSibling; // Assumes checkboxes are the next sibling
             checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
             categoryName.classList.toggle("active");
         });
-        e.appendChild(categoryName);
+        exclusiveCategoriesWrapper.appendChild(categoryName);
 
-        // Add checkboxes container
+        // Add checkboxes container.
         let categoryCheckboxes = document.createElement("div");
         categoryCheckboxes.setAttribute("class", "category-div");
 
-        // Replace the following loop with your existing code for radio buttons
+        // Loop through exclusive categories and create radio buttons.
         for (const exclusiveCategoriesKey in Categories.exclusive[ex]) {
             let category = exclusiveCategoriesKey;
             let listItem = document.createElement("li");
@@ -355,24 +416,24 @@ function displayCategoryFilters() {
             listItem.appendChild(label);
             categoryCheckboxes.appendChild(listItem);
         }
-        e.appendChild(categoryCheckboxes);
+        exclusiveCategoriesWrapper.appendChild(categoryCheckboxes);
     }
 
-    // Add non-exclusive categories
-    let nExCategoriesWrapper = document.createElement("div");
-    nExCategoriesWrapper.setAttribute("class", "non-exclusive-categories");
-    let nExName = document.createElement("h3");
-    nExName.setAttribute("class", "category-name");
-    nExName.textContent = "Øvrige kategorier ";
-    nExName.addEventListener("click", function() {
-        // Toggle the visibility of the associated checkboxes
-    let checkboxes = nExName.nextElementSibling; // Assumes checkboxes are the next sibling
+    // Add non-exclusive categories.
+    let nonExclusiveCategoriesWrapper = document.createElement("div");
+    nonExclusiveCategoriesWrapper.setAttribute("class", "non-exclusive-categories");
+    let nonExName = document.createElement("h3");
+    nonExName.setAttribute("class", "category-name");
+    nonExName.textContent = "Other Categories ";
+    nonExName.addEventListener("click", function () {
+        // Toggle the visibility of the associated checkboxes.
+        let checkboxes = nonExName.nextElementSibling; // Assumes checkboxes are the next sibling
         checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
-        nExName.classList.toggle("active");
+        nonExName.classList.toggle("active");
     });
-    nExCategoriesWrapper.appendChild(nExName);
-    let nExCategories = document.createElement("div");
-    nExCategories.setAttribute("class", "category-div");
+    nonExclusiveCategoriesWrapper.appendChild(nonExName);
+    let nonExCategories = document.createElement("div");
+    nonExCategories.setAttribute("class", "category-div");
     for (let i = 0; i < Categories.categories.length; i++) {
         let category = Categories.categories[i];
         let listItem = document.createElement("li");
@@ -391,18 +452,18 @@ function displayCategoryFilters() {
         label.appendChild(document.createTextNode(category));
         listItem.appendChild(checkbox);
         listItem.appendChild(label);
-        nExCategories.appendChild(listItem);
+        nonExCategories.appendChild(listItem);
     }
-    nExCategoriesWrapper.appendChild(nExCategories);
+    nonExclusiveCategoriesWrapper.appendChild(nonExCategories);
 
-    // Add allergies
+    // Add allergy categories.
     let allergyWrapper = document.createElement("div");
     allergyWrapper.setAttribute("class", "allergy-categories");
     let allergyCategoriesName = document.createElement("h3");
     allergyCategoriesName.setAttribute("class", "category-name");
-    allergyCategoriesName.textContent = "Allergener ";
-    allergyCategoriesName.addEventListener("click", function() {
-        // Toggle the visibility of the associated checkboxes
+    allergyCategoriesName.textContent = "Allergens ";
+    allergyCategoriesName.addEventListener("click", function () {
+        // Toggle the visibility of the associated checkboxes.
         let checkboxes = allergyCategoriesName.nextElementSibling; // Assumes checkboxes are the next sibling
         checkboxes.style.maxHeight = checkboxes.style.maxHeight ? null : checkboxes.scrollHeight + "px";
         allergyCategoriesName.classList.toggle("active");
@@ -432,85 +493,113 @@ function displayCategoryFilters() {
     }
     allergyWrapper.appendChild(allergyCategories);
 
-    filterDiv.appendChild(e);
-    filterDiv.appendChild(nExCategoriesWrapper);
+    // Append the category filter sections to the filter wrapper.
+    filterDiv.appendChild(exclusiveCategoriesWrapper);
+    filterDiv.appendChild(nonExclusiveCategoriesWrapper);
     filterDiv.appendChild(allergyWrapper);
 }
+
 
 /**
  * Load recipes from API
  * @returns {Promise<void>}
  */
 async function loadRecipes(){
+    //Check if logged in
     if (!await checkLoginStatus()) return;
+    //Get recipes from API
     await getRecipes(Recipes);
+    //Display results
     await displayResults(Recipes);
+    //Display pagination
     displayPages();
 }
 
 /**
  * Get recipes from API
- * @param list - List to add recipes to
+ * @param list - List to add list item to
  */
-function addNewItemToList(list){
+function addNewItemToList(list) {
+    // Initialize variables for the item type and the list element to which the item will be added.
     let type = "";
     if (list === "ingredients") {
+        // If the list is for ingredients, update 'list' to the corresponding DOM element.
         list = document.querySelector("#recipe-ingredient-list");
         type = "ingredient";
-    }
-    else if (list === "instructions") {
+    } else if (list === "instructions") {
+        // If the list is for instructions, update 'list' to the corresponding DOM element.
         type = "instruction";
         list = document.querySelector("#recipe-instructions-list");
+    } else {
+        // If the list type is neither ingredients nor instructions, exit the function.
+        return;
     }
-    else return;
 
+    // Create a new list item element.
     let li = document.createElement("li");
-    if(type === "ingredient") {
+
+    // Check the type of item being added (ingredient or instruction).
+    if (type === "ingredient") {
+        // If it's an ingredient, get values from the input fields.
         let newItem = document.querySelector("#recipe-ingredient").value;
         let quantity = document.querySelector("#recipe-ingredient-qty").value;
-        //create a new Ingredient list item
+
+        // Set attributes for the ingredient list item.
         li.setAttribute("class", "ingredient-list-item");
         li.setAttribute("name", newItem);
         li.setAttribute("data-qty", quantity);
         li.textContent = newItem;
-        //create a checkbox for the list item
+
+        // Create a checkbox for removing the ingredient from the list.
         let removeItem = document.createElement("a");
         let removeIcon = document.createElement("img");
         removeIcon.setAttribute("src", "../Images/trashcan.svg");
-        removeIcon.setAttribute("alt", "Slett ingrediens");
-        removeIcon.setAttribute("class", "close-svg");
-        removeIcon.classList.add("remove-item");
+        removeIcon.setAttribute("alt", "Delete ingredient");
+        removeIcon.setAttribute("class", "close-svg remove-item");
         removeItem.appendChild(removeIcon);
+
+        // Add an event listener to remove the ingredient when the remove icon is clicked.
         removeItem.addEventListener("click", function (event) {
             list.removeChild(li);
         });
+
+        // Append the quantity and the remove icon to the ingredient list item.
         li.appendChild(document.createTextNode(" " + quantity));
         li.appendChild(removeItem);
 
     } else {
+        // If it's an instruction, get the value from the instructions input field.
         li.classList.add("instruction-list-item");
         li.textContent = document.querySelector("#recipe-instructions").value;
+
+        // Create a remove icon for the instruction list item.
         let removeItem = document.createElement("a");
-        removeItem.setAttribute("onclick", "removeItemFromList()");
         let removeIcon = document.createElement("img");
         removeIcon.setAttribute("src", "../Images/trashcan.svg");
-        removeIcon.classList.add("remove-item");
-        removeIcon.setAttribute("alt", "Slett instruks");
-        removeIcon.classList.add("close-svg");
+        removeIcon.classList.add("remove-item", "close-svg");
+        removeIcon.setAttribute("alt", "Delete instruction");
         removeItem.appendChild(removeIcon);
+
+        // Add an event listener to remove the instruction when the remove icon is clicked.
         removeItem.addEventListener("click", function (event) {
             list.removeChild(li);
         });
+
+        // Append the remove icon to the instruction list item.
         li.appendChild(removeItem);
     }
+
+    // Append the new list item to the specified list.
     list.appendChild(li);
 }
+
 
 /**
  * Create new recipe and send to API
  * @returns {Promise<void>}
  */
 async function newRecipe() {
+    // Get input values from the DOM.
     let name = document.querySelector("#recipe-name").value;
     let type = document.querySelector("#recipe-type-url");
     let difficulty = document.querySelector("#recipe-difficulty").value;
@@ -519,32 +608,40 @@ async function newRecipe() {
     let ingredients = {};
     let instructions = [];
 
+    // Get input related to the recipe image.
     let imageInput = document.querySelector("#recipe-image");
     let filename = "";
 
-    if(name === "" || difficulty === "" || time === "" || (type.checked && document.querySelector("#recipe-url").value === "")
-        || (!type.checked && document.querySelector("#recipe-ingredient-list").children.length === 0)
-        || (!type.checked && document.querySelector("#recipe-instructions-list").children.length === 0)){
-
-        alert("Alle nødvendige felt må fylles ut");
+    // Check if required fields are filled; display an alert and return if any are missing.
+    if (name === "" || difficulty === "" || time === "" ||
+        (type.checked && document.querySelector("#recipe-url").value === "") ||
+        (!type.checked && document.querySelector("#recipe-ingredient-list").children.length === 0) ||
+        (!type.checked && document.querySelector("#recipe-instructions-list").children.length === 0)) {
+        alert("All required fields must be filled out");
         return;
     }
 
+    // If an image is selected, attempt to upload it to the server.
     if (imageInput.files.length === 1) {
-        // Send the form data to the API
         try {
+            // Call the asynchronous function 'uploadImage' to upload the image.
+            // Update 'filename' with the response from the upload.
             filename = await uploadImage(imageInput.files[0], function (response) {
                 filename = response.filename;
             });
         } catch (error) {
+            // Log an error and display an alert if image upload fails.
             console.log(error);
-            alert("Det skjedde en feil med opplasting av bildet");
+            alert("There was an error uploading the image");
             return;
         }
     }
 
+    // Get user-related information from session storage.
     let username = sessionStorage.getItem("username");
     let groups = [];
+
+    // Get selected group checkboxes and add their values to the 'groups' array.
     let groupCheckboxes = document.querySelectorAll(".group-checkbox");
     for (let i = 0; i < groupCheckboxes.length; i++) {
         if (groupCheckboxes[i].checked) {
@@ -552,6 +649,7 @@ async function newRecipe() {
         }
     }
 
+    // Get selected category checkboxes and add their values to the 'categories' array.
     let categories = [];
     let categoryCheckboxes = document.querySelectorAll("input.category-checkbox");
     for (let i = 0; i < categoryCheckboxes.length; i++) {
@@ -559,6 +657,8 @@ async function newRecipe() {
             categories.push(categoryCheckboxes[i].value);
         }
     }
+
+    // Create a recipe object based on user input.
     let recipe = {
         "name": name,
         "difficulty": parseInt(difficulty),
@@ -568,15 +668,18 @@ async function newRecipe() {
         "categories": categories,
     };
 
+    // If the URL type is checked, add the URL to the recipe object.
     if (type.checked) {
         recipe.URL = document.querySelector("#recipe-url").value;
     } else {
+        // If the URL type is not checked, gather ingredient and instruction information.
         let list = document.querySelectorAll("#recipe-ingredient-list li");
         list.forEach((item) => {
             let ingredient = item.getAttribute("name");
             ingredients[ingredient] = item.getAttribute("data-qty");
         });
         recipe.ingredients = ingredients;
+
         list = document.querySelectorAll("#recipe-instructions-list li");
         list.forEach((item) => {
             instructions.push(item.textContent);
@@ -584,6 +687,7 @@ async function newRecipe() {
         recipe.instructions = instructions;
     }
 
+    // Create a data object to send to the API.
     let data = {
         "owner": username,
         "recipe": recipe,
@@ -591,6 +695,7 @@ async function newRecipe() {
     };
 
     try {
+        // Make a POST request to the API to add the new recipe.
         const recipeResponse = await fetch(API_IP + "/recipe/", {
             method: "POST",
             headers: {
@@ -598,14 +703,19 @@ async function newRecipe() {
             },
             body: JSON.stringify(data),
         });
+
+        // Log the response from the API.
         if (recipeResponse.ok) {
             console.log("Recipe added with id:", await recipeResponse.json());
         } else {
             console.log("Error adding recipe", await recipeResponse.json());
         }
     } catch (error) {
+        // Log an error if the API request fails.
         console.log(error);
     }
+
+    // Reload the page after the recipe is added.
     location.reload();
 }
 
@@ -681,11 +791,15 @@ function displayPages() {
  */
 function changePage(p) {
     let pages = document.querySelectorAll(".pagination-button");
+    //Remove active class from all pages
     for (let i = 0; i < pages.length; i++) {
         pages[i].classList.remove("active");
     }
+    //Set new page
     page = p;
+    //Display new page results
     displayResults(filterRecipes(searchRecipes(searchField.value)));
+    //Display new pagination
     displayPages();
 }
 
@@ -696,6 +810,9 @@ function changePage(p) {
  * @returns {*[]} - List of pages to display
  */
 function pagination(c, m) {
+    // Initialize variables for current page, last page, delta (range size),
+    // left and right bounds of the range, an array to store the range,
+    // another array to store the range with dots, and a variable 'l'.
     let current = c,
         last = m,
         delta = 10,
@@ -705,24 +822,34 @@ function pagination(c, m) {
         rangeWithDots = [],
         l;
 
+    // Iterate through all pages from 1 to the last page.
     for (let i = 1; i <= last; i++) {
+        // Check if the current page is the first, last, or within the range.
         if (i === 1 || i === last || i >= left && i < right) {
+            // Add the page number to the 'range' array.
             range.push(i);
         }
     }
 
+    // Iterate through the pages in the 'range' array.
     for (let i of range) {
+        // Check if 'l' (last page) is defined.
         if (l) {
+            // If there is a gap of 2 between the current and last page,
+            // add the missing page number.
             if (i - l === 2) {
                 rangeWithDots.push(l + 1);
             } else if (i - l !== 1) {
+                // If there is a gap of more than 1, add '...' to represent a gap.
                 rangeWithDots.push('...');
             }
         }
+        // Add the current page number to the 'rangeWithDots' array.
         rangeWithDots.push(i);
+        // Update 'l' to the current page number.
         l = i;
     }
-
+    // Return the array representing the pagination with or without dots.
     return rangeWithDots;
 }
 
@@ -751,7 +878,9 @@ function searchRecipes(text) {
  * Submit filter and display results
  */
 function submitFilter() {
+    //Reset page
     page = 0;
+    //Display results and update pagination
     displayPages();
     displayResults(filterRecipes(searchRecipes(searchField.value)));
 }
@@ -762,32 +891,52 @@ function submitFilter() {
  * @returns {*|*[]} - Filtered list of recipes
  */
 function filterRecipes(list) {
+    // Get all the category checkboxes from the DOM.
     let checkboxes = document.querySelectorAll(".category-checkbox");
+
+    // Initialize an array to store the values of checked checkboxes.
     let checked = [];
+
+    // Iterate through each checkbox to check if it is checked, and store its value.
     for (let i = 0; i < checkboxes.length; i++) {
         if (checkboxes[i].checked) {
             checked.push(checkboxes[i].value);
         }
     }
+
+    // If no checkboxes are checked, return the original unfiltered list.
     if (checked.length === 0) {
         return list;
     }
+
+    // Initialize an array to store the filtered list of recipes.
     let filteredList = [];
+    // Iterate through each recipe in the original list.
     for (let i = 0; i < list.length; i++) {
+        // Get the current recipe and its categories.
         let recipe = list[i];
         let categories = recipe.categories;
+
+        // If the recipe has no categories, skip to the next iteration.
         if(categories === null) continue;
+
+        // Initialize a variable to check if the recipe matches the selected categories.
         let match = true;
+
+        // Iterate through each checked category.
         for (let j = 0; j < checked.length; j++) {
+            // If the recipe's categories do not include the checked category, set match to false and break.
             if (!categories.includes(checked[j])) {
                 match = false;
                 break;
             }
         }
+        // If there is a match for all checked categories, add the recipe to the filtered list.
         if (match) {
             filteredList.push(recipe);
         }
     }
+    // Return the filtered list of recipes.
     return filteredList;
 }
 
@@ -799,8 +948,10 @@ function filterRecipes(list) {
  */
 function isDuplicate(list, item) {
     for (let i = 0; i < list.length; i++){
+        //If documentID is the same, it is a duplicate
         if (list[i].documentID === item.documentID) return true;
     }
+    //Not a duplicate
     return false;
 }
 
@@ -822,11 +973,12 @@ async function displayResults(filteredList){
     //Limit output to MAXRESULTS
     let displayedRecipes = [];
     for (let i = 0; i < MAXRESULTS && filteredList.length > i + page * MAXRESULTS; i++){
+        //Check if recipe is already displayed
         if (!isDuplicate(displayedRecipes, filteredList[i + page * MAXRESULTS])) {
             displayedRecipes.push(filteredList[i + page * MAXRESULTS]);
         }
     }
-
+    //Display recipes
     for (let i = 0; i < displayedRecipes.length; i++) {
         let recipe = displayedRecipes[i];
         let recipeA = document.createElement("a");
@@ -835,13 +987,15 @@ async function displayResults(filteredList){
         recipeA.setAttribute("href", "Oppskrift/index.html?id=" + recipe.documentID);
         recipeA.setAttribute("id", recipe.documentID);
 
+        //Create recipe block
         let recipeBlock = document.createElement("div");
         recipeBlock.setAttribute("class", "result-text");
+        //Create recipe name
         let recipeName = document.createElement("h3");
         recipeName.setAttribute("class", "result-name");
         recipeName.textContent = recipe.name;
         recipeBlock.appendChild(recipeName);
-
+        //Add URL if it exists
         if (recipe.URL !== "" && recipe.URL !== null) {
             let recipeURL = document.createElement("a");
             recipeURL.setAttribute("href", recipe.URL);
@@ -857,16 +1011,20 @@ async function displayResults(filteredList){
             }
             recipeBlock.appendChild(recipeURL);
         }
+        //Create recipe difficulty
         let recipeDifficulty = document.createElement("p");
         recipeDifficulty.setAttribute("class", "result-difficulty");
         recipeDifficulty.textContent = "Vanskelighetsgrad: " + recipe.difficulty;
         recipeBlock.appendChild(recipeDifficulty);
 
+        //Create recipe time
         let recipeTime = document.createElement("p");
         recipeTime.setAttribute("class", "result-time");
         recipeTime.textContent = "Tid: " + recipe.time + (recipe.time > 1 ? " minutter" : " minutt");
         recipeBlock.appendChild(recipeTime);
+        //Add image if recipe has it
         if (recipe.image !== "" && recipe.image !== null) {
+            //Check if image exists
             checkImageExists("../" + IMAGEDIR + recipe.image + ".jpeg", function (exists) {
                 if (!exists) {
                     return;
@@ -879,6 +1037,7 @@ async function displayResults(filteredList){
             });
         }
         recipeA.appendChild(recipeBlock);
+        //Add recipe to results
         resultDiv.appendChild(recipeA);
     }
 }
