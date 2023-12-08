@@ -754,6 +754,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.status === 204) {
                     // If the user left the chat themself, reload the page
                     if (leave === true) { 
+                        activeChatID = "";
                         location.reload();
                     } else {
                         getChatMembers(activeChatID);
