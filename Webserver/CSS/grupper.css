@@ -148,7 +148,7 @@
     background: none;
 }
 /* Style for the delete member button for each list entry */
-.delete-member-button {
+button.delete-member-button {
     background-color: #064412;
     color: white;
     font-weight: bold;
@@ -163,7 +163,7 @@
     cursor: pointer;
     float: right;
 }
-.delete-member-button {
+button.delete-member-button:hover {
     background-color: #04310d;
 }
 
