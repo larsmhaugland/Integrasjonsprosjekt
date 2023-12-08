@@ -3,7 +3,6 @@ package Socket
 import (
 	"container/heap"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -162,7 +161,6 @@ func broadcastMessageToRoom(connInfo *ConnectionInfo, messageData map[string]int
 		log.Println("Error marshaling messageData:", jsonErr)
 		return
 	}
-	log.Println("connections:" + string(len(chatRooms[messageData["activeChatID"].(string)])))
 	for roomConn := range chatRooms[messageData["activeChatID"].(string)] {
 		// Broadcast the message to clients in the same room
 		err := roomConn.Connection.WriteMessage(websocket.TextMessage, messageJSON)
@@ -176,7 +174,6 @@ func broadcastMessageToRoom(connInfo *ConnectionInfo, messageData map[string]int
 func joinChatRoom(connInfo *ConnectionInfo, activeChatID string) {
 	if activeChatID != "" {
 		// Create the chat room if it doesn't exist
-		fmt.Printf("Joining chat room: "+activeChatID+" As: %v", connInfo)
 		if chatRooms[activeChatID] == nil {
 			chatRooms[activeChatID] = make(map[*ConnectionInfo]bool)
 			roomInfo := &ChatRoomInfo{
