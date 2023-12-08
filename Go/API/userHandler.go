@@ -1,3 +1,5 @@
+// Description: This file contains all the handlers for the /user endpoint
+// It correctly reroutes the request to the correct handler based on the request method and URL
 package API
 
 import (

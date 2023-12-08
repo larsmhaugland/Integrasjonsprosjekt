@@ -1,3 +1,5 @@
+// Description: This file contains all the handlers for the /group endpoint
+// It correctly reroutes the request to the correct handler based on the request method and URL
 package API
 
 import (
@@ -10,6 +12,7 @@ import (
 	"strings"
 )
 
+// Different default images for groups
 var DEFAULTIMAGES = []string{"defaultBackground1", "defaultBackground2", "defaultBackground3",
 	"defaultBackground4", "defaultBackground5", "defaultBackground6", "defaultBackground7",
 	"defaultBackground8", "defaultBackground9", "defaultBackground10", "defaultBackground11",
@@ -136,23 +139,26 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// LeaveGroup deletes the user with the username sent as parameter from the group with the groupID sent as parameter
 func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
-		// Retrieve the groupID from the query parameters
+		// Retrieve the query parameters from the URL
 		groupID := r.URL.Query().Get("groupID")
 		username := r.URL.Query().Get("username")
 
+		// Delete the user from the group in the database
 		err := Firebase.DeleteMemberFromGroup(groupID, username)
 		if err != nil {
 			http.Error(w, "Could not delete the user from the group", http.StatusInternalServerError)
 		}
 
-		// Delete the group if there are no members left
+		// Get the group data from the database
 		group, err := Firebase.ReturnCacheGroup(groupID)
 		if err != nil {
 			http.Error(w, "Could not get the group", http.StatusInternalServerError)
 		}
 
+		// If there are no more members in the group, delete the group and chat from the database
 		if len(group.Members) == 0 {
 			err = Firebase.DeleteCacheChat(group.Chat)
 			if err != nil {
@@ -163,7 +169,7 @@ func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Could not delete the group", http.StatusInternalServerError)
 			}
 		}
-
+		// Respond with a success status
 		w.WriteHeader(http.StatusOK)
 
 	} else {
@@ -171,16 +177,20 @@ func LeaveGroup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetGroupName gets the name of the group with the specified groupID in the URL
 func GetGroupName(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
+		// Retrieve the groupID from the URL query parameter
 		groupID := r.URL.Query().Get("groupID")
 
+		// Get the group name from the database
 		groupName, err := Firebase.GetGroupName(groupID)
 		if err != nil {
 			http.Error(w, "Could not get the group name", http.StatusInternalServerError)
 		}
 
+		// Encode the groupName to JSON format for the response
 		err = EncodeJSONBody(w, r, groupName)
 		if err != nil {
 			http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
@@ -191,28 +201,37 @@ func GetGroupName(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GroupNewHandler creates a new group and adds it to the database. It also creates a groupchat for the group
 func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
+
 	var group Firebase.Group
 	chatID := r.URL.Query().Get("chatID")
+
+	// Decode the JSON body from the request and save it in the group struct
 	err := DecodeJSONBody(w, r, &group)
 	if err != nil {
 		http.Error(w, "Error; Could not decode JSON body", http.StatusBadRequest)
 		return
 	}
+
+	// Set a default image if none is specified
 	if group.Image == "" {
 		group.Image = DEFAULTIMAGES[rand.Int()%len(DEFAULTIMAGES)]
 	}
+
+	// Add the group to the database
 	id, err := Firebase.AddGroup(group, chatID)
 	if err != nil {
 		http.Error(w, "Error; Could not add group", http.StatusInternalServerError)
 		return
 	}
 
+	// Add the members from the request body to a new array
 	chatMembers := make([]string, 0)
 	for key := range group.Members {
 		chatMembers = append(chatMembers, key)
 	}
-	// Create a Chat struct with ChatOwner and Name
+	// Create a Chat struct with the necessary fields for the database
 	chat := Firebase.Chat{
 		ChatOwner:  group.Owner,
 		Name:       group.Name,
@@ -220,6 +239,7 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 		DocumentID: chatID,
 	}
 
+	// Add the chat to the databse
 	err = Firebase.AddNewChat(chat)
 	if err != nil {
 		http.Error(w, "Error; Could not create the group chat", http.StatusInternalServerError)
@@ -231,6 +251,7 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(id)
 }
 
+// GroupMemberBaseHandler handles all requests to the /group/members endpoint and reroutes them to the correct handler
 func GroupMemberBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -250,7 +271,9 @@ func GroupMemberBaseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GroupMemberGetHandler updates the role for the specified user from the URL
 func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
+
 	// Parse the query parameters from the URL
 	username := r.URL.Query().Get("username")
 	newRole := r.URL.Query().Get("newRole")
@@ -261,6 +284,7 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update the role for the specified user in the database
 	err := Firebase.UpdateMemberRole(username, newRole, groupID)
 	if err != nil {
 		http.Error(w, "Failed to update role", http.StatusInternalServerError)
@@ -271,11 +295,13 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// TODO: Er ikke denne lik relativt lik LeaveGroup?
+// GroupMemberDeleteHandler deletes the specified user from the specified group
 func GroupMemberDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse the query parameters from the URL
 	groupID := r.URL.Query().Get("groupID")
 	username := r.URL.Query().Get("username")
 
+	// Delete the user from the group in the database
 	err := Firebase.DeleteMemberFromGroup(groupID, username)
 	if err != nil {
 		http.Error(w, "Could not delete user", http.StatusInternalServerError)
@@ -285,21 +311,26 @@ func GroupMemberDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// GroupMemberPostHandler adds a new user to the specified group
 func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request) {
+	// Decode the JSON body from the request
 	var reqBody Firebase.AddGroupMember
 	err := DecodeJSONBody(w, r, &reqBody)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
 	defer r.Body.Close()
 
+	// Add the user to the group in the database
 	err = Firebase.AddUserToGroup(reqBody.Username, reqBody.GroupID)
 	if err != nil {
 		http.Error(w, "Could not add user to the group", http.StatusBadRequest)
 		return
 	}
 
+	// Add the group to the user in the database
 	err = Firebase.AddGroupToUser(reqBody.Username, reqBody.GroupID)
 	if err != nil {
 		http.Error(w, "Could not add the group to the user", http.StatusBadRequest)
@@ -309,6 +340,7 @@ func GroupMemberPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// GroupMemberGetHandler gets the name and roles of the members in the specified group
 func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the groupID from the query parameters
 	groupID := r.URL.Query().Get("groupID")
@@ -320,6 +352,7 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Encode the group members data to JSON format for the response
 	err = EncodeJSONBody(w, r, groupMembersData)
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
@@ -327,6 +360,7 @@ func GroupMemberGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GroupScheduleBaseHandler handles all requests to the /group/schedule endpoint and reroutes them to the correct handler
 func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -346,13 +380,17 @@ func GroupScheduleBaseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GroupScheduleGetHandler retrieves the schedule for the specified group
 func GroupScheduleGetHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the data for the group using the groupID from the query parameter in the URL
 	groupID := r.URL.Query().Get("groupID")
 	group, err := Firebase.ReturnCacheGroup(groupID)
 	if err != nil {
 		http.Error(w, "Error; Could not find group", http.StatusBadRequest)
 		return
 	}
+
+	// Encode the schedule to JSON format for the response
 	err = EncodeJSONBody(w, r, group.Schedule)
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
@@ -361,7 +399,10 @@ func GroupScheduleGetHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GroupSchedulePostHandler adds a new schedule to the specified group
 func GroupSchedulePostHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Define the input struct for the request body
 	type input struct {
 		Date         string   `json:"date"`
 		CustomRecipe string   `json:"customRecipe"`
@@ -376,6 +417,7 @@ func GroupSchedulePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get the groupID from the query parameter in the URL and use it to get the group data from the database
 	groupID := r.URL.Query().Get("groupID")
 	if groupID == "" {
 		http.Error(w, "Error; Could not find groupID", http.StatusBadRequest)
@@ -386,15 +428,18 @@ func GroupSchedulePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Could not find group", http.StatusBadRequest)
 		return
 	}
+
+	// Create the schedule map if it does not exist and populate it with the correct data
 	if group.Schedule == nil {
 		group.Schedule = make(map[string]Firebase.Dinner)
 	}
-
 	group.Schedule[requestBody.Date] = Firebase.Dinner{
 		CustomRecipe: requestBody.CustomRecipe,
 		Recipe:       requestBody.Recipe,
 		Responsible:  requestBody.Responsible,
 	}
+
+	// Update the group data in the database
 	err = Firebase.PatchCacheGroup(group)
 	if err != nil {
 		http.Error(w, "Error; Could not patch group", http.StatusBadRequest)
@@ -403,14 +448,15 @@ func GroupSchedulePostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// These functions are not yet needed for the application, but are defined for potential future use.
 func GroupScheduleDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
-
 func GroupSchedulePatchHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
+// GroupShoppingBaseHandler handles all requests to the /group/shopping endpoint and reroutes them to the correct handler
 func GroupShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -430,14 +476,17 @@ func GroupShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GroupShoppingGetHandler retrieves the shopping list for the specified group
 func GroupShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
-	//Retrieve shopping list for a group
+	// Get the group data from the database using the groupID from the query parameter in the URL
 	groupID := r.URL.Query().Get("groupID")
 	shoppingList, err := Firebase.ReturnCacheGroup(groupID)
 	if err != nil {
 		http.Error(w, "Could not get the shopping list", http.StatusInternalServerError)
 		return
 	}
+
+	// Encode the shopping list to JSON format for the response
 	err = EncodeJSONBody(w, r, shoppingList)
 	if err != nil {
 		http.Error(w, "Error while encoding JSON body", http.StatusInternalServerError)
@@ -446,15 +495,17 @@ func GroupShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// These functions are not yet needed for the application, but are defined for potential future use.
 func GroupShoppingPostHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
-
 func GroupShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
+// GroupShoppingPatchHandler updates the shopping list for the specified group
 func GroupShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the group data from the database using the groupID from the query parameter in the URL
 	groupID := r.URL.Query().Get("groupID")
 	group, err := Firebase.ReturnCacheGroup(groupID)
 	if err != nil {
@@ -462,12 +513,15 @@ func GroupShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get the shopping list data from the database using the shopping list ID from the group data
 	listId := group.ShoppingLists[0]
 	shoppingList, err := Firebase.ReturnCacheShoppingList(listId)
 	if err != nil {
 		http.Error(w, "Error while getting shopping list: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// Decode the JSON body from the request and save it in the newshoppinglist struct
 	var newshoppinglist Firebase.ShoppingList
 	err = DecodeJSONBody(w, r, &newshoppinglist)
 	if err != nil {
@@ -475,9 +529,11 @@ func GroupShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update the necesasry data for the shoppingList
 	shoppingList.Assignees = newshoppinglist.Assignees
 	shoppingList.List = newshoppinglist.List
 
+	// Update the shopping list in the database
 	Firebase.PatchCacheShoppingList(shoppingList)
 	if err != nil {
 		http.Error(w, "Error while updating shopping lists", http.StatusBadRequest)
