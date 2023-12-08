@@ -54,6 +54,7 @@
     margin: 0;
     padding: 10px;
     background: white; /* Background color for the paragraph */
+    color: black;
     position: absolute;
     bottom: 0; /* Position the paragraph at the bottom */
     width: 100%; /* Full width */
@@ -168,16 +169,22 @@
 .member-suggestions img {
     width: 1.5vw;
     height: auto;
-    background-color: #80AB82;
 }
 
 
 /* Styling for the "Add" button's icon within the member suggestions */
+.add-member-btn2 img:hover {
+    filter: invert(0%) sepia(24%) saturate(4310%) hue-rotate(229deg) brightness(99%) contrast(100%);
+    transition: 0.1s;
+}
+
+
 .add-member-btn2 img {
+    transition: 0.1s;
     width: 3vw;
     height: auto;
     cursor: pointer;
-    background-color: #80AB82;
+    filter: invert(35%) sepia(0%) saturate(18%) hue-rotate(177deg) brightness(89%) contrast(87%);
 }
 
 
@@ -197,10 +204,6 @@
 
 /* Style for the content within the popup */
 .popup-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     background-color: #fff;
     padding: 2vw;
     border-radius: 1vw;
@@ -232,13 +235,10 @@
 
 /* Remove member from list button */
 .remove-member-button {
-    background: #ff0000;
-    color: #fff;
-    border: none;
     padding: 5px 10px;
     border-radius: 5px;
-    cursor: pointer;
     margin-left: 10px;
+    font-size: 1em;
 }
 
 /* Labels within the form */
@@ -256,8 +256,6 @@
 
 /* Button for adding members in the form */
 .member-input button {
-    background: #007bff;
-    color: #fff;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -277,6 +275,7 @@
     background: #d1ecf1;
     margin: 5px 0;
     padding: 10px;
+    width: 30vw;
     border-radius: 5px;
     display: flex;
     align-items: center;

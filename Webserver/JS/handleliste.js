@@ -1,21 +1,23 @@
-/* jshint esversion: 8 */
+/**
+ * @file handleliste.js
+ * @brief handleliste.js contains the functions that are used on the handleliste page.
+ */
+
 //CALL ON START/RELOAD
 retrieveGroups();
 retrieveShoppingList();
 
-//Constants/defined variables
+/****************************  GLOBAL VARIABLES AND CONSTS ********************************/
 const urlParams = new URLSearchParams(window.location.search);
 const groupIDSentAsParam = urlParams.get('groupID');
 let inputCalendar = null;
-
-
-//EVENT LISTENERS:
 //Save the selected option in the dropdown menu to session storage for reloading the page
 const dropdown = document.getElementById('group-dropdown');
 const selectedOption = sessionStorage.getItem('selectedOption');
 if (selectedOption) {
     dropdown.value = selectedOption;
 }
+/****************************  EVENT LISTENERS ********************************/
 //Resetting the shopping list when changing group/user
 dropdown.addEventListener('change', function () {
     const selectedValue = dropdown.value;
@@ -70,7 +72,7 @@ hideFinished.addEventListener("click", (event) => {
         document.querySelector("#finished-list").style.display = "block";
     }});
 
-//FUNCTIONS:
+/****************************  Functions ********************************/
 /**
     DISPLAY GROUPS IN DROPDOWN MENU
      @param groups: Array of groups
@@ -122,7 +124,6 @@ function retrieveShoppingList() {
             }
         }).then(response => {
             if (response.status === 200){
-                console.log("Shopping list retrieved");
                 return response.json();
             } else {
                 console.log("Error retrieving shopping list");
@@ -130,7 +131,6 @@ function retrieveShoppingList() {
             }
         }).then(data=>{
             sessionStorage.setItem("shoppinglist", JSON.stringify(data));
-            console.log(sessionStorage.getItem("shoppinglist"));
             displayShoppingList(data);
         }
         );
@@ -149,7 +149,6 @@ function retrieveShoppingList() {
             }
         }).then(response => {
             if (response.status === 200){
-                console.log("Shopping list retrieved");
                 return response.json();
             } else {
                 console.log("Error retrieving shopping list");
@@ -180,6 +179,7 @@ function displayShoppingList(shoppinglist){
 
         //Placing the item in the correct list depending on whether it is complete or not
         if (complete === false){
+            //If the item is not complete, place it in the shopping list
             let formattedItem = quantity + " " + itemName;
             let li = document.createElement("li");
             li.setAttribute("id", "list-item");
@@ -191,7 +191,8 @@ function displayShoppingList(shoppinglist){
             li.appendChild(document.createTextNode(formattedItem));
             display.appendChild(li);
         }
-        else if(complete == true){
+        else if(complete === true){
+            //If the item is complete, place it in the finished list
             let finishedlist = document.querySelector("#finished-list");
             let formattedItem = quantity + " " + itemName;
             let li = document.createElement("li");
@@ -295,10 +296,8 @@ function removeItemFromList(){
         if(!item.querySelector("#finished-checkbox").checked){
             sessionList.forEach(sessionItem => {
                 let name = item.textContent;
-                console.log(name);
                 for (let itemName in sessionItem.list) {
                     let itemInfo = sessionItem.list[itemName].quantity + " " + itemName;
-                    console.log(itemInfo);
                     if (itemInfo === name) {
                         sessionItem.list[itemName].complete = false;
                     }
@@ -322,30 +321,30 @@ function removeItemFromList(){
     RETRIEVE GROUPS FROM DATABASE
 */
 function retrieveGroups(){
-
+    // Return if the user is not logged in
     if (!checkLoginStatus()) return;
+
     let userName = sessionStorage.getItem("username");
-
-        fetch(API_IP + `/user/groups?username=${userName}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(response => {
-            if (response.status === 200){
-                console.log("Groups retrieved");
-                return response.json();
-            } else {
-                console.log("Error retrieving groups");
-                throw new Error("Failed to retrieve groups");
-            }
-        }).then(data=>{
-            sessionStorage.setItem("groups", JSON.stringify(data));
-            displayGroups(data);})
-            .catch(error => {
-                console.log("Error retrieving groups: " + error);
-            });
-
+    //Retrieve groups from database
+    fetch(API_IP + `/user/groups?username=${userName}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(response => {
+        if (response.status === 200){
+            return response.json();
+        } else {
+            console.log("Error retrieving groups");
+            throw new Error("Failed to retrieve groups");
+        }
+    }).then(data=>{
+        //Save groups to storage session and display them
+        sessionStorage.setItem("groups", JSON.stringify(data));
+        displayGroups(data);
+    }).catch(error => {
+        console.log("Error retrieving groups: " + error);
+    });
 }
 
 /**
@@ -384,9 +383,7 @@ function patchShoppingList(){
             },
             body: JSON.stringify(shoppingListObject)
         }).then(response => {
-            if (response.status === 200){
-                console.log("Shopping list updated");
-            } else {
+            if (response.status !== 200){
                 console.log("Error updating shopping list");
                 throw new Error("Failed to update shopping list");
             }
@@ -407,9 +404,7 @@ function patchShoppingList(){
             },
             body: JSON.stringify(shoppingListObject)
         }).then(response => {
-            if (response.status === 200) {
-                console.log("Shopping list updated");
-            } else {
+            if (response.status !== 200) {
                 console.log("Error updating shopping list");
                 throw new Error("Failed to update shopping list");
             }
@@ -425,9 +420,11 @@ function patchShoppingList(){
 function removeList(){
     let list = document.querySelector("#shopping-list");
     let items = list.querySelectorAll("#list-item");
+    //Remove all items from the shopping list
     items.forEach(item => {
         list.removeChild(item);
     });
+    //Remove all items from the finished list
     list = document.querySelector("#finished-list");
     items = list.querySelectorAll("#finished-item");
     items.forEach(item => {
@@ -441,28 +438,28 @@ function removeList(){
  * @param user - boolean, true if the option is a username
  */
 function retrieveDinnerList( option, user){
+    //Clear dinner list
     removeDinnerList();
+    //If user is not logged in, do nothing
     if(!checkLoginStatus()) return;
-    else{
-        fetch(API_IP + `/group/schedule?groupID=${option}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(response => {
-            if (response.status === 200){
-                console.log("Dinner list retrieved");
-                return response.json();
-            } else {
-                console.log("Error retrieving dinner list");
-                throw new Error("Failed to retrieve dinner list");
-            }
-        }).then(data=>{
-            inputCalendar = data;
-            setCalendar(option);
+    //Send request to database to retrieve dinner list
+    fetch(API_IP + `/group/schedule?groupID=${option}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
         }
-        );
+    }).then(response => {
+        if (response.status === 200){
+            return response.json();
+        } else {
+            console.log("Error retrieving dinner list");
+            throw new Error("Failed to retrieve dinner list");
+        }
+    }).then(data=>{
+        inputCalendar = data;
+        setCalendar(option);
     }
+    );
 }
 
 /**
@@ -486,13 +483,11 @@ function setCalendar(groupID){
             let date = new Date(dateKey);
             let customDinner = dateData.customRecipe;
             let recipe = dateData.recipe;
-            console.log(recipe);
             for (let k=0; k<dates.length; k++){
                 const currentDate = new Date(dates[k]);
                 currentDate.setHours(0, 0, 0, 0); // Set time to midnight
                 date.setHours(0, 0, 0, 0); // Set time to midnight for the date
                 if (currentDate.getTime() === date.getTime() && recipe){
-                    console.log("date found");
                     let div = document.getElementById("middag-uke");
                     let paragraph = document.createElement("div");
                     paragraph.setAttribute("class", "middag");
@@ -507,7 +502,7 @@ function setCalendar(groupID){
                     paragraph.appendChild(button);
                     div.appendChild(paragraph);
                     //Add an event listener to each button which sends the correct recipeID to the function
-                    button.addEventListener("click", () => addDinnerToList(recipe));
+                    button.addEventListener("click", () => addDinnerToList(recipe));// jshint ignore:line
                 }
             }
         }
@@ -536,15 +531,12 @@ function addDinnerToList(recipeID) {
         }
     }).then(response => {
         if (response.status === 200) {
-            console.log("Recipe retrieved");
             return response.json();
         } else {
             console.log("Error retrieving recipe");
             throw new Error("Failed to retrieve recipe");
         }
     }).then(data => {
-        console.log(JSON.stringify(data));
-
         // Add ingredients to shopping list
         let ingredients = data.ingredients;
         let shoppinglist = JSON.parse(sessionStorage.getItem("shoppinglist")) || [];

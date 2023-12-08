@@ -1,3 +1,4 @@
+// Description: This file contains functions for interacting with the user collection in the Firestore database
 package Firebase
 
 import (
@@ -405,7 +406,6 @@ func GetUserChats(username string) ([]Chat, error) {
 			log.Println("error getting chat data from cache:", err)
 		} else {
 			chats = append(chats, chatData)
-			log.Println("Chat name: " + chatData.Name)
 		}
 	}
 

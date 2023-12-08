@@ -7,6 +7,7 @@ RUN rm -rf /usr/local/apache2/htdocs/*
 #Copy website to apache root
 COPY Webserver /usr/local/apache2/htdocs/
 
+#Copy HTTPS certificate to apache root
 RUN mv /usr/local/apache2/htdocs/HTTPS /
 
 #Copy custom apache config

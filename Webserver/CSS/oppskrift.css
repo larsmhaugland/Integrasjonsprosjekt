@@ -22,6 +22,7 @@ body{
         "recipe-header recipe-header"
         "recipe-content recipe-image";
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 9fr;
 }
 
 .recipe-header{
@@ -34,7 +35,8 @@ body{
     margin: 1px;
     padding: 0;
     display: inline;
-    width: 20%;
+    width: fit-content;
+    height: fit-content;
 }
 
 #edit-recipe-btn {
@@ -58,7 +60,10 @@ body{
 
 #recipe-image {
     grid-area: recipe-image;
-    width: 1fr;
+}
+
+#recipe-image img {
+    max-width: 100%;
 }
 
 .single-recipe-content {

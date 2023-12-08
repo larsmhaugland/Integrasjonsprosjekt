@@ -4,7 +4,7 @@ main{
     grid-template-areas:
     "padding padding"
     "handleliste middag-uke";
-    align-items: self-start;
+    align-items: flex-start;
 }
 
 #handleliste{
@@ -72,6 +72,7 @@ select{
     background-color: white;
     text-align: center;
     line-height: 1%;
+    color: black;
 }
 
 .middag::before {
@@ -85,7 +86,6 @@ select{
     left: 0;
     z-index: -1; /* Place it behind the paragraph */
 }
-
 
 h3, p {
     white-space: nowrap; /* Prevent text from wrapping */
@@ -105,7 +105,7 @@ li{
 
 #finished-list{
     text-decoration: line-through;
-    block: display;
+    display: block;
 }
 
 #complete-header{
@@ -117,7 +117,7 @@ li{
 
 .hide-complete{
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
     margin-right: 10%;
 }

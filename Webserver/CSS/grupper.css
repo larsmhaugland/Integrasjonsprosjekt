@@ -148,7 +148,7 @@
     background: none;
 }
 /* Style for the delete member button for each list entry */
-.delete-member-button {
+button.delete-member-button {
     background-color: #064412;
     color: white;
     font-weight: bold;
@@ -163,7 +163,7 @@
     cursor: pointer;
     float: right;
 }
-.delete-member-button:hover{
+button.delete-member-button:hover {
     background-color: #04310d;
 }
 
@@ -227,16 +227,6 @@
     text-align: center;
     box-shadow: 0 2px 1.5vw rgba(0, 0, 0, 0.2);
     overflow-y: auto;
-}
-
-/* Styling for the close button within the modal */
-.close-modal {
-    position: absolute;
-    top: 0.2vw;
-    right: 1vw;
-    font-size: 3vw;
-    cursor: pointer;
-    color: #000000;
 }
 
 /* Styling for the search input within the modal */

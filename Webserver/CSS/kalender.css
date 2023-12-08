@@ -1,3 +1,4 @@
+/* Styling for the main container */
 .container{
     grid-area:main;
     display: grid;
@@ -8,10 +9,15 @@
     "torsdag fredag lordag"
     ". sondag .";
 }
+
+/* Styling for bolded text */
 h1{
     font-weight: bolder;
     font-size: 35px;
 }
+
+/* Styling for all the day sections */
+
 #mandag{
     position: relative;
     grid-area: mandag;
@@ -19,6 +25,7 @@ h1{
     border: 2px solid black;
     padding: 10px;
 }
+
 #tirsdag{
     position: relative;
     grid-area: tirsdag;
@@ -26,6 +33,7 @@ h1{
     border: 2px solid black;
     padding: 10px;
 }
+
 #onsdag{
     position: relative;
     grid-area: onsdag;
@@ -33,6 +41,7 @@ h1{
     border: 2px solid black;
     padding: 10px;
 }
+
 #torsdag{
     position: relative;
     grid-area: torsdag;
@@ -40,6 +49,7 @@ h1{
     border: 2px solid black;
     padding: 10px;
 }
+
 #fredag{
     position: relative;
     grid-area: fredag;
@@ -47,6 +57,7 @@ h1{
     border: 2px solid black;
     padding: 10px;
 }
+
 #lordag{
     position: relative;
     grid-area: lordag;
@@ -54,6 +65,7 @@ h1{
     border: 2px solid black;
     padding: 10px;
 }
+
 #sondag{
     position: relative;
     grid-area: sondag;
@@ -62,6 +74,7 @@ h1{
     padding: 10px;
 }
 
+/* Styling for the adding dinner popup */
 .dinner-popup {
     position: fixed;
     z-index: 1;
@@ -74,6 +87,7 @@ h1{
     display: none;
 }
 
+/* Styling for the inner part of the adding dinner popup */
 .dinner-content {
     background-color: white;
     margin: 10% auto;
@@ -84,6 +98,7 @@ h1{
     font-weight: bolder;
 }
 
+/* Styling for the close button of the adding dinner popup */
 #close-dinner-popup {
     float: right;
     display: inline;
@@ -93,21 +108,30 @@ h1{
     height: 30px;
 }
 
+/* Styling for the close button of the adding dinner popup */
 .close-svg {
     width: 40px;
     filter: invert(78%) sepia(10%) saturate(22%) hue-rotate(14deg) brightness(88%) contrast(86%);
 }
 
+/* Styling for hovering over the close button of the adding dinner popup */
 .close-svg:hover {
     filter: invert(12%) sepia(75%) saturate(5744%) hue-rotate(358deg) brightness(88%) contrast(116%);
 }
 
+/* styling for most buttons */
 .btn{
     background-color: #064412;
     color: white;
     border-radius: 30px;
 }
 
+/* styling for hovering over most buttons */
+.btn:hover{
+    background-color: #04310d;
+}
+
+/* styling for the responsible buttons */
 .btn.responsible {
     padding: 10px;
     cursor: pointer;
@@ -115,12 +139,15 @@ h1{
     width: 150px;
 }
 
+/* styling for adding dinner button */
 .btn.dinner-btn{
     padding: 10px;
     width: 150px;
     cursor: pointer;
     font-size: 24px;
 }
+
+/* styling for div containing the buttons for adding dinners and those responsible for them */
 .button-div{
     display: flex;
     flex-direction: column;
@@ -133,18 +160,18 @@ h1{
     margin-top: -2vh;
 }
 
-.btn:hover{
-    background-color: #04310d;
-}
-
+/* Styling for the dinners that have a recipe associated with them */
 .dinner-link{
     font-weight: bold;
     font-size: 25px;
 }
+
+/* styling for hovering over those links */
 .dinner-link:hover{
     color: #80AB82;
 }
 
+/* Styling for the popup that shows the members that could be responsible for the dinners */
 .popup {
     position: fixed;
     top: 50%;
@@ -158,14 +185,18 @@ h1{
     border: 1vh solid #064412;
     border-radius: 30px;
 }
+
+/* Styling for the buttons in the popup */
 .popup button {
     display: block;
-    background-color: white;
-    margin-bottom: 10px; /* Adjust the margin as needed */
+    background-color: #80AB82;
+    margin-bottom: 10px;
     font-size: 38px;
     align-self: stretch;
     font-weight: bold;
 }
+
+/* styling for the background around the popup */
 .overlay {
     position: fixed;
     top: 0;
@@ -177,23 +208,27 @@ h1{
     display: none;
 }
 
-
+/* Styling for all input fields */
 input{
     padding-top: 1%;
     font-size: 20px;
     padding-left: 1%;
 }
 
+/* Styling for all dropdown menus */
 select{
     font-size: 20px;
     border: 2px solid black;
     border-radius: 25px;
     padding-left: 1%;
 }
+
+/* Styling for the group dropdown menu */
 #group-dropdown{
    margin-bottom: 10px;
 }
 
+/* Styling for the day-divs */
 .day {
     background: #ffffff;
 }

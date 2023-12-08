@@ -28,5 +28,6 @@ WORKDIR /GoApp
 #Expose port 8080
 EXPOSE 8080
 
+#Command to run the executable
 ENTRYPOINT ["/GoApp/main"]
 CMD ["-https"]

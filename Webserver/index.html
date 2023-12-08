@@ -16,67 +16,71 @@
     <header class="main-nav">
         <a href="index.html"><img id="logo-image" src="Images/logo.png" alt="PLÆN-logo"/></a>
     <nav>
-            <a class= "nav" href="Handleliste/index.html">HANDLELISTE</a>
-            <a class= "nav" href="Chat/index.html">CHAT</a>
-            <a class= "nav" href="Kalender/index.html">KALENDER</a>
-            <a class= "nav" href="Oppskrifter/index.html">OPPSKRIFTER</a>
+            <button class= "nav" id="Handleliste-link">HANDLELISTE</button>
+            <button class= "nav" id="Chat-link">CHAT</button>
+            <button class= "nav" id="Kalender-link">KALENDER</button>
+            <button class= "nav" id="Oppskrift-link">OPPSKRIFTER</button>
             <button class="log-btn" id="log-in-btn">INNLOGGING</button>
             <button class="log-btn" id="log-out-btn">LOGG UT</button>
     </nav>
 </header>
     <!--NOT LOGGED IN-STARTPAGE-->
     <div id="not-logged-in">
-        <img src="Images/logostor.png">
+        <img src="Images/logostor.png" alt="PLÆN-logo">
         <button class="log-btn" id="log-in-btn2">INNLOGGING</button>
-        <a>ELLER <a class="register-btn">REGISTRER DEG HER</a></a>
+        <h2>ELLER</h2>
+        <a class="register-btn">REGISTRER DEG HER</a>
     </div>
 
     <!--Pop-up login-->
     <div id="log-in-popup" class="popup-wrapper">
         <form id="log-in-form" class="popup-content">
             <a id="close-login-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
-            <h3>Brukernavn</h3>
-            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" required>
+            <div class="username"><h3>Brukernavn</h3></div>
+            <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username" class="username" required>
             <h3>Passord</h3>
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password" required>
+            <br>
             <a id="wrong-password" class="error">Feil brukernavn eller passord</a>
+            <br>
             <button type="button" class="btn" id="log-in-submit">Logg inn</button>
             <br><br>
-            <a>Har du ikke bruker? <a id="register-switch-btn">Registrer deg</a></a>
+            <h3>har du ikke bruker?</h3>
+            <button type="button" class="btn" id="register-switch-btn">Registrer deg</button>
+
         </form>
     </div>
 
     <div id="new-group-popup" class="popup">
         <div class="popup-content">
-            <span class="close" id="close-group-popup" >&times;</span>
-            <h2>Create a New Chat</h2>
+            <a id="close-group-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
+            <h2>Lag ny gruppe</h2>
             <form class="create-group-form">
-                <label for="group-name">Group Name:</label>
-                <input type="text" id="group-name" name="group-name" required placeholder="Enter a name for the group">
+                <label for="group-name">Gruppenavn:</label>
+                <input type="text" id="group-name" name="group-name" required placeholder="Skriv inn navn på gruppen...">
             
-                <label for="member-input">Add Members:</label>
+                <label for="member-input">Legg til medlemmer:</label>
                 <div class="member-input" id="member-input">
-                    <button type="button" id="add-member-button">Add Member</button>
+                    <button type="button" id="add-member-button">Legg til medlem</button>
                 </div>
-                <span> <em>Click "Add Member" to include members in the chat.</em> </span>
+                <span> <em>Klikk på "Legg til medlem" for å legge inn gruppemedlemmer.</em> </span>
                 <ul id="member-list" class="member-list">
                 </ul>
-                <label for="group-img">Gruppens ikon (opt.)</label>
+                <label for="group-img">Gruppens ikon (frivillig)</label>
                 <input type="file" id="group-img" name="group-img" accept="image/*">
                 <div id="group-img-preview">
-                    <img src="" alt="Bilde av oppskrift" style="display: none">
+                    <img src="" alt="gruppebilde" style="display: none">
                 </div>
-                <button type="submit" class="create-button" >Create</button>
+                <button type="submit" class="create-button" >Opprett</button>
             </form>
         </div>
     </div>
 
     <div id="search-member-modal" class="modal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
+            <a id="close-modal" class="close-popup close-modal"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
             <h2>Legge til medlemmer</h2>
-            <input type="text" id="search-input" placeholder="Enter member name...">
-            
+            <input type="text" id="search-input" placeholder="Skriv inn medlemmets navn...">
             <ul class="member-suggestions"></ul>
         </div>
     </div>
@@ -86,8 +90,8 @@
     <div id="register-popup" class="popup-wrapper">
         <form id="register-user-form" class="popup-content">
             <a id="close-register-popup" class="close-popup"><img src="Images/cross.svg" alt="close popup" class="close-svg"></a>
-            <h3>Navn</h3>
-            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" required>
+            <div class="name"><h3>Navn</h3></div>
+            <input type="text" placeholder="Skriv inn navn" name="name" id="name-reg" class="name" required>
             <h3>Brukernavn</h3>
             <input type="text" placeholder="Skriv inn brukernavn" name="brukernavn" id="username-reg" required>
             <a id="username-taken" class="error">Brukernavnet er opptatt</a>
@@ -95,11 +99,14 @@
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg" required>
             <h3>Gjenta passord</h3>
             <input type="password" placeholder="Skriv inn passord" name="psw" id="password-reg-conf" required>
-            <a id="password-mismatch" class="error">Passordene er ikke like</a>
             <br><br>
-            <button type="button" class="btn" id="register-user-submit">Registrer bruker</button>
+            <span id="password-validation-message"></span> 
+            <span id="password-match-message"></span> 
             <br><br>
-            <a>Har du bruker? <a id="login-switch-btn">Logg inn</a></a>
+            <button type="submit" class="btn" id="register-user-submit">Registrer bruker</button>
+            <br><br>
+            <h3>har du bruker allerede?</h3>
+            <button type="button" class="btn" id="login-switch-btn">Logg inn</button>
         </form>
     </div>
 

@@ -1,16 +1,17 @@
-
 /**
  * @file kalender.js
  * @brief This file contains the calendar functions for the application.
  */
 
-/* jshint esversion: 8 */
+/****************************** DOM Elements ************************************/
 let dinnerPopup = document.querySelector("#dinner-popup"); // The popup for adding a dinner
 let newDinnerBtns = document.querySelectorAll(".dinner-btn"); // The buttons for adding a dinner
 let closeDinnerPopup = document.querySelector("#close-dinner-popup"); // The button for closing the dinner popup
 let dinnerForm = document.querySelector("#new-dinner-form"); // The form for adding a dinner
 let groupDropdown = document.querySelector("#group-dropdown"); // The dropdown for selecting a group
 let responsibleButtons = document.querySelectorAll('.btn.responsible'); // The buttons for selecting a responsible member
+
+/*********************************** Variables ************************************************/
 let currentDay; // The day selected to add information to
 let allDays = ["mandag","tirsdag", "onsdag", "torsdag", "fredag", "lordag", "sondag"]; // Array of all days
 let Recipes = []; // Array containing all recipes
@@ -20,7 +21,112 @@ let inputCalendar = null; // The calendar data retrieved from the database
 let groups = []; // Array containing all groups
 let groupIDSentAsParam = ""; // The group ID sent as a parameter in the URL
 
-beginning();
+beginning(); // Begin the application, needs this because of async functions
+
+/*********************************** Event Listeners ************************************************/
+
+/**
+ * @brief Add event listener for closing the dinner popup.
+ *
+ * This event listener is triggered when the close button in the dinner popup is clicked.
+ * It hides the dinner popup and clears the input field.
+ */
+closeDinnerPopup.addEventListener("click", function (event) {
+    // Hide the dinner popup when the close button is clicked
+    dinnerPopup.style.display = "none";
+    const inputField = document.querySelector('#dinner-name');
+    if (inputField) {
+        inputField.value = ""; // This will empty the input field
+    }
+});
+
+
+/**
+ * @brief Add event listener to prevent form submission.
+ */
+dinnerForm.addEventListener("submit", function (event) {
+    // Prevent the default form submission behavior to handle form data asynchronously
+    event.preventDefault();
+});
+
+/**
+ * @brief Add click event listeners to "Responsible" buttons.
+ *
+ * This block of code adds click event listeners to each button in the 'responsibleButtons' NodeList.
+ * When a button is clicked, it checks the selected group from the dropdown and the day section associated with the button.
+ * If both the selected group and day section are valid, it invokes the 'createMemberPopup' function to display a popup
+ * with group members for the selected day.
+ */
+responsibleButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+        let dropdown = document.getElementById("group-dropdown");
+        if (dropdown.selectedIndex !== 0) {
+            let selectedOption = dropdown.options[dropdown.selectedIndex];
+            let groupID = selectedOption.value;
+            let selectedGroup = groups.find(function (group) {
+                return group.documentID === groupID;
+            });
+            let daySection = button.closest('[id]');
+            let id = null;
+            if (daySection) {
+                id = daySection.id; // This will give you, for example, "tirsdag"
+            }
+            if (selectedGroup && id) {
+                // Open the member popup for the selected group and day
+                createMemberPopup(selectedGroup, id);
+            }
+        }
+    });
+});
+
+/**
+ * @brief Event listener for the change event on the group dropdown.
+ *
+ * This event listener is triggered when the selected option in the group dropdown changes.
+ * It asynchronously calls the 'getCalenderData' function as long as it is not the first option.
+ * If the first option is selected, it reloads the page.
+ */
+groupDropdown.addEventListener("change", async function (event) {
+    if (groupDropdown.selectedIndex === 0) {
+        // Reload the page if the "velg gruppe" is selected
+        location.reload();
+    }else{
+        // Asynchronously fetch calendar data when the dropdown changes
+        await getCalenderData();
+    }
+});
+
+/**
+ * @brief Event listeners for new dinner buttons.
+ *
+ * This block of code adds event listeners to each button in the 'newDinnerBtns' NodeList.
+ * When a button is clicked, it checks the authentication token, displays an alert if not logged in,
+ * and sets the current day for dinner addition to the clicked button's parent node's ID.
+ * It preloads the autocomplete with the first two recipes in the database if they exist.
+ * Finally, it displays the 'dinnerPopup'.
+ */
+newDinnerBtns.forEach(function (btn) {
+    btn.addEventListener("click", function (event) {
+        // Check authentication token before proceeding
+        if (!checkLoginStatus()) {
+            alert("Du må logge inn for å legge til i kalenderen");
+            return;
+        }
+
+        // Set the current day for dinner addition
+        if (currentDay !== null) {
+            currentDay = event.target.parentNode.parentNode.id;
+        } else {
+            console.error("Unable to get the parent node's ID");
+        }
+        autocomplete(currentDay, "");
+        // Display the dinnerPopup
+        dinnerPopup.style.display = "block";
+    });
+});
+
+
+/*********************************** Functions ************************************************/
 
 /**
  * @brief Entry point for the application.
@@ -97,7 +203,6 @@ async function getCalenderData() {
  * @param {string} groupID - The ID of the group for which the calendar is being reset.
  */
 function resetCalendarAndSetAllDays(groupID) {
-    console.log("Setting calendar");
 
     // Get dates for the current week
     let dates = getDatesForCurrentWeek();
@@ -115,7 +220,7 @@ function resetCalendarAndSetAllDays(groupID) {
                 label.textContent = "";
             } else if (label.textContent.includes("Middag: ")) {
                 label.parentNode.removeChild(label);
-            } else if (label.textContent.includes("Ingen middag valgt. ")) {
+            } else if (label.textContent.includes("Ingen middag valgt. ") && inputCalendar !== null) {
                 label.parentNode.removeChild(label);
             }
         });
@@ -133,6 +238,16 @@ function resetCalendarAndSetAllDays(groupID) {
     // Check if inputCalendar is null
     if (inputCalendar == null) {
         console.log("inputCalendar is null");
+        allDays.forEach(function (day) {
+            if(document.querySelector("#" + day + "-dinner")){
+                document.querySelector("#" + day + "-dinner").textContent = "Ingen middag valgt. ";
+            }else {
+                let label = document.createElement("label");
+                label.textContent = "Ingen middag valgt. ";
+                label.id = day + "-dinner";
+                document.querySelector("#" + day + "-textbox").appendChild(label);
+            }
+        });
         return;
     }
 
@@ -140,13 +255,11 @@ function resetCalendarAndSetAllDays(groupID) {
     const dateKeys = Object.keys(inputCalendar);
     for (let j = 0; j < options.length - 1; j++) {
         if (groupID === options[j + 1].value) {
-            dateKeys.forEach(dateKey => {
+            dateKeys.forEach(dateKey => {// jshint ignore:line
                 // Check if the dateKey exists in inputCalendar
                 if (dateKey in inputCalendar) {
                     let dateData = inputCalendar[dateKey];
                     let date = new Date(dateKey);
-
-                    console.log("Group found");
 
                     // Initialize responsibleCalendar array if not already initialized
                     if (!responsibleCalendar[j]) {
@@ -165,7 +278,6 @@ function resetCalendarAndSetAllDays(groupID) {
                         date.setHours(0, 0, 0, 0);
 
                         let div = document.getElementById(allDays[k]);
-
                         // Check if the current date matches the date in the calendar data
                         if (currentDate.getTime() === date.getTime()) {
                             setCalenderOnDate(dateData, div, j, k, groupID);
@@ -206,9 +318,16 @@ function setCalenderOnDate(dateData, div, j, k, groupID) {
 
     // Select the label element in the day's div
     let label = div.querySelector('.selectedMemberLabel');
-
     // Add a label for "responsible" to the day's div
-    label.innerHTML = "Ansvarlig: " + responsible;
+    if (label){
+        label.textContent = "Ansvarlig: " + responsible;
+    }else {
+        label = document.createElement("label");
+        label.textContent = "Ansvarlig: " + responsible;
+        label.className = "selectedMemberLabel";
+    }
+
+
     if (responsible !== "") {
         responsibleCalendar[j][k + 1] = responsible[0];
     }
@@ -285,7 +404,6 @@ function updateCalendarArray(groupID, index, dinner) {
  * @remarks This function assumes a valid server endpoint for updating group schedules and proper authentication.
  */
 function sendCalendarToServer() {
-    console.log("Sending calendar to server");
 
     // Get dates for the current week
     const dates = getDatesForCurrentWeek();
@@ -315,7 +433,6 @@ function sendCalendarToServer() {
                     } else {
                         responsible = responsibleCalendar[gIndex][dIndex + 1];
                     }
-
                     // Construct the data payload for the POST request
                     const data = {
                         "date": dateString,
@@ -333,9 +450,7 @@ function sendCalendarToServer() {
                         body: JSON.stringify(data)
                     }).then(response => {
                         // Check the response status and log the result
-                        if (response.status === 200) {
-                            console.log("Successfully added dinner to calendar");
-                        } else {
+                        if (response.status !== 200) {
                             console.log("Error when adding dinner to calendar");
                         }
                     });
@@ -345,48 +460,6 @@ function sendCalendarToServer() {
     });
 }
 
-/**
- * @brief Event listener for the change event on the group dropdown.
- *
- * This event listener is triggered when the selected option in the group dropdown changes.
- * It logs a message to the console and asynchronously calls the 'getCalenderData' function.
- */
-groupDropdown.addEventListener("change", async function (event) {
-    console.log("Dropdown changed");
-
-    // Asynchronously fetch calendar data when the dropdown changes
-    await getCalenderData();
-});
-
-/**
- * @brief Event listeners for new dinner buttons.
- *
- * This block of code adds event listeners to each button in the 'newDinnerBtns' NodeList.
- * When a button is clicked, it checks the authentication token, displays an alert if not logged in,
- * and sets the current day for dinner addition to the clicked button's parent node's ID.
- * It preloads the autocomplete with the first two recipes in the database if they exist.
- * Finally, it displays the 'dinnerPopup'.
- */
-newDinnerBtns.forEach(function (btn) {
-    btn.addEventListener("click", function (event) {
-        // Check authentication token before proceeding
-        if (!checkLoginStatus()) {
-            alert("Du må logge inn for å legge til i kalenderen");
-            return;
-        }
-
-        // Set the current day for dinner addition
-        if (currentDay !== null) {
-            currentDay = event.target.parentNode.parentNode.id;
-            console.log("Current day: " + currentDay);
-        } else {
-            console.error("Unable to get the parent node's ID");
-        }
-        autocomplete(currentDay, "");
-        // Display the dinnerPopup
-        dinnerPopup.style.display = "block";
-    });
-});
 
 
 
@@ -484,60 +557,6 @@ function createMemberPopup(groupData, day) {
 }
 
 
-/**
- * @brief Add click event listeners to "Responsible" buttons.
- *
- * This block of code adds click event listeners to each button in the 'responsibleButtons' NodeList.
- * When a button is clicked, it checks the selected group from the dropdown and the day section associated with the button.
- * If both the selected group and day section are valid, it invokes the 'createMemberPopup' function to display a popup
- * with group members for the selected day.
- */
-responsibleButtons.forEach(function (button) {
-    button.addEventListener('click', function () {
-        let dropdown = document.getElementById("group-dropdown");
-        if (dropdown.selectedIndex !== 0) {
-            let selectedOption = dropdown.options[dropdown.selectedIndex];
-            let groupID = selectedOption.value;
-            let selectedGroup = groups.find(function (group) {
-                return group.documentID === groupID;
-            });
-            let daySection = button.closest('[id]');
-            let id = null;
-            if (daySection) {
-                id = daySection.id; // This will give you, for example, "tirsdag"
-            }
-            if (selectedGroup && id) {
-                // Open the member popup for the selected group and day
-                createMemberPopup(selectedGroup, id);
-            }
-        }
-    });
-});
-
-/**
- * @brief Add event listener for closing the dinner popup.
- *
- * This event listener is triggered when the close button in the dinner popup is clicked.
- * It hides the dinner popup and clears the input field.
- */
-closeDinnerPopup.addEventListener("click", function (event) {
-    // Hide the dinner popup when the close button is clicked
-    dinnerPopup.style.display = "none";
-    const inputField = document.querySelector('#dinner-name');
-    if (inputField) {
-        inputField.value = ""; // This will empty the input field
-    }
-});
-
-
-/**
- * @brief Add event listener to prevent form submission.
- */
-dinnerForm.addEventListener("submit", function (event) {
-    // Prevent the default form submission behavior to handle form data asynchronously
-    event.preventDefault();
-});
-
 
 /**
  * @brief Handle user input for adding a dinner entry to the calendar.
@@ -565,7 +584,6 @@ function addDinnerToCalendar() {
         let responsibleLabel = dayDiv.querySelector(".selectedMemberLabel");
         responsibleLabel.textContent = "Ansvarlig: ";
 
-        console.log("element: " + element);
         let recipe = findRecipesInCalendar(dinnerName);
 
         if (!element) {
@@ -577,11 +595,9 @@ function addDinnerToCalendar() {
                 element = document.createElement("label");
             }
             element.id = currentDay + "-dinner";
-            console.log("elementID: " + element.id);
         }
 
         if (recipe) {
-            console.log("found recipe");
 
             if (element instanceof HTMLLabelElement) { // Check if it's a label
                 element.parentNode.removeChild(element); // Remove the label
@@ -593,12 +609,12 @@ function addDinnerToCalendar() {
             }
 
             element.setAttribute("class", "dinner-link");
-            element.innerHTML = dinnerName;
+            element.textContent = "Middag: " + dinnerName;
             let href = "../Oppskrifter/Oppskrift/index.html?id=" + recipe.documentID; // Set the link's href
             element.setAttribute("href", href);
         } else {
             console.log("could not find recipe");
-            element.innerHTML = '<br>' + dinnerName;
+            element.innerHTML = '<br>' +"Middag: " + dinnerName;
         }
 
         // Append the created element to the 'div'
@@ -611,7 +627,6 @@ function addDinnerToCalendar() {
         for (let i = 0; i < groups.length; i++) {
             if (groups[i].name === selectedGroup) {
                 for (let j = 0; j < allDays.length; j++) {
-                    console.log("adding dinner to calendar");
                     if (allDays[j] === currentDay) {
                         if (!calendar[i]) {
                             calendar[i] = [];
@@ -759,5 +774,4 @@ function findRecipesInCalendar(dinner) {
     console.log("No matches found");
     return null;
 }
-
 

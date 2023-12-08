@@ -1,3 +1,5 @@
+// Description: This file contains all the handlers for the /recipe endpoint
+// It correctly reroutes the request to the correct handler based on the request method and URL
 package API
 
 import (
@@ -21,6 +23,7 @@ func SetCORSHeaders(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, username")
 }
 
+// RecipeBaseHandler handles all requests to the /recipe endpoint and reroutes them to the correct handler
 func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(r.URL.Path, "/")
@@ -29,7 +32,7 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
 			RecipePostHandler(w, r)
-			
+
 		case http.MethodGet:
 			if parts[len(parts)-1] == "categories" {
 				RecipeCategoriesHandler(w, r)
@@ -53,7 +56,9 @@ func RecipeBaseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// RecipeCategoriesHandler retrieves all the categories that are used for foods in the app
 func RecipeCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+
 	type Output struct {
 		Exclusive map[string]map[string]string `json:"exclusive"`
 		Inclusive []string                     `json:"categories"`
@@ -86,25 +91,32 @@ func RecipeCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// RecipeDeleteHandler handles requests to delete a recipe.
+// It removes the recipe from the user and all groups the user is in.
 func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Decode the request body into the correct struct
 	var user Firebase.User
 	err := DecodeJSONBody(w, r, &user)
 	if err != nil {
 		http.Error(w, "Error when decoding request DELETE: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	//Get recipe id from the url path
 	recipeID := strings.Split(r.URL.Path, "/")[len(strings.Split(r.URL.Path, "/"))-1]
 	if recipeID == "" {
 		http.Error(w, "Error; No id provided", http.StatusBadRequest)
 		return
 	}
+
 	//Get recipe from cache
 	recipe, err := Firebase.ReturnCacheRecipe(recipeID)
 	if err != nil {
 		http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	//Set path based on if request coming from localhost or not
 	ImagePath := "/UsrImages/"
 	if recipe.Image != "" {
@@ -118,12 +130,14 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 	//Get user from cache
 	user, err = Firebase.ReturnCacheUser(user.Username)
 	if err != nil {
 		http.Error(w, "Error when fetching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	//Search for recipe in user
 	index := -1
 	for i, rID := range user.Recipes {
@@ -132,6 +146,7 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+
 	//If recipe is found, remove it from user
 	if index != -1 {
 		user.Recipes = append(user.Recipes[:index], user.Recipes[index+1:]...)
@@ -167,6 +182,8 @@ func RecipeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// RecipePatchHandler handles requests to update a recipe.
+// It updates the recipe in the database.
 func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 	var recipe Firebase.Recipe
 	//Get recipe id from path
@@ -186,6 +203,7 @@ func RecipePatchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// RecipeGetHandler handles requests to retrieve the specified recipe from the database.
 func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	groupQ := r.URL.Query().Get("group")  //If recipes in a group should be returned
@@ -204,6 +222,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error when fetching recipe: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
+		// Encode the recipe into JSON format for the response
 		err = EncodeJSONBody(w, r, recipe)
 		if err != nil {
 			http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
@@ -225,6 +244,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when fetching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	//Get recipes from cache
 	for _, recipeID := range user.Recipes {
 		recipe, err := Firebase.ReturnCacheRecipe(recipeID)
@@ -233,6 +253,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		recipes.UserRecipes = append(recipes.UserRecipes, recipe)
 	}
+
 	//If a groups recipes are requested, get them from cache
 	if groupQ == "true" {
 		//Get group from cache
@@ -254,6 +275,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	//Add example recipes to the response
 	recipes.ExampleRecipes = ExampleRecipes
 
+	// Encode the recipes into JSON format for the response
 	err = EncodeJSONBody(w, r, recipes)
 	if err != nil {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
@@ -261,6 +283,7 @@ func RecipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// RecipePostHandler handles requests to add a new recipe to the database.
 func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 	type Input struct {
 		Recipe Firebase.Recipe `json:"recipe"`
@@ -273,19 +296,22 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when decoding POST: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	//Add recipe to firebase
+
+	// Add recipe to firebase
 	id, err := Firebase.AddRecipe(data.Recipe)
 	if err != nil {
 		http.Error(w, "Error when adding recipe to firebase: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//Get user from cache
+
+	// Get user from cache
 	user, err := Firebase.GetUserData(data.Owner)
 	if err != nil {
 		http.Error(w, "Error when fetching user data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//Check if recipe already exists in user
+
+	// Check if recipe already exists in user
 	duplicate := false
 	for _, recipeID := range user.Recipes {
 		if recipeID == id {
@@ -296,14 +322,16 @@ func RecipePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error; Recipe already exists", http.StatusBadRequest)
 		return
 	}
-	//Update user
+
+	// Update user
 	user.Recipes = append(user.Recipes, id)
 	err = Firebase.PatchCacheUser(user)
 	if err != nil {
 		http.Error(w, "Error when patching user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//Add recipe to groups
+
+	// Add recipe to groups
 	for _, groupID := range data.Groups {
 		group, err := Firebase.ReturnCacheGroup(groupID)
 		if err != nil {

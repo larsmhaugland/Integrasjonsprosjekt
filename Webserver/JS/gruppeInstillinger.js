@@ -1,9 +1,13 @@
-/* jshint esversion: 8 */
+/**
+ * @file gruppeInstillinger.js
+ * @brief gruppeInstillinger.js contains the functions that are used on the group settings page.
+ */
+
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
     
-    // DOM elements
+    /***        DOM ELEMENTS       ***/
     const modal = document.querySelector("#search-member-modal");
     const popupContent = document.querySelector(".popup");
     const closeModalButton = modal.querySelector(".close-modal");
@@ -15,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const groupNameElement = document.querySelector("#group-name");
     const leaveGroupButton = document.querySelector("#leave-group");
 
-    // Global variables and constants
+    /***        VARIABLES       ***/
     const roles = ['Owner', 'Administrator', 'Member'];
     let groupID;
     let GroupOwner;
@@ -50,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle search input changes
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.trim();
-        console.log("Query is: " + query);
         if (query.length === 0) {
             return;
         }
@@ -71,6 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
     closeModalButton.addEventListener("click", function () {
         modal.style.display = "none";
         popupContent.style.display = "none";
+        searchInput.value = "";
     });
 
     // Delete the group when the deleteGroupButton is clicked
@@ -221,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
             usernameSpan.textContent = username;
 
             // Create the button for adding the member
-            const addButton = document.createElement("button");
+            const addButton = document.createElement("a");
             addButton.className = "add-member-btn2";
 
             const addImage = document.createElement("img");
@@ -361,8 +365,6 @@ document.addEventListener("DOMContentLoaded", function () {
             // Set the selected option based on the member's role
             select.value = member.roleName.toLowerCase(); 
             initialDropdownValues[member.username] = select.value;
-            
-            console.log(initialDropdownValues);
 
             // Add an event listener to handle role updates
             select.addEventListener('change', async (event) => {
@@ -463,22 +465,27 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * Sends the PATCH request to the backend endpoint to update the role for the specficied user
-     * @param {string} username     - username to update the role for
-     * @param {string} newRole      - new role for the username
-     * @param {string} initialValue - the initial role for the username
+     * Sends a PATCH request to the backend endpoint to update the role for the specified user.
+     *
+     * @param {string} username - The username to update the role for.
+     * @param {string} newRole - The new role for the username.
+     * @param {string} initialValue - The initial role for the username.
+     * @returns {[boolean, boolean] | boolean} - A tuple containing success flags: [updateSuccess, isOwnerUpdated],
+     *                                            or false if there's an error.
      */
-    async function updateRoleForMember(username, newRole, initialValue){
-        
+    async function updateRoleForMember(username, newRole, initialValue) {
         let newOwner = false;
         let previousOwner = GroupOwner;
+
         try {
+            // Check if the logged-in user has the authority to update roles.
             if (LoggedInUsername !== GroupOwner || initialValue === "owner") {
                 resetDropdownValues(username, newRole, initialValue);
-                alert("Only the owner can update a role. If you want to make another person owner, change their value to owner");
+                alert("Only the owner can update a role. If you want to make another person the owner, change their role to owner.");
                 return [false, false];
             }
-    
+
+            // Confirm making the user the owner if the new role is "owner."
             if (newRole === "owner") {
                 if (!window.confirm("Are you sure you want to make this person the owner?")) {
                     resetDropdownValues(username, newRole, initialValue);
@@ -486,30 +493,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 newOwner = true;
             }
-    
+
+            // If making a new owner, update the previous owner's role to "administrator."
             if (newOwner) {
-                const newRoleForOwner = "administrator"; // Assuming the new role for the owner is "administrator"
+                const newRoleForOwner = "administrator";
                 const ownerUrl = `${API_IP}/group/members?username=${encodeURIComponent(GroupOwner)}&newRole=${encodeURIComponent(newRoleForOwner)}&groupID=${encodeURIComponent(groupID)}`;
                 GroupOwner = username;
-    
+
                 const ownerResponse = await fetch(ownerUrl, {
                     method: 'PATCH',
                 });
-    
-                if (!ownerResponse.status === 200) {
+
+                if (ownerResponse.status !== 200) {
                     alert("Server error when trying to update the role for the previous owner");
                     return [false, false];
                 }
             }
-    
+
+            // Update the role for the specified user.
             const memberUrl = `${API_IP}/group/members?username=${encodeURIComponent(username)}&newRole=${encodeURIComponent(newRole)}&groupID=${encodeURIComponent(groupID)}`;
-    
+
             const memberResponse = await fetch(memberUrl, {
                 method: 'PATCH',
             });
-    
+
             if (memberResponse.status === 200) {
-                console.log("Role of group member updated");
+                // Return success flags.
                 if (newOwner) return [true, true];
                 else return [true, false];
             } else {

@@ -1,3 +1,4 @@
+// Description: This file contains functions for interacting with the group collection in the firestore database. 
 package Firebase
 
 import (
@@ -98,7 +99,6 @@ func AddGroup(group Group, chatID string) (string, error) {
 		return "", err
 	}
 
-	log.Println("documentID on groupCreation: ", group.DocumentID)
 	// Return the groups documentID
 	return group.DocumentID, nil
 }
