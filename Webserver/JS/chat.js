@@ -755,7 +755,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     // If the user left the chat themself, reload the page
                     if (leave === true) { 
                         activeChatID = "";
-                        location.window.href ="../Chat/index.html"
+                        window.location.href ="../Chat/index.html"
                     } else {
                         getChatMembers(activeChatID);
                     }
