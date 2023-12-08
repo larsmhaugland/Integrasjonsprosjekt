@@ -444,130 +444,160 @@ function editRecipe() {
  * @param Recipe - Recipe object to be displayed
  * @returns {Promise<void>}
  */
+// Async function to display a recipe
 async function displayRecipe(Recipe) {
-    //Check if user is logged in
+    // Hide the edit button as default
+    recipeEdit.style.display = "none";
+
+    // Check if the user is logged in
     if (sessionStorage.getItem("username") != null && sessionStorage.getItem("loggedIn") === "true") {
-        //Get recipes from API
+        // Get recipes from the API for the logged-in user
         let response = await fetch(API_IP + "/recipe" + "/" + sessionStorage.getItem("username"));
-        if (!response.ok) {
-            recipeEdit.style.display = "none";
-            return;
-        } else {
+
+        // If there is an issue with the API request, hide the edit button
+        if (response.ok) {
+            // Parse the response data
             let data = await response.json();
+
+            // Check if the user is the owner of the displayed recipe
             for (let i = 0; i < data.userRecipes.length; i++) {
-                //Check if user is owner of recipe
                 if (data.userRecipes[i].documentID === Recipe.documentID) {
                     recipeEdit.style.display = "inline";
+                    // Set the owner variable to the username
                     owner = sessionStorage.getItem("username");
                 }
             }
         }
     }
 
+    // Get elements from the DOM
     let name = document.querySelector("#recipe-name");
     let recipeContent = document.querySelector("#recipe-content");
     let recipeImage = document.querySelector("#recipe-image");
+
+    // Clear existing content
     recipeContent.innerHTML = "";
     recipeImage.innerHTML = "";
+
+    // Set the recipe name
     name.innerHTML = Recipe.name;
-    //If recipe is manual
-    if(Recipe.URL === null || Recipe.URL === "" && Recipe.ingredients !== null  && Recipe.instructions !== null) {
-        //Create list of ingredients
+
+    // If the recipe is manual (not a link)
+    if (Recipe.URL === null || Recipe.URL === "" && Recipe.ingredients !== null && Recipe.instructions !== null) {
+        // Create a list of ingredients
         let ingredients = document.createElement("div");
         let header = document.createElement("span");
-        header.setAttribute("class","sub-header");
-        header.innerHTML = "Ingredienser: ";
+        header.setAttribute("class", "sub-header");
+        header.innerHTML = "Ingredients: ";
         ingredients.appendChild(header);
+
         let ingredientList = document.createElement("ul");
         ingredientList.setAttribute("id", "ingredientsList");
+
+        // Add each ingredient to the list
         for (let [key, value] of Object.entries(Recipe.ingredients)) {
             let ingredient = document.createElement("li");
             ingredient.innerHTML = key + ": " + value;
             ingredientList.appendChild(ingredient);
         }
+
         ingredients.appendChild(ingredientList);
         recipeContent.appendChild(ingredients);
-        //Create list of instructions
+
+        // Create a list of instructions
         header = document.createElement("span");
-        header.setAttribute("class","sub-header");
-        header.innerHTML = "Instruksjoner: ";
+        header.setAttribute("class", "sub-header");
+        header.innerHTML = "Instructions: ";
         recipeContent.appendChild(header);
+
         let instructions = document.createElement("ol");
         instructions.setAttribute("id", "instructions");
+
+        // Add each instruction to the list
         for (let i = 0; i < Recipe.instructions.length; i++) {
             let instruction = document.createElement("li");
             instruction.innerHTML = Recipe.instructions[i];
             instructions.appendChild(instruction);
         }
+
         recipeContent.appendChild(instructions);
     } else {
-        //Create link to recipe
+        // Create a link to the recipe
         let link = document.createElement("a");
         link.href = Recipe.URL;
         link.setAttribute("target", "_blank");
         link.setAttribute("id", "recipe-link");
-        link.innerHTML = "Lenke til oppskrift";
+        link.innerHTML = "Link to Recipe";
         recipeContent.appendChild(link);
     }
-    //Create description
+
+    // Create a description
     if (Recipe.description !== null && Recipe.description !== "") {
         let description = document.createElement("div");
         description.setAttribute("id", "description");
         let header = document.createElement("span");
-        header.setAttribute("class","sub-header");
-        header.innerHTML = "Beskrivelse: ";
+        header.setAttribute("class", "sub-header");
+        header.innerHTML = "Description: ";
         description.appendChild(header);
         description.appendChild(document.createTextNode(Recipe.description));
         recipeContent.appendChild(description);
     }
-    //Create time
+
+    // Create time
     let time = document.createElement("div");
     time.setAttribute("id", "time");
     let header = document.createElement("span");
-    header.setAttribute("class","sub-header");
-    header.innerHTML = "Tid: ";
-    let timeText = document.createTextNode(Recipe.time + " minutter");
+    header.setAttribute("class", "sub-header");
+    header.innerHTML = "Time: ";
+    let timeText = document.createTextNode(Recipe.time + " minutes");
     time.appendChild(header);
     time.appendChild(timeText);
     recipeContent.appendChild(time);
-    //Create difficulty
+
+    // Create difficulty
     let difficulty = document.createElement("div");
     difficulty.setAttribute("id", "difficulty");
     header = document.createElement("span");
-    header.setAttribute("class","sub-header");
-    header.innerHTML = "Vanskelighetsgrad: ";
+    header.setAttribute("class", "sub-header");
+    header.innerHTML = "Difficulty: ";
     difficulty.appendChild(header);
     difficulty.appendChild(document.createTextNode(Recipe.difficulty));
     recipeContent.appendChild(difficulty);
 
-    //Create image
-    if(Recipe.image !== null && Recipe.image !== "") {
-        //Check if image exists on server
+    // Create an image if it exists on the server
+    if (Recipe.image !== null && Recipe.image !== "") {
+        // Check if the image exists on the server
         checkImageExists("../../" + IMAGEDIR + Recipe.image + ".jpeg", function (exists) {
             if (!exists) {
                 return;
             }
-            //Create image element
+
+            // Create an image element
             let image = document.createElement("img");
-            image.src = "../../" + IMAGEDIR + Recipe.image+".jpeg";
+            image.src = "../../" + IMAGEDIR + Recipe.image + ".jpeg";
             recipeImage.appendChild(image);
         });
     }
-    if(Recipe.categories !== null) {
-        //Create category list
+
+    // Create a category list if categories exist
+    if (Recipe.categories !== null) {
         let categories = document.createElement("div");
         categories.setAttribute("id", "categories");
         let header = document.createElement("span");
-        header.setAttribute("class","sub-header");
-        header.innerHTML = "Kategorier: ";
+        header.setAttribute("class", "sub-header");
+        header.innerHTML = "Categories: ";
         categories.appendChild(header);
+
         let categoryList = document.createElement("ul");
         categoryList.setAttribute("id", "categoryList");
+
+        // Add each category to the list
         for (let i = 0; i < Recipe.categories.length; i++) {
             let category = document.createElement("li");
             category.appendChild(document.createTextNode(Recipe.categories[i]));
             categoryList.appendChild(category);
         }
+
         categories.appendChild(categoryList);
         recipeContent.appendChild(categories);
     }
