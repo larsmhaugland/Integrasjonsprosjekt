@@ -552,7 +552,7 @@ label {
 }
 
 /* Styling for the "Remove Members" button within the "Edit Chat" popup */
-#remove-members-button {
+button#remove-members-button {
     background-color: #064412;
     color: white;
     font-weight: bold;
@@ -563,7 +563,7 @@ label {
     font-size: 1.9vh;
     width:  17vw;
 }
-#remove-members-button:hover {
+button#remove-members-button:hover {
     background-color: #04310d;
 }
 
