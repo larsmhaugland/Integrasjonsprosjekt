@@ -1,3 +1,8 @@
+/**
+ * @file js.js
+ * @brief js.js contains the functions that are common across all pages.
+ */
+
 /***       GLOBAL VARIABLES        ***/
 let API_IP = "";
 let IMAGEDIR = "Images/";

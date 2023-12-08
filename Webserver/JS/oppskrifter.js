@@ -1,3 +1,8 @@
+/**
+ * @file oppskrifter.js
+ * @brief oppskrifter.js contains the functions that are used on the recipe page.
+ */
+
 /***       GLOBAL VARIABLES       ***/
 const MAXRESULTS = 12;              //Max number of results per page
 let page = 0;                       //Current page

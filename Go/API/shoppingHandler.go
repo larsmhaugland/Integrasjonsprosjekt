@@ -1,3 +1,5 @@
+// Description: This file contains all the handlers for the /shopping endpoint
+// It correctly reroutes the request to the correct handler based on the request method and URL
 package API
 
 import (
@@ -7,6 +9,7 @@ import (
 	"strings"
 )
 
+// ShoppingBaseHandler handles all requests to the /shopping endpoint and reroutes them to the correct handler
 func ShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	SetCORSHeaders(w)
 	switch r.Method {
@@ -16,12 +19,6 @@ func ShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		ShoppingPostHandler(w, r)
 
-	case http.MethodDelete:
-		ShoppingDeleteHandler(w, r)
-
-	case http.MethodPatch:
-		ShoppingPatchHandler(w, r)
-		
 	case http.MethodOptions: // For CORS
 		return
 	default:
@@ -33,6 +30,7 @@ func ShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 // ShoppingGetHandler handles GET requests to /shopping/{id}?userOrGroup={userOrGroup}
 // Returns all shopping lists for a user or group
 func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the query parameters from the URL
 	userOrGroup := r.URL.Query().Get("userOrGroup")
 	parts := strings.Split(r.URL.Path, "/")
 	saveToID := parts[len(parts)-1]
@@ -43,12 +41,14 @@ func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var shoppingLists []Firebase.ShoppingList
 
+	// Get the shopping lists from the group
 	if userOrGroup == "group" {
 		group, err := Firebase.ReturnCacheGroup(saveToID)
 		if err != nil {
 			http.Error(w, "Error while getting group: "+err.Error(), http.StatusBadRequest)
 			return
 		}
+
 		//Get all shopping lists from DB using the IDs in the group struct
 		for _, shoppingListID := range group.ShoppingLists {
 			shoppingList, err := Firebase.ReturnCacheShoppingList(shoppingListID)
@@ -58,7 +58,7 @@ func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			shoppingLists = append(shoppingLists, shoppingList)
 		}
-	} else {
+	} else { // Get the shopping lists from the user
 		user, err := Firebase.ReturnCacheUser(saveToID)
 		if err != nil {
 			http.Error(w, "Error while getting user: "+err.Error(), http.StatusBadRequest)
@@ -86,7 +86,10 @@ func ShoppingGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ShoppingPostHandler handles POST requests to /shopping/{id}?group={trueOrFalse}
+// It adds a shopping list in the database to a user or group
 func ShoppingPostHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the query parameters from the URL
 	groupParam := r.URL.Query().Get("group")
 	parts := strings.Split(r.URL.Path, "/")
 	saveToID := parts[len(parts)-1]
@@ -96,11 +99,15 @@ func ShoppingPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error when decoding request POST: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// Add the shopping list to the shopping list collection in the database
 	id, err := Firebase.AddShoppingList(shoppingList)
 	if err != nil {
 		http.Error(w, "Error when adding shopping list: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Add the shopping list to the group
 	if groupParam == "true" {
 		group, err := Firebase.ReturnCacheGroup(saveToID)
 		if err != nil {
@@ -108,39 +115,31 @@ func ShoppingPostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		group.ShoppingLists = append(group.ShoppingLists, id)
+		// Update the group in the database with the new shopping list
 		err = Firebase.PatchCacheGroup(group)
 		if err != nil {
 			http.Error(w, "Error when patching group: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-	} else {
+	} else { // Add the shopping list to the user
 		user, err := Firebase.ReturnCacheUser(saveToID)
 		if err != nil {
 			http.Error(w, "Error when getting user "+saveToID+": "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 		user.ShoppingLists = append(user.ShoppingLists, id)
+		// Update the user in the database with the new shopping list
 		err = Firebase.PatchCacheUser(user)
 		if err != nil {
 			http.Error(w, "Error when patching user: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
+
 	w.WriteHeader(http.StatusCreated)
 	err = EncodeJSONBody(w, r, id)
 	if err != nil {
 		http.Error(w, "Error when encoding response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-/*				NOTE: Tenker vi ikke trenger denne fordi vi heller kan bare slette de fra Group eller User handler */
-
-func ShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-/*				Samme gjelder egt denne også, kan heller være en del av user/group handler	*/
-func ShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }

@@ -1,3 +1,5 @@
+// Description: This file contains all the functions that are used to 
+// interact with the Firebase database for the shopping list.
 package Firebase
 
 import (

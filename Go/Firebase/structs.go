@@ -1,3 +1,4 @@
+// Description: This file contains all the structs used in the Firebase package.
 package Firebase
 
 import (

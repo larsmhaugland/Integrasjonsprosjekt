@@ -1,3 +1,4 @@
+// Description: This file contains functions for interacting with the group collection in the firestore database. 
 package Firebase
 
 import (

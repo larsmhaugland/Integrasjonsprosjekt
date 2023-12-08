@@ -1,3 +1,4 @@
+// Description: This file contains functions for interacting with the user collection in the Firestore database
 package Firebase
 
 import (

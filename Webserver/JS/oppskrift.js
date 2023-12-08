@@ -1,3 +1,7 @@
+/**
+ * @file oppskrift.js
+ * @brief oppskrift.js contains the functions that are used on each recipe.
+ */
 /***    DOM ELEMENTS AND GLOBALS   ***/
 let recipeEdit = document.querySelector("#edit-recipe-btn");
 let editRecipePopup = document.querySelector("#edit-recipe-popup");

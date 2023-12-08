@@ -1,3 +1,4 @@
+// Description: This file contains all the functions for interacting with the recipe collection in the firestore database.
 package Firebase
 
 import (

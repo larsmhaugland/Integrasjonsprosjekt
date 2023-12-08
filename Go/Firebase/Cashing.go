@@ -1,3 +1,5 @@
+// Description: This file contains all the functions for the cache. 
+// It also contains the cache maps and the cache timeout.
 package Firebase
 
 import (

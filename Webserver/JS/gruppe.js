@@ -1,4 +1,9 @@
 /**
+ * @file gruppe.js
+ * @brief gruppe.js contains the functions that are used on the group page.
+ */
+
+/**
  * Listens for the DOMContentLoaded event. When the event is fired, the function is run.
  * */
 document.addEventListener("DOMContentLoaded", function () {

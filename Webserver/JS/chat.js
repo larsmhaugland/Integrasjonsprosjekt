@@ -1,3 +1,9 @@
+/**
+ * @file chat.js
+ * @brief chat.js handles the functionality for the chat page.
+ */
+
+
 /* jshint esversion: 8 */
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -67,6 +73,12 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     
         addMessageWithDateToList(formattedMessage);
+    });
+    
+    // Handle WebSocket close event
+    socket.addEventListener("close", (event) => {
+        activeChatID = "";
+        window.location.href ="../Chat/index.html"
     });
 
     /****************************  Event listeners ************************************/
