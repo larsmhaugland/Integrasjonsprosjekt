@@ -1,5 +1,22 @@
 # prog-2052
 
+
+## Handleliste
+Fra handleliste siden kan du legge til og fjerne ting fra handlelisten til de ulike gruppene du er med på.
+Hvis det er lagt til oppskrifter med ingredienser i kalenderen vil du kunne automatisk legge til alle ingrediensene i oppskriften ved å trykke på en knapp.
+Du kan velge om du vil vise eller skjule de fullførte tingene på handlelisten.
+
+## Oppskrifter
+Fra oppskrifter siden kan man se alle oppskrifter man har laget. 
+Hvis du la inn oppskrift med URL vil det være en lenke til oppskriften på nettsiden den ble hentet fra.
+Bilde av oppskriftene vises også hvis det ble lagt til. 
+Du kan filtrere oppskrifter basert på ulike kategorier og søke etter oppskrifter basert på navn.
+Hvis du trykker på boksen med oppskriften vil du komme til en side hvor du kan se mer informasjon om oppskriften og endre på den.
+Hvis du trykker på "Legg til oppskrift" knappen vil du komme til en side hvor du kan legge til en ny oppskrift.
+
+## Oppskrift
+På oppskrift siden kan du se mer informasjon om oppskriften og redigere oppskriften hvis du er eieren av oppskriften.
+
 # Nettside endpoints:
 
 ## /
