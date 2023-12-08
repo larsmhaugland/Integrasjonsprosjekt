@@ -392,7 +392,7 @@
 }
 
 /* Styling for the "Remove Selected Members" button in edit chat poppup*/
-#remove-members-button {
+button.remove-members-button {
     background: #064412;
     font-weight: bold;
     color: #fff;
@@ -403,7 +403,7 @@
     font-size: 1.9vh;
     width:  17vw;
 }
-#remove-members-button:hover {
+button.remove-members-button:hover {
     background-color: #04310d;
 }
 
