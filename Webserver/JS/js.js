@@ -138,8 +138,6 @@ if(hjemmeside) {
     });
     let loginSwitchBtn = document.querySelector("#login-switch-btn");
     loginSwitchBtn.addEventListener("click", loginRegisterToggle);
-    let logoutBtn = document.querySelector("#log-out-btn");
-    logoutBtn.addEventListener("click", logout);
 
     const registerTextPoppup = document.querySelector(".register-btn");
     registerTextPoppup.addEventListener("click", (event) => {
@@ -176,6 +174,9 @@ if(hjemmeside) {
         passwordMatchMessage.innerHTML = '<br>' + matchMessage;
     });
 }
+let logoutBtn = document.querySelector("#log-out-btn");
+logoutBtn.addEventListener("click", logout);
+
 window.onload = function () {
     if(!checkLoginStatus() && !window.location.hostname.includes("localhost")){
         if(!oppskriftside && !hjemmeside) {
@@ -282,8 +283,10 @@ function updateLoginStatus(){
     } else {
         loginBtn.style.display = "block";
         logoutBtn.style.display = "none";
-        notLoggedInDisplay.style.display= "block";
-        notLoggedInDisplay.style.cssText = "display: flex !important";
+        if(notLoggedInDisplay !== null) {
+            notLoggedInDisplay.style.display = "block";
+            notLoggedInDisplay.style.cssText = "display: flex !important";
+        }
         if(mainDisplay !== null) {
             mainDisplay.style.display = "none";
         }
