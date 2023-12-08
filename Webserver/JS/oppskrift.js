@@ -1,5 +1,4 @@
-/* jshint esversion: 8 */
-/* jshint loopfunc: true */
+/***    DOM ELEMENTS AND GLOBALS   ***/
 let recipeEdit = document.querySelector("#edit-recipe-btn");
 let editRecipePopup = document.querySelector("#edit-recipe-popup");
 let closeEditRecipePopup = document.querySelector("#close-recipe-popup");
@@ -287,6 +286,7 @@ recipeEdit.addEventListener("click", function () {
 
     editRecipePopup.style.display = "block";
 });
+
 //Update difficulty text when difficulty slider is moved
 editRecipeDifficulty.addEventListener("input", function (event){
     let recipeDifficultyText = document.querySelector("#difficulty-value-label");
