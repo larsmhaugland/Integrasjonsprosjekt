@@ -2,9 +2,7 @@
  * @file hjemmeside.js
  * @brief hjemmeside.js contains the functions that are used on the homepage.
  */
-/* jshint esversion: 8 */
-/* jshint loopfunc: true */
-//TODO: ADD SHOPPING LIST ID WHEN CREATING NEW GROUP AND POSTING A NEW EMPTY SHOPPING LIST
+
 //CALL ON START/RELOAD
 retrieveGroups();
 
