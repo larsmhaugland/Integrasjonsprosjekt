@@ -54,6 +54,8 @@ Viser info om gruppe med mulighet for å redigere for administratorer
 ## /handleliste
 Mulighet til å se, legge til og fjerne ting fra handleliste
 
+## /chat
+chat
 
 
 # API Endpoints:
