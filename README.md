@@ -98,3 +98,9 @@ Response:
 200 - OK
 id - ID (filnavn) til nytt bilde
 ```
+
+# Deployment
+
+For å deploye tjenesten bruker man et skript kalt deploy.sh. 
+Det skriptet henter oppdateringer fra Git repoet og bygger en ny versjon av tjenesten ved hjelp av docker-compose.
+Pass på at port 8080 og 433 er åpne på serveren, slik at tjenesten kan nås fra utsiden.
