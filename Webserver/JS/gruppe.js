@@ -169,5 +169,40 @@ document.addEventListener("DOMContentLoaded", function () {
             editButton.style.display = "none";
         }
     }
+
+    /**
+     * Removes the active user from the group by sending a delete request to the backend API with the
+     * appropriate username and groupID
+     * @param {string} groupID - Unique identifier of the group to leave
+     * @returns {void}
+     */
+    function leaveGroup(groupID) {
+        const url = `${API_IP}/group/leaveGroup?groupID=${groupID}&username=${LoggedInUsername}`;
+        
+        // URL the user is sent to after leaving the group
+        const redirectURL = "../index.html";
+
+        // Make sure the user intended to leave the group
+        if (!window.confirm("Er du sikker på at du vil forlate gruppa?")){
+            return;
+        } 
+        
+        // Send a DELETE request to the server
+        fetch(url, {
+            method: "DELETE",
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                alert("Du forlot gruppa.");
+                window.location.href = redirectURL;
+            } else {
+                alert("Serverfeil med å forlate gruppe.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("Server error occured, could not leave the group.");
+        });
+    }
     
 });
