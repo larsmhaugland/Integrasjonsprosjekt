@@ -189,7 +189,7 @@ h1{
 /* Styling for the buttons in the popup */
 .popup button {
     display: block;
-    background-color: white;
+    background-color: #80AB82;
     margin-bottom: 10px;
     font-size: 38px;
     align-self: stretch;

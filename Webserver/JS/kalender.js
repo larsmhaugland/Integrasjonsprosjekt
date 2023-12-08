@@ -321,7 +321,15 @@ function setCalenderOnDate(dateData, div, j, k, groupID) {
     // Select the label element in the day's div
     let label = div.querySelector('.selectedMemberLabel');
     // Add a label for "responsible" to the day's div
-    label.textContent = "Ansvarlig: " + responsible;
+    if (label){
+        label.textContent = "Ansvarlig: " + responsible;
+    }else {
+        label = document.createElement("label");
+        label.textContent = "Ansvarlig: " + responsible;
+        label.className = "selectedMemberLabel";
+    }
+
+
     if (responsible !== "") {
         responsibleCalendar[j][k + 1] = responsible[0];
     }
@@ -427,7 +435,7 @@ function sendCalendarToServer() {
                     } else {
                         responsible = responsibleCalendar[gIndex][dIndex + 1];
                     }
-
+                    console.log(responsible);
                     // Construct the data payload for the POST request
                     const data = {
                         "date": dateString,
@@ -532,6 +540,7 @@ function createMemberPopup(groupData, day) {
                             }
 
                         }
+                        console.log(responsibleCalendar);
                         // Add the memberKey to the group array in the second dimension
                         responsibleCalendar[groupIndex][allDays.indexOf(day) + 1] = key;
                         sendCalendarToServer();
@@ -606,7 +615,7 @@ function addDinnerToCalendar() {
             }
 
             element.setAttribute("class", "dinner-link");
-            element.innerHTML = dinnerName;
+            element.textContent = "Middag: " + dinnerName;
             let href = "../Oppskrifter/Oppskrift/index.html?id=" + recipe.documentID; // Set the link's href
             element.setAttribute("href", href);
         } else {
