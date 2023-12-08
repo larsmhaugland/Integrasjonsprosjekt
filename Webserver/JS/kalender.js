@@ -3,8 +3,6 @@
  * @brief This file contains the calendar functions for the application.
  */
 
-/* jshint esversion: 8 */
-/* jshint loopfunc: true */
 /****************************** DOM Elements ************************************/
 let dinnerPopup = document.querySelector("#dinner-popup"); // The popup for adding a dinner
 let newDinnerBtns = document.querySelectorAll(".dinner-btn"); // The buttons for adding a dinner
