@@ -135,6 +135,39 @@ Response:
 id - ID (filnavn) til nytt bilde
 ```
 
+### /clear/
+```
+Method: POST
+Path: /clear/
+Body: 
+```
+
+Response:
+```
+200- OK
+```
+
+### /stats/
+```
+Method: GET
+Path: /stats/
+Body:
+```
+
+Response:
+```
+200 - OK
+Body:
+{
+ "numCacheHits": 0,
+ "numCacheMiss": 0,
+ "numGroups": 36,
+ "numRecipes": 144,
+ "numShopping": 7,
+ "numUsers": 45
+}
+```
+
 # Deployment
 
 For å deploye tjenesten bruker man et skript kalt deploy.sh. 
