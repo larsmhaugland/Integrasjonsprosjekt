@@ -201,9 +201,7 @@ func RemoveMemberFromChat(chatID string, usernames []string) error {
 	// Filter out usernames to keep
 	var currentMembers []string
 	for _, member := range chatData.Members {
-		log.Println("usernameMap:", usernameMap[member])
 		if !usernameMap[member] {
-			log.Println("member: ", member)
 			currentMembers = append(currentMembers, member)
 		} else {
 			// Remove the chat from the members document
@@ -220,7 +218,6 @@ func RemoveMemberFromChat(chatID string, usernames []string) error {
 	}
 	chatData.Members = currentMembers
 
-	log.Println("currentMembers Before firestore update:", currentMembers)
 	// Update the firestore document with the modified members list
 	_, err = client.Collection("chat").Doc(chatID).Update(ctx, []firestore.Update{
 		{Path: "members", Value: currentMembers},

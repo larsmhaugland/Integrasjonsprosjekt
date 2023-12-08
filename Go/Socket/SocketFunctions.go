@@ -70,14 +70,12 @@ var Upgrader = websocket.Upgrader{
 // It upgrades the HTTP connection to a websocket connection and then runs
 // the handleMessage function
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("Received websocket connection request")
 	// Upgrade the HTTP connection to a websocket connection
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println("Upgraded connection to websocket")
 	// Listen to messages from the websocket connection
 	handleMessage(conn)
 
@@ -87,7 +85,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 // handleMessage listens to messages from the websocket connection
 // and handles them according to the event type of the message
 func handleMessage(conn *websocket.Conn) {
-	log.Println("Listening to messages from websocket connection")
 	// Unterminated loop that listens to messages and handles them
 	for {
 
@@ -100,7 +97,6 @@ func handleMessage(conn *websocket.Conn) {
 
 		// Make sure the message is a text message
 		if messageType == websocket.TextMessage {
-			log.Println("Received message:", string(data))
 
 			// Set the lastMessageTime to the current time
 			connectionInfo := &ConnectionInfo{
@@ -146,7 +142,6 @@ func handleMessage(conn *websocket.Conn) {
 				}
 			case "chatMessage":
 				// Handle the chatMessage event
-				log.Println("Should broadcase message now")
 				broadcastMessageToRoom(connectionInfo, message)
 			default:
 				log.Println("Received unknown event:", event)
@@ -173,7 +168,6 @@ func broadcastMessageToRoom(connInfo *ConnectionInfo, messageData map[string]int
 		if err != nil {
 			log.Printf("Error sending message to client: %v\n", err)
 		}
-		log.Println("Broadcasted message to client")
 	}
 }
 
@@ -191,7 +185,6 @@ func joinChatRoom(connInfo *ConnectionInfo, activeChatID string) {
 		}
 		// Add the client to the chat room
 		chatRooms[activeChatID][connInfo] = true
-		log.Println("User joined the chat room")
 	}
 }
 
@@ -200,7 +193,6 @@ func leaveChatRoom(connInfo *ConnectionInfo, activeChatID string) {
 	if activeChatID != "" && chatRooms[activeChatID] != nil {
 		// Remove the client from the chat room
 		delete(chatRooms[activeChatID], connInfo)
-		log.Println("User left the chat room")
 
 		// Check if the chat room is empty, if yes, remove it from the heap
 		if len(chatRooms[activeChatID]) == 0 {
@@ -234,14 +226,14 @@ func chatRoomCleanup() {
 
 // RunChatRoomCleanup periodically runs chat room cleanup in the background
 func RunChatRoomCleanup(interval time.Duration) {
-    cleanupTimer := time.NewTimer(interval)	 // Timer that fires at the specified interval
-    defer cleanupTimer.Stop()
+	cleanupTimer := time.NewTimer(interval) // Timer that fires at the specified interval
+	defer cleanupTimer.Stop()
 
-    for {							 // Infinite loop
-        <-cleanupTimer.C			 // Blocked until the timer fires
-        chatRoomCleanup()
-        cleanupTimer.Reset(interval) // Reset the timer for the next interval
-    }
+	for { // Infinite loop
+		<-cleanupTimer.C // Blocked until the timer fires
+		chatRoomCleanup()
+		cleanupTimer.Reset(interval) // Reset the timer for the next interval
+	}
 }
 
 /*

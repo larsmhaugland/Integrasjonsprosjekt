@@ -32,14 +32,14 @@ type User struct {
 	DocumentID    string   `json:"documentID"`
 }
 
-// TODO comment this
+// Dinner is a struct that represents a dinner in the database with all it's data fields.
 type Dinner struct {
 	CustomRecipe string   `json:"customRecipe"`
 	Recipe       string   `json:"recipe"`
 	Responsible  []string `json:"responsible"`
 }
 
-// TODO comment this
+// GroupRecipe is a struct that represents a recipe in a group in the database with all it's data fields.
 type GroupRecipe struct {
 	LastEaten time.Time `json:"lastEaten"`
 	Owner     string    `json:"owner"`
@@ -113,6 +113,6 @@ type Chat struct {
 }
 
 type RemoveMembersFromChat struct {
-    ChatID    string   `json:"chatID"`
-    Usernames []string `json:"usernames"`
+	ChatID    string   `json:"chatID"`
+	Usernames []string `json:"usernames"`
 }

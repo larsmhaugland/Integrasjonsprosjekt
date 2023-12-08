@@ -3,7 +3,6 @@ package API
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -212,7 +211,6 @@ func GroupNewHandler(w http.ResponseWriter, r *http.Request) {
 	for key := range group.Members {
 		chatMembers = append(chatMembers, key)
 	}
-	log.Println("Chat members: ", chatMembers)
 	// Create a Chat struct with ChatOwner and Name
 	chat := Firebase.Chat{
 		ChatOwner:  group.Owner,
@@ -256,9 +254,7 @@ func GroupMemberPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	newRole := r.URL.Query().Get("newRole")
 	groupID := r.URL.Query().Get("groupID")
-	log.Println("Username: ", username)
-	log.Println("New role: ", newRole)
-	log.Println("GroupID: ", groupID)
+
 	if username == "" || newRole == "" || groupID == "" {
 		http.Error(w, "Error; Could not parse query parameters", http.StatusBadRequest)
 		return

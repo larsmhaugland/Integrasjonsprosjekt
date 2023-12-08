@@ -98,7 +98,6 @@ func AddGroup(group Group, chatID string) (string, error) {
 		return "", err
 	}
 
-	log.Println("documentID on groupCreation: ", group.DocumentID)
 	// Return the groups documentID
 	return group.DocumentID, nil
 }
