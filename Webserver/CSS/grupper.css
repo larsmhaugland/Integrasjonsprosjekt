@@ -178,7 +178,7 @@
 }
 
 /* Style for add member button */
-#add-member-btn {
+#add-member-btn button {
     background-color: #064412;
     color: #fff;
     border: none;
@@ -188,6 +188,10 @@
     font-weight: bold;
     border-radius: 1.5vw;
     margin: 1.25vh;
+}
+
+#add-member-btn button:hover{
+    background-color: #04310d;
 }
 
 /******************************** MODAL STYLE ADDING MEMBERS *****************************************/
