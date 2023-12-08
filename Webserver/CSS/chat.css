@@ -376,7 +376,7 @@
 }
 
 /* Styling for the "legg til medlemmer" button in the edit chat poppup */
-button#add-members-button {
+#add-members-button {
     background: #064412;
     font-weight: bold;
     color: #fff;
@@ -387,12 +387,12 @@ button#add-members-button {
     font-size: 1.9vh;
     width:  17vw;
 }
-button#add-members-button:hover {
+#add-members-button:hover {
     background-color: #04310d;
 }
 
 /* Styling for the "Remove Selected Members" button in edit chat poppup*/
-button.remove-members-button {
+#remove-members-button {
     background: #064412;
     font-weight: bold;
     color: #fff;
@@ -403,7 +403,7 @@ button.remove-members-button {
     font-size: 1.9vh;
     width:  17vw;
 }
-button.remove-members-button:hover {
+#remove-members-button:hover {
     background-color: #04310d;
 }
 
