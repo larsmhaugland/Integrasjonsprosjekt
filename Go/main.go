@@ -1,3 +1,5 @@
+// Description: This file is the main entry point for our application.
+// It is resposnible for starting the HTTPS or HTTP sever and setting up the endpoints.
 package main
 
 import (
@@ -17,8 +19,10 @@ import (
 	"github.com/google/uuid"
 )
 
+// Main function
 func main() {
 
+	// Start either the HTTP or HTTPS sever based on the flag
 	httpsFlag := flag.Bool("https", false, "Enable HTTPS")
 	flag.Parse()
 	if *httpsFlag {
@@ -26,16 +30,17 @@ func main() {
 	} else {
 		startHTTPserver()
 	}
-	game_version :=3
-    fmt.Printf("Super Mario %s\n",game_version)
 }
 
+// StartHTTPserver initializes the chache, sets up the endpoints and starts the server.
 func startHTTPserver() {
 	server := &http.Server{
 		Addr: ":8080",
 	}
 
 	Firebase.InitCache()
+
+	// Set up endpoints
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { return })
 	http.HandleFunc("/stats/", statsHandler)
 	http.HandleFunc("/image/", ImageHandler)
@@ -48,14 +53,13 @@ func startHTTPserver() {
 	log.Println("Websocket endpoint set up")
 	http.HandleFunc("/clear/", clearCacheHandler)
 
-	// coroutine that runs the chat room cleanup function
-	// Socket.RunChatRoomCleanup()
-
 	// Start HTTP server
 	log.Println("Starting HTTP server on port 8080 ...")
 	log.Fatal(server.ListenAndServe())
 }
 
+// startHTTPSserver initializes the chache, sets up the endpoints and starts the server.
+// It also sets up the HTTPS certificates.
 func startHTTPSserver() {
 	certFile := "HTTPS/server.crt"
 	keyFile := "HTTPS/server.key"
@@ -75,6 +79,8 @@ func startHTTPSserver() {
 	server.TLSConfig.Certificates = []tls.Certificate{cert}
 
 	Firebase.InitCache()
+
+	// Set up endpoints
 	http.HandleFunc("/stats/", statsHandler)
 	http.HandleFunc("/image/", ImageHandler)
 	http.HandleFunc("/group/", API.GroupBaseHandler)
@@ -86,15 +92,16 @@ func startHTTPSserver() {
 	log.Println("Websocket endpoint set up")
 	http.HandleFunc("/clear/", clearCacheHandler)
 
-	// coroutine that runs the chat room cleanup function
-
-	go Socket.RunChatRoomCleanup(10)
+	// coroutine that runs the chat room cleanup function every 10 minutes
+	const timeInterval = 10 // minutes
+	go Socket.RunChatRoomCleanup(timeInterval)
 
 	// Start HTTP server
 	log.Println("Starting HTTPS server on port 8080 ...")
 	log.Fatal(server.ListenAndServeTLS("", ""))
 }
 
+// clearCacheHandler clears the cache and returns a 200 OK response
 func clearCacheHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
 	Firebase.InitCache()
@@ -102,7 +109,7 @@ func clearCacheHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Cache cleared")
 }
 
-// Tenker det hadde vært gøy å ha statistikk over hvor mye de forskjellige endpointsene blir brukt og antall cache hits/misses ellerno
+// statsHandler returns a JSON object with the current cache statistics
 func statsHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
 	stats := map[string]interface{}{
@@ -126,6 +133,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ImageHandler handles the image upload and returns a response with the filename of the uploaded image
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	API.SetCORSHeaders(w)
 	//If filename is specified, it is at the end of the path
@@ -192,6 +200,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// generateUniqueID generates a unique ID for the filename of the uploaded image
 func generateUniqueID() (string, error) {
 	// Generate a new UUID
 	uniqueID, err := uuid.NewUUID()

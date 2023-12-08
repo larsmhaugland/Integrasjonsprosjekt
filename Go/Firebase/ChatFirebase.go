@@ -1,3 +1,5 @@
+// Description: This file contains the functions for interacting with the chat collection in the firestore database.
+
 package Firebase
 
 import (
@@ -8,6 +10,7 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
+// GetAllChats returns all the chats from the firestore database
 func GetAllChats() ([]Chat, error) {
 	ctx := context.Background()
 	client, err := GetFirestoreClient(ctx)
@@ -16,10 +19,12 @@ func GetAllChats() ([]Chat, error) {
 		return nil, err
 	}
 
+	// Get the iterator for the chat collection
 	iter := client.Collection("chat").Documents(ctx)
 	defer iter.Stop()
 
 	var chats []Chat
+	// Iterate through the documents and add them to the chats array
 	for {
 		var chat Chat
 		doc, err := iter.Next()

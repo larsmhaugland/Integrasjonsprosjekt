@@ -1,3 +1,4 @@
+// Description: This file contains the functions for handling websokcet connections.
 package Socket
 
 import (
