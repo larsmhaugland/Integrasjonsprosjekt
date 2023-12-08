@@ -1,3 +1,9 @@
+/**
+ * @file gruppeInstillinger.js
+ * @brief gruppeInstillinger.js contains the functions that are used on the group settings page.
+ */
+
+
 /* jshint esversion: 8 */
 // Wrapping in document.addEventListener("DOMContentLoaded") ensures that the code will run after
 // the HTML document is fully loaded

@@ -1,3 +1,7 @@
+/**
+ * @file handleliste.js
+ * @brief handleliste.js contains the functions that are used on the handleliste page.
+ */
 /* jshint esversion: 8 */
 /* jshint loopfunc: true */
 //CALL ON START/RELOAD

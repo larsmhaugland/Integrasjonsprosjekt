@@ -1,3 +1,9 @@
+/**
+ * @file chat.js
+ * @brief chat.js handles the functionality for the chat page.
+ */
+
+
 /* jshint esversion: 8 */
 document.addEventListener("DOMContentLoaded", function () {
 

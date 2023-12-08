@@ -1,3 +1,7 @@
+/**
+ * @file gruppe.js
+ * @brief gruppe.js contains the functions that are used on the group page.
+ */
 /* jshint esversion: 8 */
 document.addEventListener("DOMContentLoaded", function () {
     // DOM elements

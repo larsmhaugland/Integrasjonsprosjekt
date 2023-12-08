@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// UserBaseHandler base handler for all requests to /user/
 func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 	SetCORSHeaders(w)
 	parts := strings.Split(r.URL.Path, "/")
@@ -38,6 +39,7 @@ func UserBaseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// UserCredentialBaseHandler base handler for all credential requests
 func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
@@ -62,10 +64,12 @@ func UserCredentialBaseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// CheckUserCookie checks if the user has a valid cookie
 func CheckUserCookie(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// UserCredentialPostLoginHandler handles all requests to login
 func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	//Decode the JSON body
 	var user Firebase.User
@@ -101,6 +105,7 @@ func UserCredentialPostLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// UserCredentialPostHandler handles all requests to register
 func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	//Decode the JSON body
 	var user Firebase.User
@@ -141,6 +146,7 @@ func UserCredentialPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// HashPassword hashes the password using SHA3-384
 func HashPassword(password string) (string, error) {
 	hash := sha3.New384()
 	_, err := hash.Write([]byte(password))
@@ -152,10 +158,14 @@ func HashPassword(password string) (string, error) {
 	return hashString, nil
 }
 
+// These two functions are not yet implemented, but are here for future use
+
+// UserCredentialDeleteHandler handles all requests to delete a user
 func UserCredentialDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
+// UserCredentialPatchHandler handles all requests to patch a user
 func UserCredentialPatchHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
@@ -166,13 +176,7 @@ func UserGroupBaseHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		UserGroupGetHandler(w, r)
 
-	case http.MethodPost:
-		UserGroupPostHandler(w, r)
-
 	case http.MethodOptions: // For CORS
-
-	case http.MethodDelete:
-		UserGroupDeleteHandler(w, r)
 
 	case http.MethodPatch:
 		UserGroupPatchHandler(w, r)
@@ -235,14 +239,7 @@ func UserSearchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UserGroupPostHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
-func UserGroupDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Not implemented", http.StatusNotImplemented)
-}
-
+// UserGroupPatchHandler adds a user to a group
 func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	log.Print("Username: " + username)
@@ -281,6 +278,7 @@ func UserGroupPatchHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// UserShoppingBaseHandler handles all requests to shopping
 func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodOptions: // For CORS
@@ -297,10 +295,12 @@ func UserShoppingBaseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// UserShoppingDeleteHandler handles all requests to delete a shopping list, not yet implemented
 func UserShoppingDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }
 
+// UserShoppingPatchHandler handles all requests to patch a shopping list
 func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	user, err := Firebase.ReturnCacheUser(username)
@@ -335,6 +335,7 @@ func UserShoppingPatchHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// DecodeJSONBody decodes the JSON body of a request
 func DecodeJSONBody(w http.ResponseWriter, r *http.Request, u interface{}) error {
 	// Decode the JSON body
 	err := json.NewDecoder(r.Body).Decode(u)
@@ -344,6 +345,7 @@ func DecodeJSONBody(w http.ResponseWriter, r *http.Request, u interface{}) error
 	return nil
 }
 
+// EncodeJSONBody encodes the JSON body of a request
 func EncodeJSONBody(w http.ResponseWriter, r *http.Request, u interface{}) error {
 	err := json.NewEncoder(w).Encode(u)
 	if err != nil {

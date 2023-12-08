@@ -1,3 +1,8 @@
+/**
+ * @file API.js
+ * @brief API.js contains some of the functions that communicate with the backend.
+ */
+
 /* jshint esversion: 8 */
 /* jshint loopfunc: true */
 async function getRecipes(Recipes) {
